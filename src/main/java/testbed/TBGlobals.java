@@ -30,7 +30,7 @@ interface TBGlobals {
       CONFIGEND = 9000,
 
       ABOUT = 9001,
-      OPER = 9003,
+      OPER = 9002,
       ENFORCE_ASP = 9029,
       GLOBALSCALE = 9030,
       MENU_TESTBED = 9031,

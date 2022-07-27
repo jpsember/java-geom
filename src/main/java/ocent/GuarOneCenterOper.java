@@ -241,6 +241,15 @@ public class GuarOneCenterOper implements TestBedOperation, Globals {
 
   public void runAlgorithm() {
     vornGraph = null;
+    
+
+    if ( T.update())
+      T.msg("algorithm step 1");
+
+    if ( T.update())
+      T.msg("algorithm step 2");
+
+
     if (C.vb(TRACKINDEP))
       trackIndep();
   }

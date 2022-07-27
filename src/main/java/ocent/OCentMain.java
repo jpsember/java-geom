@@ -1,6 +1,7 @@
 package ocent;
 
 import base.*;
+import js.system.SystemUtil;
 import testbed.*;
 import java.util.*;
 
@@ -26,6 +27,7 @@ public class OCentMain extends TestBed {
   public static void main(String[] args) {
 
     new OCentMain().doMainGUI(args);
+    SystemUtil.killProcesses("OCentMain");
   }
 
   // -------------------------------------------------------
@@ -34,6 +36,7 @@ public class OCentMain extends TestBed {
 
   public void addOperations() {
     addOper(GuarOneCenterOper.singleton);
+    addOper(new SimpleOper());
     addOper(new GeneratorOper());
   }
   public static int regionType() {
