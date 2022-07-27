@@ -1,7 +1,6 @@
 package testbed;
 
 import java.io.*;
-import base.*;
 
 /**
  * Keeps track of file path, name, extension, and modified flags

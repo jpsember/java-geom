@@ -361,11 +361,6 @@ public final class Polyn implements Globals, IVector {
       System.out.println("Roots:\n" + roots);
     }
   }
-
-  // for debug use, to suppress verbose output of nested
-  // calls to solve()
-  private static int dbNest;
-
   /**
    * Find roots for the polynomial
    * @param roots : Doubles are returned in this array, one for
@@ -378,7 +373,6 @@ public final class Polyn implements Globals, IVector {
   public void solve(DArray roots, double fuzzyMargin) {
     boolean db = false;
     if (db) {
-      dbNest++;
       if (db) {
         System.out.println("solve " + this.toString(true));
       }

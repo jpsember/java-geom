@@ -1464,9 +1464,8 @@ public class Hyperbola implements GeomPrimitive, Globals, Renderable {
         if (dashed)
           V.pushStroke(Globals.STRK_RUBBERBAND);
         {
-          int count = 0;
           boolean first = true;
-          for (double t = t0;; t += step, count++) {
+          for (double t = t0;; t += step ) {
             boolean last = (t >= t1);
             if (last) {
               t = t1;

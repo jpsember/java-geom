@@ -4,8 +4,6 @@ import java.awt.*;
 import java.awt.RenderingHints.*;
 import java.awt.geom.*;
 import java.awt.image.*;
-import java.util.*;
-import testbed.*;
 import base.*;
 
 public class BitMap implements Renderable {

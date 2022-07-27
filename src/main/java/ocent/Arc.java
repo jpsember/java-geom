@@ -2,7 +2,6 @@ package ocent;
 
 import java.awt.*;
 import java.awt.geom.*;
-import ocent.DiscIntersection.*;
 import testbed.*;
 import base.*;
 

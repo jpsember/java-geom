@@ -290,8 +290,6 @@ public final class Tools {
   }
 
   public static String d(Map m) {
-    if (m == null)
-      return m.toString();
     StringBuilder sb = new StringBuilder();
     sb.append(dashTitle(80, "Map (size=" + m.size() + ")", true));
     Iterator it = m.keySet().iterator();

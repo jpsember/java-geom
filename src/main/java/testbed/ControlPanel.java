@@ -1,8 +1,6 @@
 package testbed;
-import static base.Tools.*;
 import base.*;
 import javax.swing.*;
-import testbed.StackPanel.*;
 import java.awt.*;
 
 /**

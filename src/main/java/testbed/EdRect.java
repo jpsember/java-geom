@@ -2,8 +2,6 @@ package testbed;
 
 import base.*;
 import java.awt.*;
-import java.awt.geom.*;
-import testbed.*;
 
 public class EdRect extends EdObject implements Globals {
   public static final int FLG_SQUARE = (1 << (USER_FLAG_BITS - 1));

@@ -1,7 +1,6 @@
 package ocent;
 
 import java.awt.*;
-import java.awt.geom.*;
 import testbed.*;
 import base.*;
 

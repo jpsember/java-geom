@@ -4,8 +4,6 @@ import static js.base.Tools.*;
 
 import js.app.App;
 
-import geom.MainOper;
-
 public class Main extends App {
 
   public static void main(String[] args) {

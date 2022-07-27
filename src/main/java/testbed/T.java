@@ -7,30 +7,30 @@ import java.awt.geom.*;
 
 /**
  * Algorithm Tracing
- *
  */
-public class T extends TBError implements Globals { //, TBGlobals {
+public class T extends TBError implements Globals {
 
-  
   public static void disable() {
     algTraceDisabled++;
   }
+
   public static void enable() {
     algTraceDisabled--;
     Tools.ASSERT(algTraceDisabled >= 0);
   }
-  
+
   /**
    * Execute an algorithm, with optional tracing
-   * @param alg : algorithm to execute
+   * 
+   * @param alg
+   *          : algorithm to execute
    * @return true if algorithm ran to completion
    */
   static boolean runAlgorithm(TestBedOperation alg) {
 
-    algRunning = C.exists(TBGlobals.TRACEENABLED)
-        && C.vb(TBGlobals.TRACEENABLED);
+    algRunning = C.exists(TBGlobals.TRACEENABLED) && C.vb(TBGlobals.TRACEENABLED);
     algTraceDisabled = 0;
-    
+
     if (algRunning) {
       traceStop = C.vi(TBGlobals.TRACESTEP);
       traceStep = 0;
@@ -64,6 +64,7 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
   /**
    * Get event that interrupted last algorithm run
+   * 
    * @return T, or null if last algorithm ran to completion
    */
   public static T lastEvent() {
@@ -71,9 +72,12 @@ public class T extends TBError implements Globals { //, TBGlobals {
   }
 
   /**
-   * Render each item in a collection 
-   * @param c : if not null, collection to render
-   * @param color : if not null, color to override default with
+   * Render each item in a collection
+   * 
+   * @param c
+   *          : if not null, collection to render
+   * @param color
+   *          : if not null, color to override default with
    */
   public static void renderAll(Collection c, Color color) {
     renderAll(c, color, -1, -1);
@@ -85,8 +89,11 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
   /**
    * Render a Traceable item
-   * @param item : if not null, item to render
-   * @param color : if not null, color to override default with
+   * 
+   * @param item
+   *          : if not null, item to render
+   * @param color
+   *          : if not null, color to override default with
    */
   public static void render(Object item, Color color) {
     render(item, color, -1, -1);
@@ -94,10 +101,15 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
   /**
    * Render a Traceable item
-   * @param item   if not null, item to render
-   * @param color  if not null, color to override default with
-   * @param stroke if >= 0, stroke to override default with
-   * @param markType  if >= 0, mark type to override default with
+   * 
+   * @param item
+   *          if not null, item to render
+   * @param color
+   *          if not null, color to override default with
+   * @param stroke
+   *          if >= 0, stroke to override default with
+   * @param markType
+   *          if >= 0, mark type to override default with
    */
   public static void render(Object item, Color color, int stroke, int markType) {
     Renderable t = make(item, color, stroke, markType);
@@ -128,24 +140,27 @@ public class T extends TBError implements Globals { //, TBGlobals {
   //  }
 
   /**
-   * Make a renderable and add it to an array for later plotting.
-   * Does nothing if array is null, or no renderable can be made.
-   * @param dest where to store the Renderable
+   * Make a renderable and add it to an array for later plotting. Does nothing
+   * if array is null, or no renderable can be made.
+   * 
+   * @param dest
+   *          where to store the Renderable
    */
-  public static void make(DArray dest, Object item, Color color, int stroke,
-      int markType) {
+  public static void make(DArray dest, Object item, Color color, int stroke, int markType) {
     if (dest != null) {
       Renderable t = make(item, color, stroke, markType);
       if (t != null)
         dest.add(t);
     }
   }
+
   /**
    * @see make
    */
   public static void make(DArray dest, Object item, Color color) {
     make(dest, item, color, -1, -1);
   }
+
   /**
    * @see make
    */
@@ -153,8 +168,7 @@ public class T extends TBError implements Globals { //, TBGlobals {
     make(dest, item, null, -1, -1);
   }
 
-  public static void make(DArray dest, String str, Color color, double x,
-      double y, int flags) {
+  public static void make(DArray dest, String str, Color color, double x, double y, int flags) {
     if (flags == -1)
       flags = TX_BGND | TX_FRAME | TX_CLAMP;
 
@@ -163,11 +177,12 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
   /**
    * Attempt to build a Renderable from an object
-   * @param item object
+   * 
+   * @param item
+   *          object
    * @return Renderable, or null if unable to build one
    */
-  public static Renderable make(Object item, Color color, int stroke,
-      int markType) {
+  public static Renderable make(Object item, Color color, int stroke, int markType) {
     Renderable t = null;
     if (item != null) {
       if (item instanceof Renderable) {
@@ -182,19 +197,23 @@ public class T extends TBError implements Globals { //, TBGlobals {
       } else if (item instanceof RectangularShape) {
         t = new TraceRect((RectangularShape) item, color, stroke, markType);
       } else if (item instanceof Object[]) {
-        t = new TraceIterable(new DArray((Object[]) item), color, stroke,
-            markType);
+        t = new TraceIterable(new DArray((Object[]) item), color, stroke, markType);
       }
     }
     return t;
   }
 
   /**
-   * Show a Traceable  
-   * @param t   if not null, and a Traceable type, traceable to show
-   * @param c  if not null, color to override default with
-   * @param stroke   if >= 0, stroke to override default with
-   * @param markType   if >= 0, mark type to override default with
+   * Show a Traceable
+   * 
+   * @param t
+   *          if not null, and a Traceable type, traceable to show
+   * @param c
+   *          if not null, color to override default with
+   * @param stroke
+   *          if >= 0, stroke to override default with
+   * @param markType
+   *          if >= 0, mark type to override default with
    * @return empty string
    */
   public static String show(Object t, Color c, int stroke, int markType) {
@@ -207,13 +226,17 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
   /**
    * Render each item in a collection that is a Traceable
-   * @param c   if not null, collection to render
-   * @param color   if not null, color to override default with
-   * @param stroke  if >= 0, stroke to override default with
-   * @param markType   if >= 0, mark type to override default with
+   * 
+   * @param c
+   *          if not null, collection to render
+   * @param color
+   *          if not null, color to override default with
+   * @param stroke
+   *          if >= 0, stroke to override default with
+   * @param markType
+   *          if >= 0, mark type to override default with
    */
-  public static void renderAll(Collection c, Color color, int stroke,
-      int markType) {
+  public static void renderAll(Collection c, Color color, int stroke, int markType) {
     if (c != null)
       for (Iterator it = c.iterator(); it.hasNext();) {
         Object obj = it.next();
@@ -223,13 +246,17 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
   /**
    * Render each item in an array that is a Traceable
-   * @param array if not null, array to render
-   * @param color  if not null, color to override default with
-   * @param stroke   if >= 0, stroke to override default with
-   * @param markType  if >= 0, mark type to override default with
+   * 
+   * @param array
+   *          if not null, array to render
+   * @param color
+   *          if not null, color to override default with
+   * @param stroke
+   *          if >= 0, stroke to override default with
+   * @param markType
+   *          if >= 0, mark type to override default with
    */
-  public static void renderAll(Object[] array, Color color, int stroke,
-      int markType) {
+  public static void renderAll(Object[] array, Color color, int stroke, int markType) {
     if (array != null)
       for (int i = 0; i < array.length; i++) {
         Object obj = array[i];
@@ -241,10 +268,10 @@ public class T extends TBError implements Globals { //, TBGlobals {
   }
 
   /**
-   * Display items shown during algorithm, including any
-   * added by trace message.
-   * @param evt trace object thrown during algorithm processing, 
-   *   or null
+   * Display items shown during algorithm, including any added by trace message.
+   * 
+   * @param evt
+   *          trace object thrown during algorithm processing, or null
    */
   private static void plotTrace(T tr) {
     DArray oldPlotList = plotList;
@@ -280,6 +307,7 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
   /**
    * Determine if algorithm tracing is occurring
+   * 
    * @return true if so
    */
   public static boolean active() {
@@ -287,8 +315,7 @@ public class T extends TBError implements Globals { //, TBGlobals {
   }
 
   /**
-   * Determine if current algorithm step should be interrupted with 
-   * message.
+   * Determine if current algorithm step should be interrupted with message.
    *
    * @return true if this is the trace step
    */
@@ -302,17 +329,21 @@ public class T extends TBError implements Globals { //, TBGlobals {
   }
 
   /**
-   * Throw an algorithm error event.  Message is always displayed for
-   * errors, along with stack trace.
-   * @param s : Object describing problem
+   * Throw an algorithm error event. Message is always displayed for errors,
+   * along with stack trace.
+   * 
+   * @param s
+   *          : Object describing problem
    */
   public static void err(Object s) {
     throw new T(s.toString(), true);
   }
 
   /**
-   * Throw an algorithm message event.  
-   * @param s : Object describing problem
+   * Throw an algorithm message event.
+   * 
+   * @param s
+   *          : Object describing problem
    */
   public static void msg(Object s) {
     throw new T(s.toString(), false);
@@ -320,23 +351,31 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
   /**
    * Show a collection of Traceable items
-   * @param tList  if not null, collection to show
-   * @param c  if not null, color to override default with
+   * 
+   * @param tList
+   *          if not null, collection to show
+   * @param c
+   *          if not null, color to override default with
    * @return empty string
    */
   public static String showAll(Collection tList, Color c) {
     return showAll(tList, c, -1, -1);
   }
+
   /**
    * Show a collection of Traceable items
-   * @param tList  if not null, collection to show
-   * @param c  if not null, color to override default with
-   * @param stroke   if >= 0, stroke to override default with
-   * @param markType   if >= 0, mark type to override default with
+   * 
+   * @param tList
+   *          if not null, collection to show
+   * @param c
+   *          if not null, color to override default with
+   * @param stroke
+   *          if >= 0, stroke to override default with
+   * @param markType
+   *          if >= 0, mark type to override default with
    * @return empty string
    */
-  public static String showAll(Collection tList, Color c, int stroke,
-      int markType) {
+  public static String showAll(Collection tList, Color c, int stroke, int markType) {
     if (tList != null)
       for (Iterator it = tList.iterator(); it.hasNext();) {
         Object obj = it.next();
@@ -347,7 +386,9 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
   /**
    * Show a collection of Traceable items
-   * @param tList : if not null, collection to show
+   * 
+   * @param tList
+   *          : if not null, collection to show
    * @return empty string
    * @deprecated
    */
@@ -357,19 +398,28 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
   /**
    * Show an array of Traceable items
-   * @param array  if not null, array to show
-   * @param c  if not null, color to override default with
+   * 
+   * @param array
+   *          if not null, array to show
+   * @param c
+   *          if not null, color to override default with
    * @return empty string
    */
   public static String showAll(Object[] array, Color c) {
     return showAll(array, c, -1, -1);
   }
+
   /**
    * Show a collection of Traceable items
-   * @param array  if not null, array to show
-   * @param c  if not null, color to override default with
-   * @param stroke   if >= 0, stroke to override default with
-   * @param markType   if >= 0, mark type to override default with
+   * 
+   * @param array
+   *          if not null, array to show
+   * @param c
+   *          if not null, color to override default with
+   * @param stroke
+   *          if >= 0, stroke to override default with
+   * @param markType
+   *          if >= 0, mark type to override default with
    * @return empty string
    */
   public static String showAll(Object[] array, Color c, int stroke, int markType) {
@@ -383,7 +433,9 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
   /**
    * Show an array of Traceable items
-   * @param array if not null, array of items to show
+   * 
+   * @param array
+   *          if not null, array of items to show
    * @return empty string
    */
   public static String showAll(Object[] array) {
@@ -393,6 +445,7 @@ public class T extends TBError implements Globals { //, TBGlobals {
   public static String show(Object t) {
     return show(t, null, -1, -1);
   }
+
   public static String show(Object t, Color c) {
     return show(t, c, -1, -1);
   }
@@ -405,20 +458,19 @@ public class T extends TBError implements Globals { //, TBGlobals {
     this.error = error;
   }
 
-  public static String show(String str, Color color, FPoint2 loc, int flags,
-      double scale) {
+  public static String show(String str, Color color, FPoint2 loc, int flags, double scale) {
     return show(str, color, loc.x, loc.y, flags, scale);
   }
+
   public static String show(String str, Color color, FPoint2 loc, int flags) {
     return show(str, color, loc, flags, 1.0);
   }
 
-  public static String show(String str, Color color, double x, double y,
-      int flags) {
+  public static String show(String str, Color color, double x, double y, int flags) {
     return show(str, color, x, y, flags, 1.0);
   }
-  public static String show(String str, Color color, double x, double y,
-      int flags, double scale) {
+
+  public static String show(String str, Color color, double x, double y, int flags, double scale) {
     if (flags == -1)
       flags = TX_BGND | TX_FRAME | TX_CLAMP;
 
@@ -452,9 +504,10 @@ public class T extends TBError implements Globals { //, TBGlobals {
       this.stroke = stroke;
       this.markType = markType;
     }
-//    public PlotItem(Renderable t) {
-//      this(t, null, -1, -1);
-//    }
+
+    //    public PlotItem(Renderable t) {
+    //      this(t, null, -1, -1);
+    //    }
     public int stroke;
     public int markType;
     public Renderable item;
@@ -473,9 +526,11 @@ public class T extends TBError implements Globals { //, TBGlobals {
       this.color = color;
       Tools.ASSERT(v != null);
     }
+
     private IVector v;
     private int markType;
     private Color color;
+
     public void render(Color c, int stroke, int markType) {
       if (c == null)
         c = color;
@@ -498,6 +553,7 @@ public class T extends TBError implements Globals { //, TBGlobals {
       this.color = color;
       Tools.ASSERT(c != null);
     }
+
     public void render(Color c, int stroke, int markType) {
       if (c == null)
         c = color;
@@ -510,6 +566,7 @@ public class T extends TBError implements Globals { //, TBGlobals {
         T.render(obj, color, stroke, markType);
       }
     }
+
     private int stroke;
     private Iterable c;
     private int markType;
@@ -530,10 +587,12 @@ public class T extends TBError implements Globals { //, TBGlobals {
 
       Tools.ASSERT(v != null);
     }
+
     private int stroke;
     private LineEqn v;
     private int markType;
     private Color color;
+
     public void render(Color c, int stroke, int markType) {
       V.pushColor(c, color);
       V.pushStroke(stroke, this.stroke);
@@ -575,11 +634,10 @@ public class T extends TBError implements Globals { //, TBGlobals {
       V.pushColor(c, color);
       V.pushStroke(stroke, this.stroke);
       Rectangle2D r = this.c.getBounds2D();
-      double x0 = r.getMinX(), x1 = r.getMaxX(), y0 = r.getMinY(), y1 = r
-          .getMaxY();
+      double x0 = r.getMinX(), x1 = r.getMaxX(), y0 = r.getMinY(), y1 = r.getMaxY();
 
-      FPoint2 p0 = new FPoint2(x0, y0), p1 = new FPoint2(x1, y0), p2 = new FPoint2(
-          x1, y1), p3 = new FPoint2(x0, y1);
+      FPoint2 p0 = new FPoint2(x0, y0), p1 = new FPoint2(x1, y0), p2 = new FPoint2(x1, y1),
+          p3 = new FPoint2(x0, y1);
 
       V.drawLine(p0, p1);
       V.drawLine(p1, p2);
@@ -593,6 +651,7 @@ public class T extends TBError implements Globals { //, TBGlobals {
       }
       V.pop(2);
     }
+
     private int stroke;
     private RectangularShape c;
     private int markType;
@@ -603,8 +662,7 @@ public class T extends TBError implements Globals { //, TBGlobals {
    * Wrapper class for tracing messages
    */
   private static class TraceString implements Renderable {
-    public TraceString(String s, Color color, double x, double y, int flags,
-        double scale) {
+    public TraceString(String s, Color color, double x, double y, int flags, double scale) {
       this.str = s;
       if (color == null)
         color = MyColor.cRED;
@@ -620,12 +678,14 @@ public class T extends TBError implements Globals { //, TBGlobals {
       V.draw(str, position, flags);
       V.pop(2);
     }
+
     private String str;
     private int flags;
     private FPoint2 position;
     private Color color;
     private double scale;
   }
+
   /**
    * Wrapper class for other renderables, for overriding color/stroke/mark attrs
    */
@@ -646,6 +706,7 @@ public class T extends TBError implements Globals { //, TBGlobals {
         markType = this.markType;
       r.render(c, stroke, markType);
     }
+
     private int stroke;
     private Renderable r;
     private int markType;

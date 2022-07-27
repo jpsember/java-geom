@@ -1,8 +1,5 @@
 package base;
 
-import java.util.*;
-import base.*;
-
 public class AttributeList {
   public int size() {
     return am.size();

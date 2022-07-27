@@ -2,23 +2,13 @@ package ocent;
 
 import base.*;
 import testbed.*;
-import java.awt.*;
 import java.util.*;
 
 public class OCentMain extends TestBed {
-  /*! .enum  .private   4000
-     bedges  _ _ _ togglediscs makediam makesupported maketangent
-     samprange sampres minbound   random rndtest type disc square rect poly
-  */
-
-  private static final int BEDGES = 4000;//!
   private static final int TOGGLEDISCS = 4004;//!
   private static final int MAKEDIAM = 4005;//!
   private static final int MAKESUPPORTED = 4006;//!
   private static final int MAKETANGENT = 4007;//!
-  private static final int SAMPRANGE = 4008;//!
-  private static final int SAMPRES = 4009;//!
-  private static final int MINBOUND = 4010;//!
   private static final int RANDOM = 4011;//!
   private static final int RNDTEST = 4012;//!
   private static final int TYPE = 4013;//!
@@ -27,7 +17,6 @@ public class OCentMain extends TestBed {
   private static final int RECT = 4016;//!
   private static final int POLY = 4017;//!
   /* !*/
-   static boolean FULL = false;
 
   public static final int DISCS = 0, SQUARES = 1, RECTS = 2, POLYGONS = 3;
 
@@ -45,17 +34,8 @@ public class OCentMain extends TestBed {
   // -------------------------------------------------------
 
   public void addOperations() {
-    addOper(PossOneCentOper.singleton);
-    addOper(PossSmallestBoundingDiscOper.singleton);
     addOper(GuarOneCenterOper.singleton);
     addOper(new GeneratorOper());
-
-    if (FULL) {
-      addOper(CurvesOper.singleton);
-      addOper(DynamicOneCentOper.singleton);
-      addOper(OneCenterOper.singleton);
-      addOper(DiscVornOper.singleton);
-    }
   }
   public static int regionType() {
     return C.vi(TYPE) - DISC;
@@ -68,26 +48,12 @@ public class OCentMain extends TestBed {
       C.sOpen();
       C.sButton(RANDOM, "Random", "Generate random discs");
 
-      if (FULL) {
-        C.sCheckBox(MINBOUND, "m.b.disc",
-            "plot minimum bounding disc of discs", false);
-        C.sCheckBox(BEDGES, "Bisector edges", "Plots edges of 1-center region"
-            + " derived from bisector edges", false);
-        C.sCheckBox(RNDTEST, "Test", "Repeatedly generate random discs", false);
-        C.sNewColumn();
-      }
-
       C.sOpenComboBox(TYPE, "Regions", "Select uncertain regions", false);
       C.sChoice(DISC, "disc");
       C.sChoice(SQUARE, "square");
       C.sChoice(RECT, "rectangle");
       C.sChoice(POLY, "polygon");
       C.sCloseComboBox();
-      if (FULL) {
-        C.sIntSpinner(SAMPRANGE, "range", null, 5, 300, 100, 5);
-        C.sIntSpinner(SAMPRES, "res", null, 1, 100, 10, 1);
-      }
-      //   C.sIntSpinner(DBSAMP, "db", null, 0, 50, 0, 1);
       C.sClose();
     }
 
@@ -239,131 +205,8 @@ public class OCentMain extends TestBed {
     parms.fileExt = "dat";
   }
 
-  private DArray buildBisectorEdges() {
-    DArray bisectorEdges = new DArray();
-    final boolean db = false;
-    EdDisc[] discs = OCentMain.getDiscs();
-    int k = 0;
-    for (int di = 0; di < discs.length; di++) {
-      EdDisc ddi = discs[di];
-      if (!ddi.isActive())
-        continue;
-      for (int dj = 0; dj < discs.length; dj++) {
-        if (dj == di)
-          continue;
 
-        EdDisc ddj = discs[dj];
-        if (!ddj.isActive())
-          continue;
-        k++;
-        // db = (k == C.vi(DBSAMP));
-
-        Hyperbola bs = GuaranteedDiscBisector.S.getBisector(ddi, ddj);
-
-        if (db && T.update())
-          T.msg("bisector for discs" + T.show(ddi) + T.show(ddj) + T.show(bs));
-        if (bs == null)
-          continue;
-
-        if (!bs.valid())
-          continue;
-
-        // add all the time, so we can debug sampling
-        bisectorEdges.add(bs);
-
-        sampleBisector(ddi, ddj, bs, db);
-      }
-    }
-    return bisectorEdges;
-
-  }
-  private static boolean allDiscsOverlap(EdDisc sd) {
-    final boolean db = false;
-    boolean valid = true;
-    EdDisc[] discs = OCentMain.getDiscs();
-    for (int j = 0; j < discs.length; j++) {
-      EdDisc dj = discs[j];
-      if (!dj.isActive())
-        continue;
-      if (!EdDisc.overlap(sd, dj)) {
-        if (db && T.update())
-          T.msg("discs don't overlap" + T.show(sd) + T.show(dj));
-        valid = false;
-        break;
-      }
-    }
-    return valid;
-  }
-
-  private void sampleBisector(EdDisc di, EdDisc dj, Hyperbola b, boolean db) {
-
-    EdDisc[] discs = OCentMain.getDiscs();
-
-    double TMAX = C.vi(SAMPRANGE);
-    double TRES = C.vi(SAMPRES) / 6.0;
-
-    double tPrev = -1000;
-
-    for (double t = -TMAX; t < TMAX;) {
-      FPoint2 pt = b.calcPoint(t);
-      EdDisc sd = new EdDisc(pt, 1e-6 + pt.distance(di.getOrigin())
-          + di.getRadius());
-      if (db && T.update())
-        T.msg("sampling bisector, disc" + T.show(sd) + T.show(sd.getOrigin()));
-      boolean valid = false;
-      do {
-        if (!allDiscsOverlap(sd)) {
-          if (db && T.update())
-            T.msg("not all discs overlap" + T.show(sd));
-          break;
-        }
-
-        DiscBoundary dbnd = new DiscBoundary(sd);
-        for (int j = 0; j < discs.length; j++) {
-          EdDisc ddj = discs[j];
-          if (ddj == di)
-            continue;
-          if (!ddj.isActive())
-            continue;
-          dbnd.exclude(ddj);
-        }
-        // exclude the tangency points of the two discs
-        // that produced the bisector
-        dbnd.exclude(MyMath.polarAngle(pt, dj.getOrigin()));
-
-        // determine if 180 rule is violated before adding di's tangent point
-        if (db && T.update())
-          T.msg("determining if valid180 before adding inside tangent disc"
-              + T.show(di));
-        boolean wasValid = dbnd.valid180(db);
-        if (wasValid) {
-          if (db && T.update())
-            T.msg("was valid before inside tangent disc added, skipping");
-          break;
-        }
-        dbnd.exclude(MyMath.polarAngle(pt, di.getOrigin()));
-
-        if (db && T.update())
-          T.msg("boundary" + T.show(dbnd));
-        if (!dbnd.valid180(db)) {
-          if (db && T.update())
-            T.msg("boundary is not valid" + T.show(dbnd));
-          break;
-        }
-        valid = true;
-      } while (false);
-
-      if (!valid) {
-        b.clip(tPrev, t);
-      }
-      tPrev = t;
-
-      double step = Math.sqrt(Math.abs(t)) / TRES;
-      step = Math.max(step, .05);
-      t += step;
-
-    }
-  }
+  
 
   public static EdDisc getMinBound() {
     if (minBound == null) {
@@ -380,31 +223,7 @@ public class OCentMain extends TestBed {
     rects2 = null;
     polygons = null;
     minBound = null;
-
-    if (false)
-    PossOneCentOper.singleton.plotSamples();
-
-    if (FULL && C.vb(MINBOUND)) {
-      T.render(getMinBound(), MyColor.cLIGHTGRAY, -1, MARK_X);
-    }
-
-    if (FULL && C.vb(BEDGES)) {
-      DArray bisectorEdges = buildBisectorEdges();
-      T.renderAll(bisectorEdges, Color.black);
-    }
-
     super.paintView();
-
-    //    if (TestBed.oper() != EnvOper.singleton)
-    //      EnvOper.singleton.plotSamples();
-
-    if (FULL && C.vb(RNDTEST)) {
-      if (T.lastEvent() == null) {
-        GeneratorOper.generateRandom();
-        V.repaint();
-      } else
-        C.setb(RNDTEST, false);
-    }
   }
 
   public static EdPolygon[] getPolygons() {

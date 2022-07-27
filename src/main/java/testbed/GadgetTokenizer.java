@@ -1,6 +1,5 @@
 package testbed;
 
- import static base.Tools.*;
 import base.*;
 import javax.swing.SwingConstants;
 import java.io.*;

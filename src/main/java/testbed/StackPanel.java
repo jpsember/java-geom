@@ -2,7 +2,6 @@ package testbed;
 
 import java.awt.*;
 import javax.swing.*;
-import base.*;
 
 /**
  * Panel that contains a stack of components.

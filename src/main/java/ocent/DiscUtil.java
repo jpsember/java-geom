@@ -132,12 +132,8 @@ public class DiscUtil {
       Hyperbola h = MinMaxDiscBisector.S.getBisector(a, b);
       double t0 = -1000;
       double t1 = 1000;
-      int step = 0;
       while (t0 < t1 - 1e-6) {
-        step++;
         inf.update();
-        if (db && T.update())
-          T.msg("step=" + step + " t0=" + Tools.f(t0) + " t1=" + Tools.f(t1));
         double tm = .67 * t0 + .33 * t1;
         double tn = .33 * t0 + .67 * t1;
         double dm = distFrom(h, tm, c, a);
