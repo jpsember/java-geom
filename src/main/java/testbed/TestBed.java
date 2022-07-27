@@ -9,9 +9,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 
 /**
- * The TestBed class is the base class for the TestBed framework.
- * See the PDF file:
- *  'TestBed: A Framework for Simple Java Test Program Generation'
+ * The TestBed class is the base class for the TestBed framework. See the PDF
+ * file: 'TestBed: A Framework for Simple Java Test Program Generation'
  */
 public abstract class TestBed extends Application implements Globals {
   // debug problems with initial window placement?
@@ -38,7 +37,8 @@ public abstract class TestBed extends Application implements Globals {
    * Process an application action; if it is processed, its code may be modified
    * or cleared to 0
    *
-   * @param a : TBAction to view and/or modify
+   * @param a
+   *          : TBAction to view and/or modify
    */
   private void processAction0(TBAction a) {
 
@@ -79,26 +79,21 @@ public abstract class TestBed extends Application implements Globals {
         clearButUpdate = true;
         break;
 
-     
-      case TBGlobals.ABOUT:
-        {
-          new AboutDialog(TestBed.appFrame(), "TestBed");
-        }
+      case TBGlobals.ABOUT: {
+        new AboutDialog(TestBed.appFrame(), "TestBed");
+      }
         break;
 
       case TBGlobals.QUIT:
         exitProgram();
         break;
-      case TBGlobals.FILLCOLOR:
-        {
-          Color fillColor = new Color(C.vi(TBGlobals.sFILLCOLOR));
-          Color cl = JColorChooser.showDialog(
-              appFrame == null ? (Component) this : (Component) appFrame,
-              "Select background color", fillColor);
-          if (cl != null) {
-            C.seti(TBGlobals.sFILLCOLOR, cl.getRGB() & 0xffffff);
-          }
+      case TBGlobals.FILLCOLOR: {
+        Color fillColor = new Color(C.vi(TBGlobals.sFILLCOLOR));
+        Color cl = JColorChooser.showDialog(appFrame, "Select background color", fillColor);
+        if (cl != null) {
+          C.seti(TBGlobals.sFILLCOLOR, cl.getRGB() & 0xffffff);
         }
+      }
         break;
 
       case TBGlobals.TRACEBWD:
@@ -110,17 +105,15 @@ public abstract class TestBed extends Application implements Globals {
         C.seti(TBGlobals.TRACESTEP, C.vi(TBGlobals.TRACESTEP) + 1);
         break;
       case TBGlobals.BTN_TOGGLECTRLS:
-      case TBGlobals.BTN_TOGGLECONSOLE:
-        {
-          JSplitPane sp = (a.ctrlId == TBGlobals.BTN_TOGGLECTRLS) ? spCtrls
-              : spConsole;
-          int x = sp.getDividerLocation(), x1 = sp.getMaximumDividerLocation();
-          if (x > x1 || x < 20) {
-            sp.resetToPreferredSizes();
-          } else {
-            sp.setDividerLocation(1.0);
-          }
+      case TBGlobals.BTN_TOGGLECONSOLE: {
+        JSplitPane sp = (a.ctrlId == TBGlobals.BTN_TOGGLECTRLS) ? spCtrls : spConsole;
+        int x = sp.getDividerLocation(), x1 = sp.getMaximumDividerLocation();
+        if (x > x1 || x < 20) {
+          sp.resetToPreferredSizes();
+        } else {
+          sp.setDividerLocation(1.0);
         }
+      }
         break;
 
       case TBGlobals.BTN_TOGGLEWORKSPACE:
@@ -130,14 +123,13 @@ public abstract class TestBed extends Application implements Globals {
       }
       break;
 
-    case TBAction.ITEMENABLE:
-      {
-        // call application to determine if this item should
-        // be enabled.
-        boolean s = processMenuEnable(a.menuId, a.ctrlId);
-        // change menu item's state if necessary.
-        C.get(a.ctrlId).getComponent().setEnabled(s);
-      }
+    case TBAction.ITEMENABLE: {
+      // call application to determine if this item should
+      // be enabled.
+      boolean s = processMenuEnable(a.menuId, a.ctrlId);
+      // change menu item's state if necessary.
+      C.get(a.ctrlId).getComponent().setEnabled(s);
+    }
       break;
     }
 
@@ -213,24 +205,29 @@ public abstract class TestBed extends Application implements Globals {
       pack();
       setVisible(true);
     }
+
     public void actionPerformed(ActionEvent e) {
       setVisible(false);
       dispose();
     }
   }
+
   /**
-   * Process actions for main controls.
-   * Default implementation does nothing
-   * @param a action to process
+   * Process actions for main controls. Default implementation does nothing
+   * 
+   * @param a
+   *          action to process
    */
   public void processAction(TBAction a) {
   }
 
   /**
-   * Perform enable/disable of a menu's items in preparation for
-   * it being shown.
-   * @param menu : menu containing item
-   * @param item : the item to enable/disable
+   * Perform enable/disable of a menu's items in preparation for it being shown.
+   * 
+   * @param menu
+   *          : menu containing item
+   * @param item
+   *          : the item to enable/disable
    * @return new enabled state of item
    */
   protected boolean processMenuEnable(int menu, int item) {
@@ -258,14 +255,12 @@ public abstract class TestBed extends Application implements Globals {
   }
 
   /**
-   * Write configuration file.
-   * If program hasn't finished initializing, does nothing.
+   * Write configuration file. If program hasn't finished initializing, does
+   * nothing.
    */
   static void writeConfigFile() {
     if (app.programBegun) {
-      if (!isApplet()) {
-        app.writeConfigFile2();
-      }
+      app.writeConfigFile2();
     }
   }
 
@@ -301,10 +296,6 @@ public abstract class TestBed extends Application implements Globals {
    */
   private void processConfigFile() {
     final boolean db = false;
-
-    if (Streams.isApplet()) {
-      return;
-    }
 
     if (db) {
       System.out.println("processConfigFile");
@@ -365,7 +356,8 @@ public abstract class TestBed extends Application implements Globals {
   /**
    * Read configuration arguments
    * 
-   * @param tk   Tokenizer producing values
+   * @param tk
+   *          Tokenizer producing values
    */
   private void readAppConfigArguments(Tokenizer tk) {
 
@@ -380,34 +372,36 @@ public abstract class TestBed extends Application implements Globals {
   }
 
   /**
-   * Initialize the editor, if one is to be used. 
-   * User can also add items to the editor menu, and add
-   * any additional menus.  Default implementation does nothing.
-   * <br>
+   * Initialize the editor, if one is to be used. User can also add items to the
+   * editor menu, and add any additional menus. Default implementation does
+   * nothing. <br>
    * Typical user code:
+   * 
    * <pre>
-    // specify object types manipulated by editor
-    Editor.addObjectType(EdPoint.FACTORY);
-    Editor.addObjectType(EdSegment.FACTORY);
+   * // specify object types manipulated by editor
+   * Editor.addObjectType(EdPoint.FACTORY);
+   * Editor.addObjectType(EdSegment.FACTORY);
    * </pre>
+   * 
    * A more involved version might look like:
+   * 
    * <pre>
-    Editor.addObjectType(EdPolygon.FACTORY);
-    Editor.addObjectType(EdDisc.FACTORY);
-    Editor.addObjectType(EdSegment.FACTORY);
-    Editor.addObjectType(EdDiameter.FACTORY);
-    Editor.addObjectType(EdPoint.FACTORY);
-
-    Editor.openMenu();
-    C.sMenuItem(G_TOGGLEDISCS, "Toggle discs/points", "!^t");
-    C.sMenuItem(G_MAKETANGENT, "Set disc tangent", "!^3"); 
-    C.sMenuItem(G_MAKESUPPORTED, "Set disc supported", "!^4"); 
-    Editor.closeMenu();
-    
-    C.sOpenMenu(INVERT, "Invert");
-    C.sMenuItem(INV_SEGS,"Segments",null);
-    C.sMenuItem(INV_DISCS,"Discs",null);
-    C.sCloseMenu();
+   * Editor.addObjectType(EdPolygon.FACTORY);
+   * Editor.addObjectType(EdDisc.FACTORY);
+   * Editor.addObjectType(EdSegment.FACTORY);
+   * Editor.addObjectType(EdDiameter.FACTORY);
+   * Editor.addObjectType(EdPoint.FACTORY);
+   * 
+   * Editor.openMenu();
+   * C.sMenuItem(G_TOGGLEDISCS, "Toggle discs/points", "!^t");
+   * C.sMenuItem(G_MAKETANGENT, "Set disc tangent", "!^3");
+   * C.sMenuItem(G_MAKESUPPORTED, "Set disc supported", "!^4");
+   * Editor.closeMenu();
+   * 
+   * C.sOpenMenu(INVERT, "Invert");
+   * C.sMenuItem(INV_SEGS, "Segments", null);
+   * C.sMenuItem(INV_DISCS, "Discs", null);
+   * C.sCloseMenu();
    * </pre>
    */
   public void initEditor() {
@@ -428,35 +422,32 @@ public abstract class TestBed extends Application implements Globals {
       C.sMenuItem(TBGlobals.BTN_TOGGLECONSOLE, "Toggle console", "!^2");
     }
 
-    if (Streams.isApplet())
-      C.sMenuItem(TBGlobals.BTN_TOGGLEWORKSPACE, "Toggle workspace", "!^3");
     C.sMenuSep();
     if (parms.algTrace) {
       C.sMenuItem(TBGlobals.TRACEBWD, "Trace bwd", "!^#" + KeyEvent.VK_LEFT);
       C.sMenuItem(TBGlobals.TRACEFWD, "Trace fwd", "!^#" + KeyEvent.VK_RIGHT);
 
     }
-    if (!Streams.isApplet())
-      C.sMenuItem(TBGlobals.QUIT, "Quit", "!^q");
+    C.sMenuItem(TBGlobals.QUIT, "Quit", "!^q");
     C.sCloseMenu();
   }
 
   /**
-   * Add operations available to the user.  Default implementation 
-   * does nothing.
+   * Add operations available to the user. Default implementation does nothing.
    * Typical user code (taken from the ConvexHull example):
+   * 
    * <pre>
-    // add operations 
-    addOper(GrahamOper.singleton);
-    addOper(JarvisOper.singleton);
-    </pre>
+   * // add operations 
+   * addOper(GrahamOper.singleton);
+   * addOper(JarvisOper.singleton);
+   * </pre>
    */
   public void addOperations() {
   }
 
   /**
-   * Add 'global' controls: available to all operations
-   * Default implementation does nothing.
+   * Add 'global' controls: available to all operations Default implementation
+   * does nothing.
    */
   public void addControls() {
   }
@@ -470,18 +461,15 @@ public abstract class TestBed extends Application implements Globals {
     C.sOpenTabSet(TBGlobals.AUXTABSET);
     if (parms.algTrace) {
       C.sOpenTab(TBGlobals.AUXTAB_TRACE, "Trace");
-      C.sCheckBox(TBGlobals.TRACEENABLED, "Enabled",
-          "if true, enables algorithm tracing", true);
+      C.sCheckBox(TBGlobals.TRACEENABLED, "Enabled", "if true, enables algorithm tracing", true);
       C.sCheckBox(TBGlobals.TRACEPLOT, "Messages", "plots trace text", true);
       C.sNewColumn();
-      C.sIntSlider(TBGlobals.TRACESTEP, null,
-          "Highlight individual steps in algorithm", 0, parms.traceSteps, 0, 1);
+      C.sIntSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, parms.traceSteps,
+          0, 1);
       C.sOpen();
-      C.sButton(TBGlobals.TRACEBTNBWD, "<<",
-          "Move one step backward in algorithm");
+      C.sButton(TBGlobals.TRACEBTNBWD, "<<", "Move one step backward in algorithm");
       C.sNewColumn();
-      C.sButton(TBGlobals.TRACEBTNFWD, ">>",
-          "Move one step forward in algorithm");
+      C.sButton(TBGlobals.TRACEBTNFWD, ">>", "Move one step forward in algorithm");
       C.sClose();
       C.sCloseTab();
     }
@@ -489,29 +477,24 @@ public abstract class TestBed extends Application implements Globals {
     {
       C.sOpenTab(TBGlobals.AUXTAB_VIEW, "View");
       {
-        C.sIntSpinner(TBGlobals.GLOBALSCALE, "scale:",
-            "Sets global scale factor", 1, 40, 7, 1);
+        C.sIntSpinner(TBGlobals.GLOBALSCALE, "scale:", "Sets global scale factor", 1, 40, 7, 1);
         if (parms.withEditor)
           Editor.addControls();
       }
-      C.sCheckBox(TBGlobals.ENFORCE_ASP, "fixed aspect",
-          "Enforce aspect ratio", false);
+      C.sCheckBox(TBGlobals.ENFORCE_ASP, "fixed aspect", "Enforce aspect ratio", false);
       C.sNewColumn();
       C.sButton(TBGlobals.FILLCOLOR, "bg color", "Adjust background color");
-      C.sDoubleSpinner(TBGlobals.ASPECTRATIO, "ratio", "Aspect Ratio", .1, 10,
-          1.458, .1);
+      C.sDoubleSpinner(TBGlobals.ASPECTRATIO, "ratio", "Aspect Ratio", .1, 10, 1.458, .1);
       C.sCloseTab();
     }
     if (parms.includeGrid) {
       C.sOpenTab(TBGlobals.AUXTAB_GRID, "Grid");
       {
-        C.sIntSpinner(TBGlobals.GRIDSIZE, "size:", "size of grid", 1, 1000, 5,
-            1);
+        C.sIntSpinner(TBGlobals.GRIDSIZE, "size:", "size of grid", 1, 1000, 5, 1);
         C.sTextField(TBGlobals.MOUSELOC, "!", "mouse position", 8, true, "");
         C.sNewColumn();
         C.sCheckBox(TBGlobals.GRIDON, "plot", "plot grid", false);
-        C.sCheckBox(TBGlobals.GRIDLABELS, "labels", "include grid labels",
-            false);
+        C.sCheckBox(TBGlobals.GRIDLABELS, "labels", "include grid labels", false);
         C.sCheckBox(TBGlobals.GRIDACTIVE, "snap", //
             "snap objects to grid", false);
       }
@@ -536,11 +519,13 @@ public abstract class TestBed extends Application implements Globals {
   }
 
   /**
-   * Add console.  Redirects all writer output to the console's text area.
-   * The console's id is fixed at ID_CONSOLE.
+   * Add console. Redirects all writer output to the console's text area. The
+   * console's id is fixed at ID_CONSOLE.
    *
-   * @param rows : number of rows of text
-   * @param commandLine : true if user can enter commands
+   * @param rows
+   *          : number of rows of text
+   * @param commandLine
+   *          : true if user can enter commands
    */
   private void addConsole(int rows, boolean commandLine) {
     C.openScript();
@@ -550,7 +535,7 @@ public abstract class TestBed extends Application implements Globals {
   }
 
   /**
-   * Get title of application 
+   * Get title of application
    */
   protected final String title() {
     // we must give user application an opportunity to
@@ -560,8 +545,8 @@ public abstract class TestBed extends Application implements Globals {
   }
 
   /**
-   * Set parameters for Testbed program.
-   * Should customize the values of the parms object's fields, if necessary.
+   * Set parameters for Testbed program. Should customize the values of the
+   * parms object's fields, if necessary.
    */
   public abstract void setParameters();
 
@@ -579,12 +564,12 @@ public abstract class TestBed extends Application implements Globals {
     }
     //    }
   }
+
   private boolean paramSetFlag;
 
   /**
-   * Perform any initialization operations.
-   * User should override this method if desired. 
-   * Default implementation does nothing.
+   * Perform any initialization operations. User should override this method if
+   * desired. Default implementation does nothing.
    */
   public void initTestbed() {
   }
@@ -611,9 +596,8 @@ public abstract class TestBed extends Application implements Globals {
   //  }
 
   /**
-   * Create the GUI and show it.  For thread safety,
-   * this method should be invoked from the
-   * event-dispatching thread.
+   * Create the GUI and show it. For thread safety, this method should be
+   * invoked from the event-dispatching thread.
    */
   protected void doInit() {
     app = this;
@@ -636,8 +620,8 @@ public abstract class TestBed extends Application implements Globals {
     main.add(C.menuPanel(), "North");
     Component p1;
     {
-      JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-          V.getPanel(), C.getControlPanel(TBGlobals.CT_MAIN));
+      JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, V.getPanel(),
+          C.getControlPanel(TBGlobals.CT_MAIN));
       sp2.setOneTouchExpandable(true);
       sp2.setResizeWeight(1);
       p1 = sp2;
@@ -701,28 +685,16 @@ public abstract class TestBed extends Application implements Globals {
     showApp();
     workFile = new WorkFile();
 
-    /* Get rid of this; it was created as workaround to what I 
-     have now discovered to be a bug (I think).
-     
-    if (!Streams.isApplet()) {
-      // Set up timer to check every 10 seconds to
-      // write application configuration file if it has changed
-      Thread t = new Thread(new Runnable() {
-        public void run() {
-          while (true) {
-            try {
-              Thread.sleep(10000);
-              writeConfigFile();
-            } catch (InterruptedException e) {
-              break;
-            }
-          }
-        }
-      });
-      t.setDaemon(true);
-      t.start();
-    }
-    */
+    /*
+     * Get rid of this; it was created as workaround to what I have now
+     * discovered to be a bug (I think).
+     * 
+     * if (!Streams.isApplet()) { // Set up timer to check every 10 seconds to
+     * // write application configuration file if it has changed Thread t = new
+     * Thread(new Runnable() { public void run() { while (true) { try {
+     * Thread.sleep(10000); writeConfigFile(); } catch (InterruptedException e)
+     * { break; } } } }); t.setDaemon(true); t.start(); }
+     */
 
     //    if (parms.withEditor)
     //      Editor.init();
@@ -737,6 +709,7 @@ public abstract class TestBed extends Application implements Globals {
 
     }
   }
+
   class FocusChangeListener implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
       Component oldComp = (Component) evt.getOldValue();
@@ -771,8 +744,8 @@ public abstract class TestBed extends Application implements Globals {
   }
 
   /**
-   * Process a paintComponent() for the view.
-   * Default implementation runs the algorithm of the current operation.
+   * Process a paintComponent() for the view. Default implementation runs the
+   * algorithm of the current operation.
    */
   public void paintView() {
     if (!operList.isEmpty())
@@ -781,11 +754,12 @@ public abstract class TestBed extends Application implements Globals {
 
   /**
    * Display an error message dialog within a JOptionPane
-   * @param msg : the message to display
+   * 
+   * @param msg
+   *          : the message to display
    */
   public static void showError(String msg) {
-    JOptionPane.showMessageDialog(appFrame(), msg, "Error",
-        JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(appFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
   }
 
   protected static class TestBedParameters {
@@ -812,8 +786,8 @@ public abstract class TestBed extends Application implements Globals {
     public boolean threeD;
 
     /**
-     * Name of application; appears in leftmost menu; also used as 
-     * name of configuration file:  _{title}config_.txt
+     * Name of application; appears in leftmost menu; also used as name of
+     * configuration file: _{title}config_.txt
      */
     public String menuTitle = "TestBed";
 
@@ -838,8 +812,8 @@ public abstract class TestBed extends Application implements Globals {
     public boolean withEditor = true;
 
     /**
-     * If true, includes 'do nothing' operation as first operation,
-     * to allow editing of objects without running algorithm of any other operation
+     * If true, includes 'do nothing' operation as first operation, to allow
+     * editing of objects without running algorithm of any other operation
      */
     public boolean includeEditOper = true;
 
@@ -889,8 +863,8 @@ public abstract class TestBed extends Application implements Globals {
   /**
    * Strings for serializing hidden integers, doubles, booleans
    */
-  public static final String serInt = " ? i '' -10000 10000 0 ",
-      serDbl = " ? d '' -10000 10000 0 ", serBool = " ? c '' ";
+  public static final String serInt = " ? i '' -10000 10000 0 ", serDbl = " ? d '' -10000 10000 0 ",
+      serBool = " ? c '' ";
 
   //  /**
   //   * Set path of file last read/saved; for generating EPS, IPE files
@@ -927,6 +901,7 @@ public abstract class TestBed extends Application implements Globals {
   public static void setFileStats(FileStats s) {
     fileStats = s;
   }
+
   private static FileStats fileStats;
 
   private static void addOperCtrls() {
@@ -948,6 +923,7 @@ public abstract class TestBed extends Application implements Globals {
           C.sOpenTab("Edit");
           C.sCloseTab();
         }
+
         public void runAlgorithm() {
         }
 
@@ -955,6 +931,7 @@ public abstract class TestBed extends Application implements Globals {
           if (parms.withEditor)
             Editor.render();
         }
+
         public void processAction(TBAction a) {
         }
       });
@@ -965,12 +942,15 @@ public abstract class TestBed extends Application implements Globals {
   public static int operNum() {
     return C.vi(TBGlobals.OPER);
   }
+
   public static TestBedOperation oper() {
     return oper(C.vi(TBGlobals.OPER));
   }
+
   public static TestBedOperation oper(int n) {
     return (TestBedOperation) operList.get(n);
   }
+
   public static boolean plotTraceMessages() {
     return C.vb(TBGlobals.TRACEPLOT);
   }
@@ -991,16 +971,15 @@ public abstract class TestBed extends Application implements Globals {
   public static TestBed app;
 
   /**
-   * Modify GUI appearance to match values in gadgets.  If
-   * program not initialized yet, does nothing.
+   * Modify GUI appearance to match values in gadgets. If program not
+   * initialized yet, does nothing.
    */
   void readGadgetGUIValues() {
     if (programBegun) {
       final boolean db = DBF;
 
-      Rectangle r = new Rectangle(C.vi(TBGlobals.TBFRAME + 0), C
-          .vi(TBGlobals.TBFRAME + 1), C.vi(TBGlobals.TBFRAME + 2), C
-          .vi(TBGlobals.TBFRAME + 3));
+      Rectangle r = new Rectangle(C.vi(TBGlobals.TBFRAME + 0), C.vi(TBGlobals.TBFRAME + 1),
+          C.vi(TBGlobals.TBFRAME + 2), C.vi(TBGlobals.TBFRAME + 3));
 
       if (db)
         Streams.out.println(Tools.stackTrace() + " app rect=" + r);
@@ -1030,9 +1009,10 @@ public abstract class TestBed extends Application implements Globals {
       }
     }
   }
+
   /**
-   * Read GUI appearance, write to gadget values.
-   * If program not initialized yet, does nothing.
+   * Read GUI appearance, write to gadget values. If program not initialized
+   * yet, does nothing.
    */
   void writeGadgetGUIValues() {
     if (programBegun) {

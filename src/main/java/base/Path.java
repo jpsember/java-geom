@@ -96,10 +96,6 @@ public class Path {
    * @return path of user directory, or empty string if running as an applet
    */
   public static String getUserDir() {
-    if (Streams.isApplet()) {
-      return "";
-    }
-
     String h = System.getProperty("user.dir");
     return h;
   }

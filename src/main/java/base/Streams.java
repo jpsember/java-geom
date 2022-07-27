@@ -8,10 +8,6 @@ import java.io.*;
  */
 public class Streams {
 
-  public static boolean isApplet() {
-    return fileAccess.isApplet();
-  }
-
   public static Class classParam(Object p) {
     Class c = null;
     if (p != null) {
@@ -394,12 +390,6 @@ public class Streams {
     return newDir;
   }
 
-  static void ensureApplet() {
-    if (!isApplet()) {
-      throw new RuntimeException("Not an applet");
-    }
-  }
-
   public static void copyFile(File source, File dest, boolean overwriteExisting)
       throws IOException {
     InputStream in = new BufferedInputStream(new FileInputStream(source));
@@ -487,11 +477,6 @@ public class Streams {
     }
     r.close();
     return sb.toString();
-  }
-
-  public static PrintStream printStream(String path) throws IOException {
-    OutputStream out = outputStream(path);
-    return (path == null) ? new NCPrintStream(out) : new PrintStream(out);
   }
 
   public static void writeTextFile(File file, String content)

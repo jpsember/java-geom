@@ -35,13 +35,15 @@ import java.awt.*;
 
  */
 
-class MenuPanel extends JMenuBar implements Globals, ActionListener,
-    MenuListener, IScript {
+class MenuPanel extends JMenuBar implements Globals, ActionListener, MenuListener, IScript {
 
   /**
    * Constructor
-   * @param gList : gadget list (shared with ControlPanel)
-   * @param frame : JFrame to add menu bar to (if not an applet)
+   * 
+   * @param gList
+   *          : gadget list (shared with ControlPanel)
+   * @param frame
+   *          : JFrame to add menu bar to (if not an applet)
    */
   public MenuPanel(JFrame frame) {
 
@@ -49,19 +51,18 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener,
     // the application frame.  If as an applet, we will
     // use 'this' pointer.
 
-    if (!Streams.isApplet()) {
-      frame.setJMenuBar(this);
-      this.setMinimumSize(new Dimension(100, 20));
-    }
+    frame.setJMenuBar(this);
+    this.setMinimumSize(new Dimension(100, 20));
   }
 
   /**
    * Process a script to add a sequence of menus
-   * @param script String with EBNF format described above
+   * 
+   * @param script
+   *          String with EBNF format described above
    */
   public void processScript(String script) {
-    
-    
+
     t = new GadgetTokenizer(script);
     skipFlags = new DArray();
     skipFlags.pushBoolean(false);
@@ -92,20 +93,12 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener,
   }
 
   private boolean consumeSkip() {
-    boolean f = skipFlags.lastBoolean() && Streams.isApplet();
-    if (f) {
-      replaceSkip(true);
-    }
-    return f;
-  }
-
-  private void replaceSkip(boolean v) {
-    skipFlags.pop();
-    skipFlags.pushBoolean(v);
+    return false;
   }
 
   /**
    * Calculate next id and increment; error if no nextId defined
+   * 
    * @return id
    */
   private int useID() {
@@ -115,17 +108,20 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener,
   }
 
   /**
-   * Construct a new menu gadget, and add to menu bar (or as submenu
-   *  to existing menu)
-   * @param parentId : id of parent menu, if submenu; else 0
-   * @param id : id of new menu
-   * @param name : name of menu
+   * Construct a new menu gadget, and add to menu bar (or as submenu to existing
+   * menu)
+   * 
+   * @param parentId
+   *          : id of parent menu, if submenu; else 0
+   * @param id
+   *          : id of new menu
+   * @param name
+   *          : name of menu
    */
   private void createMenu(int parentId, int id, String name) {
     final boolean db = false;
     if (db) {
-      System.out.println("createMenu parent=" + parentId + " id=" + id
-          + " name=" + name);
+      System.out.println("createMenu parent=" + parentId + " id=" + id + " name=" + name);
     }
 
     // create a new menu gadget
@@ -161,7 +157,9 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener,
 
   /**
    * Parse <menu>
-   * @param parentMenuId : id of parent menu, if it's a submenu; or 0
+   * 
+   * @param parentMenuId
+   *          : id of parent menu, if it's a submenu; or 0
    */
   private void parseMenu(int parentMenuId) {
 
@@ -230,9 +228,8 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener,
   private void parseItemArg(int menuId, boolean rbFlag) {
 
     final boolean db = false;
-    if (db)  
-      pr(" pitem mid=" + menuId + " rb=" + rbFlag + " peek="
-          + t.peek());
+    if (db)
+      pr(" pitem mid=" + menuId + " rb=" + rbFlag + " peek=" + t.peek());
     if (verbose) {
       System.out.println("parseItemArg menuId=" + menuId + " rbFlag=" + rbFlag);
     }
@@ -257,14 +254,13 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener,
           addSeparator(menuId);
         }
         break;
-      default:
-        {
-          int id = useID();
-          String lbl = t.readLabel(tk);
-          if (!consumeSkip()) {
-            addItem(menuId, id, lbl);
-          }
+      default: {
+        int id = useID();
+        String lbl = t.readLabel(tk);
+        if (!consumeSkip()) {
+          addItem(menuId, id, lbl);
         }
+      }
         break;
       }
     }
@@ -275,6 +271,7 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener,
     nextAccel = null;
     return k;
   }
+
   // pending accelerator key:
   private static KeyStroke nextAccel;
 
@@ -288,14 +285,16 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener,
   /**
    * Add an item to a menu
    *
-   * @param menuId : id of menu
-   * @param itemId : id to assign to menu item
-   * @param label : text of menu item
+   * @param menuId
+   *          : id of menu
+   * @param itemId
+   *          : id to assign to menu item
+   * @param label
+   *          : text of menu item
    */
   private void addItem(int menuId, int itemId, String label) {
     if (verbose) {
-      System.out.println("addItem m=" + menuId + " i=" + itemId + " lbl="
-          + label);
+      System.out.println("addItem m=" + menuId + " i=" + itemId + " lbl=" + label);
     }
     CtMenu c = CtMenu.newItem(menuId, itemId, label);
     CtMenu p = get(menuId);
@@ -317,8 +316,7 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener,
   }
 
   /**
-   * Update menu bar to reflect changes due to insertion/deletion of
-   * menu
+   * Update menu bar to reflect changes due to insertion/deletion of menu
    */
   private void displayChanges() {
     validate();
@@ -326,8 +324,10 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener,
   }
 
   /**
-   * Remove a menu.  It must be a top-level menu, not a submenu.
-   * @param menuId : id of menu
+   * Remove a menu. It must be a top-level menu, not a submenu.
+   * 
+   * @param menuId
+   *          : id of menu
    */
   public void removeMenu(int menuId) {
     removeMenuItem(0, menuId);
@@ -336,8 +336,11 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener,
 
   /**
    * Remove a menu or menu item gadget and any submenus
-   * @param parent : id of menu containing this item, or 0 if topmost
-   * @param id : id of item to be removed
+   * 
+   * @param parent
+   *          : id of menu containing this item, or 0 if topmost
+   * @param id
+   *          : id of item to be removed
    */
   private void removeMenuItem(int parent, int id) {
     final boolean db = false;

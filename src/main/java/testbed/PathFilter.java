@@ -3,29 +3,30 @@ package testbed;
 import java.io.*;
 import base.*;
 
-  public class PathFilter extends javax.swing.filechooser.FileFilter implements
-    FilenameFilter {
+public class PathFilter extends javax.swing.filechooser.FileFilter implements FilenameFilter {
   private final boolean db = false;
 
   /**
    * Constructor
-   * @param f : FilenameFilter to use 
+   * 
+   * @param f
+   *          : FilenameFilter to use
    */
   public PathFilter(FilenameFilter f) {
     if (db)
-      Streams.out.println("PathFilter construct for FilenameFilter " + f + "\n"
-          + Tools.st());
+      Streams.out.println("PathFilter construct for FilenameFilter " + f + "\n" + Tools.st());
     this.filter = f;
   }
 
   /**
    * Constructor
-   * @param extensions : space-separated list of extensions to allow
+   * 
+   * @param extensions
+   *          : space-separated list of extensions to allow
    */
   public PathFilter(String extensions) {
     if (db)
-      Streams.out.println("PathFilter construct for extensions= " + extensions
-          + "\n" + Tools.st());
+      Streams.out.println("PathFilter construct for extensions= " + extensions + "\n" + Tools.st());
     TextScanner sc = new TextScanner(extensions);
     while (true) {
       String w = sc.readWord();
@@ -43,29 +44,31 @@ import base.*;
   //  }
 
   /**
-  * Accept file?
-  * @param dir File, or null
-  * @param name String
-  * @return boolean
-  */
+   * Accept file?
+   * 
+   * @param dir
+   *          File, or null
+   * @param name
+   *          String
+   * @return boolean
+   */
   public boolean accept(File dir, String name) {
     if (filter != null)
       return filter.accept(dir, name);
 
-    boolean flag = Streams.isApplet();
-    if (!flag) {
-      File f = new File(name);
+    File f = new File(name);
 
-      if (f.isDirectory()) {
-        flag = true;
-      } else
-        flag = accept(name);
-    }
+    boolean flag;
+    if (f.isDirectory()) {
+      flag = true;
+    } else
+      flag = accept(name);
     return flag;
   }
 
   public boolean accept(File file) {
-    if (file.isDirectory()) return true;
+    if (file.isDirectory())
+      return true;
     return accept(file.getPath());
   }
 
@@ -104,9 +107,11 @@ import base.*;
   private FilenameFilter filter;
 
   /**
-   * Construct a PathFilter from a FilenameFilter.
-   * If FilenameFilter is already a PathFilter, just returns it.
-   * @param filter : FilenameFilter
+   * Construct a PathFilter from a FilenameFilter. If FilenameFilter is already
+   * a PathFilter, just returns it.
+   * 
+   * @param filter
+   *          : FilenameFilter
    * @return PathFilter
    */
   public static PathFilter construct(FilenameFilter filter) {

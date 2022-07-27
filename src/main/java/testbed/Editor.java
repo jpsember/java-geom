@@ -12,26 +12,22 @@ import base.*;
  * This will be moved into the TestBed package when it is working cleanly.
  */
 public class Editor implements Globals, IEditorScript {
-  /*! .enum  .public .prefix TYPE_ 1
-    point segment disc polygon
-  */
+  /*
+   * ! .enum .public .prefix TYPE_ 1 point segment disc polygon
+   */
 
   public static final int TYPE_POINT = 1; //!
   public static final int TYPE_SEGMENT = 2; //!
   public static final int TYPE_DISC = 3; //!
   public static final int TYPE_POLYGON = 4; //!
-  /* !*/
+  /* ! */
 
-  /*! .enum  .private .prefix G_ 9300
-       file new open save saveas
-       edit undo redo cut copy paste all none dup filepath
-       revert opennext deletept
-       backward forward back front
-       errorset toggleactive withlabels labelverts
-       scaleup scaledn addanother rotate scale
-       saveasnext
-       additems  50 
-  */
+  /*
+   * ! .enum .private .prefix G_ 9300 file new open save saveas edit undo redo
+   * cut copy paste all none dup filepath revert opennext deletept backward
+   * forward back front errorset toggleactive withlabels labelverts scaleup
+   * scaledn addanother rotate scale saveasnext additems 50
+   */
 
   private static final int G_FILE = 9300;//!
   private static final int G_NEW = 9301;//!
@@ -66,7 +62,7 @@ public class Editor implements Globals, IEditorScript {
   private static final int G_SCALE = 9330;//!
   private static final int G_SAVEASNEXT = 9331;//!
   private static final int G_ADDITEMS = 9332;//!
-  /* !*/
+  /* ! */
 
   /**
    * Editor state: ready (no mode)
@@ -93,7 +89,7 @@ public class Editor implements Globals, IEditorScript {
   private static final int ES_MOVING = 4;
 
   /**
-   * Editor state:  dragging box
+   * Editor state: dragging box
    */
   private static final int ES_BOX = 5;
 
@@ -101,13 +97,14 @@ public class Editor implements Globals, IEditorScript {
   private static final int ES_SCALEWAIT = 8, ES_SCALING = 9;
 
   /**
-   * Editor state: waiting for mouse to move slightly before choosing next
-   * point to edit
+   * Editor state: waiting for mouse to move slightly before choosing next point
+   * to edit
    */
   private static final int ES_EDITWAIT = 10;
 
   /**
    * Determine if editor is included and has been initialized
+   * 
    * @return true if editor is included and initialized
    */
   static boolean initialized() {
@@ -117,10 +114,12 @@ public class Editor implements Globals, IEditorScript {
   private static final boolean db = false;
 
   /**
-   * Add a type of object to the editor, so user can manipulate
-   * objects of this type.  Adds an appropriate item to the edit menu
-   * to allow creating the objects.
-   * @param f object type
+   * Add a type of object to the editor, so user can manipulate objects of this
+   * type. Adds an appropriate item to the edit menu to allow creating the
+   * objects.
+   * 
+   * @param f
+   *          object type
    */
   public static void addObjectType(EdObjectFactory f) {
     objTypesMap.put(f.getTag(), new Integer(objectFactories.size()));
@@ -148,14 +147,15 @@ public class Editor implements Globals, IEditorScript {
   static boolean menuAdded;
 
   /**
-   * Construct a menu for the editor.  Should be balanced by a call 
-   * to closeMenu().  Before doing so, user can extend this menu by 
-   * adding more items.  For example, within the application's addMenus() method,
+   * Construct a menu for the editor. Should be balanced by a call to
+   * closeMenu(). Before doing so, user can extend this menu by adding more
+   * items. For example, within the application's addMenus() method,
+   * 
    * <pre>
-   *    Editor.openMenu();
-   *    // add a menu item to set selected discs' radii to zero
-   *    C.sMenuItem(G_ZERODISCRADII, "Zero radii", "!^t");
-   *    Editor.closeMenu();
+   * Editor.openMenu();
+   * // add a menu item to set selected discs' radii to zero
+   * C.sMenuItem(G_ZERODISCRADII, "Zero radii", "!^t");
+   * Editor.closeMenu();
    * </pre>
    */
   public static void openMenu() {
@@ -170,8 +170,7 @@ public class Editor implements Globals, IEditorScript {
     C.sMenuItem(G_SAVEAS, "Save as", null);
     C.sMenuItem(G_SAVEASNEXT, "Save as next", "^A");
     C.sMenuItem(G_REVERT, "Revert", null);
-    if (!TestBed.isApplet())
-      C.sMenuItem(G_ERRORSET, "Get error set", "^E");
+    C.sMenuItem(G_ERRORSET, "Get error set", "^E");
     C.sCloseMenu();
     C.sOpenMenu(G_EDIT, "Edit");
     C.sMenuItem(G_UNDO, "Undo", "^z");
@@ -200,6 +199,7 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Close menu previously opened by openMenu(), add it to the menu bar.
+   * 
    * @see #openMenu()
    */
   public static void closeMenu() {
@@ -208,6 +208,7 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Get width of grid in cells
+   * 
    * @return width of grid, in cells
    */
   public static int gridSize() {
@@ -219,7 +220,6 @@ public class Editor implements Globals, IEditorScript {
    */
   static void init() {
 
-   
     undoStack = new DArray();
     objTypesMap = new HashMap();
     objectFactories = new DArray();
@@ -241,18 +241,11 @@ public class Editor implements Globals, IEditorScript {
 
     String filePath = fileStats.getPath();
 
-    if (filePath == null && TestBed.isApplet()) {
-      DArray fl = Streams.getFileList(null, TestBed.parms.fileExt);
-      if (!fl.isEmpty())
-        filePath = fl.getString(0);
-    }
-
     if (filePath != null) {
       try {
         doOpen(filePath);
       } catch (Throwable t) {
-        Tools.warn("problem opening " + filePath + ": " + t + "\n"
-            + Tools.stackTrace(0, 10, t));
+        Tools.warn("problem opening " + filePath + ": " + t + "\n" + Tools.stackTrace(0, 10, t));
       }
     }
   }
@@ -267,8 +260,7 @@ public class Editor implements Globals, IEditorScript {
       ret = true;
     }
     if (dbDUP)
-      Streams.out.println("dupPrepare " + oper + " ret " + ret + ": off="
-          + dupOffset + " acc=" + dupAccum);
+      Streams.out.println("dupPrepare " + oper + " ret " + ret + ": off=" + dupOffset + " acc=" + dupAccum);
     return ret;
   }
 
@@ -293,16 +285,17 @@ public class Editor implements Globals, IEditorScript {
 
     final boolean db = dbDUP;
     if (db) {
-      Streams.out.println("adjust dup: " + Tools.stackTrace() + "\n off="
-          + dupOffset + "\n acc=" + dupAccum);
+      Streams.out.println("adjust dup: " + Tools.stackTrace() + "\n off=" + dupOffset + "\n acc=" + dupAccum);
     }
   }
 
   /**
-   * Get EdObjects, prior to performing some editing action upon them.
-   * Saves them in the undo buffers.
-   * Skips objects that are not complete, active, and selected.
-   * @param objType  type of object, or null for any
+   * Get EdObjects, prior to performing some editing action upon them. Saves
+   * them in the undo buffers. Skips objects that are not complete, active, and
+   * selected.
+   * 
+   * @param objType
+   *          type of object, or null for any
    * @return DArray of matching objects
    */
   public static DArray editObjects(EdObjectFactory objType) {
@@ -310,18 +303,19 @@ public class Editor implements Globals, IEditorScript {
   }
 
   /**
-   * Get EdObjects, prior to performing some editing action upon them.
-   * Saves them in the undo buffers.
-   * Skips objects that are not complete.
-   * @param objType  type of object, or null for any
-   * @param selectedOnly  if true, includes only selected objects
-   * @param skipInactive  if true, skips inactive objects
+   * Get EdObjects, prior to performing some editing action upon them. Saves
+   * them in the undo buffers. Skips objects that are not complete.
+   * 
+   * @param objType
+   *          type of object, or null for any
+   * @param selectedOnly
+   *          if true, includes only selected objects
+   * @param skipInactive
+   *          if true, skips inactive objects
    * @return DArray of matching objects
    */
-  public static DArray editObjects(EdObjectFactory objType,
-      boolean selectedOnly, boolean skipInactive) {
-    ChangeItemsOper oper = new ChangeItemsOper(objType, selectedOnly,
-        skipInactive);
+  public static DArray editObjects(EdObjectFactory objType, boolean selectedOnly, boolean skipInactive) {
+    ChangeItemsOper oper = new ChangeItemsOper(objType, selectedOnly, skipInactive);
     perform(oper);
 
     ObjArray ret = new ObjArray(Editor.items, oper.itemSlots(), false);
@@ -329,18 +323,19 @@ public class Editor implements Globals, IEditorScript {
   }
 
   /**
-   * Make a copy of the current items, and store in 'error' buffer.
-   * Called by algorithm tracing (T.runAlgorithm) to save the items
-   * that produced a problem, as the user may be clicking on a button
-   * that generates random items and tests them quickly
+   * Make a copy of the current items, and store in 'error' buffer. Called by
+   * algorithm tracing (T.runAlgorithm) to save the items that produced a
+   * problem, as the user may be clicking on a button that generates random
+   * items and tests them quickly
    */
   static void storeErrorItems() {
     errorItems = new ObjArray(items);
   }
 
   /**
-   * Replace existing objects with a new set, saving old in undo 
-   * buffers beforehand
+   * Replace existing objects with a new set, saving old in undo buffers
+   * beforehand
+   * 
    * @param newObjects
    */
   public static void replaceAllObjects(Collection newObjects) {
@@ -351,8 +346,9 @@ public class Editor implements Globals, IEditorScript {
   }
 
   /**
-   * Replace selected objects with a new set, saving old in 
-   * undo buffers beforehand
+   * Replace selected objects with a new set, saving old in undo buffers
+   * beforehand
+   * 
    * @param newObjects
    */
   public static void replaceSelectedObjects(Collection newObjects) {
@@ -385,17 +381,20 @@ public class Editor implements Globals, IEditorScript {
   }
 
   private static final boolean NEWEDIT = true;
+
   /**
    * Process a testbed action
-   * @param a : action 
+   * 
+   * @param a
+   *          : action
    */
   static void processAction(TBAction a) {
     final boolean db = dba;
 
     if (db) {
       if (a.code != TBAction.HOVER && a.code != TBAction.DRAG)
-        Streams.out.println("editState=" + Tools.f(editState) + " " + a
-            + " editObj=" + editObj + " editField=" + editField);
+        Streams.out.println(
+            "editState=" + Tools.f(editState) + " " + a + " editObj=" + editObj + " editField=" + editField);
     }
 
     switch (a.code) {
@@ -415,356 +414,337 @@ public class Editor implements Globals, IEditorScript {
       }
       break;
 
-    case TBAction.DOWN1:
-      {
-        lastMouseDown = new FPoint2(a.loc);
-        switch (editState) {
-        case ES_ROTWAIT:
-          if (editBox.contains(a.loc)) {
+    case TBAction.DOWN1: {
+      lastMouseDown = new FPoint2(a.loc);
+      switch (editState) {
+      case ES_ROTWAIT:
+        if (editBox.contains(a.loc)) {
 
-            rotStartPt = lastMouseDown;
-            rotThetaOrig = rotThetaNow;
-            setState(ES_ROTATING);
-          } else {
-            setState(ES_READY);
-          }
-          break;
-        case ES_SCALEWAIT:
-          {
-            rotStartPt = lastMouseDown;
-            scaleUniformly = a.altPressed();
+          rotStartPt = lastMouseDown;
+          rotThetaOrig = rotThetaNow;
+          setState(ES_ROTATING);
+        } else {
+          setState(ES_READY);
+        }
+        break;
+      case ES_SCALEWAIT: {
+        rotStartPt = lastMouseDown;
+        scaleUniformly = a.altPressed();
 
-            setState(ES_SCALING);
-            editBoxOrig = new FRect(editBox);
-          }
-          break;
+        setState(ES_SCALING);
+        editBoxOrig = new FRect(editBox);
+      }
+        break;
 
-        case ES_READY:
-          {
-            int i = findObjAt(a.loc);
-            if (i < 0) {
-              resetDupOffset();
-              if (!a.ctrlPressed())
-                unselectAll();
-              otherBoxCorner = new FPoint2(lastMouseDown);
-              setState(ES_BOX);
-              break;
-            }
-
-            EdObject obj = obj(i);
-            if (db)
-              Streams.out.println("ES_READY, mouse down on object " + obj);
-
-            if (a.ctrlPressed()) {
-              resetDupOffset();
-              obj.setSelected(!obj.isSelected());
-              break;
-            }
-            int particularPt = -1;
-            boolean wasSelected = obj.isSelected();
-            if (!wasSelected) {
-              resetDupOffset();
-              unselectAll();
-              obj.setSelected(true);
-            } else {
-
-              if (!a.altPressed()) {
-                // determine if we have selected a particular point of an object;
-                // if so, move just that point
-                int j = 0;
-                double nearestDist = 0;
-
-                double maxDist = nearPointDist();
-
-                for (;; j++) {
-                  double dist = obj.distFrom(j, a.loc);
-                  if (dist < 0)
-                    break;
-                  if (dist > maxDist)
-                    continue;
-                  if (particularPt < 0 || nearestDist < dist) {
-                    nearestDist = dist;
-                    particularPt = j;
-                  }
-                }
-              }
-            }
-            if (dp)
-              Streams.out.println("clearing dpoffset to null in DOWN/READY");
-            adjustPositionOffset = null;
-            if (particularPt >= 0) {
-              if (db)
-                Streams.out.println(" chose particular point " + particularPt
-                    + ", setting ES_EDITINGPT");
-
-              resetDupOffset();
-              editField = particularPt;
-
-              // determine difference between mouse location and 
-              // point's location, so when we drag it it doesn't jump.
-              adjustPositionOffset = FPoint2.difference(a.loc,
-                  obj.getPoint(particularPt), null);
-              if (dp)
-                Streams.out.println(" dpoffset set to a.loc=" + a.loc
-                    + " - pt=" + obj.getPoint(particularPt) + " = "
-                    + adjustPositionOffset);
-
-              setEditObject(i);
-              setState(ES_EDITINGPT);
-
-              if (true) {
-                Undoable oper = new ChangeItemsOper(null, true, false);
-                perform(oper);
-                touch();
-              }
-
-            } else {
-              setState(ES_STARTMOVING);
-              if (db)
-                Streams.out.println(" setting ES_STARTMOVING");
-              pendingUndo = new ChangeItemsOper(null, true, false);
-            }
-          }
-          break;
-
-        case ES_EDITINGPT:
-        case ES_INSERTINGPT:
+      case ES_READY: {
+        int i = findObjAt(a.loc);
+        if (i < 0) {
           resetDupOffset();
+          if (!a.ctrlPressed())
+            unselectAll();
+          otherBoxCorner = new FPoint2(lastMouseDown);
+          setState(ES_BOX);
+          break;
+        }
+
+        EdObject obj = obj(i);
+        if (db)
+          Streams.out.println("ES_READY, mouse down on object " + obj);
+
+        if (a.ctrlPressed()) {
+          resetDupOffset();
+          obj.setSelected(!obj.isSelected());
+          break;
+        }
+        int particularPt = -1;
+        boolean wasSelected = obj.isSelected();
+        if (!wasSelected) {
+          resetDupOffset();
+          unselectAll();
+          obj.setSelected(true);
+        } else {
+
+          if (!a.altPressed()) {
+            // determine if we have selected a particular point of an object;
+            // if so, move just that point
+            int j = 0;
+            double nearestDist = 0;
+
+            double maxDist = nearPointDist();
+
+            for (;; j++) {
+              double dist = obj.distFrom(j, a.loc);
+              if (dist < 0)
+                break;
+              if (dist > maxDist)
+                continue;
+              if (particularPt < 0 || nearestDist < dist) {
+                nearestDist = dist;
+                particularPt = j;
+              }
+            }
+          }
+        }
+        if (dp)
+          Streams.out.println("clearing dpoffset to null in DOWN/READY");
+        adjustPositionOffset = null;
+        if (particularPt >= 0) {
           if (db)
-            Streams.out.println(" INSERTINGPT, setting point editField="
-                + editField + " to " + a.loc);
-          editObj.setPoint(editField, a.loc, true, a);
-          touch();
-          break;
-        }
+            Streams.out.println(" chose particular point " + particularPt + ", setting ES_EDITINGPT");
 
-      }
-      break;
+          resetDupOffset();
+          editField = particularPt;
 
-    case TBAction.UP1:
-      {
-        switch (editState) {
-        case ES_ROTATING:
-        case ES_SCALING:
-          setState(ES_READY);
-          break;
+          // determine difference between mouse location and 
+          // point's location, so when we drag it it doesn't jump.
+          adjustPositionOffset = FPoint2.difference(a.loc, obj.getPoint(particularPt), null);
+          if (dp)
+            Streams.out.println(" dpoffset set to a.loc=" + a.loc + " - pt=" + obj.getPoint(particularPt)
+                + " = " + adjustPositionOffset);
 
-        case ES_BOX:
-          {
-            FRect r = new FRect(lastMouseDown, otherBoxCorner);
+          setEditObject(i);
+          setState(ES_EDITINGPT);
 
-            if (r.width == 0 && r.height == 0) {
-              // he didn't move the mouse away from the original point
-              // find object at this point, and toggle its selection state
-              int i = findObjAt(r.start());
-              if (i >= 0) {
-                EdObject obj = obj(i);
-                obj.setSelected(!obj.isSelected());
-              }
-            } else {
-              for (int i = 0; i < items.size(); i++) {
-                EdObject obj = items.obj(i);
-                if (obj.isSelected())
-                  continue;
-                if (r.contains(obj.getBounds())) {
-                  obj.setSelected(true);
-                }
-              }
-            }
-            setState(ES_READY);
+          if (true) {
+            Undoable oper = new ChangeItemsOper(null, true, false);
+            perform(oper);
+            touch();
           }
-          break;
 
-        case ES_INSERTINGPT:
-        case ES_EDITINGPT:
-          touch();
-
-          if (NEWEDIT) {
-            mouseUpLoc = a.loc;
-            procDrift(a);
-          } else {
-            // get next point to insert
-            int efNew = editObj.getNextPointToInsert(a, editField, null);
-            // if we're done all the points, stop editing this object
-            if (efNew < 0) {
-              setState(ES_READY);
-            } else {
-              editField = efNew;
-              setState(ES_INSERTINGPT);
-            }
-          }
-          break;
-
-        case ES_MOVING:
-          adjustDupOffset(FPoint2.difference(a.loc, lastMouseDown, null));
-          setState(ES_READY);
-          break;
-        case ES_STARTMOVING:
-          setState(ES_READY);
-          break;
+        } else {
+          setState(ES_STARTMOVING);
+          if (db)
+            Streams.out.println(" setting ES_STARTMOVING");
+          pendingUndo = new ChangeItemsOper(null, true, false);
         }
       }
+        break;
+
+      case ES_EDITINGPT:
+      case ES_INSERTINGPT:
+        resetDupOffset();
+        if (db)
+          Streams.out.println(" INSERTINGPT, setting point editField=" + editField + " to " + a.loc);
+        editObj.setPoint(editField, a.loc, true, a);
+        touch();
+        break;
+      }
+
+    }
       break;
 
-    case TBAction.HOVER:
-      {
-        updateCoordDisplay(a.loc);
-        switch (editState) {
-        default:
-          a.code = 0;
-          break;
-        case ES_INSERTINGPT:
-        case ES_EDITINGPT:
-          touch();
-          editObj.setPoint(editField, a.loc, true, a);
-          break;
-        case ES_EDITWAIT:
+    case TBAction.UP1: {
+      switch (editState) {
+      case ES_ROTATING:
+      case ES_SCALING:
+        setState(ES_READY);
+        break;
+
+      case ES_BOX: {
+        FRect r = new FRect(lastMouseDown, otherBoxCorner);
+
+        if (r.width == 0 && r.height == 0) {
+          // he didn't move the mouse away from the original point
+          // find object at this point, and toggle its selection state
+          int i = findObjAt(r.start());
+          if (i >= 0) {
+            EdObject obj = obj(i);
+            obj.setSelected(!obj.isSelected());
+          }
+        } else {
+          for (int i = 0; i < items.size(); i++) {
+            EdObject obj = items.obj(i);
+            if (obj.isSelected())
+              continue;
+            if (r.contains(obj.getBounds())) {
+              obj.setSelected(true);
+            }
+          }
+        }
+        setState(ES_READY);
+      }
+        break;
+
+      case ES_INSERTINGPT:
+      case ES_EDITINGPT:
+        touch();
+
+        if (NEWEDIT) {
+          mouseUpLoc = a.loc;
           procDrift(a);
-          break;
+        } else {
+          // get next point to insert
+          int efNew = editObj.getNextPointToInsert(a, editField, null);
+          // if we're done all the points, stop editing this object
+          if (efNew < 0) {
+            setState(ES_READY);
+          } else {
+            editField = efNew;
+            setState(ES_INSERTINGPT);
+          }
         }
+        break;
+
+      case ES_MOVING:
+        adjustDupOffset(FPoint2.difference(a.loc, lastMouseDown, null));
+        setState(ES_READY);
+        break;
+      case ES_STARTMOVING:
+        setState(ES_READY);
+        break;
       }
+    }
       break;
 
-    case TBAction.DRAG:
-      {
-        updateCoordDisplay(a.loc);
-        switch (editState) {
-        default:
-          a.code = 0;
-          break;
-        case ES_SCALING:
-          {
-            if (pendingUndo != null) {
-              perform(pendingUndo);
-              touch();
-              pendingUndo = null;
-            }
-            FPoint2 rotOrigin = editBoxOrig.midPoint();
-            FPoint2 origDiff = FPoint2.difference(rotStartPt, rotOrigin, null);
-            double origDist = origDiff.length();
-            if (origDist == 0)
-              break;
-            //            double origDist = origDiff.length();
-            //            if (origDist == 0)
-            //              break;
+    case TBAction.HOVER: {
+      updateCoordDisplay(a.loc);
+      switch (editState) {
+      default:
+        a.code = 0;
+        break;
+      case ES_INSERTINGPT:
+      case ES_EDITINGPT:
+        touch();
+        editObj.setPoint(editField, a.loc, true, a);
+        break;
+      case ES_EDITWAIT:
+        procDrift(a);
+        break;
+      }
+    }
+      break;
 
-            FPoint2 newDiff = FPoint2.difference(a.loc, rotOrigin, null);
-            if (Math.signum(origDiff.x) != Math.signum(newDiff.x))
-              newDiff.x = 0;
-            if (Math.signum(origDiff.y) != Math.signum(newDiff.y))
-              newDiff.y = 0;
-            double newDist = newDiff.length();
-            if (newDist == 0)
-              break;
-
-            double sclx = 1.0;
-            double scly = 1.0;
-            if (scaleUniformly) {
-              if (origDist > 0 && newDist > 0)
-                sclx = scly = newDist / origDist;
-            } else {
-              if (origDiff.x != 0)
-                sclx = newDiff.x / origDiff.x;
-              if (origDiff.y != 0)
-                scly = newDiff.y / origDiff.y;
-            }
-
-            //            double scl = newDist / origDist;
-            {
-              ObjArray origItems = lastUndoItems();
-              DArray origItemSlots = lastUndoItemSlots();
-
-              for (int i = 0; i < origItemSlots.size(); i++) {
-                EdObject obj = items.obj(origItemSlots.getInt(i));
-                EdObject origObj = origItems.obj(i);
-
-                for (int j = 0; j < obj.nPoints(); j++) {
-                  FPoint2 pt = origObj.getPoint(j);
-                  obj.setTransformedPoint(j, new FPoint2(rotOrigin.x
-                      + (pt.x - rotOrigin.x) * sclx, rotOrigin.y
-                      + (pt.y - rotOrigin.y) * scly));
-                }
-              }
-            }
-            double sw = editBoxOrig.width * .5 * sclx;
-            double sh = editBoxOrig.height * .5 * scly;
-            editBox = new FRect(rotOrigin.x - sw, rotOrigin.y - sh, sw * 2,
-                sh * 2);
-          }
-          break;
-
-        case ES_ROTATING:
-          {
-            if (pendingUndo != null) {
-              perform(pendingUndo);
-              touch();
-              pendingUndo = null;
-            }
-            FPoint2 rotOrigin = editBox.midPoint();
-            double theta0 = MyMath.polarAngle(rotOrigin, rotStartPt);
-            double theta1 = MyMath.polarAngle(rotOrigin, a.loc);
-            double thAdd = MyMath.normalizeAngle(theta1 - theta0);
-            rotThetaNow = rotThetaOrig + thAdd;
-
-            {
-              ObjArray origItems = lastUndoItems();
-              DArray origItemSlots = lastUndoItemSlots();
-
-              for (int i = 0; i < origItemSlots.size(); i++) {
-                EdObject obj = items.obj(origItemSlots.getInt(i));
-                EdObject origObj = origItems.obj(i);
-
-                for (int j = 0; j < obj.nPoints(); j++) {
-                  FPoint2 pt = origObj.getPoint(j);
-                  double theta = MyMath.polarAngle(rotOrigin, pt);
-                  //  public void setTransformedPoint(int ptIndex, FPoint2 point) {
-                  double radius = FPoint2.distance(pt, rotOrigin);
-                  obj.setTransformedPoint(j,
-                      MyMath.ptOnCircle(rotOrigin, theta + rotThetaNow, radius));
-                }
-              }
-            }
-          }
-          break;
-        case ES_INSERTINGPT:
-        case ES_EDITINGPT:
+    case TBAction.DRAG: {
+      updateCoordDisplay(a.loc);
+      switch (editState) {
+      default:
+        a.code = 0;
+        break;
+      case ES_SCALING: {
+        if (pendingUndo != null) {
+          perform(pendingUndo);
           touch();
-          {
-            FPoint2 adj = a.loc;
-            if (adjustPositionOffset != null)
-              adj = new FPoint2(a.loc.x - adjustPositionOffset.x, a.loc.y
-                  - adjustPositionOffset.y);
-            if (dp)
-              Streams.out.println("setting pt " + editField + " to a=" + a.loc
-                  + " minus dp=" + adjustPositionOffset + " = " + adj);
-            editObj.setPoint(editField, adj, true, a);
-          }
+          pendingUndo = null;
+        }
+        FPoint2 rotOrigin = editBoxOrig.midPoint();
+        FPoint2 origDiff = FPoint2.difference(rotStartPt, rotOrigin, null);
+        double origDist = origDiff.length();
+        if (origDist == 0)
+          break;
+        //            double origDist = origDiff.length();
+        //            if (origDist == 0)
+        //              break;
+
+        FPoint2 newDiff = FPoint2.difference(a.loc, rotOrigin, null);
+        if (Math.signum(origDiff.x) != Math.signum(newDiff.x))
+          newDiff.x = 0;
+        if (Math.signum(origDiff.y) != Math.signum(newDiff.y))
+          newDiff.y = 0;
+        double newDist = newDiff.length();
+        if (newDist == 0)
           break;
 
-        case ES_MOVING:
-        case ES_STARTMOVING:
-          {
-            FPoint2 delta = FPoint2.difference(a.loc, lastMouseDown, null);
-            if (pendingUndo != null) {
-              setState(ES_MOVING);
-              perform(pendingUndo);
-              pendingUndo = null;
-              touch();
-            }
-            ObjArray origItems = lastUndoItems();
-            DArray origItemSlots = lastUndoItemSlots();
-            for (int i = 0; i < origItemSlots.size(); i++) {
-              EdObject obj = items.obj(origItemSlots.getInt(i));
-              EdObject origObj = origItems.obj(i);
-              obj.moveBy(origObj, delta);
+        double sclx = 1.0;
+        double scly = 1.0;
+        if (scaleUniformly) {
+          if (origDist > 0 && newDist > 0)
+            sclx = scly = newDist / origDist;
+        } else {
+          if (origDiff.x != 0)
+            sclx = newDiff.x / origDiff.x;
+          if (origDiff.y != 0)
+            scly = newDiff.y / origDiff.y;
+        }
+
+        //            double scl = newDist / origDist;
+        {
+          ObjArray origItems = lastUndoItems();
+          DArray origItemSlots = lastUndoItemSlots();
+
+          for (int i = 0; i < origItemSlots.size(); i++) {
+            EdObject obj = items.obj(origItemSlots.getInt(i));
+            EdObject origObj = origItems.obj(i);
+
+            for (int j = 0; j < obj.nPoints(); j++) {
+              FPoint2 pt = origObj.getPoint(j);
+              obj.setTransformedPoint(j, new FPoint2(rotOrigin.x + (pt.x - rotOrigin.x) * sclx,
+                  rotOrigin.y + (pt.y - rotOrigin.y) * scly));
             }
           }
-          break;
-        case ES_BOX:
-          otherBoxCorner = new FPoint2(a.loc);
-          break;
+        }
+        double sw = editBoxOrig.width * .5 * sclx;
+        double sh = editBoxOrig.height * .5 * scly;
+        editBox = new FRect(rotOrigin.x - sw, rotOrigin.y - sh, sw * 2, sh * 2);
+      }
+        break;
+
+      case ES_ROTATING: {
+        if (pendingUndo != null) {
+          perform(pendingUndo);
+          touch();
+          pendingUndo = null;
+        }
+        FPoint2 rotOrigin = editBox.midPoint();
+        double theta0 = MyMath.polarAngle(rotOrigin, rotStartPt);
+        double theta1 = MyMath.polarAngle(rotOrigin, a.loc);
+        double thAdd = MyMath.normalizeAngle(theta1 - theta0);
+        rotThetaNow = rotThetaOrig + thAdd;
+
+        {
+          ObjArray origItems = lastUndoItems();
+          DArray origItemSlots = lastUndoItemSlots();
+
+          for (int i = 0; i < origItemSlots.size(); i++) {
+            EdObject obj = items.obj(origItemSlots.getInt(i));
+            EdObject origObj = origItems.obj(i);
+
+            for (int j = 0; j < obj.nPoints(); j++) {
+              FPoint2 pt = origObj.getPoint(j);
+              double theta = MyMath.polarAngle(rotOrigin, pt);
+              //  public void setTransformedPoint(int ptIndex, FPoint2 point) {
+              double radius = FPoint2.distance(pt, rotOrigin);
+              obj.setTransformedPoint(j, MyMath.ptOnCircle(rotOrigin, theta + rotThetaNow, radius));
+            }
+          }
         }
       }
+        break;
+      case ES_INSERTINGPT:
+      case ES_EDITINGPT:
+        touch(); {
+        FPoint2 adj = a.loc;
+        if (adjustPositionOffset != null)
+          adj = new FPoint2(a.loc.x - adjustPositionOffset.x, a.loc.y - adjustPositionOffset.y);
+        if (dp)
+          Streams.out.println("setting pt " + editField + " to a=" + a.loc + " minus dp="
+              + adjustPositionOffset + " = " + adj);
+        editObj.setPoint(editField, adj, true, a);
+      }
+        break;
+
+      case ES_MOVING:
+      case ES_STARTMOVING: {
+        FPoint2 delta = FPoint2.difference(a.loc, lastMouseDown, null);
+        if (pendingUndo != null) {
+          setState(ES_MOVING);
+          perform(pendingUndo);
+          pendingUndo = null;
+          touch();
+        }
+        ObjArray origItems = lastUndoItems();
+        DArray origItemSlots = lastUndoItemSlots();
+        for (int i = 0; i < origItemSlots.size(); i++) {
+          EdObject obj = items.obj(origItemSlots.getInt(i));
+          EdObject origObj = origItems.obj(i);
+          obj.moveBy(origObj, delta);
+        }
+      }
+        break;
+      case ES_BOX:
+        otherBoxCorner = new FPoint2(a.loc);
+        break;
+      }
+    }
       break;
 
     case TBAction.CTRLVALUE:
@@ -792,19 +772,17 @@ public class Editor implements Globals, IEditorScript {
       case G_SAVEASNEXT:
         doSave(a.ctrlId);
         break;
-      case G_REVERT:
-        {
-          if (fileStats.getPath() != null) {
-            doOpen(fileStats.getPath());
-          }
+      case G_REVERT: {
+        if (fileStats.getPath() != null) {
+          doOpen(fileStats.getPath());
         }
+      }
         break;
-      case G_ERRORSET:
-        {
-          if (errorItems != null) {
-            restoreErrorSet();
-          }
+      case G_ERRORSET: {
+        if (errorItems != null) {
+          restoreErrorSet();
         }
+      }
         break;
       case G_UNDO:
         if (canUndo()) {
@@ -831,14 +809,13 @@ public class Editor implements Globals, IEditorScript {
       case G_DUP:
         perform(new DupOper());
         break;
-      case G_TOGGLEACTIVE:
-        {
-          DArray m = editObjects(null, true, false);
-          for (int i = 0; i < m.size(); i++) {
-            EdObject e = (EdObject) m.get(i);
-            e.setActive(!e.isActive());
-          }
+      case G_TOGGLEACTIVE: {
+        DArray m = editObjects(null, true, false);
+        for (int i = 0; i < m.size(); i++) {
+          EdObject e = (EdObject) m.get(i);
+          e.setActive(!e.isActive());
         }
+      }
         break;
       case G_COPY:
         perform(new CopyOper());
@@ -850,18 +827,17 @@ public class Editor implements Globals, IEditorScript {
         for (int i = 0; i < items.size(); i++)
           items.obj(i).setSelected(true);
         break;
-      case G_NONE:
-        {
-          switch (editState) {
-          default:
-            stopEdit();
-            break;
-          case ES_ROTWAIT:
-          case ES_ROTATING:
-            setState(ES_READY);
-            break;
-          }
+      case G_NONE: {
+        switch (editState) {
+        default:
+          stopEdit();
+          break;
+        case ES_ROTWAIT:
+        case ES_ROTATING:
+          setState(ES_READY);
+          break;
         }
+      }
         break;
       case G_SCALEUP:
         scaleObjects(1.2);
@@ -899,6 +875,7 @@ public class Editor implements Globals, IEditorScript {
       updateTitle();
 
   }
+
   private static void scaleObjects(double factor) {
     ArrayList m = editObjects(null, true, false);
     for (int i = 0; i < m.size(); i++) {
@@ -906,20 +883,10 @@ public class Editor implements Globals, IEditorScript {
       e.scale(factor);
     }
   }
+
   private static void doOpenNext() {
     final boolean db = false;
     do {
-      if (TestBed.isApplet()) {
-        String s = fileStats.getPath();
-        DArray fl = Streams.getFileList(s, TestBed.parms.fileExt);
-        String fNext = Path.getNextFile(fl, s, true);
-        if (db)
-          Streams.out.println("nextfile to " + s + " is " + fNext);
-        if (fNext == null)
-          break;
-        doOpen(fNext);
-        break;
-      }
       String s = fileStats.getPath();
       if (s == null)
         break;
@@ -993,6 +960,7 @@ public class Editor implements Globals, IEditorScript {
     }
     dupItems(clipboard, applyOffsets);
   }
+
   static void performDup(DArray itemInds) {
     //    DArray itemInds = getSelectedItemInd();
     if (dupPrepare(G_DUP))
@@ -1043,6 +1011,7 @@ public class Editor implements Globals, IEditorScript {
     } while (false);
     return valid;
   }
+
   private static void startScale() {
     do {
       if (!prepareScaleRot())
@@ -1063,6 +1032,7 @@ public class Editor implements Globals, IEditorScript {
       setState(ES_ROTWAIT);
     } while (false);
   }
+
   private static EdObjectFactory getType(int index) {
     return (EdObjectFactory) objectFactories.get(index);
   }
@@ -1087,6 +1057,7 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Get a list of the selected items' indices
+   * 
    * @return DArray of Integers
    */
   static DArray getSelectedItemInd() {
@@ -1131,6 +1102,7 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Add a new object
+   * 
    * @param obj
    * @return index of added object
    */
@@ -1147,14 +1119,15 @@ public class Editor implements Globals, IEditorScript {
     editField = 0;
     setState(ES_INSERTINGPT);
     if (dba)
-      Streams.out.println("add(" + obj.getFactory().getTag()
-          + "), setting ES_INSERTINGPT");
+      Streams.out.println("add(" + obj.getFactory().getTag() + "), setting ES_INSERTINGPT");
     return ret;
   }
 
   /**
    * Set editor state
-   * @param s : new state
+   * 
+   * @param s
+   *          : new state
    */
   private static void setState(int s) {
     editState = s;
@@ -1162,7 +1135,9 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Get EditObj
-   * @param index : index of object 
+   * 
+   * @param index
+   *          : index of object
    * @return
    */
   private static EdObject obj(int index) {
@@ -1170,22 +1145,23 @@ public class Editor implements Globals, IEditorScript {
   }
 
   /**
-   * Perform rendering related to the editor.
-   * Plots the objects, and if necessary, the 'rubber band' selection box.
-   * Some applications may not want the objects plotted.  Otherwise, user 
-   * should just call render().
-   * @param allObjects if true, includes all objects
-   * @param selectedObjects if true, includes selected objects 
-   * @param activeObjects if true, includes active objects 
+   * Perform rendering related to the editor. Plots the objects, and if
+   * necessary, the 'rubber band' selection box. Some applications may not want
+   * the objects plotted. Otherwise, user should just call render().
+   * 
+   * @param allObjects
+   *          if true, includes all objects
+   * @param selectedObjects
+   *          if true, includes selected objects
+   * @param activeObjects
+   *          if true, includes active objects
    */
-  public static void render(boolean allObjects, boolean selectedObjects,
-      boolean activeObjects) {
+  public static void render(boolean allObjects, boolean selectedObjects, boolean activeObjects) {
 
     Iterator it = items.iterator();
     while (it.hasNext()) {
       EdObject e = (EdObject) it.next();
-      if (allObjects || (selectedObjects && e.isSelected())
-          || (activeObjects && e.isActive()))
+      if (allObjects || (selectedObjects && e.isSelected()) || (activeObjects && e.isActive()))
         e.render();
     }
 
@@ -1229,17 +1205,16 @@ public class Editor implements Globals, IEditorScript {
 
   }
 
-  private static int[] boxHandleOffsets = { 0, 0, -1, -1, 1, -1, 1, 1, -1, 1,
-      0, -1, 1, 0, 0, 1, -1, 0, };
+  private static int[] boxHandleOffsets = { 0, 0, -1, -1, 1, -1, 1, 1, -1, 1, 0, -1, 1, 0, 0, 1, -1, 0, };
 
   /**
-   * Calculate the nine handle points for the (possibly rotated) box.
-   * Has the format:
-   *  4 7 3
-   *  8 0 6
-   *  1 5 2
-   * @param r box
-   * @param rRot angle of rotation
+   * Calculate the nine handle points for the (possibly rotated) box. Has the
+   * format: 4 7 3 8 0 6 1 5 2
+   * 
+   * @param r
+   *          box
+   * @param rRot
+   *          angle of rotation
    * @return array of nine points
    */
   private static FPoint2[] calcBoxPoints(FRect r, double rRot) {
@@ -1253,16 +1228,16 @@ public class Editor implements Globals, IEditorScript {
     Matrix.mult(m, mCenterOfBox, m);
 
     for (int i = 0; i < ret.length; i++) {
-      FPoint2 boxPt = new FPoint2(cent.x + r.width * .5
-          * boxHandleOffsets[i * 2 + 0], cent.y + r.height * .5
-          * boxHandleOffsets[i * 2 + 1]);
+      FPoint2 boxPt = new FPoint2(cent.x + r.width * .5 * boxHandleOffsets[i * 2 + 0],
+          cent.y + r.height * .5 * boxHandleOffsets[i * 2 + 1]);
       ret[i] = m.apply(boxPt, null);
     }
     return ret;
   }
+
   /**
-   * Perform rendering related to the editor.
-   * Plots the objects, and if necessary, the 'rubber band' selection box
+   * Perform rendering related to the editor. Plots the objects, and if
+   * necessary, the 'rubber band' selection box
    */
   public static void render() {
     render(true, true, true);
@@ -1273,9 +1248,11 @@ public class Editor implements Globals, IEditorScript {
   }
 
   /**
-   * Find which object, if any, is at a point.
-   * Highlighted items have precedence; otherwise, topmost items have precedence.
-   * @param pt : point in view space
+   * Find which object, if any, is at a point. Highlighted items have
+   * precedence; otherwise, topmost items have precedence.
+   * 
+   * @param pt
+   *          : point in view space
    * @return index of object, or -1 if none
    */
   private static int findObjAt(FPoint2 pt) {
@@ -1290,8 +1267,7 @@ public class Editor implements Globals, IEditorScript {
 
     double maxDist = nearPointDist();
     if (db)
-      Streams.out
-          .println("view scale=" + V.getScale() + ", maxDist=" + maxDist);
+      Streams.out.println("view scale=" + V.getScale() + ", maxDist=" + maxDist);
 
     for (int i = items.size() - 1; i >= 0; i--) {
       EdObject obj = items.obj(i);
@@ -1341,10 +1317,12 @@ public class Editor implements Globals, IEditorScript {
   }
 
   /**
-   * Perform enable/disable of a menu's items in preparation for
-   * it being shown.
-   * @param menu : menu containing item
-   * @param item : the item to enable/disable
+   * Perform enable/disable of a menu's items in preparation for it being shown.
+   * 
+   * @param menu
+   *          : menu containing item
+   * @param item
+   *          : the item to enable/disable
    * @return new enabled state of item
    */
   static boolean processMenuEnable(int menu, int item) {
@@ -1437,12 +1415,10 @@ public class Editor implements Globals, IEditorScript {
   private static class ObjIterator implements Iterator {
     private static final boolean db = false;
 
-    public ObjIterator(Iterator iter, EdObjectFactory type,
-        boolean selectedOnly, boolean skipInactive) {
+    public ObjIterator(Iterator iter, EdObjectFactory type, boolean selectedOnly, boolean skipInactive) {
 
       if (db)
-        Streams.out.println("ObjIterator, type="
-            + (type == null ? "<any>" : type.getTag()) + " selectedOnly="
+        Streams.out.println("ObjIterator, type=" + (type == null ? "<any>" : type.getTag()) + " selectedOnly="
             + selectedOnly + " skipInactive=" + skipInactive);
 
       this.iter = iter;
@@ -1459,8 +1435,7 @@ public class Editor implements Globals, IEditorScript {
           break;
         EdObject obj = (EdObject) iter.next();
         if (db)
-          Streams.out.println("prepareNext, obj=" + obj + " fact="
-              + obj.getFactory());
+          Streams.out.println("prepareNext, obj=" + obj + " fact=" + obj.getFactory());
 
         if (!obj.complete())
           continue;
@@ -1470,8 +1445,7 @@ public class Editor implements Globals, IEditorScript {
           continue;
         if (objType != null && obj.getFactory() != objType) {
           if (db)
-            Streams.out.println(" type disagrees: obj.fact=" + obj.getFactory()
-                + " != " + objType);
+            Streams.out.println(" type disagrees: obj.fact=" + obj.getFactory() + " != " + objType);
           continue;
         }
         next = obj;
@@ -1480,6 +1454,7 @@ public class Editor implements Globals, IEditorScript {
       if (db)
         Streams.out.println("prepareNext: " + next);
     }
+
     public boolean hasNext() {
       return next != null;
     }
@@ -1498,6 +1473,7 @@ public class Editor implements Globals, IEditorScript {
     public void remove() {
       throw new UnsupportedOperationException();
     }
+
     private Object next;
     private Iterator iter;
     private EdObjectFactory objType;
@@ -1506,21 +1482,20 @@ public class Editor implements Globals, IEditorScript {
   }
 
   /**
-   * Get array of EdObjects that match certain criteria.
-   * Skips objects that are not complete (i.e., are in the process of being
-   * created).
-   * <br>
-   * This should be called only if the resulting objects are 'read only'; 
-   * if they are to be edited, use editObjects() instead.
+   * Get array of EdObjects that match certain criteria. Skips objects that are
+   * not complete (i.e., are in the process of being created). <br>
+   * This should be called only if the resulting objects are 'read only'; if
+   * they are to be edited, use editObjects() instead.
    * 
-   * @param objType  type of object, or null for any
-   * @param selectedOnly  if true, includes objects only if they are 
-   *   currently selected
-   * @param skipInactive  if true, skips inactive objects
+   * @param objType
+   *          type of object, or null for any
+   * @param selectedOnly
+   *          if true, includes objects only if they are currently selected
+   * @param skipInactive
+   *          if true, skips inactive objects
    * @return DArray of matching objects
    */
-  public static DArray readObjects(EdObjectFactory objType,
-      boolean selectedOnly, boolean skipInactive) {
+  public static DArray readObjects(EdObjectFactory objType, boolean selectedOnly, boolean skipInactive) {
     DArray a = new DArray();
     Iterator it = iterator(objType, selectedOnly, skipInactive);
     while (it.hasNext()) {
@@ -1530,21 +1505,26 @@ public class Editor implements Globals, IEditorScript {
   }
 
   /**
-   * Get an iterator over EditObjects.  Objects must be complete.
-   * @param objType  type of object, or null for any
-   * @param selectedOnly  if true, includes only selected objects
-   * @param skipInactive  if true, skips inactive objects
+   * Get an iterator over EditObjects. Objects must be complete.
+   * 
+   * @param objType
+   *          type of object, or null for any
+   * @param selectedOnly
+   *          if true, includes only selected objects
+   * @param skipInactive
+   *          if true, skips inactive objects
    * @return Iterator
    */
-  private static Iterator iterator(EdObjectFactory objType,
-      final boolean selectedOnly, boolean skipInactive) {
-    return new ObjIterator(items.iterator(), objType, selectedOnly,
-        skipInactive);
+  private static Iterator iterator(EdObjectFactory objType, final boolean selectedOnly,
+      boolean skipInactive) {
+    return new ObjIterator(items.iterator(), objType, selectedOnly, skipInactive);
   }
 
   /**
    * Save file
-   * @param type G_SAVExxx
+   * 
+   * @param type
+   *          G_SAVExxx
    */
   private static void doSave(int type) {
 
@@ -1647,8 +1627,10 @@ public class Editor implements Globals, IEditorScript {
       TestBed.writeConfigFile();
     }
   }
+
   /**
    * Output current file to string
+   * 
    * @return string containing file
    */
   public static String saveToString() {
@@ -1702,8 +1684,7 @@ public class Editor implements Globals, IEditorScript {
           s = Path.getUserDir();
         }
         IFileChooser ch = Streams.fileChooser();
-        String ns = ch.doOpen("Open file:", s, new PathFilter(
-            TestBed.parms.fileExt));
+        String ns = ch.doOpen("Open file:", s, new PathFilter(TestBed.parms.fileExt));
         if (ns != null) {
           f = Path.changeExtension(ns, TestBed.parms.fileExt);
         }
@@ -1723,7 +1704,7 @@ public class Editor implements Globals, IEditorScript {
         ObjArray dp = new ObjArray();
 
         C.parseGadgets(tk);
-          
+
         // read items
         while (!tk.eof()) {
           String tag = tk.read(T_WORD).text();
@@ -1739,8 +1720,7 @@ public class Editor implements Globals, IEditorScript {
 
           EdObject eo = fa.parse(tk, flags);
           if (db)
-            Streams.out.println(" parsed object " + eo + ", type="
-                + eo.getFactory());
+            Streams.out.println(" parsed object " + eo + ", type=" + eo.getFactory());
 
           dp.add(eo);
         }
@@ -1768,8 +1748,11 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Request name of text file to write
-   * @param fc FCData
-   * @param autoMode boolean
+   * 
+   * @param fc
+   *          FCData
+   * @param autoMode
+   *          boolean
    * @return File
    */
   private static String getSavePath() {
@@ -1798,8 +1781,7 @@ public class Editor implements Globals, IEditorScript {
     String s = fileStats.getPath();
     if (s != null) {
       sb.append(" : ");
-      if (!TestBed.isApplet())
-        s = Path.relativeToUserHome(new File(s));
+      s = Path.relativeToUserHome(new File(s));
 
       sb.append(s);
       if (fileStats.modified())
@@ -1815,6 +1797,7 @@ public class Editor implements Globals, IEditorScript {
 
     displayedModified = fileStats.modified();
   }
+
   private static boolean justSaved;
 
   static ObjArray getItems() {
@@ -1832,14 +1815,16 @@ public class Editor implements Globals, IEditorScript {
   static void setClipboard(ObjArray c) {
     clipboard = c;
   }
+
   static boolean getFileModified() {
     return fileStats.modified();
   }
 
   /**
    * Select specific items
-   * @param slots an array of Integers indicating which objects
-   *  should be selected
+   * 
+   * @param slots
+   *          an array of Integers indicating which objects should be selected
    */
   static void setSelectedItems(DArray slots) {
     unselectAll();
@@ -1858,6 +1843,7 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Determine if if label vertices checkbox is selected
+   * 
    * @return true if label vertices checkbox is selected
    */
   public static boolean withLabels(boolean vertices) {
@@ -1870,10 +1856,10 @@ public class Editor implements Globals, IEditorScript {
    * @param box
    * @param c
    */
-  public static void plotLabel(String label, FPoint2 position, boolean box,
-      Color c) {
+  public static void plotLabel(String label, FPoint2 position, boolean box, Color c) {
     plotLabel(label, position.x, position.y, box, c);
   }
+
   /**
    * @param label
    * @param x
@@ -1885,15 +1871,15 @@ public class Editor implements Globals, IEditorScript {
   }
 
   /**
-   * @param vert true if vertex label vs object label
+   * @param vert
+   *          true if vertex label vs object label
    * @param label
    * @param x
    * @param y
    * @param box
    * @param c
    */
-  public static void plotLabel(String label, double x, double y, boolean box,
-      Color c) {
+  public static void plotLabel(String label, double x, double y, boolean box, Color c) {
     {
       if (c == null)
         c = MyColor.cDARKGREEN;
@@ -1954,6 +1940,7 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Determine if redo operation is available
+   * 
    * @return
    */
   private static boolean canRedo() {
@@ -2001,6 +1988,7 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Read last operation from undo stack
+   * 
    * @return
    */
   private static Undoable lastUndo() {
@@ -2009,6 +1997,7 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Read an operation from the undo stack
+   * 
    * @param index
    * @return IUndo
    */
@@ -2040,8 +2029,8 @@ public class Editor implements Globals, IEditorScript {
       Undoable undoOper = proc.getUndo();
 
       if (db)
-        Streams.out.println("Undo.perform: " + Undoable.toString(proc)
-            + " (saving undo: " + Undoable.toString(undoOper) + ")");
+        Streams.out.println("Undo.perform: " + Undoable.toString(proc) + " (saving undo: "
+            + Undoable.toString(undoOper) + ")");
 
       undoStack.add(undoOper);
       stackPtr++;
@@ -2057,6 +2046,7 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Get most recent list of selected items stored on undo stack
+   * 
    * @return ObjArray
    */
   private static ObjArray lastUndoItems() {
@@ -2065,6 +2055,7 @@ public class Editor implements Globals, IEditorScript {
 
   /**
    * Get most recent selected item indices stored on undo stack
+   * 
    * @return DArray of Integers indicating position of selected items
    */
   private static DArray lastUndoItemSlots() {
