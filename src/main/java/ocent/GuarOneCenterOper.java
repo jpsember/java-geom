@@ -466,12 +466,6 @@ public class GuarOneCenterOper implements TestBedOperation, Globals {
       case OCentMain.SQUARES:
         {
 
-          if (C.vb(FPT)) {
-            Hyperbola[] vDiag = VornUtil.buildRects((EdRect[]) new DArray(rgns)
-                .toArray(EdRect.class), 1, StandardDiscBisector.FARTHEST, 0);
-            vornGraph = new VornGraph(vDiag);
-          }
-
           for (int i = 0; i < rgns.length; i++) {
             FRect r = rgns[i].getBounds();
             EdPoint pi = null;

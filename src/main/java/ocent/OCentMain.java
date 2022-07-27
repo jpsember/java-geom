@@ -207,22 +207,12 @@ public class OCentMain extends TestBed {
 
 
   
-
-  public static EdDisc getMinBound() {
-    if (minBound == null) {
-      minBound = OneCenterOfDiscs.findCenter(new DArray(OCentMain.getDiscs()),
-          new Random(1965));
-    }
-    return minBound;
-  }
-
   public void paintView() {
     discs = null;
     discs2 = null;
     rects = null;
     rects2 = null;
     polygons = null;
-    minBound = null;
     super.paintView();
   }
 
@@ -350,5 +340,4 @@ public class OCentMain extends TestBed {
   private static EdRect[] rects;
   private static EdRect[] rects2;
   private static EdPolygon[] polygons;
-  private static EdDisc minBound;
 }

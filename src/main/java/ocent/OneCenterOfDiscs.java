@@ -4,6 +4,7 @@ import java.util.*;
 import base.*;
 import testbed.*;
 
+@Deprecated
 public class OneCenterOfDiscs {
   private static final boolean db = false;
   private static int count;

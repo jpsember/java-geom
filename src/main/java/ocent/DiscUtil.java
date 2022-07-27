@@ -104,6 +104,7 @@ public class DiscUtil {
   }
 
 
+  @Deprecated
   public static EdDisc smallestBoundingDisc(EdDisc a, EdDisc b, EdDisc c) {
     EdDisc ret = null;
 

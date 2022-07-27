@@ -3,6 +3,7 @@ package ocent;
 import testbed.*;
 import base.*;
 
+@Deprecated
 public class GuaranteedDiscBisector extends StandardDiscBisector {
 
   public Hyperbola getBisector(EdPoint a, EdPoint b) {

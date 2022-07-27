@@ -3,6 +3,7 @@ package ocent;
 import testbed.*;
 import base.*;
 
+@Deprecated
 public class StandardDiscBisector extends PointBisector {
   public StandardDiscBisector() {
     this(false);
