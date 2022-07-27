@@ -247,10 +247,7 @@ public class DArray extends ArrayList implements Cloneable {
     return ((Boolean) get(item)).booleanValue();
   }
 
-  public void sort(Comparator c) {
-    Collections.sort(this, c);
-  }
-
+*/                            %%% // gitdiff marker
   public static final Comparator COMPARE_DOUBLES = new Comparator() {
     public int compare(Object arg0, Object arg1) {
       return MyMath.sign(((Double) arg0).doubleValue()
