@@ -7,7 +7,6 @@ import java.util.*;
 public class OCentMain extends TestBed {
   private static final int TOGGLEDISCS = 4004;//!
   private static final int MAKEDIAM = 4005;//!
-  private static final int MAKESUPPORTED = 4006;//!
   private static final int MAKETANGENT = 4007;//!
   private static final int RANDOM = 4011;//!
   private static final int RNDTEST = 4012;//!
@@ -70,7 +69,6 @@ public class OCentMain extends TestBed {
     Editor.openMenu();
     C.sMenuItem(TOGGLEDISCS, "Toggle discs/points", "!^t");
     C.sMenuItem(MAKETANGENT, "Set disc tangent", "!^3"); //"!^g");
-    C.sMenuItem(MAKESUPPORTED, "Set disc supported", "!^4"); //"!^u");
     C.sMenuItem(MAKEDIAM, "Convert seg->diameter", null);
     Editor.closeMenu();
   }
@@ -96,9 +94,6 @@ public class OCentMain extends TestBed {
           }
         }
         break;
-      case MAKESUPPORTED:
-        makeSupported();
-        break;
       case MAKETANGENT:
         makeTangent();
         break;
@@ -109,36 +104,6 @@ public class OCentMain extends TestBed {
     }
   }
 
-  /**
-   * Make highlighted inactive discs supported by best-fit pair of candidates
-   */
-  private void makeSupported() {
-
-    DArray a = Editor.editObjects(EdDisc.FACTORY, true, false);
-    for (int k = 0; k < a.size(); k++) {
-      EdDisc c = (EdDisc) a.get(k);
-
-      {
-        if (c.isActive())
-          continue;
-
-        // find best two candidates for supporting this disc
-        DArray can = getCandidate(c);
-        if (can.size() < 2)
-          continue;
-
-        EdDisc ca = (EdDisc) can.get(0);
-        EdDisc cb = (EdDisc) can.get(1);
-        boolean ia = DiscUtil.itan(c, ca);
-
-        c.setPoint(0,
-            DiscUtil.supportingHyperbola(c, ca, cb).snap(c.getOrigin()));
-
-        c.setRadius(FPoint2.distance(c.getOrigin(), ca.getOrigin())
-            + (ia ? ca.getRadius() : -ca.getRadius()));
-      }
-    }
-  }
 
   private static DArray getCandidate(final EdDisc c) {
     // find best two candidates for supporting this disc
