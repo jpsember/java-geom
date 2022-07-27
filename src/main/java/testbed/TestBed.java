@@ -79,23 +79,13 @@ public abstract class TestBed extends Application implements Globals {
         clearButUpdate = true;
         break;
 
-      case TBGlobals.GENERATEEPS:
-        V.plotToEPS(false);
-        break;
-
+     
       case TBGlobals.ABOUT:
         {
           new AboutDialog(TestBed.appFrame(), "TestBed");
         }
         break;
 
-      case TBGlobals.GENERATEPDF:
-        V.plotToEPS(true);
-        break;
-
-      case TBGlobals.GENERATEIPE:
-        V.plotToIPE();
-        break;
       case TBGlobals.QUIT:
         exitProgram();
         break;
@@ -433,9 +423,6 @@ public abstract class TestBed extends Application implements Globals {
 
     C.sMenuItem(TBGlobals.ABOUT, "About Testbed", null);
     C.sMenuSep();
-    C.sMenuItem(TBGlobals.GENERATEPDF, "Print to PDF file", "!^p");
-    C.sMenuItem(TBGlobals.GENERATEEPS, "Print to EPS file", "!^e");
-    C.sMenuItem(TBGlobals.GENERATEIPE, "Print to IPE file", "!^f");
     C.sMenuItem(TBGlobals.BTN_TOGGLECTRLS, "Toggle controls", "!^1");
     if (console()) {
       C.sMenuItem(TBGlobals.BTN_TOGGLECONSOLE, "Toggle console", "!^2");

@@ -30,10 +30,7 @@ interface TBGlobals {
       CONFIGEND = 9000,
 
       ABOUT = 9001,
-      GENERATEEPS = 9002,
       OPER = 9003,
-      GENERATEIPE = 9005,
-      GENERATEPDF = 9006,
       ENFORCE_ASP = 9029,
       GLOBALSCALE = 9030,
       MENU_TESTBED = 9031,

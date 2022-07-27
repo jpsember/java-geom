@@ -6,11 +6,10 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.geom.*;
 import java.awt.event.*;
-import java.io.*;
 
 /**
- * Main view of TestBed applications.
- * It has the short name 'V' to minimize typing.
+ * Main view of TestBed applications. It has the short name 'V' to minimize
+ * typing.
  */
 public class V implements Globals {
 
@@ -29,13 +28,14 @@ public class V implements Globals {
 
   /**
    * Get the JPanel containing the view
+   * 
    * @return JPanel
    */
   static JPanel getPanel() {
     return panel;
   }
 
-    static Color getBackgroundColor() {
+  static Color getBackgroundColor() {
     return new Color(C.vi(TBGlobals.sFILLCOLOR));
   }
 
@@ -81,8 +81,7 @@ public class V implements Globals {
         logSize = new FPoint2(logWidth, logHeight);
       }
       FPoint2 depscr0 = new FPoint2(screenOffsetX, screenOffsetY);
-      FPoint2 depscr1 = new FPoint2(screenWidth + screenOffsetX, screenHeight
-          + screenOffsetY);
+      FPoint2 depscr1 = new FPoint2(screenWidth + screenOffsetX, screenHeight + screenOffsetY);
 
       if (TestBed.parms.includeGrid)
         grid.setSize(C.vi(TBGlobals.GRIDSIZE), logSize);
@@ -90,32 +89,12 @@ public class V implements Globals {
       TBFont.prepare();
 
       Graphics2D g2 = null;
-      boolean generatingEPS = epsMode;
-      boolean generatingIPE = ipeMode;
 
       boolean aliasing = true;
-
-      if (generatingEPS) {
-        EpsGraphics2D g3 = new EpsGraphics2D();
-        g2 = g3;
-        g3.setColorDepth(EpsGraphics2D.RGB);
-        g3.setAccurateTextMode(true);
-
-        g3.setMaxBounds(new FRect(clipScreen0.x, clipScreen0.y, clipScreen1.x
-            - clipScreen0.x + 1, clipScreen1.y - clipScreen0.y + 1));
-
-      } else if (generatingIPE) {
-        IPEGraphics g3 = new IPEGraphics(new FRect(0, 0, clipScreen1.x
-            - clipScreen0.x + 1, clipScreen1.y - clipScreen0.y + 1));
-        g2 = g3;
-      } else {
-        g2 = (Graphics2D) g;
-
-      }
+      g2 = (Graphics2D) g;
 
       g2.addRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING,
-          aliasing ? RenderingHints.VALUE_ANTIALIAS_ON
-              : RenderingHints.VALUE_ANTIALIAS_OFF));
+          aliasing ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF));
 
       // save current drawing context
       vu_setGraphics(g2);
@@ -136,29 +115,21 @@ public class V implements Globals {
       // compensate for aspect ratio, to extend
       // in the dimension that isn't critical
 
-      double sfx = Math.min((depscr1.x - depscr0.x) / logSize.x,
-          (depscr1.y - depscr0.y) / logSize.y);
+      double sfx = Math.min((depscr1.x - depscr0.x) / logSize.x, (depscr1.y - depscr0.y) / logSize.y);
 
       double sfy = -sfx;
 
       logPixelSize = sfx;
 
-      if (!generatingIPE) {
+      {
         // negate the y scale factor to change the orientation of the y axis (we
         // want it to point up)
         logicToViewTF.setToIdentity();
         // translation so 0,0 is at center of physical
-        logicToViewTF.translate((depscr0.x + depscr1.x) * .5,
-            (depscr0.y + depscr1.y) * .5);
+        logicToViewTF.translate((depscr0.x + depscr1.x) * .5, (depscr0.y + depscr1.y) * .5);
         logicToViewTF.scale(sfx, sfy);
         // translation so 0,0 is at center of logical coords
         logicToViewTF.translate(-logSize.x * .5, -logSize.y * .5);
-      } else {
-        // negate the y scale factor to change the orientation of the y axis (we
-        // want it to point up)
-        logicToViewTF.setToIdentity();
-        logicToViewTF.scale(sfx, sfy);
-        logicToViewTF.translate(0, -logSize.y);
       }
 
       // calculate inverse
@@ -171,9 +142,9 @@ public class V implements Globals {
 
       viewToLogicTF.setTransform(inv);
 
-      Color bgColor =  getBackgroundColor(); //new Color(C.vi(TBGlobals.sFILLCOLOR));
+      Color bgColor = getBackgroundColor(); //new Color(C.vi(TBGlobals.sFILLCOLOR));
 
-      if (C.vb(TBGlobals.ENFORCE_ASP) && !(epsMode || ipeMode)) {
+      if (C.vb(TBGlobals.ENFORCE_ASP)) {
         pushColor(Color.gray);
         fillRect(new FRect(g2.getClipBounds()));
         popColor();
@@ -193,19 +164,11 @@ public class V implements Globals {
         logicToViewTF.transform(new FPoint2(0, 0), c0);
 
         logicToViewTF.transform(logSize, c1);
-        clipScreen0 = new FPoint2(c0.x, c1.y);
-        clipScreen1 = new FPoint2(c1.x, c0.y);
       }
 
-      {
-        boolean fill = !bgColor.equals(Color.white);
-        if (fill || !(epsMode || ipeMode)) {
-          pushColor(bgColor);
-          fillRect(0, 0, logSize.x, logSize.y);
-          popColor();
-
-        }
-      }
+      pushColor(bgColor);
+      fillRect(0, 0, logSize.x, logSize.y);
+      popColor();
       {
 
         // construct strokes so we have uniform thickness despite scaling
@@ -219,8 +182,8 @@ public class V implements Globals {
           dash[0] = (float) (sc);
           dash[1] = (float) (sc * .5);
 
-          BasicStroke s = new BasicStroke(calcStrokeWidth(.4),
-              BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 1.0f, dash, 0);
+          BasicStroke s = new BasicStroke(calcStrokeWidth(.4), BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND,
+              1.0f, dash, 0);
           strokes[STRK_RUBBERBAND] = s;
         }
         scale = screenScaleFactor() / logicalPixelSize();
@@ -238,9 +201,6 @@ public class V implements Globals {
         TestBed.app.paintView();
       }
 
-      epsMode = false;
-      ipeMode = false;
-
       // ----------------------------------------------
       // restore drawing context
       if (db)
@@ -251,16 +211,8 @@ public class V implements Globals {
 
       vu_setGraphics(null);
       // ----------------------------------------------
-      if (generatingEPS) {
-        // save the eps file in a string to be processed
-        // by the event thread later.
-        epsFile = g2.toString();
-      }
-      if (generatingIPE) {
-        ipeFile = g2.toString();
-      }
-      flushEPSFile();
     }
+
     public ourPanel() {
 
       setDoubleBuffered(true);
@@ -283,13 +235,11 @@ public class V implements Globals {
         }
 
         public void mousePressed(MouseEvent e) {
-          TestBed.procAction(new TBAction(!button1(e) ? TBAction.DOWN2
-              : TBAction.DOWN1, e));
+          TestBed.procAction(new TBAction(!button1(e) ? TBAction.DOWN2 : TBAction.DOWN1, e));
         }
 
         public void mouseReleased(MouseEvent e) {
-          TestBed.procAction(new TBAction(!button1(e) ? TBAction.UP2
-              : TBAction.UP1, e));
+          TestBed.procAction(new TBAction(!button1(e) ? TBAction.UP2 : TBAction.UP1, e));
         }
 
       });
@@ -304,6 +254,7 @@ public class V implements Globals {
       });
     }
   }
+
   private static ourPanel panel;
 
   static void init() {
@@ -313,8 +264,10 @@ public class V implements Globals {
 
   /**
    * Set logical view size
-   * @param width 
-   * @param height dimensions of view 
+   * 
+   * @param width
+   * @param height
+   *          dimensions of view
    */
   private static void setLogicalView(double width, double height) {
     logicalSize = new FPoint2(width, height);
@@ -323,8 +276,10 @@ public class V implements Globals {
 
   /**
    * Draw a string (with flags set to zero)
-   * @param str 
-   * @param loc view coordinates 
+   * 
+   * @param str
+   * @param loc
+   *          view coordinates
    */
   public static void draw(String str, FPoint2 loc) {
     draw(str, loc.x, loc.y, 0);
@@ -332,25 +287,33 @@ public class V implements Globals {
 
   /**
    * Mark a location with a small 'x'
-   * @param pt location
+   * 
+   * @param pt
+   *          location
    */
   public static void mark(FPoint2 pt) {
     mark(pt, MARK_X);
   }
 
   /**
-   * Mark a location 
-   * @param pt location
-   * @param markType @see {@link #mark(FPoint2, int, double)}
+   * Mark a location
+   * 
+   * @param pt
+   *          location
+   * @param markType
+   * @see {@link #mark(FPoint2, int, double)}
    */
   public static void mark(FPoint2 pt, int markType) {
     mark(pt, markType, 1.0);
   }
 
   /**
-   * Mark a location 
-   * @param pt location
-   * @param markType MARK_xxx
+   * Mark a location
+   * 
+   * @param pt
+   *          location
+   * @param markType
+   *          MARK_xxx
    */
   public static void mark(FPoint2 pt, int markType, double scale) {
     double pad = getScale() * scale * .4;
@@ -390,10 +353,14 @@ public class V implements Globals {
   }
 
   /**
-   * Draw a string 
-   * @param str string to draw
-   * @param loc view coordinates
-   * @param flags @see {@link #draw(String, double, double, int)}
+   * Draw a string
+   * 
+   * @param str
+   *          string to draw
+   * @param loc
+   *          view coordinates
+   * @param flags
+   * @see {@link #draw(String, double, double, int)}
    */
   public static void draw(String str, FPoint2 loc, int flags) {
     draw(str, loc.x, loc.y, flags);
@@ -412,10 +379,7 @@ public class V implements Globals {
   }
 
   private static float calcStrokeWidth(double width) {
-    double d = width * screenScaleFactor * 1.8;
-    if (!epsMode && !ipeMode) {
-      d /= logPixelSize;
-    }
+    double d = width * screenScaleFactor * 1.8 / logPixelSize;
     return (float) d;
   }
 
@@ -424,50 +388,11 @@ public class V implements Globals {
     strokes[index] = new BasicStroke(f);
   }
 
-  static void plotToEPS(boolean cvtToPDF0) {
-    cvtToPDF = cvtToPDF0;
-    epsMode = true;
-  }
-
-  static void plotToIPE() {
-    ipeMode = true;
-  }
-
-  private static boolean epsMode;
-
-  private static boolean cvtToPDF;
-
-  private static boolean ipeMode;
-
   /**
-   * Get the constructed EPS file in a string, and clear it.
+   * Set stroke
    * 
-   * @return EPS file, or null if none exists
-   */
-  private static String getEPSFile() {
-    String s = epsFile;
-    epsFile = null;
-    return s;
-  }
-
-  /**
-   * Get the constructed IPE file in a string, and clear it.
-   * 
-   * @return IPE file, or null if none exists
-   */
-  private static String getIPEFile() {
-    String s = ipeFile;
-    ipeFile = null;
-    return s;
-  }
-
-  private static String epsFile;
-
-  private static String ipeFile;
-
-  /**
-   * Set stroke 
-   * @param s  stroke (STRK_xxx)
+   * @param s
+   *          stroke (STRK_xxx)
    */
   public static void setStroke(int s) {
     g.setStroke(strokes[s]);
@@ -479,8 +404,7 @@ public class V implements Globals {
    */
   private static void updateScaleFactor() {
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    screenScaleFactor = (240.0 * C.vi(TBGlobals.GLOBALSCALE))
-        / screenSize.width;
+    screenScaleFactor = (240.0 * C.vi(TBGlobals.GLOBALSCALE)) / screenSize.width;
   }
 
   private static void recalcLogicalView(Graphics g) {
@@ -493,14 +417,16 @@ public class V implements Globals {
     xs = r.width / n;
     ys = r.height / n;
     if (db)
-      Streams.out.println("setLogicalView xs=" + Tools.f(xs) + " ys="
-          + Tools.f(ys));
+      Streams.out.println("setLogicalView xs=" + Tools.f(xs) + " ys=" + Tools.f(ys));
 
     setLogicalView(xs * 100, ys * 100);
   }
+
   /**
    * Save current scaling factor on stack, scale by some factor
-   * @param scaleAdj amount to scale current factor by
+   * 
+   * @param scaleAdj
+   *          amount to scale current factor by
    */
   public static void pushScale(double scaleAdj) {
     plotStack.push(new Double(screenScaleFactor));
@@ -533,7 +459,9 @@ public class V implements Globals {
 
   /**
    * Set font
-   * @param font FNT_xx
+   * 
+   * @param font
+   *          FNT_xx
    */
   public static void setFont(int font) {
     activeFont = font;
@@ -542,7 +470,9 @@ public class V implements Globals {
 
   /**
    * Save current font on stack, set to new
-   * @param font new font (FNT_xx)
+   * 
+   * @param font
+   *          new font (FNT_xx)
    */
   public static void pushFont(int font) {
     if (font >= 0) {
@@ -565,22 +495,28 @@ public class V implements Globals {
 
   /**
    * Draw a string (with flags set to zero)
-   * @param str 
-   * @param x 
-   * @param y view coordinates 
+   * 
+   * @param str
+   * @param x
+   * @param y
+   *          view coordinates
    */
   public static void draw(String str, double x, double y) {
     draw(str, x, y, 0);
   }
 
   /**
-   * Draw a string 
-   * @param str string to draw
-   * @param x 
-   * @param y view coordinates
-   * @param flags Flags controlling string's appearance.  
-   *   These include:
-   *  <pre>
+   * Draw a string
+   * 
+   * @param str
+   *          string to draw
+   * @param x
+   * @param y
+   *          view coordinates
+   * @param flags
+   *          Flags controlling string's appearance. These include:
+   * 
+   *          <pre>
       TX_LINEWIDTH  if not zero, plots string in multiple rows, breaking at 
                      word boundaries (if possible) so no row has length 
                      greater than this value
@@ -588,7 +524,7 @@ public class V implements Globals {
       TX_FRAME      if set, draws a frame around the string
       TX_CLAMP      if set, clamps coordinates into range of view so entire
                      string is guaranteed to be visible
-   *   </pre>
+   *          </pre>
    */
   public static void draw(String str, double x, double y, int flags) {
 
@@ -622,8 +558,7 @@ public class V implements Globals {
         }
 
         if (db) {
-          System.out.println(" ch=" + ch + ", c=" + c + ", s=" + s
-              + ", lastSpace=" + lastSpace);
+          System.out.println(" ch=" + ch + ", c=" + c + ", s=" + s + ", lastSpace=" + lastSpace);
         }
         // If beyond maximum width, back up to last space printed
 
@@ -717,6 +652,7 @@ public class V implements Globals {
     }
     g.setTransform(saveXform);
   }
+
   private static final boolean ds = false;
 
   /**
@@ -739,17 +675,22 @@ public class V implements Globals {
 
   /**
    * Draw a circle
-   * @param origin origin of circle
-   * @param radius radius of circle
+   * 
+   * @param origin
+   *          origin of circle
+   * @param radius
+   *          radius of circle
    */
   public static void drawCircle(FPoint2 origin, double radius) {
-    g.draw(new Arc2D.Double(origin.x - radius, origin.y - radius, 2 * radius,
-        2 * radius, 0, 360, Arc2D.CHORD));
+    g.draw(
+        new Arc2D.Double(origin.x - radius, origin.y - radius, 2 * radius, 2 * radius, 0, 360, Arc2D.CHORD));
   }
 
   /**
    * Draw a rectangle
-   * @param r rectangle
+   * 
+   * @param r
+   *          rectangle
    */
   public static void drawRect(FRect r) {
     g.draw(r);
@@ -759,175 +700,30 @@ public class V implements Globals {
    * Set graphics context being updated by updateView() (should only be called
    * by the viewPanel class)
    * 
-   * @param gr :
-   *          graphics context
+   * @param gr
+   *          : graphics context
    */
   private static void vu_setGraphics(Graphics2D gr) {
     g = gr;
   }
 
-  private static String epsExt = "eps";
-
-  private static String ipeExt = "xml";
-
-  private static String pdfExt = "pdf";
-
-  /**
-   * Display file requester, optionally save file
-   * @param file
-   * @param prompt
-   * @param path
-   * @param ext
-   * @return path file was written to, or null if no writing occurred
-   */
-  private static String saveFile(String file, String prompt, String path,
-      String ext) {
-
-    String writtenTo = null;
-    path = askForSaveFile(file, prompt, path, ext);
-    if (path != null) {
-      try {
-        Writer w = Streams.writer(path);
-        w.write(file);
-        w.close();
-        writtenTo = path;
-      } catch (IOException e) {
-        TestBed.showError(e.getMessage());
-      }
-    }
-    return writtenTo;
-  }
-
-  /**
-   * Display file requester, optionally save file
-   * @param file
-   * @param prompt
-   * @param path
-   * @param ext
-   * @return path file was written to, or null if no writing occurred
-   */
-  private static String askForSaveFile(String file, String prompt, String path,
-      String ext) {
-
-    String writtenTo = null;
-
-    if (path == null)
-      path = "";
-
-    IFileChooser ch = Streams.fileChooser();
-    path = ch.doWrite(prompt, path, new PathFilter(ext));
-
-    if (path != null) {
-      path = Path.changeExtension(path, ext);
-      writtenTo = path;
-    }
-    return writtenTo;
-  }
-
-  private static String epsFileToFlush;
-
-  private static String ipeFileToFlush;
-
-  //  private static int frameNum = 0;
-  private static void flushEPSFile() {
-    {
-      // If EPS file is ready to be saved, do so.
-      String s = getEPSFile();
-      if (s != null) {
-        epsFileToFlush = s;
-
-        if (cvtToPDF)
-          javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-              //              String path = null;
-              //              if (false) {
-              //                Tools.warn("using anim frame");
-              //                path = TestBed.getSpecialSavePath(null, pdfExt);
-              //                path = Path.removeExt(path);
-              //                path = path + (frameNum++);
-              //                path = Path.addExtension(path, pdfExt);
-              //
-              //                path = askForSaveFile(epsFileToFlush, "Save .pdf file:", path,
-              //                    pdfExt);
-              //              }
-              String path = askForSaveFile(epsFileToFlush, "Save .pdf file:",
-                  TestBed.getSpecialSavePath(null, pdfExt), pdfExt);
-
-              if (path != null) {
-                // write to temp dir
-                try {
-                  File f = File.createTempFile("_testbed_", ".eps");
-                  String epsPath = f.getAbsolutePath();
-                  Writer w = Streams.writer(epsPath);
-                  w.write(epsFileToFlush);
-                  w.close();
-
-                  /* Can't use ProcessBuilder with pre 5.0 compiler                 
-                  
-                  // using ProcessBuilder to spawn an process
-                  ProcessBuilder pb = new ProcessBuilder("pstopdf", epsPath,
-                      "-o", path);
-                  // merge child's error and normal output streams.
-                  // Note it is not called setRedirectErrorStream.
-                  pb.redirectErrorStream(true);
-
-                  //Process p = 
-                  pb.start();
-                  // From here on it, it behaves just like exec, since you have the
-                  // exact same Process object.
-                  // ...
-                  */
-                  String cmd = "pstopdf " + epsPath + " -o " + path;
-                  Runtime.getRuntime().exec(cmd);
-                } catch (IOException e) {
-                  TestBed.showError(e.getMessage());
-                }
-              }
-              epsFileToFlush = null;
-            }
-          });
-        else
-
-          javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-              saveFile(epsFileToFlush, "Save .eps file:", TestBed
-                  .getSpecialSavePath(null, epsExt), epsExt);
-              epsFileToFlush = null;
-            }
-          });
-      }
-    }
-    {
-      // If EPS file is ready to be saved, do so.
-      String s = getIPEFile();
-      if (s != null) {
-        ipeFileToFlush = s;
-
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-            saveFile(ipeFileToFlush, "Save IPE file as .XML file:", TestBed
-                .getSpecialSavePath(null, ipeExt), ipeExt);
-            ipeFileToFlush = null;
-          }
-        });
-
-      }
-    }
-
-  }
   /**
    * Draw a filled circle (disc)
-   * @param origin origin of circle
-   * @param radius radius of circle
+   * 
+   * @param origin
+   *          origin of circle
+   * @param radius
+   *          radius of circle
    */
   public static void fillCircle(FPoint2 origin, double radius) {
-    g.fill(new Arc2D.Double(origin.x - radius, origin.y - radius, 2 * radius,
-        2 * radius, 0, 360, Arc2D.CHORD));
+    g.fill(
+        new Arc2D.Double(origin.x - radius, origin.y - radius, 2 * radius, 2 * radius, 0, 360, Arc2D.CHORD));
   }
 
   /**
    * Set color
-   * @param c 
+   * 
+   * @param c
    */
   public static void setColor(Color c) {
     g.setColor(c);
@@ -935,7 +731,9 @@ public class V implements Globals {
 
   /**
    * Pop a number of state attributes
-   * @param count number to pop
+   * 
+   * @param count
+   *          number to pop
    */
   public static void pop(int count) {
     for (int i = 0; i < count; i++)
@@ -971,8 +769,7 @@ public class V implements Globals {
   private static Object popValue(Object expectedTag) {
     Object tag = plotStack.pop();
     if (tag != expectedTag) {
-      throw new IllegalStateException("render stack problem: popped " + tag
-          + ", expected " + expectedTag);
+      throw new IllegalStateException("render stack problem: popped " + tag + ", expected " + expectedTag);
     }
     Object val = plotStack.pop();
     if (val == ST_IGNORE)
@@ -981,8 +778,8 @@ public class V implements Globals {
   }
 
   /**
-   * Get the current graphics context being updated by updateView(),
-   * in case we need to manipulate it in ways not provided by this class.
+   * Get the current graphics context being updated by updateView(), in case we
+   * need to manipulate it in ways not provided by this class.
    * 
    * @return Graphics2D
    */
@@ -992,14 +789,19 @@ public class V implements Globals {
 
   /**
    * Save current color on stack, set to new
-   * @param c new color
+   * 
+   * @param c
+   *          new color
    */
   public static void pushColor(Color c) {
     pushColor(c, null);
   }
+
   /**
    * Save current color on stack, set to new
-   * @param c new color
+   * 
+   * @param c
+   *          new color
    */
   public static void pushColor(Color c, Color defaultColor) {
     if (c == null)
@@ -1019,8 +821,11 @@ public class V implements Globals {
 
   /**
    * Draw a line segment
-   * @param p0 first endpoint
-   * @param p1 second endpoint
+   * 
+   * @param p0
+   *          first endpoint
+   * @param p1
+   *          second endpoint
    */
   public static void drawLine(FPoint2 p0, FPoint2 p1) {
     if (false) {
@@ -1028,8 +833,7 @@ public class V implements Globals {
       drawLine(p0.x, p0.y, p1.x, p1.y);
       long end = System.currentTimeMillis();
       if (end - start > 1) {
-        Streams.out.println("drawling line " + p0 + ".." + p1 + " took "
-            + (end - start) + " ms!");
+        Streams.out.println("drawling line " + p0 + ".." + p1 + " took " + (end - start) + " ms!");
       }
       return;
     }
@@ -1039,9 +843,11 @@ public class V implements Globals {
   /**
    * Draw a pixel as a filled square
    * 
-   * @param x 
-   * @param y location
-   * @param pixelSize width of square 
+   * @param x
+   * @param y
+   *          location
+   * @param pixelSize
+   *          width of square
    */
   public static void drawPixel(double x, double y, double pixelSize) {
     fillRect(x - pixelSize * .5, y - pixelSize * .5, pixelSize, pixelSize);
@@ -1050,8 +856,10 @@ public class V implements Globals {
   /**
    * Draw a pixel as a filled square
    * 
-   * @param pt location
-   * @param pixelSize width of square 
+   * @param pt
+   *          location
+   * @param pixelSize
+   *          width of square
    */
   public static void drawPixel(FPoint2 pt, double pixelSize) {
     drawPixel(pt.x, pt.y, pixelSize);
@@ -1059,10 +867,13 @@ public class V implements Globals {
 
   /**
    * Draw a line segment
+   * 
    * @param x0
-   * @param y0 first endpoint
+   * @param y0
+   *          first endpoint
    * @param x1
-   * @param y1 second endpoint
+   * @param y1
+   *          second endpoint
    */
   public static void drawLine(double x0, double y0, double x1, double y1) {
     Line2D.Double wl = new Line2D.Double();
@@ -1072,14 +883,19 @@ public class V implements Globals {
 
   /**
    * Save current stroke on stack, set to new
-   * @param s new stroke (STRK_xxx)
+   * 
+   * @param s
+   *          new stroke (STRK_xxx)
    */
   public static void pushStroke(int s) {
     pushStroke(s, -1);
   }
+
   /**
    * Save current stroke on stack, set to new
-   * @param s new stroke (STRK_xxx)
+   * 
+   * @param s
+   *          new stroke (STRK_xxx)
    */
   public static void pushStroke(int s, int defaultStroke) {
     if (s < 0)
@@ -1108,8 +924,11 @@ public class V implements Globals {
 
   /**
    * Draw a filled rectangle
-   * @param pos location
-   * @param size size
+   * 
+   * @param pos
+   *          location
+   * @param size
+   *          size
    */
   public static void fillRect(FPoint2 pos, FPoint2 size) {
     fillRect(pos.x, pos.y, size.x, size.y);
@@ -1117,7 +936,9 @@ public class V implements Globals {
 
   /**
    * Draw a filled rectangle
-   * @param r rectangle
+   * 
+   * @param r
+   *          rectangle
    */
   public static void fillRect(FRect r) {
     fillRect(r.x, r.y, r.width, r.height);
@@ -1125,10 +946,14 @@ public class V implements Globals {
 
   /**
    * Draw a filled rectangle
-   * @param x 
-   * @param y location
-   * @param w width
-   * @param h height
+   * 
+   * @param x
+   * @param y
+   *          location
+   * @param w
+   *          width
+   * @param h
+   *          height
    */
   public static void fillRect(double x, double y, double w, double h) {
 
@@ -1142,10 +967,14 @@ public class V implements Globals {
 
   /**
    * Draw a rectangle
-   * @param x 
-   * @param y location
-   * @param w width
-   * @param h height
+   * 
+   * @param x
+   * @param y
+   *          location
+   * @param w
+   *          width
+   * @param h
+   *          height
    */
   public static void drawRect(double x, double y, double w, double h) {
     Rectangle2D.Double r = new Rectangle2D.Double();
@@ -1161,11 +990,8 @@ public class V implements Globals {
   // table of BasicStroke objects for use by application
   private static BasicStroke[] strokes = new BasicStroke[STRK_TOTAL];
 
-  private static FPoint2 clipScreen0, clipScreen1;
-
   // the transform to convert from logic -> view coords
-  private static AffineTransform logicToViewTF = new AffineTransform(),
-      viewToLogicTF = new AffineTransform();
+  private static AffineTransform logicToViewTF = new AffineTransform(), viewToLogicTF = new AffineTransform();
 
   // size, in viewspace, of a 1x1 rectangle in logicspace
   private static double logPixelSize;
@@ -1176,6 +1002,7 @@ public class V implements Globals {
 
   /**
    * Get current scale factor
+   * 
    * @return scale factor
    */
   public static double getScale() {
@@ -1183,7 +1010,8 @@ public class V implements Globals {
   }
 
   /**
-   * Get size of view, in view space.  Default is width, height both 100.
+   * Get size of view, in view space. Default is width, height both 100.
+   * 
    * @return size of view
    */
   public static FPoint2 logicalSize() {
@@ -1206,9 +1034,12 @@ public class V implements Globals {
   public static void repaint() {
     repaint(0);
   }
+
   /**
    * Cause view to be repainted after a delay
-   * @param tm number of milliseconds
+   * 
+   * @param tm
+   *          number of milliseconds
    */
   public static void repaint(long tm) {
     panel.repaint(tm);
@@ -1216,7 +1047,9 @@ public class V implements Globals {
 
   /**
    * Set grid
-   * @param g Grid
+   * 
+   * @param g
+   *          Grid
    */
   public static void setGrid(Grid g) {
     grid = g;
@@ -1225,8 +1058,9 @@ public class V implements Globals {
   static Grid grid;
 
   /**
-   * Return a copy of a point, that has been snapped to 
-   * the current grid (if it is active)
+   * Return a copy of a point, that has been snapped to the current grid (if it
+   * is active)
+   * 
    * @param pt
    * @return copy of pt, possibly snapped to grid
    */
