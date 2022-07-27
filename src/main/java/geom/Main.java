@@ -1,0 +1,28 @@
+package geom;
+
+import static js.base.Tools.*;
+
+import js.app.App;
+
+import geom.MainOper;
+
+public class Main extends App {
+
+  public static void main(String[] args) {
+    loadTools();
+    Main app = new Main();
+    app.startApplication(args);
+    app.exitWithReturnCode();
+  }
+
+  @Override
+  public String getVersion() {
+    return "1.0";
+  }
+
+  @Override
+  protected void registerOperations() {
+    registerOper(new MainOper());
+  }
+
+}
