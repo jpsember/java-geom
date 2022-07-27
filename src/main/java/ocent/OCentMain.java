@@ -7,7 +7,6 @@ import java.util.*;
 
 public class OCentMain extends TestBed {
   private static final int TOGGLEDISCS = 4004;//!
-  private static final int MAKEDIAM = 4005;//!
   private static final int MAKETANGENT = 4007;//!
   private static final int RANDOM = 4011;//!
   private static final int RNDTEST = 4012;//!
@@ -35,7 +34,6 @@ public class OCentMain extends TestBed {
   // -------------------------------------------------------
 
   public void addOperations() {
-    addOper(GuarOneCenterOper.singleton);
     addOper(new SimpleOper());
     addOper(new GeneratorOper());
   }
@@ -65,14 +63,12 @@ public class OCentMain extends TestBed {
     Editor.addObjectType(EdPolygon.FACTORY);
     Editor.addObjectType(EdDisc.FACTORY);
     Editor.addObjectType(EdSegment.FACTORY);
-    Editor.addObjectType(EdDiameter.FACTORY);
     Editor.addObjectType(EdPoint.FACTORY);
     Editor.addObjectType(EdRect.FACTORY);
 
     Editor.openMenu();
     C.sMenuItem(TOGGLEDISCS, "Toggle discs/points", "!^t");
     C.sMenuItem(MAKETANGENT, "Set disc tangent", "!^3"); //"!^g");
-    C.sMenuItem(MAKEDIAM, "Convert seg->diameter", null);
     Editor.closeMenu();
   }
 
@@ -99,9 +95,6 @@ public class OCentMain extends TestBed {
         break;
       case MAKETANGENT:
         makeTangent();
-        break;
-      case MAKEDIAM:
-        makeDiam();
         break;
       }
     }
@@ -145,28 +138,7 @@ public class OCentMain extends TestBed {
           + (ia ? ca.getRadius() : -ca.getRadius()));
     }
   }
-  private void makeDiam() {
-    DArray a = Editor.editObjects(null, false, false);
-    for (int k = 0; k < a.size(); k++) {
-      EdObject obj = (EdObject) a.get(k);
-      if (!(obj.isSelected()))
-        continue;
-      if (!(obj instanceof EdSegment))
-        continue;
-
-      EdSegment c = (EdSegment) obj;
-
-      FPoint2 mid = FPoint2.midPoint(c.getPoint(0), c.getPoint(1));
-      //      double theta = MyMath.polarAngle(c.getPoint(0), c.getPoint(1));
-      //      double rad = FPoint2.distance(mid, c.getPoint(1));
-
-      EdDiameter diam = (EdDiameter) EdDiameter.FACTORY.construct();
-      diam.setPoint(0, mid);
-      diam.setPoint(1, c.getPoint(1));
-      a.set(k, diam);
-    }
-    Editor.replaceAllObjects(a);
-  }
+ 
   public void setParameters() {
     parms.appTitle = "Possible 1-Centers";
     parms.menuTitle = "Main";

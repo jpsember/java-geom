@@ -4,6 +4,7 @@ import base.*;
 import testbed.*;
 import java.awt.*;
 
+@Deprecated
 public class EdDiameter extends EdObject implements Globals, Renderable {
 
   static final boolean db = false;

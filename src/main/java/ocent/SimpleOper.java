@@ -1,6 +1,5 @@
 package ocent;
 
-import base.*;
 import testbed.*;
 
 public class SimpleOper implements TestBedOperation, Globals {
