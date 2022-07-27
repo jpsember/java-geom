@@ -135,11 +135,6 @@ public abstract class Application {
    */
   protected void doInit() {
     Streams.loadResources(this);
-
-    Tools.warn("Is this still required?");
-    // Make sure we have nice window decorations.
-    JFrame.setDefaultLookAndFeelDecorated(true);
-    
     
     // Create and set up the window.
     appFrame = new ApplicationJFrame(this);
