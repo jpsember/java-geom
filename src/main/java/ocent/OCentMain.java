@@ -35,15 +35,11 @@ public class OCentMain extends TestBed {
 
   private OCentMain() {
     guiAppConfig() //
-    .appName("OCent") //
-    .processExpression("ocent.OCentMain");
+        .appName("OCent") //
+    ;
   }
+
  
-
-  @Override
-  public void startGUI() {
-  }
-
   //  @Override
   //  protected AppOper constructAppOper() {
   //    return new OurOper();
