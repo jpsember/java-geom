@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import base.*;
+import static js.base.Tools.*;
 
 /**
  * Object editor.
@@ -372,11 +373,11 @@ public class Editor implements Globals, IEditorScript {
   private static final boolean dba = false; //Tools.dbWarn(true);
 
   private static void updateCoordDisplay(FPoint2 loc) {
-    if (TestBed.parms.includeGrid) {
-      String s = Tools.f(loc.x, 4, 1);
-      s = s + Tools.f(loc.y, 4, 1);
-      C.sets(TBGlobals.MOUSELOC, s);
-    }
+//    if (TestBed.parms.includeGrid) {
+//      String s = Tools.f(loc.x, 4, 1);
+//      s = s + Tools.f(loc.y, 4, 1);
+//      C.sets(TBGlobals.MOUSELOC, s);
+//    }
 
   }
 
@@ -885,30 +886,31 @@ public class Editor implements Globals, IEditorScript {
   }
 
   private static void doOpenNext() {
-    final boolean db = false;
-    do {
-      String s = fileStats.getPath();
-      if (s == null)
-        break;
-      if (db)
-        Streams.out.println("OPENNEXT, s=" + s);
-
-      File f = new File(s);
-      if (!f.exists())
-        break;
-      File f2 = f.getParentFile();
-      if (db)
-        Streams.out.println("parentfile=" + f2);
-      if (!f2.isDirectory())
-        break;
-      DArray fl = Streams.getFileList(f2.toString(), TestBed.parms.fileExt);
-      File fNext = Path.getNextFile(fl, f, true);
-      if (db)
-        Streams.out.println("nextfile to " + f + " is " + fNext);
-      if (fNext == null)
-        break;
-      doOpen(fNext.getPath());
-    } while (false);
+    todo("doOpenNext");
+//    final boolean db = false;
+//    do {
+//      String s = fileStats.getPath();
+//      if (s == null)
+//        break;
+//      if (db)
+//        Streams.out.println("OPENNEXT, s=" + s);
+//
+//      File f = new File(s);
+//      if (!f.exists())
+//        break;
+//      File f2 = f.getParentFile();
+//      if (db)
+//        Streams.out.println("parentfile=" + f2);
+//      if (!f2.isDirectory())
+//        break;
+//      DArray fl = Streams.getFileList(f2.toString(), TestBed.parms.fileExt);
+//      File fNext = Path.getNextFile(fl, f, true);
+//      if (db)
+//        Streams.out.println("nextfile to " + f + " is " + fNext);
+//      if (fNext == null)
+//        break;
+//      doOpen(fNext.getPath());
+//    } while (false);
   }
 
   private static void restoreErrorSet() {
@@ -1187,7 +1189,7 @@ public class Editor implements Globals, IEditorScript {
     if (r != null) {
       FPoint2[] pts = calcBoxPoints(r, rRot);
       V.pushColor(Color.RED);
-      V.pushStroke(TestBed.STRK_RUBBERBAND);
+      V.pushStroke(Globals.STRK_RUBBERBAND);
       V.drawLine(pts[1], pts[2]);
       V.drawLine(pts[2], pts[3]);
       V.drawLine(pts[3], pts[4]);
@@ -1622,7 +1624,7 @@ public class Editor implements Globals, IEditorScript {
         throw new TBError(e.getMessage());
       }
       clearUndo(true);
-      justSaved = true;
+//      justSaved = true;
       updateTitle();
       TestBed.writeConfigFile();
     }
@@ -1684,7 +1686,8 @@ public class Editor implements Globals, IEditorScript {
           s = Path.getUserDir();
         }
         IFileChooser ch = Streams.fileChooser();
-        String ns = ch.doOpen("Open file:", s, new PathFilter(TestBed.parms.fileExt));
+        String ns = ch.doOpen("Open file:", s, new PathFilter(TestBed
+            .parms.fileExt));
         if (ns != null) {
           f = Path.changeExtension(ns, TestBed.parms.fileExt);
         }
@@ -1772,33 +1775,35 @@ public class Editor implements Globals, IEditorScript {
   }
 
   private static void updateTitle() {
-    StringBuilder sb = new StringBuilder();
-    TestBed app = TestBed.app;
-    String title = app.title();
-
-    sb.append(title);
-
-    String s = fileStats.getPath();
-    if (s != null) {
-      sb.append(" : ");
-      s = Path.relativeToUserHome(new File(s));
-
-      sb.append(s);
-      if (fileStats.modified())
-        sb.append("   (changes not written)");
-      else if (justSaved) {
-        justSaved = false;
-        sb.append("   (saved)");
-      }
-    }
-    String t = sb.toString();
-    app.setExtendedTitle(t);
-    app.updateTitle();
-
-    displayedModified = fileStats.modified();
+    todo("updateTitle");
+//    StringBuilder sb = new StringBuilder();
+//    TestBed app = TestBed.app;
+//    String title = app.title();
+//
+//    sb.append(title);
+//
+//    String s = fileStats.getPath();
+//    if (s != null) {
+//      sb.append(" : ");
+//      s = Path.relativeToUserHome(new File(s));
+//
+//      sb.append(s);
+//      if (fileStats.modified())
+//        sb.append("   (changes not written)");
+//      else if (justSaved) {
+//        justSaved = false;
+//        sb.append("   (saved)");
+//      }
+//    }
+//    notSupported("set/update title");
+//    //    String t = sb.toString();
+//    //    app.setExtendedTitle(t);
+//    //    app.updateTitle();
+//
+//    displayedModified = fileStats.modified();
   }
 
-  private static boolean justSaved;
+//  private static boolean justSaved;
 
   static ObjArray getItems() {
     return items;

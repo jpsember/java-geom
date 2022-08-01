@@ -2,8 +2,8 @@ package testbed;
 
 import base.*;
 import java.awt.*;
-import javax.swing.*;
 import java.io.*;
+import static js.base.Tools.*;
 
 public class C implements Globals {
 
@@ -229,8 +229,8 @@ public class C implements Globals {
    */
   static void openScript() {
     script = new StringBuilder();
-    if (TestBed.parms.traceScript)
-      script.append("*\n");
+//    if (TestBed.parms.traceScript)
+//      script.append("*\n");
   }
 
   /**
@@ -344,7 +344,7 @@ public class C implements Globals {
    */
   public static void sStaticText(String s) {
     sText('l');
-    sIValue(TestBed.parms.staticTextWidth);
+    sIValue(45); //TestBed.parms.staticTextWidth);
     sLbl(s);
     sNewLine();
   }
@@ -663,16 +663,17 @@ public class C implements Globals {
    */
   static void addControls(String script, int panel) {
     ctrlPanels[panel].processScript(script);
-    TestBed.topLevelContainer().validate();
+    todo("validate?");
+//    TestBed.topLevelContainer().validate();
   }
 
-  /**
-   * Remove a menu from the menu bar
-   * @param id id of menu
-   */
-  public static void removeMenu(int id) {
-    menuPanel.removeMenu(id);
-  }
+//  /**
+//   * Remove a menu from the menu bar
+//   * @param id id of menu
+//   */
+//  public static void removeMenu(int id) {
+//    menuPanel.removeMenu(id);
+//  }
 
   /**
    * Clear console (if one exists)
@@ -683,9 +684,9 @@ public class C implements Globals {
     }
   }
 
-  static MenuPanel menuPanel() {
-    return menuPanel;
-  }
+//  static MenuPanel menuPanel() {
+//    return menuPanel;
+//  }
 
   /**
    * Get the next anonymous id
@@ -698,8 +699,8 @@ public class C implements Globals {
   static void parseGadgets(Tokenizer tk) {
     if (tk.peek(IEditorScript.T_BROP)) {
       list.setValues(tk);
-      
-      TestBed.app.readGadgetGUIValues();
+      todo("readGadgetGUIValues");
+//      TestBed.app.readGadgetGUIValues();
     }
   }
 
@@ -710,7 +711,8 @@ public class C implements Globals {
    *   editor file header
    */
   static void printGadgets(PrintWriter pw, boolean configContext) {
-    TestBed.app.writeGadgetGUIValues();
+    todo("write gadget values");
+//    TestBed.app.writeGadgetGUIValues();
     String s = list.getValues(configContext);
     pw.println(s);
   }
@@ -786,11 +788,12 @@ public class C implements Globals {
   public static void sCloseMenu() {
     script.append(")");
     sNewLine();
-    menuPanel.processScript(C.closeScript());
+    todo("unsupported menu stuff?");
+//    menuPanel.processScript(C.closeScript());
     //    C.addMenu(C.closeScript());
   }
 
-  static void init(JFrame forMenu) {
+  static void init( ) {
     anonIdBase = TBGlobals.ID_ANON_START;
     consoleTextArea = null;
     ctrlPanels = new ControlPanel[TBGlobals.CT_TOTAL];
@@ -798,7 +801,7 @@ public class C implements Globals {
       ctrlPanels[i] = new ControlPanel();
     inComboBox = false;
     list = new GadgetList();
-    menuPanel = new MenuPanel(forMenu);
+//    menuPanel = new MenuPanel(forMenu);
     savedOut = null;
     script = null;
     tabPaneCount = 0;
@@ -810,7 +813,7 @@ public class C implements Globals {
   private static ControlPanel[] ctrlPanels;
   private static boolean inComboBox;
   static GadgetList list;
-  private static MenuPanel menuPanel;
+//  private static MenuPanel menuPanel;
   private static PrintStream savedOut;
   private static StringBuilder script;
   private static int tabPaneCount;

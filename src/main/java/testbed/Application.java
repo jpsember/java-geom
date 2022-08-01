@@ -9,6 +9,7 @@ import base.*;
  * Application class.
  *
  */
+@Deprecated
 public abstract class Application {
 
   private static boolean dba = false;

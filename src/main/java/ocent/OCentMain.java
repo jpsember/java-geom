@@ -1,8 +1,11 @@
 package ocent;
 
 import base.*;
-import js.system.SystemUtil;
+import js.app.App;
 import testbed.*;
+
+import static js.base.Tools.*;
+
 import java.util.*;
 
 public class OCentMain extends TestBed {
@@ -15,7 +18,7 @@ public class OCentMain extends TestBed {
   private static final int SQUARE = 4015;//!
   private static final int RECT = 4016;//!
   private static final int POLY = 4017;//!
-  /* !*/
+  /* ! */
 
   public static final int DISCS = 0, SQUARES = 1, RECTS = 2, POLYGONS = 3;
 
@@ -24,9 +27,115 @@ public class OCentMain extends TestBed {
   //  }
 
   public static void main(String[] args) {
+    loadTools();
+    App app = new OCentMain();
+    app.setName("OCent");
+    app.startApplication(args);
+  }
 
-    new OCentMain().doMainGUI(args);
-    SystemUtil.killProcesses("OCentMain");
+  @Override
+  protected String getProcessExpression() {
+    return "ocent.OCentMain";
+  }
+
+  @Override
+  public void startGUI() {
+  }
+
+  //  @Override
+  //  protected AppOper constructAppOper() {
+  //    return new OurOper();
+  //  }
+
+  //  // ------------------------------------------------------------------
+  //  // AppOper implementation
+  //  // ------------------------------------------------------------------
+  //  private class OurOper extends AppOper {
+  //
+  //    @Override
+  //    public String userCommand() {
+  //      return null;
+  //    }
+  //    //
+  //    //    @Override
+  //    //    public ScreditConfig defaultArgs() {
+  //    //      return ScreditConfig.DEFAULT_INSTANCE;
+  //    //    }
+  //
+  ////    @Override
+  ////    public void perform() {
+  ////      if (cmdLineArgs().hasNextArg()) {
+  ////        mStartProjectFile = new File(cmdLineArgs().nextArg());
+  ////        log(DASHES, "set start project:", INDENT, mStartProjectFile, VERT_SP);
+  ////      }
+  ////      if (cmdLineArgs().hasNextArg())
+  ////        throw badArg("Unexpected argument(s):", cmdLineArgs().peekNextArg());
+  ////      //      if (devMode()) {
+  ////      //        SystemUtil.killProcesses("js.scredit");
+  ////      //        SystemUtil.killAfterDelay("js.scredit");
+  ////      //      }
+  ////      startGUI(() -> createAndShowGUI());
+  ////    }
+  //
+  //    @Override
+  //    protected List<Object> getAdditionalArgs() {
+  //      return arrayList("[<project directory>]");
+  //    }
+  //
+  //    @Override
+  //    protected String getHelpDescription() {
+  //      return "Graphics script editor";
+  //    }
+  //  }
+
+  //  private File mStartProjectFile = Files.DEFAULT;
+
+  //   
+  ////------------------------------------------------------------------
+  // // Frame
+  // // ------------------------------------------------------------------
+  //
+  // private void createFrame() {
+  //   mFrame = new OurAppFrame();
+  //
+  //   JFrame jFrame = mFrame.frame();
+  //
+  ////   // Handle close window requests ourselves
+  ////   //
+  ////   jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+  ////   jFrame.addWindowListener(new WindowAdapter() {
+  ////     @Override
+  ////     public void windowClosing(WindowEvent e) {
+  ////       if (requestWindowClose()) {
+  ////         closeProject();
+  ////         jFrame.setVisible(false);
+  ////         jFrame.dispose();
+  ////         mFrame = null;
+  ////       }
+  ////     }
+  ////   });
+  //   jFrame.setVisible(true);
+  // }
+  //
+  // private OurAppFrame mFrame;
+  //
+  //  
+
+  //  
+  //  
+  //
+  //  private void processUserEvent(UserEvent event) {
+  //    // Avoid repainting if default operation and just a mouse move
+  //    // (though later we may want to render the mouse's position in an info box)
+  //    int repaintFlags = mUserEventManager.getOperation().repaintRequiredFlags(event);
+  //    if (repaintFlags != 0)
+  //      performRepaint(repaintFlags);
+  //  }
+  //
+  //  
+
+  @Override
+  public void repaintPanels(int repaintFlags) {
   }
 
   // -------------------------------------------------------
@@ -37,9 +146,11 @@ public class OCentMain extends TestBed {
     addOper(new SimpleOper());
     addOper(new GeneratorOper());
   }
+
   public static int regionType() {
     return C.vi(TYPE) - DISC;
   }
+
   public void addControls() {
     C.sOpen();
     // C.sCheckBox(RECTS, "Rectangles", null, false);
@@ -59,6 +170,7 @@ public class OCentMain extends TestBed {
 
     C.sClose();
   }
+
   public void initEditor() {
     Editor.addObjectType(EdPolygon.FACTORY);
     Editor.addObjectType(EdDisc.FACTORY);
@@ -83,15 +195,14 @@ public class OCentMain extends TestBed {
           GeneratorOper.generateRandom();
         break;
 
-      case TOGGLEDISCS:
-        {
-          for (int i = 0; i < discs2.length; i++) {
-            EdDisc c = discs2[i];
-            if (!c.isSelected())
-              continue;
-            c.togglePointMode();
-          }
+      case TOGGLEDISCS: {
+        for (int i = 0; i < discs2.length; i++) {
+          EdDisc c = discs2[i];
+          if (!c.isSelected())
+            continue;
+          c.togglePointMode();
         }
+      }
         break;
       case MAKETANGENT:
         makeTangent();
@@ -100,7 +211,6 @@ public class OCentMain extends TestBed {
     }
   }
 
-
   private static DArray getCandidate(final EdDisc c) {
     // find best two candidates for supporting this disc
     DArray can = new DArray(discs);
@@ -108,10 +218,8 @@ public class OCentMain extends TestBed {
       public int compare(Object arg0, Object arg1) {
         EdDisc c1 = (EdDisc) arg0, c2 = (EdDisc) arg1;
 
-        double d1 = DiscUtil.itan(c, c1) ? DiscUtil.itanDist(c, c1) : DiscUtil
-            .otanDist(c, c1);
-        double d2 = DiscUtil.itan(c, c2) ? DiscUtil.itanDist(c, c2) : DiscUtil
-            .otanDist(c, c2);
+        double d1 = DiscUtil.itan(c, c1) ? DiscUtil.itanDist(c, c1) : DiscUtil.otanDist(c, c1);
+        double d2 = DiscUtil.itan(c, c2) ? DiscUtil.itanDist(c, c2) : DiscUtil.otanDist(c, c2);
 
         return (int) Math.signum(d1 - d2);
       }
@@ -134,19 +242,16 @@ public class OCentMain extends TestBed {
 
       EdDisc ca = (EdDisc) can.get(0);
       boolean ia = DiscUtil.itan(c, ca);
-      c.setRadius(FPoint2.distance(c.getOrigin(), ca.getOrigin())
-          + (ia ? ca.getRadius() : -ca.getRadius()));
+      c.setRadius(FPoint2.distance(c.getOrigin(), ca.getOrigin()) + (ia ? ca.getRadius() : -ca.getRadius()));
     }
   }
- 
+
   public void setParameters() {
     parms.appTitle = "Possible 1-Centers";
     parms.menuTitle = "Main";
     parms.fileExt = "dat";
   }
 
-
-  
   public void paintView() {
     discs = null;
     discs2 = null;
@@ -178,8 +283,7 @@ public class OCentMain extends TestBed {
     m.rotate(MyMath.radians(1));
     m.translate(50, 50);
 
-    for (Iterator it = Editor.editObjects(EdDisc.FACTORY, false, false)
-        .iterator(); it.hasNext();) {
+    for (Iterator it = Editor.editObjects(EdDisc.FACTORY, false, false).iterator(); it.hasNext();) {
       EdDisc ed = (EdDisc) it.next();
       FPoint2 loc = ed.getOrigin();
       loc = m.apply(loc, null);
@@ -202,8 +306,7 @@ public class OCentMain extends TestBed {
       discs2 = (EdDisc[]) b.toArray(EdDisc.class);
 
       for (int i = 0; i < discs2.length; i++) {
-        discs2[i].clearFlags(DiscUtil.DISC_OVERLAPPING
-            | DiscUtil.DISC_CONTAINED);
+        discs2[i].clearFlags(DiscUtil.DISC_OVERLAPPING | DiscUtil.DISC_CONTAINED);
       }
 
     }
@@ -229,6 +332,7 @@ public class OCentMain extends TestBed {
     }
     return ret;
   }
+
   public static EdRect[] getRects() {
     if (rects == null) {
       DArray a = Editor.readObjects(EdRect.FACTORY, false, true);
@@ -238,8 +342,7 @@ public class OCentMain extends TestBed {
       rects2 = (EdRect[]) b.toArray(EdRect.class);
 
       for (int i = 0; i < rects2.length; i++) {
-        rects2[i].clearFlags(DiscUtil.DISC_OVERLAPPING
-            | DiscUtil.DISC_CONTAINED);
+        rects2[i].clearFlags(DiscUtil.DISC_OVERLAPPING | DiscUtil.DISC_CONTAINED);
       }
 
     }
@@ -248,6 +351,7 @@ public class OCentMain extends TestBed {
 
   /**
    * Construct a string that uniquely describes a set of EdObjects
+   * 
    * @param obj
    * @return
    */

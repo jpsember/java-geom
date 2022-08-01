@@ -1,20 +1,38 @@
 package testbed;
 
 import base.*;
+import js.guiapp.GUIApp;
+import js.guiapp.KeyboardShortcutManager;
+import js.guiapp.UserEventManager;
+
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import javax.swing.*;
-import javax.swing.border.*;
+
+import static js.base.Tools.*;
 
 /**
  * The TestBed class is the base class for the TestBed framework. See the PDF
  * file: 'TestBed: A Framework for Simple Java Test Program Generation'
  */
-public abstract class TestBed extends Application implements Globals {
-  // debug problems with initial window placement?
-  private static final boolean DBF = false;
+public abstract class TestBed extends GUIApp {
+
+  /**
+   * Concrete subclasses (e.g. Foo) should supply this method:
+   */
+  //  
+  //  TODO: grab relevant code from OCentMain when it stabilizes
+
+  @Override
+  public String getVersion() {
+    return "1.0";
+  }
+
+  // ------------------------------------------------------------------
+  // Construction
+  // ------------------------------------------------------------------
 
   static void procAction(TBAction a) {
     try {
@@ -28,9 +46,10 @@ public abstract class TestBed extends Application implements Globals {
   }
 
   private static void resetFocus() {
+    todo("requestFocus?  Or just avoid text input?");
     //    boolean f = TestBed.getAppContainer().requestFocusInWindow();
     //    Streams.out.println("req foc in TestBed app cont=" + f);
-    C.menuPanel().requestFocusInWindow();
+//    C.menuPanel().requestFocusInWindow();
   }
 
   /**
@@ -65,8 +84,9 @@ public abstract class TestBed extends Application implements Globals {
     switch (a.code) {
 
     case TBAction.UPDATETITLE:
-      setExtendedTitle(a.strArg);
-      updateTitle();
+      todo("set/update title");
+      //      setExtendedTitle(a.strArg);
+      //      updateTitle();
       break;
 
     case TBAction.CTRLVALUE:
@@ -79,22 +99,17 @@ public abstract class TestBed extends Application implements Globals {
         clearButUpdate = true;
         break;
 
-      case TBGlobals.ABOUT: {
-        new AboutDialog(TestBed.appFrame(), "TestBed");
-      }
-        break;
-
-      case TBGlobals.QUIT:
-        exitProgram();
-        break;
-      case TBGlobals.FILLCOLOR: {
-        Color fillColor = new Color(C.vi(TBGlobals.sFILLCOLOR));
-        Color cl = JColorChooser.showDialog(appFrame, "Select background color", fillColor);
-        if (cl != null) {
-          C.seti(TBGlobals.sFILLCOLOR, cl.getRGB() & 0xffffff);
-        }
-      }
-        break;
+//      case TBGlobals.QUIT:
+//        exitProgram();
+//        break;
+      //      case TBGlobals.FILLCOLOR: {
+      //        Color fillColor = new Color(C.vi(TBGlobals.sFILLCOLOR));
+      //        Color cl = JColorChooser.showDialog(appFrame, "Select background color", fillColor);
+      //        if (cl != null) {
+      //          C.seti(TBGlobals.sFILLCOLOR, cl.getRGB() & 0xffffff);
+      //        }
+      //      }
+      //        break;
 
       case TBGlobals.TRACEBWD:
       case TBGlobals.TRACEBTNBWD:
@@ -161,56 +176,56 @@ public abstract class TestBed extends Application implements Globals {
     //    resetFocus();
   }
 
-  private static class AboutDialog extends JDialog implements ActionListener {
-    private JPanel msg;
-    private int counter;
-
-    private void msg(String s) {
-
-      //      DArray lst = new DArray();
-      //      TextScanner.splitString(s, 865, lst);
-      //
-      //      for (int i = 0; i < lst.size(); i++) {
-      if (counter != 0) {
-        Dimension d = new Dimension(5, 5);
-        msg.add(new Box.Filler(d, d, d));
-      }
-      counter++;
-      msg.add(new JLabel(s)); //lst.getString(i)));
-      //      }
-    }
-
-    public AboutDialog(JFrame parent, String title) {
-      super(parent, title, true);
-      if (parent != null) {
-        Dimension parentSize = parent.getSize();
-        Point p = parent.getLocation();
-        setLocation(p.x + parentSize.width / 4, p.y + parentSize.height / 4);
-      }
-      msg = new JPanel();
-      msg.setBorder(new EmptyBorder(10, 10, 10, 10));
-      msg.setLayout(new BoxLayout(msg, BoxLayout.Y_AXIS));
-
-      msg("This program uses the TestBed library, Copyright \u00a9 2009 Jeff Sember.");
-      msg("");
-      msg("<html><a href=\"http://www.cs.ubc.ca/~jpsember/testbed\">http://www.cs.ubc.ca/~jpsember/testbed</html>");
-
-      getContentPane().add(msg);
-      JPanel buttonPane = new JPanel();
-      JButton button = new JButton("OK");
-      buttonPane.add(button);
-      button.addActionListener(this);
-      getContentPane().add(buttonPane, BorderLayout.SOUTH);
-      setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-      pack();
-      setVisible(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      setVisible(false);
-      dispose();
-    }
-  }
+//  private static class AboutDialog extends JDialog implements ActionListener {
+//    private JPanel msg;
+//    private int counter;
+//
+//    private void msg(String s) {
+//
+//      //      DArray lst = new DArray();
+//      //      TextScanner.splitString(s, 865, lst);
+//      //
+//      //      for (int i = 0; i < lst.size(); i++) {
+//      if (counter != 0) {
+//        Dimension d = new Dimension(5, 5);
+//        msg.add(new Box.Filler(d, d, d));
+//      }
+//      counter++;
+//      msg.add(new JLabel(s)); //lst.getString(i)));
+//      //      }
+//    }
+//
+//    public AboutDialog(JFrame parent, String title) {
+//      super(parent, title, true);
+//      if (parent != null) {
+//        Dimension parentSize = parent.getSize();
+//        Point p = parent.getLocation();
+//        setLocation(p.x + parentSize.width / 4, p.y + parentSize.height / 4);
+//      }
+//      msg = new JPanel();
+//      msg.setBorder(new EmptyBorder(10, 10, 10, 10));
+//      msg.setLayout(new BoxLayout(msg, BoxLayout.Y_AXIS));
+//
+//      msg("This program uses the TestBed library, Copyright \u00a9 2009 Jeff Sember.");
+//      msg("");
+//      msg("<html><a href=\"http://www.cs.ubc.ca/~jpsember/testbed\">http://www.cs.ubc.ca/~jpsember/testbed</html>");
+//
+//      getContentPane().add(msg);
+//      JPanel buttonPane = new JPanel();
+//      JButton button = new JButton("OK");
+//      buttonPane.add(button);
+//      button.addActionListener(this);
+//      getContentPane().add(buttonPane, BorderLayout.SOUTH);
+//      setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+//      pack();
+//      setVisible(true);
+//    }
+//
+//    public void actionPerformed(ActionEvent e) {
+//      setVisible(false);
+//      dispose();
+//    }
+//  }
 
   /**
    * Process actions for main controls. Default implementation does nothing
@@ -595,11 +610,7 @@ public abstract class TestBed extends Application implements Globals {
   //    }
   //  }
 
-  /**
-   * Create the GUI and show it. For thread safety, this method should be
-   * invoked from the event-dispatching thread.
-   */
-  protected void doInit() {
+ private void oldStartGUI() {
     app = this;
     operList = new DArray();
     workFile = null;
@@ -608,16 +619,24 @@ public abstract class TestBed extends Application implements Globals {
 
     // desiredApplicationBounds = null;
     oldConfigFile = "";
+    app = this;
 
     setParameters0();
-    super.doInit();
-    JComponent main = new JPanel(new BorderLayout());
+
+    //    JComponent main = new JPanel(new BorderLayout());
 
     V.init();
 
-    C.init(appFrame());
+   C.init();
 
-    main.add(C.menuPanel(), "North");
+  }
+
+  @Override
+  public void populateFrame(JPanel parentPanel) {
+
+    todo("populateFrame seems to be called BEFORE startGUI");
+    oldStartGUI();
+  //  parentPanel.add(C.menuPanel(), "North");
     Component p1;
     {
       JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, V.getPanel(),
@@ -639,11 +658,9 @@ public abstract class TestBed extends Application implements Globals {
       sp.setResizeWeight(1);
       spToAdd = sp;
     }
-
-    main.add(spToAdd, "Center");
-    getAppContentPane().add(main);
-
-    app = this;
+    parentPanel.add(spToAdd, SwingConstants.CENTER);
+//    main.add(spToAdd, "Center");
+//    getAppContentPane().add(main);
 
     if (console()) {
       addConsole(parms.consoleRows, false);
@@ -682,7 +699,7 @@ public abstract class TestBed extends Application implements Globals {
 
     programBegun = true;
 
-    showApp();
+//    showApp();
     workFile = new WorkFile();
 
     /*
@@ -730,18 +747,21 @@ public abstract class TestBed extends Application implements Globals {
         }
       }
     }
+
   }
 
-  /**
-   * Show the application.
-   * 
-   * Overridden to retain last window dimensions in configuration file.
-   */
-  protected void showApp() {
-    appFrame.pack();
-    readGadgetGUIValues();
-    appFrame.setVisible(true);
-  }
+  // TODO: we need to call readGadgetGUIValues at startup at some point
+
+  //  /**
+  //   * Show the application.
+  //   * 
+  //   * Overridden to retain last window dimensions in configuration file.
+  //   */
+  //  protected void showApp() {
+  //    appFrame.pack();
+  //    readGadgetGUIValues();
+  //    appFrame.setVisible(true);
+  //  }
 
   /**
    * Process a paintComponent() for the view. Default implementation runs the
@@ -759,10 +779,10 @@ public abstract class TestBed extends Application implements Globals {
    *          : the message to display
    */
   public static void showError(String msg) {
-    JOptionPane.showMessageDialog(appFrame(), msg, "Error", JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(null /* appFrame().frame() */, msg, "Error", JOptionPane.ERROR_MESSAGE);
   }
 
-  protected static class TestBedParameters {
+  public static class TestBedParameters {
     public String appTitle = "TestBed";
 
     /**
@@ -828,37 +848,37 @@ public abstract class TestBed extends Application implements Globals {
     public boolean traceScript;
   }
 
-  protected void exitProgram() {
-    final boolean db = false;
-    if (db) {
-      Streams.out.println("TestBed: exitProgram");
-    }
-    if (db) {
-      Streams.out.println("writeconfig");
-    }
+//  protected void exitProgram() {
+//    final boolean db = false;
+//    if (db) {
+//      Streams.out.println("TestBed: exitProgram");
+//    }
+//    if (db) {
+//      Streams.out.println("writeconfig");
+//    }
+//
+//    writeConfigFile();
+//    if (console()) {
+//      if (db) {
+//        Streams.out.println("unset console");
+//      }
+//      C.unsetConsole();
+//    }
+//
+//    if (workFile != null) {
+//      workFile.dispose();
+//      workFile = null;
+//    }
+//    if (db) {
+//      Streams.out.println("calling super");
+//    }
+//
+//    super.exitProgram();
+//  }
 
-    writeConfigFile();
-    if (console()) {
-      if (db) {
-        Streams.out.println("unset console");
-      }
-      C.unsetConsole();
-    }
-
-    if (workFile != null) {
-      workFile.dispose();
-      workFile = null;
-    }
-    if (db) {
-      Streams.out.println("calling super");
-    }
-
-    super.exitProgram();
-  }
-
-  static JComponent topLevelContainer() {
-    return Application.getAppContentPane();
-  }
+//  static JComponent topLevelContainer() {
+//    return Application.getAppContentPane();
+//  }
 
   /**
    * Strings for serializing hidden integers, doubles, booleans
@@ -960,7 +980,7 @@ public abstract class TestBed extends Application implements Globals {
   private static WorkFile workFile;
   //private static String filePath;
   // TestBed parameters
-  protected static TestBedParameters parms = new TestBedParameters();
+  public static TestBedParameters parms = new TestBedParameters();
   //  // desired bounds for application window
   //  private static Rectangle desiredApplicationBounds;
 
@@ -976,7 +996,7 @@ public abstract class TestBed extends Application implements Globals {
    */
   void readGadgetGUIValues() {
     if (programBegun) {
-      final boolean db = DBF;
+      final boolean db = false;
 
       Rectangle r = new Rectangle(C.vi(TBGlobals.TBFRAME + 0), C.vi(TBGlobals.TBFRAME + 1),
           C.vi(TBGlobals.TBFRAME + 2), C.vi(TBGlobals.TBFRAME + 3));
@@ -984,12 +1004,13 @@ public abstract class TestBed extends Application implements Globals {
       if (db)
         Streams.out.println(Tools.stackTrace() + " app rect=" + r);
 
-      if (r.width > 0) {
-        appFrame().setLocation(r.x, r.y);
-        appFrame().setSize(r.width, r.height);
-      } else {
-        appFrame().setLocationRelativeTo(null);
-      }
+      todo("restore app frame loc and size");
+//      if (r.width > 0) {
+//        appFrame().setLocation(r.x, r.y);
+//        appFrame().setSize(r.width, r.height);
+//      } else {
+//        appFrame().setLocationRelativeTo(null);
+//      }
 
       int dv = C.vi(TBGlobals.TBCTRLSLIDER);
 
@@ -1017,19 +1038,20 @@ public abstract class TestBed extends Application implements Globals {
   void writeGadgetGUIValues() {
     if (programBegun) {
 
-      final boolean db = DBF;
+      final boolean db = false;
 
-      // read frame bounds to gadgets, so they are serialized along with other
-      // persistent values
-
-      Rectangle r = appFrame().getBounds();
-
-      if (db)
-        System.out.println(Tools.stackTrace() + " writing TBFRAME " + r);
-      C.seti(TBGlobals.TBFRAME + 0, r.x);
-      C.seti(TBGlobals.TBFRAME + 1, r.y);
-      C.seti(TBGlobals.TBFRAME + 2, r.width);
-      C.seti(TBGlobals.TBFRAME + 3, r.height);
+      todo("persist frame bounds somewhere");
+//      // read frame bounds to gadgets, so they are serialized along with other
+//      // persistent values
+//
+//      Rectangle r = appFrame().getBounds();
+//
+//      if (db)
+//        System.out.println(Tools.stackTrace() + " writing TBFRAME " + r);
+//      C.seti(TBGlobals.TBFRAME + 0, r.x);
+//      C.seti(TBGlobals.TBFRAME + 1, r.y);
+//      C.seti(TBGlobals.TBFRAME + 2, r.width);
+//      C.seti(TBGlobals.TBFRAME + 3, r.height);
 
       if (spCtrls != null) {
         int loc = spCtrls.getDividerLocation();
@@ -1043,5 +1065,77 @@ public abstract class TestBed extends Application implements Globals {
       }
     }
   }
+
+  // TODO: refactor to make this private
+  public UserEventManager mUserEventManager;
+  // TODO: refactor to make this private
+  public KeyboardShortcutManager mKeyboardShortcutManager;
+
+  //  public void createMenuBarIfNec() {
+  //    if (mMenuBar != null)
+  //      return;
+  //
+  //    mKeyboardShortcutManager.clearAssignedOperationList();
+  //    OurMenuBar m = new OurMenuBar(mUserEventManager, mKeyboardShortcutManager);
+  //    mMenuBar = m;
+  //    todo("add method for subclass to populate menu bar");
+  ////    addProjectMenu(m);
+  ////    if (currentProject().definedAndNonEmpty()) {
+  ////      addFileMenu(m);
+  ////      addEditMenu(m);
+  ////      addViewMenu(m);
+  ////      addCategoryMenu(m);
+  ////    }
+  //    mFrame.frame().setJMenuBar(m.jmenuBar());
+  //  }
+
+  //  private OurMenuBar mMenuBar;
+
+  // ------------------------------------------------------------------
+  // Frame
+  // ------------------------------------------------------------------
+//
+//  private void createFrame() {
+//    mFrame = new OurAppFrame();
+//
+//    JFrame jFrame = mFrame.frame();
+//
+//    //    // Handle close window requests ourselves
+//    //    //
+//    //    jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+//    //    jFrame.addWindowListener(new WindowAdapter() {
+//    //      @Override
+//    //      public void windowClosing(WindowEvent e) {
+//    //        if (requestWindowClose()) {
+//    //          closeProject();
+//    //          jFrame.setVisible(false);
+//    //          jFrame.dispose();
+//    //          mFrame = null;
+//    //        }
+//    //      }
+//    //    });
+//    jFrame.setVisible(true);
+//  }
+
+//  private OurAppFrame mFrame;
+
+  //  private void performRepaint(int repaintFlags) {
+  //    // If there is no menu bar, create one
+  //    createMenuBarIfNec();
+  //   
+  //    todo("add editor panels, info panels, etc");
+  ////      if (0 != (repaintFlags & REPAINT_EDITOR))
+  ////        mEditorPanel.repaint();
+  ////      if (0 != (repaintFlags & REPAINT_INFO))
+  ////        mInfoPanel.refresh();
+  //  }
+
+//  private void processUserEvent(UserEvent event) {
+//    // Avoid repainting if default operation and just a mouse move
+//    // (though later we may want to render the mouse's position in an info box)
+//    int repaintFlags = mUserEventManager.getOperation().repaintRequiredFlags(event);
+//    if (repaintFlags != 0)
+//      performRepaint(repaintFlags);
+//  }
 
 }
