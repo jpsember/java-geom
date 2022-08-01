@@ -33,10 +33,12 @@ public class OCentMain extends TestBed {
     app.startApplication(args);
   }
 
-  @Override
-  protected String getProcessExpression() {
-    return "ocent.OCentMain";
+  private OCentMain() {
+    guiAppConfig() //
+    .appName("OCent") //
+    .processExpression("ocent.OCentMain");
   }
+ 
 
   @Override
   public void startGUI() {

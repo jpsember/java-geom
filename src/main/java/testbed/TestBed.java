@@ -19,17 +19,6 @@ import static js.base.Tools.*;
  */
 public abstract class TestBed extends GUIApp {
 
-  /**
-   * Concrete subclasses (e.g. Foo) should supply this method:
-   */
-  //  
-  //  TODO: grab relevant code from OCentMain when it stabilizes
-
-  @Override
-  public String getVersion() {
-    return "1.0";
-  }
-
   // ------------------------------------------------------------------
   // Construction
   // ------------------------------------------------------------------
@@ -49,7 +38,7 @@ public abstract class TestBed extends GUIApp {
     todo("requestFocus?  Or just avoid text input?");
     //    boolean f = TestBed.getAppContainer().requestFocusInWindow();
     //    Streams.out.println("req foc in TestBed app cont=" + f);
-//    C.menuPanel().requestFocusInWindow();
+    //    C.menuPanel().requestFocusInWindow();
   }
 
   /**
@@ -99,9 +88,9 @@ public abstract class TestBed extends GUIApp {
         clearButUpdate = true;
         break;
 
-//      case TBGlobals.QUIT:
-//        exitProgram();
-//        break;
+      //      case TBGlobals.QUIT:
+      //        exitProgram();
+      //        break;
       //      case TBGlobals.FILLCOLOR: {
       //        Color fillColor = new Color(C.vi(TBGlobals.sFILLCOLOR));
       //        Color cl = JColorChooser.showDialog(appFrame, "Select background color", fillColor);
@@ -176,56 +165,56 @@ public abstract class TestBed extends GUIApp {
     //    resetFocus();
   }
 
-//  private static class AboutDialog extends JDialog implements ActionListener {
-//    private JPanel msg;
-//    private int counter;
-//
-//    private void msg(String s) {
-//
-//      //      DArray lst = new DArray();
-//      //      TextScanner.splitString(s, 865, lst);
-//      //
-//      //      for (int i = 0; i < lst.size(); i++) {
-//      if (counter != 0) {
-//        Dimension d = new Dimension(5, 5);
-//        msg.add(new Box.Filler(d, d, d));
-//      }
-//      counter++;
-//      msg.add(new JLabel(s)); //lst.getString(i)));
-//      //      }
-//    }
-//
-//    public AboutDialog(JFrame parent, String title) {
-//      super(parent, title, true);
-//      if (parent != null) {
-//        Dimension parentSize = parent.getSize();
-//        Point p = parent.getLocation();
-//        setLocation(p.x + parentSize.width / 4, p.y + parentSize.height / 4);
-//      }
-//      msg = new JPanel();
-//      msg.setBorder(new EmptyBorder(10, 10, 10, 10));
-//      msg.setLayout(new BoxLayout(msg, BoxLayout.Y_AXIS));
-//
-//      msg("This program uses the TestBed library, Copyright \u00a9 2009 Jeff Sember.");
-//      msg("");
-//      msg("<html><a href=\"http://www.cs.ubc.ca/~jpsember/testbed\">http://www.cs.ubc.ca/~jpsember/testbed</html>");
-//
-//      getContentPane().add(msg);
-//      JPanel buttonPane = new JPanel();
-//      JButton button = new JButton("OK");
-//      buttonPane.add(button);
-//      button.addActionListener(this);
-//      getContentPane().add(buttonPane, BorderLayout.SOUTH);
-//      setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-//      pack();
-//      setVisible(true);
-//    }
-//
-//    public void actionPerformed(ActionEvent e) {
-//      setVisible(false);
-//      dispose();
-//    }
-//  }
+  //  private static class AboutDialog extends JDialog implements ActionListener {
+  //    private JPanel msg;
+  //    private int counter;
+  //
+  //    private void msg(String s) {
+  //
+  //      //      DArray lst = new DArray();
+  //      //      TextScanner.splitString(s, 865, lst);
+  //      //
+  //      //      for (int i = 0; i < lst.size(); i++) {
+  //      if (counter != 0) {
+  //        Dimension d = new Dimension(5, 5);
+  //        msg.add(new Box.Filler(d, d, d));
+  //      }
+  //      counter++;
+  //      msg.add(new JLabel(s)); //lst.getString(i)));
+  //      //      }
+  //    }
+  //
+  //    public AboutDialog(JFrame parent, String title) {
+  //      super(parent, title, true);
+  //      if (parent != null) {
+  //        Dimension parentSize = parent.getSize();
+  //        Point p = parent.getLocation();
+  //        setLocation(p.x + parentSize.width / 4, p.y + parentSize.height / 4);
+  //      }
+  //      msg = new JPanel();
+  //      msg.setBorder(new EmptyBorder(10, 10, 10, 10));
+  //      msg.setLayout(new BoxLayout(msg, BoxLayout.Y_AXIS));
+  //
+  //      msg("This program uses the TestBed library, Copyright \u00a9 2009 Jeff Sember.");
+  //      msg("");
+  //      msg("<html><a href=\"http://www.cs.ubc.ca/~jpsember/testbed\">http://www.cs.ubc.ca/~jpsember/testbed</html>");
+  //
+  //      getContentPane().add(msg);
+  //      JPanel buttonPane = new JPanel();
+  //      JButton button = new JButton("OK");
+  //      buttonPane.add(button);
+  //      button.addActionListener(this);
+  //      getContentPane().add(buttonPane, BorderLayout.SOUTH);
+  //      setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+  //      pack();
+  //      setVisible(true);
+  //    }
+  //
+  //    public void actionPerformed(ActionEvent e) {
+  //      setVisible(false);
+  //      dispose();
+  //    }
+  //  }
 
   /**
    * Process actions for main controls. Default implementation does nothing
@@ -610,7 +599,7 @@ public abstract class TestBed extends GUIApp {
   //    }
   //  }
 
- private void oldStartGUI() {
+  private void oldStartGUI() {
     app = this;
     operList = new DArray();
     workFile = null;
@@ -627,7 +616,7 @@ public abstract class TestBed extends GUIApp {
 
     V.init();
 
-   C.init();
+    C.init();
 
   }
 
@@ -636,7 +625,7 @@ public abstract class TestBed extends GUIApp {
 
     todo("populateFrame seems to be called BEFORE startGUI");
     oldStartGUI();
-  //  parentPanel.add(C.menuPanel(), "North");
+    //  parentPanel.add(C.menuPanel(), "North");
     Component p1;
     {
       JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, V.getPanel(),
@@ -659,8 +648,8 @@ public abstract class TestBed extends GUIApp {
       spToAdd = sp;
     }
     parentPanel.add(spToAdd, SwingConstants.CENTER);
-//    main.add(spToAdd, "Center");
-//    getAppContentPane().add(main);
+    //    main.add(spToAdd, "Center");
+    //    getAppContentPane().add(main);
 
     if (console()) {
       addConsole(parms.consoleRows, false);
@@ -699,7 +688,7 @@ public abstract class TestBed extends GUIApp {
 
     programBegun = true;
 
-//    showApp();
+    //    showApp();
     workFile = new WorkFile();
 
     /*
@@ -848,37 +837,37 @@ public abstract class TestBed extends GUIApp {
     public boolean traceScript;
   }
 
-//  protected void exitProgram() {
-//    final boolean db = false;
-//    if (db) {
-//      Streams.out.println("TestBed: exitProgram");
-//    }
-//    if (db) {
-//      Streams.out.println("writeconfig");
-//    }
-//
-//    writeConfigFile();
-//    if (console()) {
-//      if (db) {
-//        Streams.out.println("unset console");
-//      }
-//      C.unsetConsole();
-//    }
-//
-//    if (workFile != null) {
-//      workFile.dispose();
-//      workFile = null;
-//    }
-//    if (db) {
-//      Streams.out.println("calling super");
-//    }
-//
-//    super.exitProgram();
-//  }
+  //  protected void exitProgram() {
+  //    final boolean db = false;
+  //    if (db) {
+  //      Streams.out.println("TestBed: exitProgram");
+  //    }
+  //    if (db) {
+  //      Streams.out.println("writeconfig");
+  //    }
+  //
+  //    writeConfigFile();
+  //    if (console()) {
+  //      if (db) {
+  //        Streams.out.println("unset console");
+  //      }
+  //      C.unsetConsole();
+  //    }
+  //
+  //    if (workFile != null) {
+  //      workFile.dispose();
+  //      workFile = null;
+  //    }
+  //    if (db) {
+  //      Streams.out.println("calling super");
+  //    }
+  //
+  //    super.exitProgram();
+  //  }
 
-//  static JComponent topLevelContainer() {
-//    return Application.getAppContentPane();
-//  }
+  //  static JComponent topLevelContainer() {
+  //    return Application.getAppContentPane();
+  //  }
 
   /**
    * Strings for serializing hidden integers, doubles, booleans
@@ -1005,12 +994,12 @@ public abstract class TestBed extends GUIApp {
         Streams.out.println(Tools.stackTrace() + " app rect=" + r);
 
       todo("restore app frame loc and size");
-//      if (r.width > 0) {
-//        appFrame().setLocation(r.x, r.y);
-//        appFrame().setSize(r.width, r.height);
-//      } else {
-//        appFrame().setLocationRelativeTo(null);
-//      }
+      //      if (r.width > 0) {
+      //        appFrame().setLocation(r.x, r.y);
+      //        appFrame().setSize(r.width, r.height);
+      //      } else {
+      //        appFrame().setLocationRelativeTo(null);
+      //      }
 
       int dv = C.vi(TBGlobals.TBCTRLSLIDER);
 
@@ -1041,17 +1030,17 @@ public abstract class TestBed extends GUIApp {
       final boolean db = false;
 
       todo("persist frame bounds somewhere");
-//      // read frame bounds to gadgets, so they are serialized along with other
-//      // persistent values
-//
-//      Rectangle r = appFrame().getBounds();
-//
-//      if (db)
-//        System.out.println(Tools.stackTrace() + " writing TBFRAME " + r);
-//      C.seti(TBGlobals.TBFRAME + 0, r.x);
-//      C.seti(TBGlobals.TBFRAME + 1, r.y);
-//      C.seti(TBGlobals.TBFRAME + 2, r.width);
-//      C.seti(TBGlobals.TBFRAME + 3, r.height);
+      //      // read frame bounds to gadgets, so they are serialized along with other
+      //      // persistent values
+      //
+      //      Rectangle r = appFrame().getBounds();
+      //
+      //      if (db)
+      //        System.out.println(Tools.stackTrace() + " writing TBFRAME " + r);
+      //      C.seti(TBGlobals.TBFRAME + 0, r.x);
+      //      C.seti(TBGlobals.TBFRAME + 1, r.y);
+      //      C.seti(TBGlobals.TBFRAME + 2, r.width);
+      //      C.seti(TBGlobals.TBFRAME + 3, r.height);
 
       if (spCtrls != null) {
         int loc = spCtrls.getDividerLocation();
@@ -1094,30 +1083,30 @@ public abstract class TestBed extends GUIApp {
   // ------------------------------------------------------------------
   // Frame
   // ------------------------------------------------------------------
-//
-//  private void createFrame() {
-//    mFrame = new OurAppFrame();
-//
-//    JFrame jFrame = mFrame.frame();
-//
-//    //    // Handle close window requests ourselves
-//    //    //
-//    //    jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-//    //    jFrame.addWindowListener(new WindowAdapter() {
-//    //      @Override
-//    //      public void windowClosing(WindowEvent e) {
-//    //        if (requestWindowClose()) {
-//    //          closeProject();
-//    //          jFrame.setVisible(false);
-//    //          jFrame.dispose();
-//    //          mFrame = null;
-//    //        }
-//    //      }
-//    //    });
-//    jFrame.setVisible(true);
-//  }
+  //
+  //  private void createFrame() {
+  //    mFrame = new OurAppFrame();
+  //
+  //    JFrame jFrame = mFrame.frame();
+  //
+  //    //    // Handle close window requests ourselves
+  //    //    //
+  //    //    jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+  //    //    jFrame.addWindowListener(new WindowAdapter() {
+  //    //      @Override
+  //    //      public void windowClosing(WindowEvent e) {
+  //    //        if (requestWindowClose()) {
+  //    //          closeProject();
+  //    //          jFrame.setVisible(false);
+  //    //          jFrame.dispose();
+  //    //          mFrame = null;
+  //    //        }
+  //    //      }
+  //    //    });
+  //    jFrame.setVisible(true);
+  //  }
 
-//  private OurAppFrame mFrame;
+  //  private OurAppFrame mFrame;
 
   //  private void performRepaint(int repaintFlags) {
   //    // If there is no menu bar, create one
@@ -1130,12 +1119,12 @@ public abstract class TestBed extends GUIApp {
   ////        mInfoPanel.refresh();
   //  }
 
-//  private void processUserEvent(UserEvent event) {
-//    // Avoid repainting if default operation and just a mouse move
-//    // (though later we may want to render the mouse's position in an info box)
-//    int repaintFlags = mUserEventManager.getOperation().repaintRequiredFlags(event);
-//    if (repaintFlags != 0)
-//      performRepaint(repaintFlags);
-//  }
+  //  private void processUserEvent(UserEvent event) {
+  //    // Avoid repainting if default operation and just a mouse move
+  //    // (though later we may want to render the mouse's position in an info box)
+  //    int repaintFlags = mUserEventManager.getOperation().repaintRequiredFlags(event);
+  //    if (repaintFlags != 0)
+  //      performRepaint(repaintFlags);
+  //  }
 
 }
