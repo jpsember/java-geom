@@ -19,6 +19,7 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import geom.gen.ScriptEditState;
 import js.data.IntArray;
 import js.geometry.FPoint;
 import js.geometry.FRect;

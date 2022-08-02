@@ -30,8 +30,6 @@ import js.graphics.ScriptElement;
 import js.graphics.gen.ElementProperties;
 import js.guiapp.UserEvent;
 import js.guiapp.UserOperation;
-import js.scredit.EditorElementRegistry;
-import js.scredit.ScrEdit;
 import js.geometry.IPoint;
 import js.geometry.Matrix;
 
@@ -75,7 +73,7 @@ public interface EditorElement extends ScriptElement {
    * Determine if an event is occurring at a part of an object that should
    * trigger an operation. If so, return the operation; else, null
    */
-  default UserOperation isEditingSelectedObject(ScrEdit editor, int slot, UserEvent event) {
+  default UserOperation isEditingSelectedObject(GeomApp editor, int slot, UserEvent event) {
     return null;
   }
 
