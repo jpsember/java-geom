@@ -45,7 +45,7 @@ public class AbstractEditorPanel extends JPanel implements UserEventSource, Mous
  
   @Override
   public void paintComponent(Graphics g) {
-    ScriptWrapper script = getScript();
+    ScriptWrapper script = editor().getScript();
     if (!script.isNone()) {
       mGraphics = (Graphics2D) g;
       mCurrentZoom = 
@@ -111,7 +111,7 @@ public class AbstractEditorPanel extends JPanel implements UserEventSource, Mous
   }
 
   private void paintContents() {
-    ScriptWrapper script = getScript();
+    ScriptWrapper script =  editor().getScript();
     if (script.isNone())
       return;
     Graphics2D g = mGraphics;
@@ -165,10 +165,7 @@ public class AbstractEditorPanel extends JPanel implements UserEventSource, Mous
         element.render(this, appearance);
       }
     }
-    
-    todo("Add a 'paint' method to operations to support this");
-    if (op instanceof NewEditorOper)
-      ((NewEditorOper) op).paint(this);
+    op.paint();
   }
 
   // ------------------------------------------------------------------
@@ -363,9 +360,4 @@ public class AbstractEditorPanel extends JPanel implements UserEventSource, Mous
 //  public   void setAppZoomFactor(float z) {
 //  }
 //  
-private ScriptWrapper getScript() {
-  throw notFinished();
-//return mEditor.currentProject().script();
-}
-//
 }

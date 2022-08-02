@@ -28,7 +28,6 @@ import static js.base.Tools.*;
 
 import java.util.List;
 
-import geom.EditorElement;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
 import js.data.IntArray;

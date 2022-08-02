@@ -28,7 +28,6 @@ import static js.base.Tools.*;
 
 import java.util.Map;
 
-import geom.EditorElement;
 import geom.elem.EditableMaskElement;
 import geom.elem.EditablePointElement;
 import geom.elem.EditablePolygonElement;

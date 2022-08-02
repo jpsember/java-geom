@@ -1,6 +1,8 @@
 package ocent;
 
 import base.*;
+import geom.AbstractEditorPanel;
+import geom.ScriptWrapper;
 import js.app.App;
 import testbed.*;
 
@@ -387,4 +389,14 @@ public class OCentMain extends TestBed {
     return (int) (20 / zoomFactor());
   }
 
+  @Override
+  public ScriptWrapper getScript() {
+    todo("getScript");
+    return ScriptWrapper.DEFAULT_INSTANCE;
+  }
+
+  @Override
+  public AbstractEditorPanel getEditorPanel() {
+    throw notSupported();
+  }
 }

@@ -27,7 +27,6 @@ package geom.oper;
 import geom.SlotList;
 import geom.StateTools;
 import geom.gen.Command;
-import geom.gen.Command.Builder;
 import geom.gen.ScriptEditState;
 import js.data.IntArray;
 

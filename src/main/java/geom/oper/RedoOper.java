@@ -25,10 +25,7 @@
 package geom.oper;
 
 import js.guiapp.UserOperation;
-import geom.EditorElement;
 import geom.GeomApp;
-import geom.SlotList;
-import geom.StateTools;
 import geom.UndoManager;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;

@@ -2,13 +2,7 @@ package geom;
 
 import js.guiapp.UserOperation;
 
+@Deprecated
 public class NewEditorOper extends UserOperation {
 
-  /**
-   * Display any optional rendering associated with this operation
-   */
-  public void paint(AbstractEditorPanel panel) {
-  }
-
-  
 }

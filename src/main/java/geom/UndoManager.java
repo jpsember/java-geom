@@ -32,11 +32,9 @@ import js.base.BaseObject;
 import js.data.IntArray;
 import js.json.JSList;
 import js.json.JSMap;
-import geom.EditorElement;
-import geom.SlotList;
-import geom.StateTools;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
+
 /**
  * Class to encapsulate the state and behaviour of the undo/redo functionality.
  * Conceptually, maintains two stacks of commands: an undo stack, and a redo

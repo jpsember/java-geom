@@ -24,10 +24,8 @@
  **/
 package geom.oper;
 
-import static js.base.Tools.*;
-
 import js.guiapp.UserOperation;
- 
+
 /**
  * A subclass of UserOperation that maintains a reference to its ScrEdit
  * instance
@@ -35,27 +33,27 @@ import js.guiapp.UserOperation;
 @Deprecated
 public abstract class EditorOper extends UserOperation {
 
-//  public final EditorOper setEditor(ScrEdit editor) {
-//    mEditor = editor;
-//    return this;
-//  }
-//
-//  public final ProjectState.Builder projectState() {
-//    return editor().projectState();
-//  }
-//
-//  public final ScrEdit editor() {
-//    if (mEditor == null)
-//      badState("No editor defined", getClass().getName());
-//    return mEditor;
-//  }
-//
-//  /**
-//   * Display any optional rendering associated with this operation
-//   */
-//  public void paint(EditorPanel panel) {
-//  }
-//
-//  private ScrEdit mEditor;
+  //  public final EditorOper setEditor(ScrEdit editor) {
+  //    mEditor = editor;
+  //    return this;
+  //  }
+  //
+  //  public final ProjectState.Builder projectState() {
+  //    return editor().projectState();
+  //  }
+  //
+  //  public final ScrEdit editor() {
+  //    if (mEditor == null)
+  //      badState("No editor defined", getClass().getName());
+  //    return mEditor;
+  //  }
+  //
+  //  /**
+  //   * Display any optional rendering associated with this operation
+  //   */
+  //  public void paint(EditorPanel panel) {
+  //  }
+  //
+  //  private ScrEdit mEditor;
 
 }

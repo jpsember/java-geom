@@ -30,7 +30,6 @@ import java.awt.Color;
 
 import geom.AbstractEditorPanel;
 import geom.EditorElement;
-import geom.NewEditorOper;
 import js.data.IntArray;
 import js.geometry.FRect;
 import js.geometry.IPoint;
@@ -38,13 +37,11 @@ import js.geometry.IRect;
 import js.graphics.Paint;
 import js.guiapp.UserEvent;
 import js.guiapp.UserOperation;
-import geom.EditorElement;
 import geom.SlotList;
-import geom.StateTools;
-import geom.gen.Command;
-import geom.gen.ScriptEditState;import static geom.GeomTools.*;
+import geom.gen.ScriptEditState;
+import static geom.GeomTools.*;
 
-public class SelectElementsWithBoxOper extends NewEditorOper implements UserEvent.Listener {
+public class SelectElementsWithBoxOper extends UserOperation implements UserEvent.Listener {
 
   @Override
   public void processUserEvent(UserEvent event) {
@@ -71,7 +68,8 @@ public class SelectElementsWithBoxOper extends NewEditorOper implements UserEven
   private static final Paint HIGHLIGHT_PAINT = Paint.newBuilder().color(Color.YELLOW.darker()).width(3);
 
   @Override
-  public void paint(AbstractEditorPanel p) {
+  public void paint() {
+    AbstractEditorPanel p = editor().getEditorPanel();
     IRect r = getRect();
     FRect f = p.pushFocusOn(r.toRect());
     p.apply(HIGHLIGHT_PAINT).renderFrame(f);

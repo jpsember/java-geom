@@ -27,9 +27,7 @@ package geom.oper;
 import static js.base.Tools.*;
 
 import js.data.IntArray;
-import geom.EditorElement;
 import geom.SlotList;
-import geom.StateTools;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
 

@@ -197,6 +197,10 @@ public abstract class GeomApp extends GUIApp {
   public void setZoomFactor(float zoom) {
     throw notSupported("setZoomFactor");
   }
+  
+  public abstract ScriptWrapper getScript();
+
+  public abstract AbstractEditorPanel getEditorPanel();
 
   // TODO: consider moving these?
   public static final int REPAINT_EDITOR = (1 << 0);
