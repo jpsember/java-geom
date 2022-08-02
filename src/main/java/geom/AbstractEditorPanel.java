@@ -19,6 +19,7 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import geom.EditorElement.Render;
 import geom.gen.ScriptEditState;
 import js.data.IntArray;
 import js.geometry.FPoint;
@@ -144,7 +145,7 @@ public class AbstractEditorPanel extends JPanel implements UserEventSource, Mous
     IntArray displayedSlots = op.displayedSlotsFilter();
     int filterCursor = 0;
     {
-      ScriptEditState state = mEditor.state();
+      ScriptEditState state = editor().state();
       int slot = INIT_INDEX;
       for (EditorElement element : state.elements()) {
         slot++;
@@ -354,4 +355,17 @@ public class AbstractEditorPanel extends JPanel implements UserEventSource, Mous
   private Graphics2D mGraphics;
   private Float mCurrentZoom;
 
+  
+  
+//  public   float getAppZoomFactor() {
+//    return 1f;
+//  }
+//  public   void setAppZoomFactor(float z) {
+//  }
+//  
+private ScriptWrapper getScript() {
+  throw notFinished();
+//return mEditor.currentProject().script();
+}
+//
 }

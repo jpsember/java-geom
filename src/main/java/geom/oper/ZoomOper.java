@@ -27,6 +27,7 @@ package geom.oper;
 import js.geometry.MyMath;
 import js.guiapp.UserOperation;
 import static js.base.Tools.*;
+import static geom.GeomTools.*;
 
 /**
  * This affects the current project's settings, not individual scripts; so it's
@@ -53,7 +54,7 @@ public final class ZoomOper extends UserOperation {
 
   @Override
   public boolean shouldBeEnabled() {
-    float oldZoom = projectState().zoomFactor();
+    float oldZoom = editor().zoomFactor(); //projectState().zoomFactor();
     float newZoom;
     if (mStepFactor == 0)
       newZoom = 1f;
@@ -70,7 +71,9 @@ public final class ZoomOper extends UserOperation {
 
   @Override
   public void start() {
-    projectState().zoomFactor(mNewZoomFactor);
+    
+    editor().setZoomFactor(mNewZoomFactor);
+//    projectState().zoomFactor(mNewZoomFactor);
   }
 
   private final float mStepFactor;

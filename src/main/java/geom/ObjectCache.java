@@ -22,42 +22,58 @@
  * SOFTWARE.
  * 
  **/
-package geom.oper;
-
-import java.io.File;
+package geom;
 
 import static js.base.Tools.*;
 
-import js.file.Files;
-import js.guiapp.SwingUtils;
-import js.guiapp.UserOperation;
-import js.scredit.Project;
-import static geom.GeomTools.*;
+import java.util.List;
+import java.util.Map;
 
-public class ProjectOpenOper extends UserOperation {
+import js.base.BaseObject;
+import js.geometry.MyMath;
 
-  @Override
-  public void start() {
-    loadTools();
-    File defaultDirectory = null;
+/**
+ * In-memory cache; thread safe
+ */
+public class ObjectCache<KEY, VALUE> extends BaseObject {
 
-    // If there's an existing project or recent project, start requester in its parent directory
-    Project project = editor().currentProject();
-    if (project.defined())
-      defaultDirectory = project.directory();
-    else {
-      // Use most recent project (if there is one)
-      defaultDirectory = editor().recentProjects().getMostRecentFile();
-    }
-
-    if (!Files.empty(defaultDirectory) && !defaultDirectory.isDirectory())
-      defaultDirectory = null;
-
-    File file = SwingUtils.displayOpenDirectoryFileRequester(
-        Files.empty(defaultDirectory) ? null : Files.parent(defaultDirectory), "Open Project");
-    if (Files.empty(file))
-      return;
-    editor().closeProject();
-    editor().openProject(file);
+  public VALUE get(KEY scriptFile) {
+    return mCache.get(scriptFile);
   }
+
+  public VALUE put(KEY key, VALUE image) {
+    if (image == null)
+      badArg("No object for key:", key);
+    trim();
+    log("Storing", key);
+    mCache.put(key, image);
+    return image;
+  }
+
+  private void trim() {
+    int size = mCache.size();
+    log("trim; size:", size, "capacity:", mCapacity);
+    if (size < mCapacity)
+      return;
+    auxTrim();
+  }
+
+  private synchronized void auxTrim() {
+    List<KEY> keys = arrayList();
+    keys.addAll(mCache.keySet());
+    MyMath.permute(keys, null);
+    int end = keys.size();
+    for (int i = mCapacity / 2; i < end; i++) {
+      KEY key = keys.get(i);
+      log("removing", key);
+      mCache.remove(key);
+    }
+  }
+
+  public ObjectCache(int capacity) {
+    mCapacity = capacity;
+  }
+
+  private Map<KEY, VALUE> mCache = concurrentHashMap();
+  private int mCapacity = 100;
 }

@@ -92,12 +92,57 @@ public abstract class GeomApp extends GUIApp {
     }
   }
 
+  private ScriptEditState mState = ScriptEditState.DEFAULT_INSTANCE;
+
   public ScriptWrapper currentScript() {
     return mScript;
   }
 
+  public void flushScript() {
+    mScript.flush();
+  }
+
   private ScriptWrapper mScript = ScriptWrapper.DEFAULT_INSTANCE;
-  private ScriptEditState mState = ScriptEditState.DEFAULT_INSTANCE;
+
+  public void replaceCurrentScriptWith(ScriptWrapper newScript) {
+    if (newScript == mScript)
+      return;
+
+    // Copy the clipboard from the current script, so we can copy or paste with the new script
+    ScriptEditState oldState = mState;
+    mScript = newScript;
+
+    // Parse the ScriptElement objects, constructing an appropriate
+    // EditorElement for each
+    List<EditorElement> editorElements = arrayList();
+    for (ScriptElement element : newScript.data().items()) {
+      // It is possible that elements are null, if they were unable to be parsed
+      if (element == null)
+        continue;
+      EditorElement parser = EditorElementRegistry.sharedInstance().factoryForTag(element.tag(), false);
+      if (parser == null) {
+        pr("*** No EditorElement parser found for tag:", quote(element.tag()));
+        continue;
+      }
+      EditorElement elem = parser.toEditorElement(element);
+      EditorElement validatedElement = elem.validate();
+      if (validatedElement == null) {
+        pr("*** failed to validate element:", INDENT, elem);
+        continue;
+      }
+      editorElements.add(validatedElement);
+    }
+
+    setState(ScriptEditState.newBuilder() //
+        .elements(editorElements)//
+        .clipboard(oldState.clipboard())//
+    );
+
+    // Discard undo manager, since it refers to a different script
+    // TODO: have some support for keeping around multiple undo managers, one for each script,
+    // or some finite number of them to keep memory usage down
+    mUndoManager = null;
+  }
 
   // ------------------------------------------------------------------
   // Commands
@@ -145,10 +190,15 @@ public abstract class GeomApp extends GUIApp {
    * This is needed for some operations that occur outside of rendering
    * operation
    */
-  public abstract float zoomFactor();
-  
-  
-// TODO: consider moving these?
+  public float zoomFactor() {
+    return 1f;
+  }
+
+  public void setZoomFactor(float zoom) {
+    throw notSupported("setZoomFactor");
+  }
+
+  // TODO: consider moving these?
   public static final int REPAINT_EDITOR = (1 << 0);
   public static final int REPAINT_INFO = (1 << 1);
   public static final int REPAINT_ALL = ~0;

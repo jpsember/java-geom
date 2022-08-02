@@ -30,6 +30,7 @@ import java.awt.Color;
 
 import geom.AbstractEditorPanel;
 import geom.EditorElement;
+import geom.NewEditorOper;
 import js.data.IntArray;
 import js.geometry.FRect;
 import js.geometry.IPoint;
@@ -43,7 +44,7 @@ import geom.StateTools;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;import static geom.GeomTools.*;
 
-public class SelectElementsWithBoxOper extends UserOperation implements UserEvent.Listener {
+public class SelectElementsWithBoxOper extends NewEditorOper implements UserEvent.Listener {
 
   @Override
   public void processUserEvent(UserEvent event) {

@@ -39,7 +39,6 @@ public class OCentMain extends TestBed {
     ;
   }
 
- 
   //  @Override
   //  protected AppOper constructAppOper() {
   //    return new OurOper();
@@ -382,4 +381,10 @@ public class OCentMain extends TestBed {
   private static EdRect[] rects;
   private static EdRect[] rects2;
   private static EdPolygon[] polygons;
+
+  @Override
+  public int paddingPixels() {
+    return (int) (20 / zoomFactor());
+  }
+
 }

@@ -34,6 +34,7 @@ import geom.AbstractEditorPanel;
 import geom.EditorElement;
 import geom.GeomApp;
 import geom.oper.AdjustBoxRotationOper;
+import geom.oper.RectEditOper;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.IPoint;
@@ -196,7 +197,7 @@ public class EditableRectElement extends RectElement implements EditorElement {
       IPoint corn = r.corner(c);
       float dist = MyMath.distanceBetween(corn, pt);
       if (dist < paddingPixels) {
-        return new RectEditOper( event, slot, c);
+        return new RectEditOper(event, slot, c);
       }
     }
     if (edElement < 0)
@@ -206,7 +207,7 @@ public class EditableRectElement extends RectElement implements EditorElement {
         float dist = MyMath.ptDistanceToSegment(pt.toFPoint(), ep0.toFPoint(), ep1.toFPoint(), null);
         if (dist < paddingPixels) {
           edElement = edge + 4;
-          return new RectEditOper(editor, event, slot, edge + 4);
+          return new RectEditOper(event, slot, edge + 4);
         }
       }
 

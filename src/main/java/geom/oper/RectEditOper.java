@@ -29,6 +29,7 @@ import static js.base.Tools.*;
 import java.awt.Cursor;
 
 import geom.EditorElement;
+import geom.StateTools;
 import geom.elem.EditableRectElement;
 import geom.gen.Command;
 import js.data.IntArray;

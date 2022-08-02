@@ -25,12 +25,11 @@
 package geom.oper;
 
 import js.guiapp.UserEvent;
-import js.scredit.ScrEdit;
 
 public class MaskEditOper extends RectEditOper {
 
-  public MaskEditOper(  UserEvent event, int slot, int handle) {
-    super(  event, slot, handle);
+  public MaskEditOper(UserEvent event, int slot, int handle) {
+    super(event, slot, handle);
   }
 
 }

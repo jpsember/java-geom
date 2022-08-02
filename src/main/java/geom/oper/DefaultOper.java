@@ -57,7 +57,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
   public int repaintRequiredFlags(UserEvent event) {
     // If it's only a mouse move, don't update the main view
     if (event.getCode() == UserEvent.CODE_MOVE)
-      return ScrEdit.REPAINT_INFO;
+      return GeomApp.REPAINT_INFO;
     return super.repaintRequiredFlags(event);
   }
 

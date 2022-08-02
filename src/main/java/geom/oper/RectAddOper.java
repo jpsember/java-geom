@@ -33,6 +33,7 @@ import java.awt.geom.Path2D;
 import geom.AbstractEditorPanel;
 import geom.EditorElement;
 import geom.EditorElement.Render;
+import geom.NewEditorOper;
 import geom.StateTools;
 import geom.elem.EditableRectElement;
 import geom.gen.Command;
@@ -46,7 +47,7 @@ import js.guiapp.UserEvent;
 import js.guiapp.UserOperation;
 import static geom.GeomTools.*;
 
-public class RectAddOper extends UserOperation implements UserEvent.Listener {
+public class RectAddOper extends NewEditorOper implements UserEvent.Listener {
 
   protected String getObjectMenuName() {
     return "Box";
@@ -137,7 +138,8 @@ public class RectAddOper extends UserOperation implements UserEvent.Listener {
   }
 
   private int cornerIndex() {
-    return projectState().addBoxCornerIndex();
+    todo("add support here" );return 0;
+//    return projectState().addBoxCornerIndex();
   }
 
   /**
@@ -199,10 +201,11 @@ public class RectAddOper extends UserOperation implements UserEvent.Listener {
     return path;
   }
 
-  @Override
+   @Override
   public void paint(AbstractEditorPanel p) {
     if (mAddMousePos == null)
       return;
+    
     boolean choosingOrigin = addState().is(STATE_ORIGIN);
     IRect guide = guideRect(choosingOrigin);
 

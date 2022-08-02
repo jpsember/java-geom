@@ -26,8 +26,10 @@ package geom.oper;
 
 import js.guiapp.UserOperation;
 import geom.EditorElement;
+import geom.GeomApp;
 import geom.SlotList;
 import geom.StateTools;
+import geom.UndoManager;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;import static geom.GeomTools.*;
 
@@ -50,7 +52,7 @@ public class UndoOper extends UserOperation {
   public void start() {
     ScriptEditState restoredState = undoManager().performUndo();
     editor().setState(restoredState);
-    editor().performRepaint(ScrEdit.REPAINT_ALL);
+    editor().performRepaint(GeomApp.REPAINT_ALL);
   }
 
   private UndoManager undoManager() {
