@@ -54,7 +54,7 @@ public final class ZoomOper extends UserOperation {
 
   @Override
   public boolean shouldBeEnabled() {
-    float oldZoom = editor().zoomFactor(); //projectState().zoomFactor();
+    float oldZoom = editor().zoomFactor(); 
     float newZoom;
     if (mStepFactor == 0)
       newZoom = 1f;
@@ -71,9 +71,7 @@ public final class ZoomOper extends UserOperation {
 
   @Override
   public void start() {
-    
     editor().setZoomFactor(mNewZoomFactor);
-//    projectState().zoomFactor(mNewZoomFactor);
   }
 
   private final float mStepFactor;

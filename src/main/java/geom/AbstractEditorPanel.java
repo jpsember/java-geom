@@ -34,25 +34,22 @@ import js.guiapp.UserEventSource;
 import js.guiapp.UserOperation;
 import static geom.GeomTools.*;
 
-public class AbstractEditorPanel extends JPanel implements UserEventSource, MouseListener, MouseMotionListener {
+public class AbstractEditorPanel extends JPanel
+    implements UserEventSource, MouseListener, MouseMotionListener {
 
-  public AbstractEditorPanel( ) {
-    loadTools();
+  public AbstractEditorPanel() {
     setBackground(new Color(185, 201, 179));
     addMouseListener(this);
     addMouseMotionListener(this);
   }
- 
+
   @Override
   public void paintComponent(Graphics g) {
     ScriptWrapper script = editor().getScript();
     if (!script.isNone()) {
       mGraphics = (Graphics2D) g;
-      mCurrentZoom = 
-          editor()
-          .zoomFactor();
+      mCurrentZoom = editor().zoomFactor();
       super.paintComponent(g);
-      todo("!maybe need special handling in case there's an exception?");
       paintContents();
       mGraphics = null;
       mCurrentZoom = null;
@@ -111,7 +108,7 @@ public class AbstractEditorPanel extends JPanel implements UserEventSource, Mous
   }
 
   private void paintContents() {
-    ScriptWrapper script =  editor().getScript();
+    ScriptWrapper script = editor().getScript();
     if (script.isNone())
       return;
     Graphics2D g = mGraphics;
@@ -177,7 +174,6 @@ public class AbstractEditorPanel extends JPanel implements UserEventSource, Mous
     return mViewToWorldTransform.apply(viewPt);
   }
 
-
   // ------------------------------------------------------------------
   // Mouse-related interfaces
   // ------------------------------------------------------------------
@@ -215,7 +211,6 @@ public class AbstractEditorPanel extends JPanel implements UserEventSource, Mous
   }
 
   private void generateMouseEvent(MouseEvent evt, int type) {
-    todo("!we need to do something special in case there's a Swing exception");
     IPoint viewPoint = new IPoint(evt.getX(), evt.getY());
     int modifierFlags = 0;
     if (SwingUtilities.isRightMouseButton(evt))
@@ -352,12 +347,4 @@ public class AbstractEditorPanel extends JPanel implements UserEventSource, Mous
   private Graphics2D mGraphics;
   private Float mCurrentZoom;
 
-  
-  
-//  public   float getAppZoomFactor() {
-//    return 1f;
-//  }
-//  public   void setAppZoomFactor(float z) {
-//  }
-//  
 }

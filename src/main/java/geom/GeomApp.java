@@ -7,13 +7,14 @@ import java.util.List;
 
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
-import geom.oper.CommandOper;
+import geom.oper.*;
 import js.graphics.ScriptElement;
 import js.graphics.gen.Script;
 import js.guiapp.GUIApp;
-import js.guiapp.OurMenuBar;
+import js.guiapp.MenuBarWrapper;
 //import js.guiapp.UserOperation;
 import js.guiapp.UserEventManager;
+import js.guiapp.UserOperation;
 
 /**
  * A GUIApp that supports editing of geometric objects
@@ -31,41 +32,40 @@ public abstract class GeomApp extends GUIApp {
     return sSingleton;
   }
 
-  public void addEditMenu(OurMenuBar m) {
-    //    m.addMenu("Edit", null);
-    //    // The labels will be fetched via getLabelText(), so use placeholders ('_')
-    //    addItem("undo", "_", new UndoOper());
-    //    addItem("redo", "_", new RedoOper());
-    //
-    //    m.addSeparator();
-    //
-    //    addItem("cut", "Cut", new CutOper());
-    //    addItem("copy", "Copy", new CopyOper());
-    //    addItem("paste", "Paste", new PasteOper());
-    //    m.addSeparator();
-    //    addItem("select_none", "Select None", new SelectNoneOper());
-    //    addItem("select_all", "Select All", new SelectAllOper());
-    //    m.addSeparator();
-    //    addItem("box_add", "Add Box", new RectAddOper());
-    //    addItem("mask_add", "Add Mask", new MaskAddOper());
-    //    addItem("pt_add", "Add Point", new PointAddOper());
-    //    addItem("polygon_add", "Add Polygon", PolygonEditOper.buildAddOper(this));
-    //    addItem("rotation_toggle", "Toggle Rotation", new ToggleRotationOper(this));
-    //
-    //    {
-    //      UserOperation oper = PolygonEditOper.buildAddCurveOper(this);
-    //      addItem("curve_add", "Add Curve", oper);
-    //      addItem("curve_add2", "Add Curve (2)", oper);
-    //    }
-    //
-    //    //addItem("yolo_merge", "Yolo Merge", new NonMaxSuppressOper());
+  @Override
+  public UserOperation getDefaultUserOperation() {
+    return new DefaultOper();
   }
 
-  public void addViewMenu(OurMenuBar m) {
-    //    m.addMenu("View");
-    //    addItem("zoom_in", "Zoom In", ZoomOper.buildIn());
-    //    addItem("zoom_out", "Zoom Out", ZoomOper.buildOut());
-    //    addItem("zoom_reset", "Zoom Reset", ZoomOper.buildReset());
+  // ------------------------------------------------------------------
+  // Menu construction methods, can be called from populateMenuBar()
+  // ------------------------------------------------------------------
+
+  public void addEditMenu(MenuBarWrapper m) {
+    m.addMenu("Edit", null);
+    // The labels will be fetched via getLabelText(), so use placeholders ('_')
+    addItem("undo", "_", new UndoOper());
+    addItem("redo", "_", new RedoOper());
+
+    m.addSeparator();
+
+    addItem("cut", "Cut", new CutOper());
+    addItem("copy", "Copy", new CopyOper());
+    addItem("paste", "Paste", new PasteOper());
+    m.addSeparator();
+    addItem("select_none", "Select None", new SelectNoneOper());
+    addItem("select_all", "Select All", new SelectAllOper());
+    m.addSeparator();
+    addItem("box_add", "Add Box", new RectAddOper());
+    addItem("pt_add", "Add Point", new PointAddOper());
+    addItem("polygon_add", "Add Polygon", PolygonEditOper.buildAddOper());
+  }
+
+  public void addViewMenu(MenuBarWrapper m) {
+    m.addMenu("View");
+    addItem("zoom_in", "Zoom In", ZoomOper.buildIn());
+    addItem("zoom_out", "Zoom Out", ZoomOper.buildOut());
+    addItem("zoom_reset", "Zoom Reset", ZoomOper.buildReset());
   }
 
   // ------------------------------------------------------------------
@@ -139,8 +139,6 @@ public abstract class GeomApp extends GUIApp {
     );
 
     // Discard undo manager, since it refers to a different script
-    // TODO: have some support for keeping around multiple undo managers, one for each script,
-    // or some finite number of them to keep memory usage down
     mUndoManager = null;
   }
 
@@ -184,8 +182,6 @@ public abstract class GeomApp extends GUIApp {
 
   private UndoManager mUndoManager;
 
-  public abstract int paddingPixels();
-
   /**
    * This is needed for some operations that occur outside of rendering
    * operation
@@ -197,7 +193,11 @@ public abstract class GeomApp extends GUIApp {
   public void setZoomFactor(float zoom) {
     throw notSupported("setZoomFactor");
   }
-  
+
+  public final int paddingPixels() {
+    return (int) (20 / zoomFactor());
+  }
+
   public abstract ScriptWrapper getScript();
 
   public abstract AbstractEditorPanel getEditorPanel();

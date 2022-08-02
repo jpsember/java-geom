@@ -385,11 +385,6 @@ public class OCentMain extends TestBed {
   private static EdPolygon[] polygons;
 
   @Override
-  public int paddingPixels() {
-    return (int) (20 / zoomFactor());
-  }
-
-  @Override
   public ScriptWrapper getScript() {
     todo("getScript");
     return ScriptWrapper.DEFAULT_INSTANCE;
