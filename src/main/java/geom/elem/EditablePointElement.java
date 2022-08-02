@@ -26,7 +26,7 @@ package geom.elem;
 
 import java.awt.Color;
 
-import geom.AbstractEditorPanel;
+import geom.EditorPanel;
 import geom.EditorElement;
 
 import static js.base.Tools.*;
@@ -75,7 +75,7 @@ public class EditablePointElement extends PointElement implements EditorElement 
   private static final FRect SELECTED_RELATIVE_BOUNDS = new FRect(-6, -6, 6 * 2, 6 * 2);
 
   @Override
-  public void render(AbstractEditorPanel panel, Render appearance) {
+  public void render(EditorPanel panel, Render appearance) {
     loadTools();
     panel.pushFocusOn(bounds().toRect());
     if (appearance == Render.SELECTED)

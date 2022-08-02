@@ -34,10 +34,10 @@ import js.guiapp.UserEventSource;
 import js.guiapp.UserOperation;
 import static geom.GeomTools.*;
 
-public class AbstractEditorPanel extends JPanel
+public class EditorPanel extends JPanel
     implements UserEventSource, MouseListener, MouseMotionListener {
 
-  public AbstractEditorPanel() {
+  public EditorPanel() {
     setBackground(new Color(185, 201, 179));
     addMouseListener(this);
     addMouseMotionListener(this);
@@ -253,7 +253,7 @@ public class AbstractEditorPanel extends JPanel
 
   private Paint mActivePaint = Paint.DEFAULT_INSTANCE;
 
-  public AbstractEditorPanel apply(Paint pb) {
+  public EditorPanel apply(Paint pb) {
     assertRendering();
     mActivePaint = pb.apply(mGraphics);
     return this;
@@ -271,16 +271,16 @@ public class AbstractEditorPanel extends JPanel
     renderLine(new FPoint(x0, y0), new FPoint(x1, y1));
   }
 
-  public AbstractEditorPanel renderFrame(FRect rect) {
+  public EditorPanel renderFrame(FRect rect) {
     return renderFrame(rect, 0);
   }
 
-  public AbstractEditorPanel renderText(String text, float x, float y) {
+  public EditorPanel renderText(String text, float x, float y) {
     mGraphics.drawString(text, x, y);
     return this;
   }
 
-  public AbstractEditorPanel renderFrame(FRect rect, float radius) {
+  public EditorPanel renderFrame(FRect rect, float radius) {
     if (mActivePaint.isFill()) {
       RectangularShape r;
       if (radius > 0) {

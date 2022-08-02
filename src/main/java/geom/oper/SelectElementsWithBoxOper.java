@@ -28,7 +28,7 @@ import static js.base.Tools.*;
 
 import java.awt.Color;
 
-import geom.AbstractEditorPanel;
+import geom.EditorPanel;
 import geom.EditorElement;
 import js.data.IntArray;
 import js.geometry.FRect;
@@ -69,7 +69,7 @@ public class SelectElementsWithBoxOper extends UserOperation implements UserEven
 
   @Override
   public void paint() {
-    AbstractEditorPanel p = editor().getEditorPanel();
+    EditorPanel p = editor().getEditorPanel();
     IRect r = getRect();
     FRect f = p.pushFocusOn(r.toRect());
     p.apply(HIGHLIGHT_PAINT).renderFrame(f);

@@ -1,7 +1,7 @@
 package ocent;
 
 import base.*;
-import geom.AbstractEditorPanel;
+import geom.EditorPanel;
 import geom.ScriptWrapper;
 import js.app.App;
 import testbed.*;
@@ -391,7 +391,7 @@ public class OCentMain extends TestBed {
   }
 
   @Override
-  public AbstractEditorPanel getEditorPanel() {
+  public EditorPanel getEditorPanel() {
     throw notSupported();
   }
 }

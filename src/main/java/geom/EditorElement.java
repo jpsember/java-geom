@@ -85,7 +85,7 @@ public interface EditorElement extends ScriptElement {
     NOMINAL, SELECTED, DISABLED,
   }
 
-  default void render(AbstractEditorPanel editorPanel, Render appearance) {
+  default void render(EditorPanel editorPanel, Render appearance) {
     throw notSupported("render unsupported for element:", getClass().getSimpleName());
   }
 

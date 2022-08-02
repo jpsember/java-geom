@@ -30,7 +30,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.geom.Path2D;
 
-import geom.AbstractEditorPanel;
+import geom.EditorPanel;
 import geom.EditorElement;
 import geom.EditorElement.Render;
 import geom.StateTools;
@@ -206,7 +206,7 @@ public class RectAddOper extends UserOperation implements UserEvent.Listener {
     if (mAddMousePos == null)
       return;
 
-    AbstractEditorPanel p = editor().getEditorPanel();
+    EditorPanel p = editor().getEditorPanel();
     boolean choosingOrigin = addState().is(STATE_ORIGIN);
     IRect guide = guideRect(choosingOrigin);
 

@@ -30,7 +30,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import geom.AbstractEditorPanel;
+import geom.EditorPanel;
 import geom.EditorElement;
 import geom.GeomApp;
 import geom.oper.PolygonEditOper;
@@ -171,7 +171,7 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
   }
 
   @Override
-  public void render(AbstractEditorPanel panel, Render appearance) {
+  public void render(EditorPanel panel, Render appearance) {
 
     // We want the line width to be constant, independent of the zoom factor
     float scale = 1.0f / panel.zoomFactor();
@@ -266,7 +266,7 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
 
   private static PolygonSmoother sSmoother;
 
-  private void renderLine(AbstractEditorPanel panel, float scale, IPoint i1, IPoint i2, boolean withArrows) {
+  private void renderLine(EditorPanel panel, float scale, IPoint i1, IPoint i2, boolean withArrows) {
     FPoint p1 = i1.toFPoint();
     FPoint p2 = i2.toFPoint();
     panel.renderLine(p1, p2);
