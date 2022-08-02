@@ -1,7 +1,7 @@
 package testbed;
 
 import base.*;
-import js.guiapp.GUIApp;
+import geom.GeomApp;
 import js.guiapp.KeyboardShortcutManager;
 import js.guiapp.UserEventManager;
 
@@ -17,7 +17,7 @@ import static js.base.Tools.*;
  * The TestBed class is the base class for the TestBed framework. See the PDF
  * file: 'TestBed: A Framework for Simple Java Test Program Generation'
  */
-public abstract class TestBed extends GUIApp {
+public abstract class TestBed extends GeomApp {
 
   // ------------------------------------------------------------------
   // Construction
@@ -599,32 +599,33 @@ public abstract class TestBed extends GUIApp {
   //    }
   //  }
 
-  private void oldStartGUI() {
-    app = this;
-    operList = new DArray();
-    workFile = null;
-    // filePath = null;
-    Editor.menuAdded = false;
-
-    // desiredApplicationBounds = null;
-    oldConfigFile = "";
-    app = this;
-
-    setParameters0();
-
-    //    JComponent main = new JPanel(new BorderLayout());
-
-    V.init();
-
-    C.init();
-
-  }
-
   @Override
   public void populateFrame(JPanel parentPanel) {
+   
+    
+    
 
-    todo("populateFrame seems to be called BEFORE startGUI");
-    oldStartGUI();
+   {
+      app = this;
+      operList = new DArray();
+      workFile = null;
+      // filePath = null;
+      Editor.menuAdded = false;
+
+      // desiredApplicationBounds = null;
+      oldConfigFile = "";
+      app = this;
+
+      setParameters0();
+
+      //    JComponent main = new JPanel(new BorderLayout());
+
+      V.init();
+
+      C.init();
+    }
+    
+    
     //  parentPanel.add(C.menuPanel(), "North");
     Component p1;
     {
@@ -690,17 +691,6 @@ public abstract class TestBed extends GUIApp {
 
     //    showApp();
     workFile = new WorkFile();
-
-    /*
-     * Get rid of this; it was created as workaround to what I have now
-     * discovered to be a bug (I think).
-     * 
-     * if (!Streams.isApplet()) { // Set up timer to check every 10 seconds to
-     * // write application configuration file if it has changed Thread t = new
-     * Thread(new Runnable() { public void run() { while (true) { try {
-     * Thread.sleep(10000); writeConfigFile(); } catch (InterruptedException e)
-     * { break; } } } }); t.setDaemon(true); t.start(); }
-     */
 
     //    if (parms.withEditor)
     //      Editor.init();
