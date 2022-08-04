@@ -51,13 +51,13 @@ public class T extends TBError implements Globals {
     //    if (event != null) {
     plotTrace(event);
 
-    if (event != null) {
-      // if error, save editor buffer for user recall
-      if (event.error) {
-        if (Editor.initialized())
-          Editor.storeErrorItems();
-      }
-    }
+//    if (event != null) {
+//      // if error, save editor buffer for user recall
+//      if (event.error) {
+//        if (Editor.initialized())
+//          Editor.storeErrorItems();
+//      }
+//    }
     lastEvent = event;
     return (event == null);
   }

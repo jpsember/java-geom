@@ -2,10 +2,7 @@ package testbed;
 
 import base.*;
 import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.geom.*;
-import java.awt.event.*;
 
 /**
  * Main view of TestBed applications. It has the short name 'V' to minimize
@@ -15,16 +12,16 @@ public class V implements Globals {
 
   public static FRect viewRect;
 
-  /**
-   * Determine if a mouse event involves the second button (button1)
-   * 
-   * @param e
-   *          MouseEvent
-   * @return boolean
-   */
-  private static boolean button1(MouseEvent e) {
-    return ((e.getModifiers() & MouseEvent.BUTTON1_MASK) == MouseEvent.BUTTON1_MASK);
-  }
+//  /**
+//   * Determine if a mouse event involves the second button (button1)
+//   * 
+//   * @param e
+//   *          MouseEvent
+//   * @return boolean
+//   */
+//  private static boolean button1(MouseEvent e) {
+//    return ((e.getModifiers() & MouseEvent.BUTTON1_MASK) == MouseEvent.BUTTON1_MASK);
+//  }
 
 //  /**
 //   * Get the JPanel containing the view
@@ -340,17 +337,17 @@ public class V implements Globals {
     }
   }
 
-  /**
-   * Transform a viewspace point to a logicspace point
-   * 
-   * @param view
-   *          FPoint2
-   * @param logic
-   *          FPoint2
-   */
-  static void viewToLogic(FPoint2 view, FPoint2 logic) {
-    viewToLogicTF.transform(view, logic);
-  }
+//  /**
+//   * Transform a viewspace point to a logicspace point
+//   * 
+//   * @param view
+//   *          FPoint2
+//   * @param logic
+//   *          FPoint2
+//   */
+//  static void viewToLogic(FPoint2 view, FPoint2 logic) {
+//    viewToLogicTF.transform(view, logic);
+//  }
 
   /**
    * Draw a string
@@ -378,15 +375,15 @@ public class V implements Globals {
   private V() {
   }
 
-  private static float calcStrokeWidth(double width) {
-    double d = width * screenScaleFactor * 1.8 / logPixelSize;
-    return (float) d;
-  }
-
-  private static void buildStroke(int index, double width) {
-    float f = calcStrokeWidth(width);
-    strokes[index] = new BasicStroke(f);
-  }
+//  private static float calcStrokeWidth(double width) {
+//    double d = width * screenScaleFactor * 1.8 / logPixelSize;
+//    return (float) d;
+//  }
+//
+//  private static void buildStroke(int index, double width) {
+//    float f = calcStrokeWidth(width);
+//    strokes[index] = new BasicStroke(f);
+//  }
 
   /**
    * Set stroke
@@ -398,29 +395,29 @@ public class V implements Globals {
     g.setStroke(strokes[s]);
   }
 
-  /**
-   * Modify internal variables to reflect current 'GLOBALSCALE' gadget value.
-   * Sets screenScaleFactor to be 240 * GLOBALSCALE / screen width.
-   */
-  private static void updateScaleFactor() {
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    screenScaleFactor = (240.0 * C.vi(TBGlobals.GLOBALSCALE)) / screenSize.width;
-  }
+//  /**
+//   * Modify internal variables to reflect current 'GLOBALSCALE' gadget value.
+//   * Sets screenScaleFactor to be 240 * GLOBALSCALE / screen width.
+//   */
+//  private static void updateScaleFactor() {
+//    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//    screenScaleFactor = (240.0 * C.vi(TBGlobals.GLOBALSCALE)) / screenSize.width;
+//  }
 
-  private static void recalcLogicalView(Graphics g) {
-    final boolean db = false;
-
-    double xs, ys;
-
-    Rectangle r = g.getClipBounds();
-    double n = Math.min(r.width, r.height);
-    xs = r.width / n;
-    ys = r.height / n;
-    if (db)
-      Streams.out.println("setLogicalView xs=" + Tools.f(xs) + " ys=" + Tools.f(ys));
-
-    setLogicalView(xs * 100, ys * 100);
-  }
+//  private static void recalcLogicalView(Graphics g) {
+//    final boolean db = false;
+//
+//    double xs, ys;
+//
+//    Rectangle r = g.getClipBounds();
+//    double n = Math.min(r.width, r.height);
+//    xs = r.width / n;
+//    ys = r.height / n;
+//    if (db)
+//      Streams.out.println("setLogicalView xs=" + Tools.f(xs) + " ys=" + Tools.f(ys));
+//
+//    setLogicalView(xs * 100, ys * 100);
+//  }
 
   /**
    * Save current scaling factor on stack, scale by some factor
@@ -447,9 +444,9 @@ public class V implements Globals {
     }
   }
 
-  private static double screenScaleFactor() {
-    return screenScaleFactor;
-  }
+//  private static double screenScaleFactor() {
+//    return screenScaleFactor;
+//  }
 
   private static double scale;
 
@@ -696,16 +693,16 @@ public class V implements Globals {
     g.draw(r);
   }
 
-  /**
-   * Set graphics context being updated by updateView() (should only be called
-   * by the viewPanel class)
-   * 
-   * @param gr
-   *          : graphics context
-   */
-  private static void vu_setGraphics(Graphics2D gr) {
-    g = gr;
-  }
+//  /**
+//   * Set graphics context being updated by updateView() (should only be called
+//   * by the viewPanel class)
+//   * 
+//   * @param gr
+//   *          : graphics context
+//   */
+//  private static void vu_setGraphics(Graphics2D gr) {
+//    g = gr;
+//  }
 
   /**
    * Draw a filled circle (disc)
@@ -990,8 +987,8 @@ public class V implements Globals {
   // table of BasicStroke objects for use by application
   private static BasicStroke[] strokes = new BasicStroke[STRK_TOTAL];
 
-  // the transform to convert from logic -> view coords
-  private static AffineTransform logicToViewTF = new AffineTransform(), viewToLogicTF = new AffineTransform();
+//  // the transform to convert from logic -> view coords
+//  private static AffineTransform logicToViewTF = new AffineTransform(), viewToLogicTF = new AffineTransform();
 
   // size, in viewspace, of a 1x1 rectangle in logicspace
   private static double logPixelSize;

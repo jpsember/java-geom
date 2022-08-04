@@ -5,6 +5,7 @@ import java.io.*;
 /**
  * Keeps track of file path, name, extension, and modified flags
  */
+@Deprecated
 public class FileStats {
 
   /**

@@ -9,8 +9,6 @@ import testbed.*;
 
 import static js.base.Tools.*;
 
-import java.util.*;
-
 public class SampleMain extends TestBed {
 
   private static final int TOGGLEDISCS = 4004;//!
@@ -110,47 +108,47 @@ public class SampleMain extends TestBed {
         }
       }
         break;
-      case MAKETANGENT:
-        makeTangent();
-        break;
+//      case MAKETANGENT:
+//        makeTangent();
+//        break;
       }
     }
   }
 
-  private static DArray getCandidate(final EdDisc c) {
-    // find best two candidates for supporting this disc
-    DArray can = new DArray(discs);
-    can.sort(new Comparator() {
-      public int compare(Object arg0, Object arg1) {
-        EdDisc c1 = (EdDisc) arg0, c2 = (EdDisc) arg1;
+//  private static DArray getCandidate(final EdDisc c) {
+//    // find best two candidates for supporting this disc
+//    DArray can = new DArray(discs);
+//    can.sort(new Comparator() {
+//      public int compare(Object arg0, Object arg1) {
+//        EdDisc c1 = (EdDisc) arg0, c2 = (EdDisc) arg1;
+//
+//        double d1 = DiscUtil.itan(c, c1) ? DiscUtil.itanDist(c, c1) : DiscUtil.otanDist(c, c1);
+//        double d2 = DiscUtil.itan(c, c2) ? DiscUtil.itanDist(c, c2) : DiscUtil.otanDist(c, c2);
+//
+//        return (int) Math.signum(d1 - d2);
+//      }
+//    });
+//    return can;
+//  }
 
-        double d1 = DiscUtil.itan(c, c1) ? DiscUtil.itanDist(c, c1) : DiscUtil.otanDist(c, c1);
-        double d2 = DiscUtil.itan(c, c2) ? DiscUtil.itanDist(c, c2) : DiscUtil.otanDist(c, c2);
-
-        return (int) Math.signum(d1 - d2);
-      }
-    });
-    return can;
-  }
-
-  /**
-   * Make highlighted inactive discs tangent to best-fit candidate
-   */
-  private void makeTangent() {
-    DArray a = Editor.editObjects(EdDisc.FACTORY, true, false);
-    for (int k = 0; k < a.size(); k++) {
-      EdDisc c = (EdDisc) a.get(k);
-
-      // find best two candidates for supporting this disc
-      DArray can = getCandidate(c);
-      if (can.size() < 1)
-        continue;
-
-      EdDisc ca = (EdDisc) can.get(0);
-      boolean ia = DiscUtil.itan(c, ca);
-      c.setRadius(FPoint2.distance(c.getOrigin(), ca.getOrigin()) + (ia ? ca.getRadius() : -ca.getRadius()));
-    }
-  }
+//  /**
+//   * Make highlighted inactive discs tangent to best-fit candidate
+//   */
+//  private void makeTangent() {
+//    DArray a = Editor.editObjects(EdDisc.FACTORY, true, false);
+//    for (int k = 0; k < a.size(); k++) {
+//      EdDisc c = (EdDisc) a.get(k);
+//
+//      // find best two candidates for supporting this disc
+//      DArray can = getCandidate(c);
+//      if (can.size() < 1)
+//        continue;
+//
+//      EdDisc ca = (EdDisc) can.get(0);
+//      boolean ia = DiscUtil.itan(c, ca);
+//      c.setRadius(FPoint2.distance(c.getOrigin(), ca.getOrigin()) + (ia ? ca.getRadius() : -ca.getRadius()));
+//    }
+//  }
 
   public void setParameters() {
     parms.appTitle = "Possible 1-Centers";
@@ -180,23 +178,23 @@ public class SampleMain extends TestBed {
     return polygons;
   }
 
-  public static void perturbDiscs() {
-    Matrix m = new Matrix(3);
-    m.setIdentity();
-
-    //      Matrix.identity(3, null);
-    m.translate(-50, -50);
-    m.rotate(MyMath.radians(1));
-    m.translate(50, 50);
-
-    for (Iterator it = Editor.editObjects(EdDisc.FACTORY, false, false).iterator(); it.hasNext();) {
-      EdDisc ed = (EdDisc) it.next();
-      FPoint2 loc = ed.getOrigin();
-      loc = m.apply(loc, null);
-      ed.setPoint(0, loc);
-    }
-    Editor.unselectAll();
-  }
+//  public static void perturbDiscs() {
+//    Matrix m = new Matrix(3);
+//    m.setIdentity();
+//
+//    //      Matrix.identity(3, null);
+//    m.translate(-50, -50);
+//    m.rotate(MyMath.radians(1));
+//    m.translate(50, 50);
+//
+//    for (Iterator it = Editor.editObjects(EdDisc.FACTORY, false, false).iterator(); it.hasNext();) {
+//      EdDisc ed = (EdDisc) it.next();
+//      FPoint2 loc = ed.getOrigin();
+//      loc = m.apply(loc, null);
+//      ed.setPoint(0, loc);
+//    }
+//    Editor.unselectAll();
+//  }
 
   public static EdDisc[] getDiscs2() {
     getDiscs();

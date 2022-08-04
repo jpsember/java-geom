@@ -32,12 +32,12 @@ public abstract class TestBed extends GeomApp {
     }
   }
 
-  private static void resetFocus() {
-    todo("requestFocus?  Or just avoid text input?");
-    //    boolean f = TestBed.getAppContainer().requestFocusInWindow();
-    //    Streams.out.println("req foc in TestBed app cont=" + f);
-    //    C.menuPanel().requestFocusInWindow();
-  }
+//  private static void resetFocus() {
+//    todo("requestFocus?  Or just avoid text input?");
+//    //    boolean f = TestBed.getAppContainer().requestFocusInWindow();
+//    //    Streams.out.println("req foc in TestBed app cont=" + f);
+//    //    C.menuPanel().requestFocusInWindow();
+//  }
 
   
   // I think this method is unnecessary now that we have Commands and UserOperations...?
@@ -172,21 +172,21 @@ public abstract class TestBed extends GeomApp {
   public void processAction(TBAction a) {
   }
 
-  /**
-   * Perform enable/disable of a menu's items in preparation for it being shown.
-   * 
-   * @param menu
-   *          : menu containing item
-   * @param item
-   *          : the item to enable/disable
-   * @return new enabled state of item
-   */
-  protected boolean processMenuEnable(int menu, int item) {
-    boolean ret = true;
-    if (Editor.initialized())
-      ret = Editor.processMenuEnable(menu, item);
-    return ret;
-  }
+//  /**
+//   * Perform enable/disable of a menu's items in preparation for it being shown.
+//   * 
+//   * @param menu
+//   *          : menu containing item
+//   * @param item
+//   *          : the item to enable/disable
+//   * @return new enabled state of item
+//   */
+//  protected boolean processMenuEnable(int menu, int item) {
+//    boolean ret = true;
+//    if (Editor.initialized())
+//      ret = Editor.processMenuEnable(menu, item);
+//    return ret;
+//  }
 
   private String configFile;
 
@@ -255,7 +255,7 @@ public abstract class TestBed extends GeomApp {
     }
     try {
       String s = Streams.readTextFile(getConfigFile());
-      oldConfigFile = s;
+//      oldConfigFile = s;
       if (db) {
         System.out.println(" string=" + s);
       }
@@ -556,9 +556,9 @@ public abstract class TestBed extends GeomApp {
     {
 //      app = this;
       operList = new DArray();
-      workFile = null;
+//      workFile = null;
       Editor.menuAdded = false;
-      oldConfigFile = "";
+//      oldConfigFile = "";
 //      app = this;
 
       setParameters0();
@@ -626,12 +626,12 @@ public abstract class TestBed extends GeomApp {
     }
 
     V.initGrid();
-
-    if (parms.withEditor)
-      Editor.init2();
+//
+//    if (parms.withEditor)
+//      Editor.init2();
 
     programBegun = true;
-    workFile = new WorkFile();
+//    workFile = new WorkFile();
 
     initTestbed();
 
@@ -810,14 +810,14 @@ public abstract class TestBed extends GeomApp {
   //  //  filePath = f;
   //  }
 
-  static String getSpecialSavePath(String orig, String ext) {
-    String f = orig;
-    if (f == null || f.length() == 0)
-      f = fileStats.getPath();
-    if (f != null)
-      f = Path.changeExtension(f, ext);
-    return f;
-  }
+//  static String getSpecialSavePath(String orig, String ext) {
+//    String f = orig;
+//    if (f == null || f.length() == 0)
+//      f = fileStats.getPath();
+//    if (f != null)
+//      f = Path.changeExtension(f, ext);
+//    return f;
+//  }
 
   // true if beginProgram() has been called yet.  If not,
   // we consume any actions without reporting them to the program.
@@ -833,11 +833,11 @@ public abstract class TestBed extends GeomApp {
     return operList.size();
   }
 
-  public static void setFileStats(FileStats s) {
-    fileStats = s;
-  }
-
-  private static FileStats fileStats;
+//  public static void setFileStats(FileStats s) {
+//    fileStats = s;
+//  }
+//
+//  private static FileStats fileStats;
 
   private static void addOperCtrls() {
     if (nOpers() > 0) {
@@ -892,16 +892,16 @@ public abstract class TestBed extends GeomApp {
 
   // --------- These static members must be initialized by doInit() ----
   private static DArray operList;
-  private static WorkFile workFile;
+//  private static WorkFile workFile;
   //private static String filePath;
   // TestBed parameters
   public static TestBedParameters parms = new TestBedParameters();
   //  // desired bounds for application window
   //  private static Rectangle desiredApplicationBounds;
 
-  // cache for old configuration file contents, to determine if new one
-  // needs to be written when program exits
-  private static String oldConfigFile = "";
+//  // cache for old configuration file contents, to determine if new one
+//  // needs to be written when program exits
+//  private static String oldConfigFile = "";
   // singleton TestBed instance
 //  public static TestBed app;
 

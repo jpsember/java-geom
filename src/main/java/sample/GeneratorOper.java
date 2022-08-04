@@ -4,6 +4,8 @@ import java.util.*;
 import base.*;
 import testbed.*;
 
+import static js.base.Tools.*;
+
 public class GeneratorOper implements TestBedOperation, Globals {
   /*! .enum  .private 1600
   seed count minrad maxrad _ _ position _  
@@ -241,7 +243,8 @@ public class GeneratorOper implements TestBedOperation, Globals {
           break;
         }
       }
-      Editor.replaceAllObjects(items);
+      todo("replaceObjects disabled");
+//      Editor.replaceAllObjects(items);
     }
 
   }

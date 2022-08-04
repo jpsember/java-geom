@@ -2,6 +2,8 @@ package testbed;
 
 import base.*;
 import java.awt.event.*;
+import static js.base.Tools.*;
+
 
 public class TBAction {
 
@@ -97,7 +99,8 @@ public class TBAction {
       this.mouse = evt;
       vLoc = new FPoint2(evt.getX(), evt.getY());
       loc = new FPoint2();
-      V.viewToLogic(vLoc, loc);
+      todo("viewToLogic no longer supported");
+//      V.viewToLogic(vLoc, loc);
     }
   }
 
