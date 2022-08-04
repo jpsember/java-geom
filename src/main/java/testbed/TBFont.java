@@ -2,6 +2,7 @@ package testbed;
 
 import java.awt.*;
 import base.*;
+import static js.base.Tools.*;
 
   class TBFont implements IEditorScript {
 
@@ -89,11 +90,19 @@ public static Font fixedWidthFont() {
 
   public TBFont(  String name, int style, int size) {
     font = new Font(name, style, size);
-    fontMetrics = V.getPanel().getGraphics().getFontMetrics(font);
+    
+ //   new FontMetrics(Font.getFont("Courier"));
+    
     fontCharWidth = fontMetrics.charWidth(' ');
   }
 
   public FontMetrics metrics() {
+    if (fontMetrics == null) {
+      die("font metrics");
+//      fontMetrics = V.getPanel().getGraphics().getFontMetrics(font);
+
+    }
+    
     return fontMetrics;
   }
 

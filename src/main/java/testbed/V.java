@@ -26,240 +26,240 @@ public class V implements Globals {
     return ((e.getModifiers() & MouseEvent.BUTTON1_MASK) == MouseEvent.BUTTON1_MASK);
   }
 
-  /**
-   * Get the JPanel containing the view
-   * 
-   * @return JPanel
-   */
-  static JPanel getPanel() {
-    return panel;
-  }
+//  /**
+//   * Get the JPanel containing the view
+//   * 
+//   * @return JPanel
+//   */
+//  static JPanel getPanel() {
+//    return panel;
+//  }
 
   static Color getBackgroundColor() {
     return new Color(C.vi(TBGlobals.sFILLCOLOR));
   }
 
-  private static class ourPanel extends JPanel {
+//  private static class ourPanel extends JPanel {
+//
+//    /**
+//     * Paint the view
+//     * 
+//     * @param g
+//     *          Graphics
+//     */
+//    public void paintComponent(Graphics g) {
+//
+//      final boolean db = false;
+//      if (db)
+//        Streams.out.println("vp.paintComponent");
+//
+//      updateScaleFactor();
+//
+//      recalcLogicalView(g);
+//
+//      FPoint2 logSize = logicalSize();
+//      int screenWidth = getWidth();
+//      int screenHeight = getHeight();
+//      int screenOffsetX = 0;
+//      int screenOffsetY = 0;
+//
+//      if (C.vb(TBGlobals.ENFORCE_ASP)) {
+//        double aspRatio = C.vd(TBGlobals.ASPECTRATIO);
+//        double logWidth = 100.0 * aspRatio;
+//        double logHeight = 100.0;
+//
+//        if (aspRatio > screenWidth / (double) screenHeight) {
+//          int q = (int) (screenWidth / aspRatio);
+//          screenOffsetY = (screenHeight - q) / 2;
+//
+//          screenHeight = q;
+//        } else {
+//          int q = (int) (screenHeight * aspRatio);
+//          screenOffsetX = (screenWidth - q) / 2;
+//          screenWidth = q;
+//        }
+//        logSize = new FPoint2(logWidth, logHeight);
+//      }
+//      FPoint2 depscr0 = new FPoint2(screenOffsetX, screenOffsetY);
+//      FPoint2 depscr1 = new FPoint2(screenWidth + screenOffsetX, screenHeight + screenOffsetY);
+//
+//      if (TestBed.parms.includeGrid)
+//        grid.setSize(C.vi(TBGlobals.GRIDSIZE), logSize);
+//
+//      TBFont.prepare();
+//
+//      Graphics2D g2 = null;
+//
+//      boolean aliasing = true;
+//      g2 = (Graphics2D) g;
+//
+//      g2.addRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING,
+//          aliasing ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF));
+//
+//      // save current drawing context
+//      vu_setGraphics(g2);
+//
+////      V.setFont(FNT_MEDIUM);
+//
+//      // determine
+//      // (1) translation vector
+//      // so 0,0 is at center of logical view
+//      // (2) scale factor (also y is flipped)
+//      // (3) translation vector
+//      // so 0,0 is at center of physical view
+//      //
+//
+//      // center logical view within physical with fixed # pixels
+//      // padding around border
+//
+//      // compensate for aspect ratio, to extend
+//      // in the dimension that isn't critical
+//
+//      double sfx = Math.min((depscr1.x - depscr0.x) / logSize.x, (depscr1.y - depscr0.y) / logSize.y);
+//
+//      double sfy = -sfx;
+//
+//      logPixelSize = sfx;
+//
+//      {
+//        // negate the y scale factor to change the orientation of the y axis (we
+//        // want it to point up)
+//        logicToViewTF.setToIdentity();
+//        // translation so 0,0 is at center of physical
+//        logicToViewTF.translate((depscr0.x + depscr1.x) * .5, (depscr0.y + depscr1.y) * .5);
+//        logicToViewTF.scale(sfx, sfy);
+//        // translation so 0,0 is at center of logical coords
+//        logicToViewTF.translate(-logSize.x * .5, -logSize.y * .5);
+//      }
+//
+//      // calculate inverse
+//      AffineTransform inv = null;
+//      try {
+//        inv = logicToViewTF.createInverse();
+//      } catch (NoninvertibleTransformException e) {
+//        throw new FPError(e.toString());
+//      }
+//
+//      viewToLogicTF.setTransform(inv);
+//
+//      Color bgColor = getBackgroundColor(); //new Color(C.vi(TBGlobals.sFILLCOLOR));
+//
+//      if (C.vb(TBGlobals.ENFORCE_ASP)) {
+//        pushColor(Color.gray);
+//        fillRect(new FRect(g2.getClipBounds()));
+//        popColor();
+//      }
+//
+//      // set transform so 0,0 is top left of plottable region of view, 
+//      // but with no scaling
+//      AffineTransform origTrans = g2.getTransform();
+//      g2.translate(depscr0.x, depscr0.y);
+//      g2.setTransform(origTrans);
+//      g2.transform(logicToViewTF);
+//
+//      {
+//        // calculate desired clipping bounds, in view space.
+//        // this is what the PDF, EPS, IPE graphics will be clipped to.
+//        FPoint2 c0 = new FPoint2(), c1 = new FPoint2();
+//        logicToViewTF.transform(new FPoint2(0, 0), c0);
+//
+//        logicToViewTF.transform(logSize, c1);
+//      }
+//
+//      pushColor(bgColor);
+//      fillRect(0, 0, logSize.x, logSize.y);
+//      popColor();
+//      {
+//
+//        // construct strokes so we have uniform thickness despite scaling
+//        buildStroke(STRK_NORMAL, 1.0);
+//        buildStroke(STRK_THICK, 2.0);
+//        buildStroke(STRK_THIN, .4);
+//        buildStroke(STRK_VERYTHICK, 3.0);
+//        {
+//          float[] dash = new float[2];
+//          double sc = calcStrokeWidth(8);
+//          dash[0] = (float) (sc);
+//          dash[1] = (float) (sc * .5);
+//
+//          BasicStroke s = new BasicStroke(calcStrokeWidth(.4), BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND,
+//              1.0f, dash, 0);
+//          strokes[STRK_RUBBERBAND] = s;
+//        }
+//        scale = screenScaleFactor() / logicalPixelSize();
+//
+//        g2.setStroke(strokes[STRK_NORMAL]);
+//        g2.setPaint(Color.BLACK);
+//        V.setFont(FNT_MEDIUM);
+//
+//        if (TestBed.parms.includeGrid) {
+//          if (C.vb(TBGlobals.GRIDON))
+//            grid.render(C.vb(TBGlobals.GRIDLABELS));
+//        }
+//
+//        Editor.preparePaint();
+//        TestBed.app.paintView();
+//      }
+//
+//      // ----------------------------------------------
+//      // restore drawing context
+//      if (db)
+//        Streams.out.println(" vp, restoring original transform");
+//
+//      g2.setTransform(origTrans);
+//      g2.translate(depscr0.x, depscr0.y);
+//
+//      vu_setGraphics(null);
+//      // ----------------------------------------------
+//    }
+//
+//    public ourPanel() {
+//
+//      setDoubleBuffered(true);
+//      setOpaque(true);
+//
+//      Border loweredbevel = BorderFactory.createLoweredBevelBorder();
+//      setBorder(loweredbevel);
+//
+//      setBackground(Color.white);
+//      setForeground(Color.black);
+//
+//      addMouseListener(new MouseListener() {
+//        public void mouseEntered(MouseEvent e) {
+//        }
+//
+//        public void mouseExited(MouseEvent e) {
+//        }
+//
+//        public void mouseClicked(MouseEvent e) {
+//        }
+//
+//        public void mousePressed(MouseEvent e) {
+//          TestBed.procAction(new TBAction(!button1(e) ? TBAction.DOWN2 : TBAction.DOWN1, e));
+//        }
+//
+//        public void mouseReleased(MouseEvent e) {
+//          TestBed.procAction(new TBAction(!button1(e) ? TBAction.UP2 : TBAction.UP1, e));
+//        }
+//
+//      });
+//      addMouseMotionListener(new MouseMotionListener() {
+//        public void mouseMoved(MouseEvent e) {
+//          TestBed.procAction(new TBAction(TBAction.HOVER, e));
+//        }
+//
+//        public void mouseDragged(MouseEvent e) {
+//          TestBed.procAction(new TBAction(TBAction.DRAG, e));
+//        }
+//      });
+//    }
+//  }
 
-    /**
-     * Paint the view
-     * 
-     * @param g
-     *          Graphics
-     */
-    public void paintComponent(Graphics g) {
-
-      final boolean db = false;
-      if (db)
-        Streams.out.println("vp.paintComponent");
-
-      updateScaleFactor();
-
-      recalcLogicalView(g);
-
-      FPoint2 logSize = logicalSize();
-      int screenWidth = getWidth();
-      int screenHeight = getHeight();
-      int screenOffsetX = 0;
-      int screenOffsetY = 0;
-
-      if (C.vb(TBGlobals.ENFORCE_ASP)) {
-        double aspRatio = C.vd(TBGlobals.ASPECTRATIO);
-        double logWidth = 100.0 * aspRatio;
-        double logHeight = 100.0;
-
-        if (aspRatio > screenWidth / (double) screenHeight) {
-          int q = (int) (screenWidth / aspRatio);
-          screenOffsetY = (screenHeight - q) / 2;
-
-          screenHeight = q;
-        } else {
-          int q = (int) (screenHeight * aspRatio);
-          screenOffsetX = (screenWidth - q) / 2;
-          screenWidth = q;
-        }
-        logSize = new FPoint2(logWidth, logHeight);
-      }
-      FPoint2 depscr0 = new FPoint2(screenOffsetX, screenOffsetY);
-      FPoint2 depscr1 = new FPoint2(screenWidth + screenOffsetX, screenHeight + screenOffsetY);
-
-      if (TestBed.parms.includeGrid)
-        grid.setSize(C.vi(TBGlobals.GRIDSIZE), logSize);
-
-      TBFont.prepare();
-
-      Graphics2D g2 = null;
-
-      boolean aliasing = true;
-      g2 = (Graphics2D) g;
-
-      g2.addRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING,
-          aliasing ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF));
-
-      // save current drawing context
-      vu_setGraphics(g2);
-
-      V.setFont(FNT_MEDIUM);
-
-      // determine
-      // (1) translation vector
-      // so 0,0 is at center of logical view
-      // (2) scale factor (also y is flipped)
-      // (3) translation vector
-      // so 0,0 is at center of physical view
-      //
-
-      // center logical view within physical with fixed # pixels
-      // padding around border
-
-      // compensate for aspect ratio, to extend
-      // in the dimension that isn't critical
-
-      double sfx = Math.min((depscr1.x - depscr0.x) / logSize.x, (depscr1.y - depscr0.y) / logSize.y);
-
-      double sfy = -sfx;
-
-      logPixelSize = sfx;
-
-      {
-        // negate the y scale factor to change the orientation of the y axis (we
-        // want it to point up)
-        logicToViewTF.setToIdentity();
-        // translation so 0,0 is at center of physical
-        logicToViewTF.translate((depscr0.x + depscr1.x) * .5, (depscr0.y + depscr1.y) * .5);
-        logicToViewTF.scale(sfx, sfy);
-        // translation so 0,0 is at center of logical coords
-        logicToViewTF.translate(-logSize.x * .5, -logSize.y * .5);
-      }
-
-      // calculate inverse
-      AffineTransform inv = null;
-      try {
-        inv = logicToViewTF.createInverse();
-      } catch (NoninvertibleTransformException e) {
-        throw new FPError(e.toString());
-      }
-
-      viewToLogicTF.setTransform(inv);
-
-      Color bgColor = getBackgroundColor(); //new Color(C.vi(TBGlobals.sFILLCOLOR));
-
-      if (C.vb(TBGlobals.ENFORCE_ASP)) {
-        pushColor(Color.gray);
-        fillRect(new FRect(g2.getClipBounds()));
-        popColor();
-      }
-
-      // set transform so 0,0 is top left of plottable region of view, 
-      // but with no scaling
-      AffineTransform origTrans = g2.getTransform();
-      g2.translate(depscr0.x, depscr0.y);
-      g2.setTransform(origTrans);
-      g2.transform(logicToViewTF);
-
-      {
-        // calculate desired clipping bounds, in view space.
-        // this is what the PDF, EPS, IPE graphics will be clipped to.
-        FPoint2 c0 = new FPoint2(), c1 = new FPoint2();
-        logicToViewTF.transform(new FPoint2(0, 0), c0);
-
-        logicToViewTF.transform(logSize, c1);
-      }
-
-      pushColor(bgColor);
-      fillRect(0, 0, logSize.x, logSize.y);
-      popColor();
-      {
-
-        // construct strokes so we have uniform thickness despite scaling
-        buildStroke(STRK_NORMAL, 1.0);
-        buildStroke(STRK_THICK, 2.0);
-        buildStroke(STRK_THIN, .4);
-        buildStroke(STRK_VERYTHICK, 3.0);
-        {
-          float[] dash = new float[2];
-          double sc = calcStrokeWidth(8);
-          dash[0] = (float) (sc);
-          dash[1] = (float) (sc * .5);
-
-          BasicStroke s = new BasicStroke(calcStrokeWidth(.4), BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND,
-              1.0f, dash, 0);
-          strokes[STRK_RUBBERBAND] = s;
-        }
-        scale = screenScaleFactor() / logicalPixelSize();
-
-        g2.setStroke(strokes[STRK_NORMAL]);
-        g2.setPaint(Color.BLACK);
-        V.setFont(FNT_MEDIUM);
-
-        if (TestBed.parms.includeGrid) {
-          if (C.vb(TBGlobals.GRIDON))
-            grid.render(C.vb(TBGlobals.GRIDLABELS));
-        }
-
-        Editor.preparePaint();
-        TestBed.app.paintView();
-      }
-
-      // ----------------------------------------------
-      // restore drawing context
-      if (db)
-        Streams.out.println(" vp, restoring original transform");
-
-      g2.setTransform(origTrans);
-      g2.translate(depscr0.x, depscr0.y);
-
-      vu_setGraphics(null);
-      // ----------------------------------------------
-    }
-
-    public ourPanel() {
-
-      setDoubleBuffered(true);
-      setOpaque(true);
-
-      Border loweredbevel = BorderFactory.createLoweredBevelBorder();
-      setBorder(loweredbevel);
-
-      setBackground(Color.white);
-      setForeground(Color.black);
-
-      addMouseListener(new MouseListener() {
-        public void mouseEntered(MouseEvent e) {
-        }
-
-        public void mouseExited(MouseEvent e) {
-        }
-
-        public void mouseClicked(MouseEvent e) {
-        }
-
-        public void mousePressed(MouseEvent e) {
-          TestBed.procAction(new TBAction(!button1(e) ? TBAction.DOWN2 : TBAction.DOWN1, e));
-        }
-
-        public void mouseReleased(MouseEvent e) {
-          TestBed.procAction(new TBAction(!button1(e) ? TBAction.UP2 : TBAction.UP1, e));
-        }
-
-      });
-      addMouseMotionListener(new MouseMotionListener() {
-        public void mouseMoved(MouseEvent e) {
-          TestBed.procAction(new TBAction(TBAction.HOVER, e));
-        }
-
-        public void mouseDragged(MouseEvent e) {
-          TestBed.procAction(new TBAction(TBAction.DRAG, e));
-        }
-      });
-    }
-  }
-
-  private static ourPanel panel;
+ // private static ourPanel panel;
 
   static void init() {
     setLogicalView(100, 100);
-    panel = new ourPanel();
+  //  panel = new ourPanel();
   }
 
   /**
@@ -528,7 +528,7 @@ public class V implements Globals {
    */
   public static void draw(String str, double x, double y, int flags) {
 
-    TBFont f = TBFont.get(activeFont);
+   TBFont f = TBFont.get(activeFont);
 
     DArray strings = new DArray();
 
@@ -1028,22 +1028,22 @@ public class V implements Globals {
   //    return physicalSize;
   //  }
 
-  /**
-   * Cause view to be repainted
-   */
-  public static void repaint() {
-    repaint(0);
-  }
+//  /**
+//   * Cause view to be repainted
+//   */
+//  public static void repaint() {
+//    repaint(0);
+//  }
 
-  /**
-   * Cause view to be repainted after a delay
-   * 
-   * @param tm
-   *          number of milliseconds
-   */
-  public static void repaint(long tm) {
-    panel.repaint(tm);
-  }
+//  /**
+//   * Cause view to be repainted after a delay
+//   * 
+//   * @param tm
+//   *          number of milliseconds
+//   */
+//  public static void repaint(long tm) {
+//    panel.repaint(tm);
+//  }
 
   /**
    * Set grid

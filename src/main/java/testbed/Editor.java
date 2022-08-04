@@ -385,499 +385,499 @@ public class Editor implements Globals, IEditorScript {
 
   private static final boolean NEWEDIT = true;
 
-  /**
-   * Process a testbed action
-   * 
-   * @param a
-   *          : action
-   */
-  static void processAction(TBAction a) {
-    final boolean db = dba;
-
-    if (db) {
-      if (a.code != TBAction.HOVER && a.code != TBAction.DRAG)
-        Streams.out.println(
-            "editState=" + Tools.f(editState) + " " + a + " editObj=" + editObj + " editField=" + editField);
-    }
-
-    switch (a.code) {
-    case TBAction.DOWN2:
-      switch (editState) {
-      case ES_INSERTINGPT:
-        editObj.deletePoint(editField);
-        stopEdit();
-        break;
-      case ES_EDITINGPT:
-        editObj.deletePoint(editField);
-        stopEdit();
-        break;
-      case ES_EDITWAIT:
-        stopEdit();
-        break;
-      }
-      break;
-
-    case TBAction.DOWN1: {
-      lastMouseDown = new FPoint2(a.loc);
-      switch (editState) {
-      case ES_ROTWAIT:
-        if (editBox.contains(a.loc)) {
-
-          rotStartPt = lastMouseDown;
-          rotThetaOrig = rotThetaNow;
-          setState(ES_ROTATING);
-        } else {
-          setState(ES_READY);
-        }
-        break;
-      case ES_SCALEWAIT: {
-        rotStartPt = lastMouseDown;
-        scaleUniformly = a.altPressed();
-
-        setState(ES_SCALING);
-        editBoxOrig = new FRect(editBox);
-      }
-        break;
-
-      case ES_READY: {
-        int i = findObjAt(a.loc);
-        if (i < 0) {
-          resetDupOffset();
-          if (!a.ctrlPressed())
-            unselectAll();
-          otherBoxCorner = new FPoint2(lastMouseDown);
-          setState(ES_BOX);
-          break;
-        }
-
-        EdObject obj = obj(i);
-        if (db)
-          Streams.out.println("ES_READY, mouse down on object " + obj);
-
-        if (a.ctrlPressed()) {
-          resetDupOffset();
-          obj.setSelected(!obj.isSelected());
-          break;
-        }
-        int particularPt = -1;
-        boolean wasSelected = obj.isSelected();
-        if (!wasSelected) {
-          resetDupOffset();
-          unselectAll();
-          obj.setSelected(true);
-        } else {
-
-          if (!a.altPressed()) {
-            // determine if we have selected a particular point of an object;
-            // if so, move just that point
-            int j = 0;
-            double nearestDist = 0;
-
-            double maxDist = nearPointDist();
-
-            for (;; j++) {
-              double dist = obj.distFrom(j, a.loc);
-              if (dist < 0)
-                break;
-              if (dist > maxDist)
-                continue;
-              if (particularPt < 0 || nearestDist < dist) {
-                nearestDist = dist;
-                particularPt = j;
-              }
-            }
-          }
-        }
-        if (dp)
-          Streams.out.println("clearing dpoffset to null in DOWN/READY");
-        adjustPositionOffset = null;
-        if (particularPt >= 0) {
-          if (db)
-            Streams.out.println(" chose particular point " + particularPt + ", setting ES_EDITINGPT");
-
-          resetDupOffset();
-          editField = particularPt;
-
-          // determine difference between mouse location and 
-          // point's location, so when we drag it it doesn't jump.
-          adjustPositionOffset = FPoint2.difference(a.loc, obj.getPoint(particularPt), null);
-          if (dp)
-            Streams.out.println(" dpoffset set to a.loc=" + a.loc + " - pt=" + obj.getPoint(particularPt)
-                + " = " + adjustPositionOffset);
-
-          setEditObject(i);
-          setState(ES_EDITINGPT);
-
-          if (true) {
-            Undoable oper = new ChangeItemsOper(null, true, false);
-            perform(oper);
-            touch();
-          }
-
-        } else {
-          setState(ES_STARTMOVING);
-          if (db)
-            Streams.out.println(" setting ES_STARTMOVING");
-          pendingUndo = new ChangeItemsOper(null, true, false);
-        }
-      }
-        break;
-
-      case ES_EDITINGPT:
-      case ES_INSERTINGPT:
-        resetDupOffset();
-        if (db)
-          Streams.out.println(" INSERTINGPT, setting point editField=" + editField + " to " + a.loc);
-        editObj.setPoint(editField, a.loc, true, a);
-        touch();
-        break;
-      }
-
-    }
-      break;
-
-    case TBAction.UP1: {
-      switch (editState) {
-      case ES_ROTATING:
-      case ES_SCALING:
-        setState(ES_READY);
-        break;
-
-      case ES_BOX: {
-        FRect r = new FRect(lastMouseDown, otherBoxCorner);
-
-        if (r.width == 0 && r.height == 0) {
-          // he didn't move the mouse away from the original point
-          // find object at this point, and toggle its selection state
-          int i = findObjAt(r.start());
-          if (i >= 0) {
-            EdObject obj = obj(i);
-            obj.setSelected(!obj.isSelected());
-          }
-        } else {
-          for (int i = 0; i < items.size(); i++) {
-            EdObject obj = items.obj(i);
-            if (obj.isSelected())
-              continue;
-            if (r.contains(obj.getBounds())) {
-              obj.setSelected(true);
-            }
-          }
-        }
-        setState(ES_READY);
-      }
-        break;
-
-      case ES_INSERTINGPT:
-      case ES_EDITINGPT:
-        touch();
-
-        if (NEWEDIT) {
-          mouseUpLoc = a.loc;
-          procDrift(a);
-        } else {
-          // get next point to insert
-          int efNew = editObj.getNextPointToInsert(a, editField, null);
-          // if we're done all the points, stop editing this object
-          if (efNew < 0) {
-            setState(ES_READY);
-          } else {
-            editField = efNew;
-            setState(ES_INSERTINGPT);
-          }
-        }
-        break;
-
-      case ES_MOVING:
-        adjustDupOffset(FPoint2.difference(a.loc, lastMouseDown, null));
-        setState(ES_READY);
-        break;
-      case ES_STARTMOVING:
-        setState(ES_READY);
-        break;
-      }
-    }
-      break;
-
-    case TBAction.HOVER: {
-      updateCoordDisplay(a.loc);
-      switch (editState) {
-      default:
-        a.code = 0;
-        break;
-      case ES_INSERTINGPT:
-      case ES_EDITINGPT:
-        touch();
-        editObj.setPoint(editField, a.loc, true, a);
-        break;
-      case ES_EDITWAIT:
-        procDrift(a);
-        break;
-      }
-    }
-      break;
-
-    case TBAction.DRAG: {
-      updateCoordDisplay(a.loc);
-      switch (editState) {
-      default:
-        a.code = 0;
-        break;
-      case ES_SCALING: {
-        if (pendingUndo != null) {
-          perform(pendingUndo);
-          touch();
-          pendingUndo = null;
-        }
-        FPoint2 rotOrigin = editBoxOrig.midPoint();
-        FPoint2 origDiff = FPoint2.difference(rotStartPt, rotOrigin, null);
-        double origDist = origDiff.length();
-        if (origDist == 0)
-          break;
-        //            double origDist = origDiff.length();
-        //            if (origDist == 0)
-        //              break;
-
-        FPoint2 newDiff = FPoint2.difference(a.loc, rotOrigin, null);
-        if (Math.signum(origDiff.x) != Math.signum(newDiff.x))
-          newDiff.x = 0;
-        if (Math.signum(origDiff.y) != Math.signum(newDiff.y))
-          newDiff.y = 0;
-        double newDist = newDiff.length();
-        if (newDist == 0)
-          break;
-
-        double sclx = 1.0;
-        double scly = 1.0;
-        if (scaleUniformly) {
-          if (origDist > 0 && newDist > 0)
-            sclx = scly = newDist / origDist;
-        } else {
-          if (origDiff.x != 0)
-            sclx = newDiff.x / origDiff.x;
-          if (origDiff.y != 0)
-            scly = newDiff.y / origDiff.y;
-        }
-
-        //            double scl = newDist / origDist;
-        {
-          ObjArray origItems = lastUndoItems();
-          DArray origItemSlots = lastUndoItemSlots();
-
-          for (int i = 0; i < origItemSlots.size(); i++) {
-            EdObject obj = items.obj(origItemSlots.getInt(i));
-            EdObject origObj = origItems.obj(i);
-
-            for (int j = 0; j < obj.nPoints(); j++) {
-              FPoint2 pt = origObj.getPoint(j);
-              obj.setTransformedPoint(j, new FPoint2(rotOrigin.x + (pt.x - rotOrigin.x) * sclx,
-                  rotOrigin.y + (pt.y - rotOrigin.y) * scly));
-            }
-          }
-        }
-        double sw = editBoxOrig.width * .5 * sclx;
-        double sh = editBoxOrig.height * .5 * scly;
-        editBox = new FRect(rotOrigin.x - sw, rotOrigin.y - sh, sw * 2, sh * 2);
-      }
-        break;
-
-      case ES_ROTATING: {
-        if (pendingUndo != null) {
-          perform(pendingUndo);
-          touch();
-          pendingUndo = null;
-        }
-        FPoint2 rotOrigin = editBox.midPoint();
-        double theta0 = MyMath.polarAngle(rotOrigin, rotStartPt);
-        double theta1 = MyMath.polarAngle(rotOrigin, a.loc);
-        double thAdd = MyMath.normalizeAngle(theta1 - theta0);
-        rotThetaNow = rotThetaOrig + thAdd;
-
-        {
-          ObjArray origItems = lastUndoItems();
-          DArray origItemSlots = lastUndoItemSlots();
-
-          for (int i = 0; i < origItemSlots.size(); i++) {
-            EdObject obj = items.obj(origItemSlots.getInt(i));
-            EdObject origObj = origItems.obj(i);
-
-            for (int j = 0; j < obj.nPoints(); j++) {
-              FPoint2 pt = origObj.getPoint(j);
-              double theta = MyMath.polarAngle(rotOrigin, pt);
-              //  public void setTransformedPoint(int ptIndex, FPoint2 point) {
-              double radius = FPoint2.distance(pt, rotOrigin);
-              obj.setTransformedPoint(j, MyMath.ptOnCircle(rotOrigin, theta + rotThetaNow, radius));
-            }
-          }
-        }
-      }
-        break;
-      case ES_INSERTINGPT:
-      case ES_EDITINGPT:
-        touch(); {
-        FPoint2 adj = a.loc;
-        if (adjustPositionOffset != null)
-          adj = new FPoint2(a.loc.x - adjustPositionOffset.x, a.loc.y - adjustPositionOffset.y);
-        if (dp)
-          Streams.out.println("setting pt " + editField + " to a=" + a.loc + " minus dp="
-              + adjustPositionOffset + " = " + adj);
-        editObj.setPoint(editField, adj, true, a);
-      }
-        break;
-
-      case ES_MOVING:
-      case ES_STARTMOVING: {
-        FPoint2 delta = FPoint2.difference(a.loc, lastMouseDown, null);
-        if (pendingUndo != null) {
-          setState(ES_MOVING);
-          perform(pendingUndo);
-          pendingUndo = null;
-          touch();
-        }
-        ObjArray origItems = lastUndoItems();
-        DArray origItemSlots = lastUndoItemSlots();
-        for (int i = 0; i < origItemSlots.size(); i++) {
-          EdObject obj = items.obj(origItemSlots.getInt(i));
-          EdObject origObj = origItems.obj(i);
-          obj.moveBy(origObj, delta);
-        }
-      }
-        break;
-      case ES_BOX:
-        otherBoxCorner = new FPoint2(a.loc);
-        break;
-      }
-    }
-      break;
-
-    case TBAction.CTRLVALUE:
-      switch (a.ctrlId) {
-      case G_NEW:
-        selectAll();
-        perform(new CutOper());
-        clearUndo(true);
-        fileStats.setPath(null);
-        break;
-      case G_OPEN:
-        doOpen(null);
-        break;
-      case G_DELETEPT:
-        if (editState == ES_INSERTINGPT) {
-          editObj.deletePoint(editField);
-          stopEdit();
-        }
-        break;
-      case G_OPENNEXT:
-        doOpenNext();
-        break;
-      case G_SAVE:
-      case G_SAVEAS:
-      case G_SAVEASNEXT:
-        doSave(a.ctrlId);
-        break;
-      case G_REVERT: {
-        if (fileStats.getPath() != null) {
-          doOpen(fileStats.getPath());
-        }
-      }
-        break;
-      case G_ERRORSET: {
-        if (errorItems != null) {
-          restoreErrorSet();
-        }
-      }
-        break;
-      case G_UNDO:
-        if (canUndo()) {
-          unselectAll();
-          doUndo();
-        }
-        break;
-      case G_REDO:
-        if (canRedo()) {
-          unselectAll();
-          doRedo();
-          touch();
-        }
-        break;
-      case G_BACKWARD:
-      case G_FORWARD:
-      case G_BACK:
-      case G_FRONT:
-        doAdjustSlot(a.ctrlId);
-        break;
-      case G_CUT:
-        perform(new CutOper());
-        break;
-      case G_DUP:
-        perform(new DupOper());
-        break;
-      case G_TOGGLEACTIVE: {
-        DArray m = editObjects(null, true, false);
-        for (int i = 0; i < m.size(); i++) {
-          EdObject e = (EdObject) m.get(i);
-          e.setActive(!e.isActive());
-        }
-      }
-        break;
-      case G_COPY:
-        perform(new CopyOper());
-        break;
-      case G_PASTE:
-        perform(new PasteOper(true));
-        break;
-      case G_ALL:
-        for (int i = 0; i < items.size(); i++)
-          items.obj(i).setSelected(true);
-        break;
-      case G_NONE: {
-        switch (editState) {
-        default:
-          stopEdit();
-          break;
-        case ES_ROTWAIT:
-        case ES_ROTATING:
-          setState(ES_READY);
-          break;
-        }
-      }
-        break;
-      case G_SCALEUP:
-        scaleObjects(1.2);
-        break;
-      case G_SCALEDN:
-        scaleObjects(1 / 1.2);
-        break;
-      case G_ROTATE:
-        stopEdit();
-        startRotate();
-        break;
-      case G_SCALE:
-        stopEdit();
-        startScale();
-        break;
-      default:
-        if (a.ctrlId >= G_ADDANOTHER && a.ctrlId < G_ADDITEMS + nObjTypes()) {
-          int type = lastTypeAdded;
-          if (a.ctrlId != G_ADDANOTHER)
-            type = a.ctrlId - G_ADDITEMS;
-          if (type < 0)
-            break;
-          lastTypeAdded = type;
-          EdObjectFactory f = getType(type);
-          add(f.construct());
-          touch();
-          break;
-        }
-        break;
-      }
-      break;
-    }
-
-    if (displayedModified != fileStats.modified())
-      updateTitle();
-
-  }
+//  /**
+//   * Process a testbed action
+//   * 
+//   * @param a
+//   *          : action
+//   */
+//  private  void processAction(TBAction a) {
+//    final boolean db = dba;
+//
+//    if (db) {
+//      if (a.code != TBAction.HOVER && a.code != TBAction.DRAG)
+//        Streams.out.println(
+//            "editState=" + Tools.f(editState) + " " + a + " editObj=" + editObj + " editField=" + editField);
+//    }
+//
+//    switch (a.code) {
+//    case TBAction.DOWN2:
+//      switch (editState) {
+//      case ES_INSERTINGPT:
+//        editObj.deletePoint(editField);
+//        stopEdit();
+//        break;
+//      case ES_EDITINGPT:
+//        editObj.deletePoint(editField);
+//        stopEdit();
+//        break;
+//      case ES_EDITWAIT:
+//        stopEdit();
+//        break;
+//      }
+//      break;
+//
+//    case TBAction.DOWN1: {
+//      lastMouseDown = new FPoint2(a.loc);
+//      switch (editState) {
+//      case ES_ROTWAIT:
+//        if (editBox.contains(a.loc)) {
+//
+//          rotStartPt = lastMouseDown;
+//          rotThetaOrig = rotThetaNow;
+//          setState(ES_ROTATING);
+//        } else {
+//          setState(ES_READY);
+//        }
+//        break;
+//      case ES_SCALEWAIT: {
+//        rotStartPt = lastMouseDown;
+//        scaleUniformly = a.altPressed();
+//
+//        setState(ES_SCALING);
+//        editBoxOrig = new FRect(editBox);
+//      }
+//        break;
+//
+//      case ES_READY: {
+//        int i = findObjAt(a.loc);
+//        if (i < 0) {
+//          resetDupOffset();
+//          if (!a.ctrlPressed())
+//            unselectAll();
+//          otherBoxCorner = new FPoint2(lastMouseDown);
+//          setState(ES_BOX);
+//          break;
+//        }
+//
+//        EdObject obj = obj(i);
+//        if (db)
+//          Streams.out.println("ES_READY, mouse down on object " + obj);
+//
+//        if (a.ctrlPressed()) {
+//          resetDupOffset();
+//          obj.setSelected(!obj.isSelected());
+//          break;
+//        }
+//        int particularPt = -1;
+//        boolean wasSelected = obj.isSelected();
+//        if (!wasSelected) {
+//          resetDupOffset();
+//          unselectAll();
+//          obj.setSelected(true);
+//        } else {
+//
+//          if (!a.altPressed()) {
+//            // determine if we have selected a particular point of an object;
+//            // if so, move just that point
+//            int j = 0;
+//            double nearestDist = 0;
+//
+//            double maxDist = nearPointDist();
+//
+//            for (;; j++) {
+//              double dist = obj.distFrom(j, a.loc);
+//              if (dist < 0)
+//                break;
+//              if (dist > maxDist)
+//                continue;
+//              if (particularPt < 0 || nearestDist < dist) {
+//                nearestDist = dist;
+//                particularPt = j;
+//              }
+//            }
+//          }
+//        }
+//        if (dp)
+//          Streams.out.println("clearing dpoffset to null in DOWN/READY");
+//        adjustPositionOffset = null;
+//        if (particularPt >= 0) {
+//          if (db)
+//            Streams.out.println(" chose particular point " + particularPt + ", setting ES_EDITINGPT");
+//
+//          resetDupOffset();
+//          editField = particularPt;
+//
+//          // determine difference between mouse location and 
+//          // point's location, so when we drag it it doesn't jump.
+//          adjustPositionOffset = FPoint2.difference(a.loc, obj.getPoint(particularPt), null);
+//          if (dp)
+//            Streams.out.println(" dpoffset set to a.loc=" + a.loc + " - pt=" + obj.getPoint(particularPt)
+//                + " = " + adjustPositionOffset);
+//
+//          setEditObject(i);
+//          setState(ES_EDITINGPT);
+//
+//          if (true) {
+//            Undoable oper = new ChangeItemsOper(null, true, false);
+//            perform(oper);
+//            touch();
+//          }
+//
+//        } else {
+//          setState(ES_STARTMOVING);
+//          if (db)
+//            Streams.out.println(" setting ES_STARTMOVING");
+//          pendingUndo = new ChangeItemsOper(null, true, false);
+//        }
+//      }
+//        break;
+//
+//      case ES_EDITINGPT:
+//      case ES_INSERTINGPT:
+//        resetDupOffset();
+//        if (db)
+//          Streams.out.println(" INSERTINGPT, setting point editField=" + editField + " to " + a.loc);
+//        editObj.setPoint(editField, a.loc, true, a);
+//        touch();
+//        break;
+//      }
+//
+//    }
+//      break;
+//
+//    case TBAction.UP1: {
+//      switch (editState) {
+//      case ES_ROTATING:
+//      case ES_SCALING:
+//        setState(ES_READY);
+//        break;
+//
+//      case ES_BOX: {
+//        FRect r = new FRect(lastMouseDown, otherBoxCorner);
+//
+//        if (r.width == 0 && r.height == 0) {
+//          // he didn't move the mouse away from the original point
+//          // find object at this point, and toggle its selection state
+//          int i = findObjAt(r.start());
+//          if (i >= 0) {
+//            EdObject obj = obj(i);
+//            obj.setSelected(!obj.isSelected());
+//          }
+//        } else {
+//          for (int i = 0; i < items.size(); i++) {
+//            EdObject obj = items.obj(i);
+//            if (obj.isSelected())
+//              continue;
+//            if (r.contains(obj.getBounds())) {
+//              obj.setSelected(true);
+//            }
+//          }
+//        }
+//        setState(ES_READY);
+//      }
+//        break;
+//
+//      case ES_INSERTINGPT:
+//      case ES_EDITINGPT:
+//        touch();
+//
+//        if (NEWEDIT) {
+//          mouseUpLoc = a.loc;
+//          procDrift(a);
+//        } else {
+//          // get next point to insert
+//          int efNew = editObj.getNextPointToInsert(a, editField, null);
+//          // if we're done all the points, stop editing this object
+//          if (efNew < 0) {
+//            setState(ES_READY);
+//          } else {
+//            editField = efNew;
+//            setState(ES_INSERTINGPT);
+//          }
+//        }
+//        break;
+//
+//      case ES_MOVING:
+//        adjustDupOffset(FPoint2.difference(a.loc, lastMouseDown, null));
+//        setState(ES_READY);
+//        break;
+//      case ES_STARTMOVING:
+//        setState(ES_READY);
+//        break;
+//      }
+//    }
+//      break;
+//
+//    case TBAction.HOVER: {
+//      updateCoordDisplay(a.loc);
+//      switch (editState) {
+//      default:
+//        a.code = 0;
+//        break;
+//      case ES_INSERTINGPT:
+//      case ES_EDITINGPT:
+//        touch();
+//        editObj.setPoint(editField, a.loc, true, a);
+//        break;
+//      case ES_EDITWAIT:
+//        procDrift(a);
+//        break;
+//      }
+//    }
+//      break;
+//
+//    case TBAction.DRAG: {
+//      updateCoordDisplay(a.loc);
+//      switch (editState) {
+//      default:
+//        a.code = 0;
+//        break;
+//      case ES_SCALING: {
+//        if (pendingUndo != null) {
+//          perform(pendingUndo);
+//          touch();
+//          pendingUndo = null;
+//        }
+//        FPoint2 rotOrigin = editBoxOrig.midPoint();
+//        FPoint2 origDiff = FPoint2.difference(rotStartPt, rotOrigin, null);
+//        double origDist = origDiff.length();
+//        if (origDist == 0)
+//          break;
+//        //            double origDist = origDiff.length();
+//        //            if (origDist == 0)
+//        //              break;
+//
+//        FPoint2 newDiff = FPoint2.difference(a.loc, rotOrigin, null);
+//        if (Math.signum(origDiff.x) != Math.signum(newDiff.x))
+//          newDiff.x = 0;
+//        if (Math.signum(origDiff.y) != Math.signum(newDiff.y))
+//          newDiff.y = 0;
+//        double newDist = newDiff.length();
+//        if (newDist == 0)
+//          break;
+//
+//        double sclx = 1.0;
+//        double scly = 1.0;
+//        if (scaleUniformly) {
+//          if (origDist > 0 && newDist > 0)
+//            sclx = scly = newDist / origDist;
+//        } else {
+//          if (origDiff.x != 0)
+//            sclx = newDiff.x / origDiff.x;
+//          if (origDiff.y != 0)
+//            scly = newDiff.y / origDiff.y;
+//        }
+//
+//        //            double scl = newDist / origDist;
+//        {
+//          ObjArray origItems = lastUndoItems();
+//          DArray origItemSlots = lastUndoItemSlots();
+//
+//          for (int i = 0; i < origItemSlots.size(); i++) {
+//            EdObject obj = items.obj(origItemSlots.getInt(i));
+//            EdObject origObj = origItems.obj(i);
+//
+//            for (int j = 0; j < obj.nPoints(); j++) {
+//              FPoint2 pt = origObj.getPoint(j);
+//              obj.setTransformedPoint(j, new FPoint2(rotOrigin.x + (pt.x - rotOrigin.x) * sclx,
+//                  rotOrigin.y + (pt.y - rotOrigin.y) * scly));
+//            }
+//          }
+//        }
+//        double sw = editBoxOrig.width * .5 * sclx;
+//        double sh = editBoxOrig.height * .5 * scly;
+//        editBox = new FRect(rotOrigin.x - sw, rotOrigin.y - sh, sw * 2, sh * 2);
+//      }
+//        break;
+//
+//      case ES_ROTATING: {
+//        if (pendingUndo != null) {
+//          perform(pendingUndo);
+//          touch();
+//          pendingUndo = null;
+//        }
+//        FPoint2 rotOrigin = editBox.midPoint();
+//        double theta0 = MyMath.polarAngle(rotOrigin, rotStartPt);
+//        double theta1 = MyMath.polarAngle(rotOrigin, a.loc);
+//        double thAdd = MyMath.normalizeAngle(theta1 - theta0);
+//        rotThetaNow = rotThetaOrig + thAdd;
+//
+//        {
+//          ObjArray origItems = lastUndoItems();
+//          DArray origItemSlots = lastUndoItemSlots();
+//
+//          for (int i = 0; i < origItemSlots.size(); i++) {
+//            EdObject obj = items.obj(origItemSlots.getInt(i));
+//            EdObject origObj = origItems.obj(i);
+//
+//            for (int j = 0; j < obj.nPoints(); j++) {
+//              FPoint2 pt = origObj.getPoint(j);
+//              double theta = MyMath.polarAngle(rotOrigin, pt);
+//              //  public void setTransformedPoint(int ptIndex, FPoint2 point) {
+//              double radius = FPoint2.distance(pt, rotOrigin);
+//              obj.setTransformedPoint(j, MyMath.ptOnCircle(rotOrigin, theta + rotThetaNow, radius));
+//            }
+//          }
+//        }
+//      }
+//        break;
+//      case ES_INSERTINGPT:
+//      case ES_EDITINGPT:
+//        touch(); {
+//        FPoint2 adj = a.loc;
+//        if (adjustPositionOffset != null)
+//          adj = new FPoint2(a.loc.x - adjustPositionOffset.x, a.loc.y - adjustPositionOffset.y);
+//        if (dp)
+//          Streams.out.println("setting pt " + editField + " to a=" + a.loc + " minus dp="
+//              + adjustPositionOffset + " = " + adj);
+//        editObj.setPoint(editField, adj, true, a);
+//      }
+//        break;
+//
+//      case ES_MOVING:
+//      case ES_STARTMOVING: {
+//        FPoint2 delta = FPoint2.difference(a.loc, lastMouseDown, null);
+//        if (pendingUndo != null) {
+//          setState(ES_MOVING);
+//          perform(pendingUndo);
+//          pendingUndo = null;
+//          touch();
+//        }
+//        ObjArray origItems = lastUndoItems();
+//        DArray origItemSlots = lastUndoItemSlots();
+//        for (int i = 0; i < origItemSlots.size(); i++) {
+//          EdObject obj = items.obj(origItemSlots.getInt(i));
+//          EdObject origObj = origItems.obj(i);
+//          obj.moveBy(origObj, delta);
+//        }
+//      }
+//        break;
+//      case ES_BOX:
+//        otherBoxCorner = new FPoint2(a.loc);
+//        break;
+//      }
+//    }
+//      break;
+//
+//    case TBAction.CTRLVALUE:
+//      switch (a.ctrlId) {
+//      case G_NEW:
+//        selectAll();
+//        perform(new CutOper());
+//        clearUndo(true);
+//        fileStats.setPath(null);
+//        break;
+//      case G_OPEN:
+//        doOpen(null);
+//        break;
+//      case G_DELETEPT:
+//        if (editState == ES_INSERTINGPT) {
+//          editObj.deletePoint(editField);
+//          stopEdit();
+//        }
+//        break;
+//      case G_OPENNEXT:
+//        doOpenNext();
+//        break;
+//      case G_SAVE:
+//      case G_SAVEAS:
+//      case G_SAVEASNEXT:
+//        doSave(a.ctrlId);
+//        break;
+//      case G_REVERT: {
+//        if (fileStats.getPath() != null) {
+//          doOpen(fileStats.getPath());
+//        }
+//      }
+//        break;
+//      case G_ERRORSET: {
+//        if (errorItems != null) {
+//          restoreErrorSet();
+//        }
+//      }
+//        break;
+//      case G_UNDO:
+//        if (canUndo()) {
+//          unselectAll();
+//          doUndo();
+//        }
+//        break;
+//      case G_REDO:
+//        if (canRedo()) {
+//          unselectAll();
+//          doRedo();
+//          touch();
+//        }
+//        break;
+//      case G_BACKWARD:
+//      case G_FORWARD:
+//      case G_BACK:
+//      case G_FRONT:
+//        doAdjustSlot(a.ctrlId);
+//        break;
+//      case G_CUT:
+//        perform(new CutOper());
+//        break;
+//      case G_DUP:
+//        perform(new DupOper());
+//        break;
+//      case G_TOGGLEACTIVE: {
+//        DArray m = editObjects(null, true, false);
+//        for (int i = 0; i < m.size(); i++) {
+//          EdObject e = (EdObject) m.get(i);
+//          e.setActive(!e.isActive());
+//        }
+//      }
+//        break;
+//      case G_COPY:
+//        perform(new CopyOper());
+//        break;
+//      case G_PASTE:
+//        perform(new PasteOper(true));
+//        break;
+//      case G_ALL:
+//        for (int i = 0; i < items.size(); i++)
+//          items.obj(i).setSelected(true);
+//        break;
+//      case G_NONE: {
+//        switch (editState) {
+//        default:
+//          stopEdit();
+//          break;
+//        case ES_ROTWAIT:
+//        case ES_ROTATING:
+//          setState(ES_READY);
+//          break;
+//        }
+//      }
+//        break;
+//      case G_SCALEUP:
+//        scaleObjects(1.2);
+//        break;
+//      case G_SCALEDN:
+//        scaleObjects(1 / 1.2);
+//        break;
+//      case G_ROTATE:
+//        stopEdit();
+//        startRotate();
+//        break;
+//      case G_SCALE:
+//        stopEdit();
+//        startScale();
+//        break;
+//      default:
+//        if (a.ctrlId >= G_ADDANOTHER && a.ctrlId < G_ADDITEMS + nObjTypes()) {
+//          int type = lastTypeAdded;
+//          if (a.ctrlId != G_ADDANOTHER)
+//            type = a.ctrlId - G_ADDITEMS;
+//          if (type < 0)
+//            break;
+//          lastTypeAdded = type;
+//          EdObjectFactory f = getType(type);
+//          add(f.construct());
+//          touch();
+//          break;
+//        }
+//        break;
+//      }
+//      break;
+//    }
+//
+//    if (displayedModified != fileStats.modified())
+//      updateTitle();
+//
+//  }
 
   private static void scaleObjects(double factor) {
     ArrayList m = editObjects(null, true, false);
@@ -1628,7 +1628,8 @@ public class Editor implements Globals, IEditorScript {
       clearUndo(true);
 //      justSaved = true;
       updateTitle();
-      TestBed.writeConfigFile();
+      todo("write config file");
+    //  TestBed.writeConfigFile();
     }
   }
 
@@ -1735,7 +1736,9 @@ public class Editor implements Globals, IEditorScript {
         fileStats.setPath(f);
 
         updateTitle();
-        TestBed.writeConfigFile();
+        
+        todo("write config file");
+       // TestBed.writeConfigFile();
 
       }
       if (tk != null)
