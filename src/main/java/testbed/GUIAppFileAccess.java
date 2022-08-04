@@ -2,6 +2,7 @@ package testbed;
 
 import java.io.*;
 import base.*;
+import js.guiapp.PathFilter;
 
   class GUIAppFileAccess extends ApplicationFileAccess {
   public IFileChooser getFileChooser() {

@@ -1,4 +1,4 @@
-package ocent;
+package sample;
 
 import java.util.*;
 import base.*;
@@ -201,15 +201,15 @@ public class GeneratorOper implements TestBedOperation, Globals {
           items.set(i, s);
         }
       } else {
-        int rt = OCentMain.regionType();
+        int rt = SampleMain.regionType();
         switch (rt) {
-        case OCentMain.RECTS:
-        case OCentMain.SQUARES:
+        case SampleMain.RECTS:
+        case SampleMain.SQUARES:
           for (int i = 0; i < items.size(); i++) {
             EdDisc d = (EdDisc) items.get(i);
             FRect b = d.getBounds();
 
-            if (OCentMain.regionType() == OCentMain.RECTS) {
+            if (SampleMain.regionType() == SampleMain.RECTS) {
               b.width = MyMath.rnd(range) + radMin;
               b.height = MyMath.rnd(range) + radMin;
             }
@@ -219,7 +219,7 @@ public class GeneratorOper implements TestBedOperation, Globals {
             items.set(i, rc);
           }
           break;
-        case OCentMain.POLYGONS:
+        case SampleMain.POLYGONS:
           {
             int nPts = 6;
 

@@ -1,0 +1,26 @@
+{
+ ".version" : { "code" : 1 },
+
+"open" : { "code" : "O", "flags" : "c" },
+
+
+"zoom_in" : {"code" : 61, "flags" : "c"},
+"zoom_out" : {"code" : 45, "flags" : "c"},
+"zoom_reset" : {"code" : 48, "flags" : "c"},
+
+"box_add": {"code" : 32},
+"pt_add" : { "code" : 80 },
+"polygon_add" : {"code" : 89 },
+
+"cut" : {"code" : 88, "flags" : "c"},
+"copy" : {"code" : 67, "flags" : "c"},
+"paste" : {"code" : 86, "flags" : "c"},
+
+"undo" : {  "code" : 90, "flags" : "c" },
+"redo" : {  "code" : 89, "flags" : "c" },
+
+"select_none" : {  "code" : 27},
+"select_all" : {  "code" : 65, "flags" : "c"},
+
+// This is helpful:  https://stackoverflow.com/questions/15313469
+}

@@ -3,6 +3,8 @@ package testbed;
 import java.io.*;
 import javax.swing.*;
 import base.*;
+import js.guiapp.PathFilter;
+
 import static js.base.Tools.*;
 
 class ApplicationFileChooser implements IFileChooser {

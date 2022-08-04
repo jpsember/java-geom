@@ -5,6 +5,8 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import base.*;
+import js.guiapp.PathFilter;
+
 import static js.base.Tools.*;
 
 /**

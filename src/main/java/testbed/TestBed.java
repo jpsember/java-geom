@@ -1,9 +1,10 @@
 package testbed;
 
 import base.*;
+import geom.EditorPanel;
 import geom.GeomApp;
-import js.guiapp.KeyboardShortcutManager;
-import js.guiapp.UserEventManager;
+import geom.oper.OpenFileOper;
+import js.guiapp.MenuBarWrapper;
 
 import java.io.*;
 import java.awt.*;
@@ -13,10 +14,6 @@ import javax.swing.*;
 
 import static js.base.Tools.*;
 
-/**
- * The TestBed class is the base class for the TestBed framework. See the PDF
- * file: 'TestBed: A Framework for Simple Java Test Program Generation'
- */
 public abstract class TestBed extends GeomApp {
 
   // ------------------------------------------------------------------
@@ -164,57 +161,6 @@ public abstract class TestBed extends GeomApp {
     //    Tools.warn("always resetting focus");
     //    resetFocus();
   }
-
-  //  private static class AboutDialog extends JDialog implements ActionListener {
-  //    private JPanel msg;
-  //    private int counter;
-  //
-  //    private void msg(String s) {
-  //
-  //      //      DArray lst = new DArray();
-  //      //      TextScanner.splitString(s, 865, lst);
-  //      //
-  //      //      for (int i = 0; i < lst.size(); i++) {
-  //      if (counter != 0) {
-  //        Dimension d = new Dimension(5, 5);
-  //        msg.add(new Box.Filler(d, d, d));
-  //      }
-  //      counter++;
-  //      msg.add(new JLabel(s)); //lst.getString(i)));
-  //      //      }
-  //    }
-  //
-  //    public AboutDialog(JFrame parent, String title) {
-  //      super(parent, title, true);
-  //      if (parent != null) {
-  //        Dimension parentSize = parent.getSize();
-  //        Point p = parent.getLocation();
-  //        setLocation(p.x + parentSize.width / 4, p.y + parentSize.height / 4);
-  //      }
-  //      msg = new JPanel();
-  //      msg.setBorder(new EmptyBorder(10, 10, 10, 10));
-  //      msg.setLayout(new BoxLayout(msg, BoxLayout.Y_AXIS));
-  //
-  //      msg("This program uses the TestBed library, Copyright \u00a9 2009 Jeff Sember.");
-  //      msg("");
-  //      msg("<html><a href=\"http://www.cs.ubc.ca/~jpsember/testbed\">http://www.cs.ubc.ca/~jpsember/testbed</html>");
-  //
-  //      getContentPane().add(msg);
-  //      JPanel buttonPane = new JPanel();
-  //      JButton button = new JButton("OK");
-  //      buttonPane.add(button);
-  //      button.addActionListener(this);
-  //      getContentPane().add(buttonPane, BorderLayout.SOUTH);
-  //      setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-  //      pack();
-  //      setVisible(true);
-  //    }
-  //
-  //    public void actionPerformed(ActionEvent e) {
-  //      setVisible(false);
-  //      dispose();
-  //    }
-  //  }
 
   /**
    * Process actions for main controls. Default implementation does nothing
@@ -601,18 +547,14 @@ public abstract class TestBed extends GeomApp {
 
   @Override
   public void populateFrame(JPanel parentPanel) {
-   
-    
-    
+    mEditorPanel = new EditorPanel();
+    mEditorPanel.PLOT_RED = true;
 
-   {
+    {
       app = this;
       operList = new DArray();
       workFile = null;
-      // filePath = null;
       Editor.menuAdded = false;
-
-      // desiredApplicationBounds = null;
       oldConfigFile = "";
       app = this;
 
@@ -620,17 +562,17 @@ public abstract class TestBed extends GeomApp {
 
       //    JComponent main = new JPanel(new BorderLayout());
 
+      todo("avoid calling V.init");
       V.init();
 
       C.init();
     }
-    
-    
-    //  parentPanel.add(C.menuPanel(), "North");
+
     Component p1;
     {
-      JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, V.getPanel(),
-          C.getControlPanel(TBGlobals.CT_MAIN));
+      Component ctrlPanel = C.getControlPanel(TBGlobals.CT_MAIN);
+      pr("built control panel", ctrlPanel);
+      JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mEditorPanel, ctrlPanel);
       sp2.setOneTouchExpandable(true);
       sp2.setResizeWeight(1);
       p1 = sp2;
@@ -649,8 +591,6 @@ public abstract class TestBed extends GeomApp {
       spToAdd = sp;
     }
     parentPanel.add(spToAdd, SwingConstants.CENTER);
-    //    main.add(spToAdd, "Center");
-    //    getAppContentPane().add(main);
 
     if (console()) {
       addConsole(parms.consoleRows, false);
@@ -664,6 +604,7 @@ public abstract class TestBed extends GeomApp {
       String scr = C.closeScript();
       C.addControls(scr);
     }
+
     addMenus0();
 
     if (parms.withEditor) {
@@ -688,21 +629,14 @@ public abstract class TestBed extends GeomApp {
       Editor.init2();
 
     programBegun = true;
-
-    //    showApp();
     workFile = new WorkFile();
 
-    //    if (parms.withEditor)
-    //      Editor.init();
     initTestbed();
 
     if (false) {
       Tools.warn("adding listener");
       KeyboardFocusManager.getCurrentKeyboardFocusManager()
           .addPropertyChangeListener(new FocusChangeListener());
-      //KeyboardFocusManager.getCurrentKeyboardFocusManager()
-      //    .addVetoableChangeListener(new FocusVetoableChangeListener());
-
     }
   }
 
@@ -1045,76 +979,40 @@ public abstract class TestBed extends GeomApp {
     }
   }
 
-  // TODO: refactor to make this private
-  public UserEventManager mUserEventManager;
-  // TODO: refactor to make this private
-  public KeyboardShortcutManager mKeyboardShortcutManager;
+  @Override
+  public void startedGUI() {
+    todo("open last viewed file");
+  }
 
-  //  public void createMenuBarIfNec() {
-  //    if (mMenuBar != null)
-  //      return;
-  //
-  //    mKeyboardShortcutManager.clearAssignedOperationList();
-  //    OurMenuBar m = new OurMenuBar(mUserEventManager, mKeyboardShortcutManager);
-  //    mMenuBar = m;
-  //    todo("add method for subclass to populate menu bar");
-  ////    addProjectMenu(m);
-  ////    if (currentProject().definedAndNonEmpty()) {
-  ////      addFileMenu(m);
-  ////      addEditMenu(m);
-  ////      addViewMenu(m);
-  ////      addCategoryMenu(m);
-  ////    }
-  //    mFrame.frame().setJMenuBar(m.jmenuBar());
-  //  }
+  @Override
+  public float zoomFactor() {
+    todo("zoomFactor");
+    return mZoomFactor;
+  }
 
-  //  private OurMenuBar mMenuBar;
+  @Override
+  public void setZoomFactor(float zoom) {
+    todo("zoomFactor");
+    mZoomFactor = zoom;
+  }
+
+  private float mZoomFactor = 1f;
 
   // ------------------------------------------------------------------
-  // Frame
+  // Menu bar
   // ------------------------------------------------------------------
-  //
-  //  private void createFrame() {
-  //    mFrame = new OurAppFrame();
-  //
-  //    JFrame jFrame = mFrame.frame();
-  //
-  //    //    // Handle close window requests ourselves
-  //    //    //
-  //    //    jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-  //    //    jFrame.addWindowListener(new WindowAdapter() {
-  //    //      @Override
-  //    //      public void windowClosing(WindowEvent e) {
-  //    //        if (requestWindowClose()) {
-  //    //          closeProject();
-  //    //          jFrame.setVisible(false);
-  //    //          jFrame.dispose();
-  //    //          mFrame = null;
-  //    //        }
-  //    //      }
-  //    //    });
-  //    jFrame.setVisible(true);
-  //  }
 
-  //  private OurAppFrame mFrame;
+  @Override
+  public void populateMenuBar(MenuBarWrapper m) {
+    addFileMenu(m);
+    addEditMenu(m);
+    addViewMenu(m);
+  }
 
-  //  private void performRepaint(int repaintFlags) {
-  //    // If there is no menu bar, create one
-  //    createMenuBarIfNec();
-  //   
-  //    todo("add editor panels, info panels, etc");
-  ////      if (0 != (repaintFlags & REPAINT_EDITOR))
-  ////        mEditorPanel.repaint();
-  ////      if (0 != (repaintFlags & REPAINT_INFO))
-  ////        mInfoPanel.refresh();
-  //  }
+  private void addFileMenu(MenuBarWrapper m) {
+    m.addMenu("File", null);
+    addItem("open", "Open", new OpenFileOper());
+  }
 
-  //  private void processUserEvent(UserEvent event) {
-  //    // Avoid repainting if default operation and just a mouse move
-  //    // (though later we may want to render the mouse's position in an info box)
-  //    int repaintFlags = mUserEventManager.getOperation().repaintRequiredFlags(event);
-  //    if (repaintFlags != 0)
-  //      performRepaint(repaintFlags);
-  //  }
-
+  private EditorPanel mEditorPanel;
 }

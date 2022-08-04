@@ -34,8 +34,7 @@ import js.guiapp.UserEventSource;
 import js.guiapp.UserOperation;
 import static geom.GeomTools.*;
 
-public class EditorPanel extends JPanel
-    implements UserEventSource, MouseListener, MouseMotionListener {
+public class EditorPanel extends JPanel implements UserEventSource, MouseListener, MouseMotionListener {
 
   public EditorPanel() {
     setBackground(new Color(185, 201, 179));
@@ -43,6 +42,8 @@ public class EditorPanel extends JPanel
     addMouseMotionListener(this);
   }
 
+  public boolean PLOT_RED;
+  
   @Override
   public void paintComponent(Graphics g) {
     ScriptWrapper script = editor().getScript();
@@ -55,6 +56,11 @@ public class EditorPanel extends JPanel
       mCurrentZoom = null;
     }
 
+    if (PLOT_RED) {
+      g.setColor(Color.red);
+      int p = 30;
+      g.fillRect(p, p, getWidth() - 2 * p, getHeight() - 2 * p);
+    }
     // To avoid having the InfoPanel (or some Swing widgets within it) intercepting keyboard events
     // (that we'd like available for the menu items), always have the editor panel request the focus:
     requestFocus();

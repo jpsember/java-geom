@@ -1,4 +1,4 @@
-package ocent;
+package sample;
 
 import testbed.*;
 
@@ -22,7 +22,7 @@ public class SimpleOper implements TestBedOperation, Globals {
     if (T.update())
       T.msg("algorithm step 1");
 
-    EdDisc[] obj = OCentMain.getDiscs();
+    EdDisc[] obj = SampleMain.getDiscs();
     for (EdDisc d : obj) {
       if (T.update())
         T.msg("disc"+T.show(d));

@@ -2,6 +2,7 @@ package geom;
 
 import static js.base.Tools.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,6 +73,15 @@ public abstract class GeomApp extends GUIApp {
   // Current script and edit state
   // ------------------------------------------------------------------
 
+  
+  public void closeFile() {
+    flushScript();
+    replaceCurrentScriptWith(ScriptWrapper.DEFAULT_INSTANCE);
+  }
+  
+  public void openFile(File scriptFile) {
+  }
+  
   /**
    * Get (immutable) current script state
    */

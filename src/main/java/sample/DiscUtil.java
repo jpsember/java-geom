@@ -1,4 +1,4 @@
-package ocent;
+package sample;
 
 import testbed.*;
 import base.*;

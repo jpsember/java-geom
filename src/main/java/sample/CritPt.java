@@ -1,4 +1,4 @@
-package ocent;
+package sample;
 
 import java.awt.*;
 import java.util.*;

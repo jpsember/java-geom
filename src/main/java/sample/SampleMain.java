@@ -1,16 +1,18 @@
-package ocent;
+package sample;
 
 import base.*;
 import geom.EditorPanel;
 import geom.ScriptWrapper;
 import js.app.App;
+import js.json.JSMap;
 import testbed.*;
 
 import static js.base.Tools.*;
 
 import java.util.*;
 
-public class OCentMain extends TestBed {
+public class SampleMain extends TestBed {
+
   private static final int TOGGLEDISCS = 4004;//!
   private static final int MAKETANGENT = 4007;//!
   private static final int RANDOM = 4011;//!
@@ -24,114 +26,17 @@ public class OCentMain extends TestBed {
 
   public static final int DISCS = 0, SQUARES = 1, RECTS = 2, POLYGONS = 3;
 
-  //  private static double sq(double t) {
-  //    return t * t;
-  //  }
-
   public static void main(String[] args) {
-    loadTools();
-    App app = new OCentMain();
-    app.setName("OCent");
+    App app = new SampleMain();
     app.startApplication(args);
   }
 
-  private OCentMain() {
+  private SampleMain() {
     guiAppConfig() //
-        .appName("OCent") //
+        .appName("Sample") //
+        .keyboardShortcutRegistry(JSMap.fromResource(this.getClass(), "key_shortcut_defaults.json")) //;
     ;
   }
-
-  //  @Override
-  //  protected AppOper constructAppOper() {
-  //    return new OurOper();
-  //  }
-
-  //  // ------------------------------------------------------------------
-  //  // AppOper implementation
-  //  // ------------------------------------------------------------------
-  //  private class OurOper extends AppOper {
-  //
-  //    @Override
-  //    public String userCommand() {
-  //      return null;
-  //    }
-  //    //
-  //    //    @Override
-  //    //    public ScreditConfig defaultArgs() {
-  //    //      return ScreditConfig.DEFAULT_INSTANCE;
-  //    //    }
-  //
-  ////    @Override
-  ////    public void perform() {
-  ////      if (cmdLineArgs().hasNextArg()) {
-  ////        mStartProjectFile = new File(cmdLineArgs().nextArg());
-  ////        log(DASHES, "set start project:", INDENT, mStartProjectFile, VERT_SP);
-  ////      }
-  ////      if (cmdLineArgs().hasNextArg())
-  ////        throw badArg("Unexpected argument(s):", cmdLineArgs().peekNextArg());
-  ////      //      if (devMode()) {
-  ////      //        SystemUtil.killProcesses("js.scredit");
-  ////      //        SystemUtil.killAfterDelay("js.scredit");
-  ////      //      }
-  ////      startGUI(() -> createAndShowGUI());
-  ////    }
-  //
-  //    @Override
-  //    protected List<Object> getAdditionalArgs() {
-  //      return arrayList("[<project directory>]");
-  //    }
-  //
-  //    @Override
-  //    protected String getHelpDescription() {
-  //      return "Graphics script editor";
-  //    }
-  //  }
-
-  //  private File mStartProjectFile = Files.DEFAULT;
-
-  //   
-  ////------------------------------------------------------------------
-  // // Frame
-  // // ------------------------------------------------------------------
-  //
-  // private void createFrame() {
-  //   mFrame = new OurAppFrame();
-  //
-  //   JFrame jFrame = mFrame.frame();
-  //
-  ////   // Handle close window requests ourselves
-  ////   //
-  ////   jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-  ////   jFrame.addWindowListener(new WindowAdapter() {
-  ////     @Override
-  ////     public void windowClosing(WindowEvent e) {
-  ////       if (requestWindowClose()) {
-  ////         closeProject();
-  ////         jFrame.setVisible(false);
-  ////         jFrame.dispose();
-  ////         mFrame = null;
-  ////       }
-  ////     }
-  ////   });
-  //   jFrame.setVisible(true);
-  // }
-  //
-  // private OurAppFrame mFrame;
-  //
-  //  
-
-  //  
-  //  
-  //
-  //  private void processUserEvent(UserEvent event) {
-  //    // Avoid repainting if default operation and just a mouse move
-  //    // (though later we may want to render the mouse's position in an info box)
-  //    int repaintFlags = mUserEventManager.getOperation().repaintRequiredFlags(event);
-  //    if (repaintFlags != 0)
-  //      performRepaint(repaintFlags);
-  //  }
-  //
-  //  
 
   @Override
   public void repaintPanels(int repaintFlags) {
@@ -141,6 +46,7 @@ public class OCentMain extends TestBed {
   // TestBed overrides
   // -------------------------------------------------------
 
+  @Override
   public void addOperations() {
     addOper(new SimpleOper());
     addOper(new GeneratorOper());
@@ -150,6 +56,7 @@ public class OCentMain extends TestBed {
     return C.vi(TYPE) - DISC;
   }
 
+  @Override
   public void addControls() {
     C.sOpen();
     // C.sCheckBox(RECTS, "Rectangles", null, false);
@@ -318,14 +225,14 @@ public class OCentMain extends TestBed {
     switch (regionType()) {
     default:
       throw new UnsupportedOperationException();
-    case OCentMain.RECTS:
-    case OCentMain.SQUARES:
+    case SampleMain.RECTS:
+    case SampleMain.SQUARES:
       ret = getRects();
       break;
-    case OCentMain.DISCS:
+    case SampleMain.DISCS:
       ret = getDiscs();
       break;
-    case OCentMain.POLYGONS:
+    case SampleMain.POLYGONS:
       ret = getPolygons();
       break;
     }
@@ -362,22 +269,6 @@ public class OCentMain extends TestBed {
     return sb.toString();
   }
 
-  /**
-   * @deprecated
-   * @param d
-   * @return
-   */
-  public static DArray getActive(EdObject[] d) {
-    DArray f = new DArray();
-    for (int j = 0; j < d.length; j++) {
-      if (d[j].isActive())
-        f.add(d[j]);
-      //      else
-      //        throw new IllegalStateException("testing");
-    }
-    return f;
-  }
-
   private static EdDisc[] discs;
   private static EdDisc[] discs2;
   private static EdRect[] rects;
@@ -394,4 +285,5 @@ public class OCentMain extends TestBed {
   public EditorPanel getEditorPanel() {
     throw notSupported();
   }
+
 }
