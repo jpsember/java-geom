@@ -3,6 +3,7 @@ package testbed;
 import java.awt.*;
 import base.*;
 
+@Deprecated
 public class EdPoint extends EdObject implements Globals {
   /**
     * Render object within editor.

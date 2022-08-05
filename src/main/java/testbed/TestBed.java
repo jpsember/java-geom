@@ -431,8 +431,8 @@ public abstract class TestBed extends GeomApp {
       C.sOpenTab(TBGlobals.AUXTAB_VIEW, "View");
       {
         C.sIntSpinner(TBGlobals.GLOBALSCALE, "scale:", "Sets global scale factor", 1, 40, 7, 1);
-        if (parms.withEditor)
-          Editor.addControls();
+//        if (parms.withEditor)
+//          Editor.addControls();
       }
       C.sCheckBox(TBGlobals.ENFORCE_ASP, "fixed aspect", "Enforce aspect ratio", false);
       C.sNewColumn();
@@ -557,7 +557,6 @@ public abstract class TestBed extends GeomApp {
 //      app = this;
       operList = new DArray();
 //      workFile = null;
-      Editor.menuAdded = false;
 //      oldConfigFile = "";
 //      app = this;
 
@@ -610,13 +609,13 @@ public abstract class TestBed extends GeomApp {
     addMenus0();
 
     if (parms.withEditor) {
-      Editor.init();
+//      Editor.init();
 
       initEditor();
-      if (!Editor.menuAdded) {
-        Editor.openMenu();
-        Editor.closeMenu();
-      }
+//      if (!Editor.menuAdded) {
+//        Editor.openMenu();
+//        Editor.closeMenu();
+//      }
     }
 
     processConfigFile();
@@ -863,8 +862,6 @@ public abstract class TestBed extends GeomApp {
         }
 
         public void paintView() {
-          if (parms.withEditor)
-            Editor.render();
         }
 
         public void processAction(TBAction a) {

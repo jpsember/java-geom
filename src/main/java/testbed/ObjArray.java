@@ -5,6 +5,7 @@ import base.*;
 /**
  * Maintain ordered sets of EditObj'ects.
  */
+@Deprecated
 class ObjArray extends DArray {
 
   public EdObject obj(int n) {

@@ -1,7 +1,6 @@
 package testbed;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
 import base.*;
 
@@ -12,58 +11,48 @@ import static js.base.Tools.*;
  * 
  * This will be moved into the TestBed package when it is working cleanly.
  */
+@Deprecated
 public class Editor implements Globals, IEditorScript {
-  /*
-   * ! .enum .public .prefix TYPE_ 1 point segment disc polygon
-   */
 
-  public static final int TYPE_POINT = 1; //!
-  public static final int TYPE_SEGMENT = 2; //!
-  public static final int TYPE_DISC = 3; //!
-  public static final int TYPE_POLYGON = 4; //!
-  /* ! */
+//  public static final int TYPE_POINT = 1; //!
+//  public static final int TYPE_SEGMENT = 2; //!
+//  public static final int TYPE_DISC = 3; //!
+//  public static final int TYPE_POLYGON = 4; //!
 
-  /*
-   * ! .enum .private .prefix G_ 9300 file new open save saveas edit undo redo
-   * cut copy paste all none dup filepath revert opennext deletept backward
-   * forward back front errorset toggleactive withlabels labelverts scaleup
-   * scaledn addanother rotate scale saveasnext additems 50
-   */
-
-  private static final int G_FILE = 9300;//!
-  private static final int G_NEW = 9301;//!
-  private static final int G_OPEN = 9302;//!
-  private static final int G_SAVE = 9303;//!
-  private static final int G_SAVEAS = 9304;//!
-  private static final int G_EDIT = 9305;//!
-  private static final int G_UNDO = 9306;//!
-  private static final int G_REDO = 9307;//!
-  private static final int G_CUT = 9308;//!
-  private static final int G_COPY = 9309;//!
-  private static final int G_PASTE = 9310;//!
-  private static final int G_ALL = 9311;//!
-  private static final int G_NONE = 9312;//!
-  private static final int G_DUP = 9313;//!
-//  private static final int G_FILEPATH = 9314;//!
-  private static final int G_REVERT = 9315;//!
-  private static final int G_OPENNEXT = 9316;//!
-  private static final int G_DELETEPT = 9317;//!
-  private static final int G_BACKWARD = 9318;//!
-  private static final int G_FORWARD = 9319;//!
-  private static final int G_BACK = 9320;//!
-  private static final int G_FRONT = 9321;//!
-  private static final int G_ERRORSET = 9322;//!
-  private static final int G_TOGGLEACTIVE = 9323;//!
-  private static final int G_WITHLABELS = 9324;//!
-  private static final int G_LABELVERTS = 9325;//!
-  private static final int G_SCALEUP = 9326;//!
-  private static final int G_SCALEDN = 9327;//!
-  private static final int G_ADDANOTHER = 9328;//!
-  private static final int G_ROTATE = 9329;//!
-  private static final int G_SCALE = 9330;//!
-  private static final int G_SAVEASNEXT = 9331;//!
-  private static final int G_ADDITEMS = 9332;//!
-  /* ! */
+ 
+//  private static final int G_FILE = 9300;//!
+//  private static final int G_NEW = 9301;//!
+//  private static final int G_OPEN = 9302;//!
+//  private static final int G_SAVE = 9303;//!
+//  private static final int G_SAVEAS = 9304;//!
+//  private static final int G_EDIT = 9305;//!
+//  private static final int G_UNDO = 9306;//!
+//  private static final int G_REDO = 9307;//!
+//  private static final int G_CUT = 9308;//!
+//  private static final int G_COPY = 9309;//!
+//  private static final int G_PASTE = 9310;//!
+//  private static final int G_ALL = 9311;//!
+//  private static final int G_NONE = 9312;//!
+//  private static final int G_DUP = 9313;//!
+////  private static final int G_FILEPATH = 9314;//!
+//  private static final int G_REVERT = 9315;//!
+//  private static final int G_OPENNEXT = 9316;//!
+//  private static final int G_DELETEPT = 9317;//!
+//  private static final int G_BACKWARD = 9318;//!
+//  private static final int G_FORWARD = 9319;//!
+//  private static final int G_BACK = 9320;//!
+//  private static final int G_FRONT = 9321;//!
+//  private static final int G_ERRORSET = 9322;//!
+//  private static final int G_TOGGLEACTIVE = 9323;//!
+//  private static final int G_WITHLABELS = 9324;//!
+//  private static final int G_LABELVERTS = 9325;//!
+//  private static final int G_SCALEUP = 9326;//!
+//  private static final int G_SCALEDN = 9327;//!
+//  private static final int G_ADDANOTHER = 9328;//!
+//  private static final int G_ROTATE = 9329;//!
+//  private static final int G_SCALE = 9330;//!
+//  private static final int G_SAVEASNEXT = 9331;//!
+//  private static final int G_ADDITEMS = 9332;//!
 
 //  /**
 //   * Editor state: ready (no mode)
@@ -127,77 +116,77 @@ public class Editor implements Globals, IEditorScript {
     objectFactories.add(f);
   }
 
-  /**
-   * Add editor controls to script
-   */
-  static void addControls() {
-    loadTools();
-   // fileStats = new FileStats();
-   // TestBed.setFileStats(fileStats);
-
-   // fileStats.persistPath(G_FILEPATH);
-    //    fileStats.setPathGadget(G_FILEPATH);
-    //    C.sHide();
-    //    C.sTextField(G_FILEPATH, null, null, 200, false, null);
-    C.sOpen();
-    C.sCheckBox(G_WITHLABELS, "labels", "label items in editor", false);
-    C.sNewColumn();
-    C.sCheckBox(G_LABELVERTS, "verts", "label item vertices", false);
-    C.sClose();
-  }
+//  /**
+//   * Add editor controls to script
+//   */
+//  static void addControls() {
+//    loadTools();
+//   // fileStats = new FileStats();
+//   // TestBed.setFileStats(fileStats);
+//
+//   // fileStats.persistPath(G_FILEPATH);
+//    //    fileStats.setPathGadget(G_FILEPATH);
+//    //    C.sHide();
+//    //    C.sTextField(G_FILEPATH, null, null, 200, false, null);
+//    C.sOpen();
+//    C.sCheckBox(G_WITHLABELS, "labels", "label items in editor", false);
+//    C.sNewColumn();
+//    C.sCheckBox(G_LABELVERTS, "verts", "label item vertices", false);
+//    C.sClose();
+//  }
 
   static boolean menuAdded;
 
-  /**
-   * Construct a menu for the editor. Should be balanced by a call to
-   * closeMenu(). Before doing so, user can extend this menu by adding more
-   * items. For example, within the application's addMenus() method,
-   * 
-   * <pre>
-   * Editor.openMenu();
-   * // add a menu item to set selected discs' radii to zero
-   * C.sMenuItem(G_ZERODISCRADII, "Zero radii", "!^t");
-   * Editor.closeMenu();
-   * </pre>
-   */
-  public static void openMenu() {
-    menuAdded = true;
-
-    C.sOpenMenu(G_FILE, "File");
-    C.sMenuItem(G_NEW, "New", null);
-    C.sMenuItem(G_OPEN, "Open", "^o");
-    //if (!TestBed.isApplet())
-    C.sMenuItem(G_OPENNEXT, "Open next", "^O");
-    C.sMenuItem(G_SAVE, "Save", "^s");
-    C.sMenuItem(G_SAVEAS, "Save as", null);
-    C.sMenuItem(G_SAVEASNEXT, "Save as next", "^A");
-    C.sMenuItem(G_REVERT, "Revert", null);
-    C.sMenuItem(G_ERRORSET, "Get error set", "^E");
-    C.sCloseMenu();
-    C.sOpenMenu(G_EDIT, "Edit");
-    C.sMenuItem(G_UNDO, "Undo", "^z");
-    C.sMenuItem(G_REDO, "Redo", "^y");
-    C.sMenuSep();
-    C.sMenuItem(G_CUT, "Cut", "^x");
-    C.sMenuItem(G_COPY, "Copy", "^c");
-    C.sMenuItem(G_PASTE, "Paste", "^v");
-    C.sMenuItem(G_ALL, "Select All", "^a");
-    C.sMenuItem(G_NONE, "Select None", "#" + KeyEvent.VK_ESCAPE);
-    C.sMenuItem(G_DUP, "Duplicate", "^d");
-    C.sMenuItem(G_TOGGLEACTIVE, "Toggle active", "^w");
-    C.sMenuSep();
-    C.sMenuItem(G_BACKWARD, "Backward", "[");
-    C.sMenuItem(G_FORWARD, "Forward", "]");
-    C.sMenuItem(G_BACK, "Back", "^[");
-    C.sMenuItem(G_FRONT, "Front", "^]");
-    C.sMenuItem(G_DELETEPT, "Delete point", "#" + KeyEvent.VK_BACK_SPACE);
-    C.sMenuItem(G_SCALEDN, "Scale down", "^-");
-    C.sMenuItem(G_SCALEUP, "Scale up", "^=");
-    C.sMenuItem(G_SCALE, "Scale", "^S");
-    C.sMenuItem(G_ROTATE, "Rotate", "^R");
-
-    addObjectMenuItems();
-  }
+//  /**
+//   * Construct a menu for the editor. Should be balanced by a call to
+//   * closeMenu(). Before doing so, user can extend this menu by adding more
+//   * items. For example, within the application's addMenus() method,
+//   * 
+//   * <pre>
+//   * Editor.openMenu();
+//   * // add a menu item to set selected discs' radii to zero
+//   * C.sMenuItem(G_ZERODISCRADII, "Zero radii", "!^t");
+//   * Editor.closeMenu();
+//   * </pre>
+//   */
+//  public static void openMenu() {
+//    menuAdded = true;
+//
+//    C.sOpenMenu(G_FILE, "File");
+//    C.sMenuItem(G_NEW, "New", null);
+//    C.sMenuItem(G_OPEN, "Open", "^o");
+//    //if (!TestBed.isApplet())
+//    C.sMenuItem(G_OPENNEXT, "Open next", "^O");
+//    C.sMenuItem(G_SAVE, "Save", "^s");
+//    C.sMenuItem(G_SAVEAS, "Save as", null);
+//    C.sMenuItem(G_SAVEASNEXT, "Save as next", "^A");
+//    C.sMenuItem(G_REVERT, "Revert", null);
+//    C.sMenuItem(G_ERRORSET, "Get error set", "^E");
+//    C.sCloseMenu();
+//    C.sOpenMenu(G_EDIT, "Edit");
+//    C.sMenuItem(G_UNDO, "Undo", "^z");
+//    C.sMenuItem(G_REDO, "Redo", "^y");
+//    C.sMenuSep();
+//    C.sMenuItem(G_CUT, "Cut", "^x");
+//    C.sMenuItem(G_COPY, "Copy", "^c");
+//    C.sMenuItem(G_PASTE, "Paste", "^v");
+//    C.sMenuItem(G_ALL, "Select All", "^a");
+//    C.sMenuItem(G_NONE, "Select None", "#" + KeyEvent.VK_ESCAPE);
+//    C.sMenuItem(G_DUP, "Duplicate", "^d");
+//    C.sMenuItem(G_TOGGLEACTIVE, "Toggle active", "^w");
+//    C.sMenuSep();
+//    C.sMenuItem(G_BACKWARD, "Backward", "[");
+//    C.sMenuItem(G_FORWARD, "Forward", "]");
+//    C.sMenuItem(G_BACK, "Back", "^[");
+//    C.sMenuItem(G_FRONT, "Front", "^]");
+//    C.sMenuItem(G_DELETEPT, "Delete point", "#" + KeyEvent.VK_BACK_SPACE);
+//    C.sMenuItem(G_SCALEDN, "Scale down", "^-");
+//    C.sMenuItem(G_SCALEUP, "Scale up", "^=");
+//    C.sMenuItem(G_SCALE, "Scale", "^S");
+//    C.sMenuItem(G_ROTATE, "Rotate", "^R");
+//
+//    addObjectMenuItems();
+//  }
 
   /**
    * Close menu previously opened by openMenu(), add it to the menu bar.
@@ -217,27 +206,27 @@ public class Editor implements Globals, IEditorScript {
     return C.vi(TBGlobals.GRIDSIZE);
   }
 
-  /**
-   * Initialize editor
-   */
-  static void init() {
-
-//    undoStack = new DArray();
-    objTypesMap = new HashMap();
-    objectFactories = new DArray();
-    //    fileModified = false;
-//    resetDupOffset();
-//    clipboard = null;
-//    lastMouseDown = null;
-//    editField = 0;
-
-//    editState = ES_READY;
-//    setEditObject(-1);
-//    items = new ObjArray();
-////    clearUndo(true);
-//    clipboard = new ObjArray();
-
-  }
+//  /**
+//   * Initialize editor
+//   */
+//  static void init() {
+//
+////    undoStack = new DArray();
+//    objTypesMap = new HashMap();
+//    objectFactories = new DArray();
+//    //    fileModified = false;
+////    resetDupOffset();
+////    clipboard = null;
+////    lastMouseDown = null;
+////    editField = 0;
+//
+////    editState = ES_READY;
+////    setEditObject(-1);
+////    items = new ObjArray();
+//////    clearUndo(true);
+////    clipboard = new ObjArray();
+//
+//  }
 
 //  static void init2() {
 //
@@ -971,9 +960,9 @@ public class Editor implements Globals, IEditorScript {
 //    dupItems(new ObjArray(items, itemInds, true), true);
 //  }
 
-  private static int nObjTypes() {
-    return objectFactories.size();
-  }
+//  private static int nObjTypes() {
+//    return objectFactories.size();
+//  }
 
 //  private static boolean prepareScaleRot() {
 //    boolean valid = false;
@@ -1036,9 +1025,9 @@ public class Editor implements Globals, IEditorScript {
 //    } while (false);
 //  }
 
-  private static EdObjectFactory getType(int index) {
-    return (EdObjectFactory) objectFactories.get(index);
-  }
+//  private static EdObjectFactory getType(int index) {
+//    return (EdObjectFactory) objectFactories.get(index);
+//  }
 
 //  private static void dupItems(ObjArray dup, boolean applyOffsets) {
 //    unselectAll();
@@ -1385,27 +1374,27 @@ public class Editor implements Globals, IEditorScript {
 //    return en;
 //  }
 
-  /**
-   * Add segment types to editor menu
-   */
-  private static void addObjectMenuItems() {
-    boolean sep = false;
-    for (int i = 0; i < nObjTypes(); i++) {
-      EdObjectFactory f = getType(i);
-      String lbl = f.getMenuLabel();
-      if (lbl == null)
-        continue;
-      String keyEquiv = f.getKeyEquivalent();
-      if (keyEquiv != null)
-        keyEquiv = "!" + keyEquiv;
-      if (!sep) {
-        sep = true;
-        C.sMenuSep();
-      }
-      C.sMenuItem(G_ADDITEMS + i, lbl, keyEquiv);
-    }
-    C.sMenuItem(G_ADDANOTHER, "Add another", "!z");
-  }
+//  /**
+//   * Add segment types to editor menu
+//   */
+//  private static void addObjectMenuItems() {
+//    boolean sep = false;
+//    for (int i = 0; i < nObjTypes(); i++) {
+//      EdObjectFactory f = getType(i);
+//      String lbl = f.getMenuLabel();
+//      if (lbl == null)
+//        continue;
+//      String keyEquiv = f.getKeyEquivalent();
+//      if (keyEquiv != null)
+//        keyEquiv = "!" + keyEquiv;
+//      if (!sep) {
+//        sep = true;
+//        C.sMenuSep();
+//      }
+//      C.sMenuItem(G_ADDITEMS + i, lbl, keyEquiv);
+//    }
+//    C.sMenuItem(G_ADDANOTHER, "Add another", "!z");
+//  }
 
   //  private static String filePath() {
   //    
@@ -1857,7 +1846,9 @@ public class Editor implements Globals, IEditorScript {
    * @return true if label vertices checkbox is selected
    */
   public static boolean withLabels(boolean vertices) {
-    return C.vb(vertices ? G_LABELVERTS : G_WITHLABELS);
+    alert("not implemented");
+    return false;
+//    return C.vb(vertices ? G_LABELVERTS : G_WITHLABELS);
   }
 
   /**

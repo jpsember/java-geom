@@ -2,6 +2,7 @@ package testbed;
 
 import base.*;
 
+@Deprecated
 public abstract class EdObjectFactory {
 
   /**

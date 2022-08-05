@@ -3,6 +3,7 @@ package testbed;
 import java.awt.*;
 import base.*;
 
+@Deprecated
 public abstract class EdObject implements Cloneable, Renderable {
 
   /**

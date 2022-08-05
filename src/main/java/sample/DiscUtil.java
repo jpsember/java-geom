@@ -3,6 +3,7 @@ package sample;
 import testbed.*;
 import base.*;
 
+@Deprecated
 public class DiscUtil {
 
   public static final int DISC_CONTAINED = 1 << (EdDisc.USER_FLAG_BITS_DISC - 1);

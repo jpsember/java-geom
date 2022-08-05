@@ -4,6 +4,7 @@ import base.*;
 import java.awt.*;
 import java.awt.geom.*;
 
+@Deprecated
 public class EdSegment extends EdObject implements Globals {
 
   static final boolean db = false;

@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.util.*;
 
+@Deprecated
 public class EdPolygon extends EdObject implements IEditorScript, Globals {
 
   //  private static final boolean NEWEDIT = true;

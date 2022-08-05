@@ -3,6 +3,7 @@ package testbed;
 import base.*;
 import java.awt.*;
 
+@Deprecated
 public class EdRect extends EdObject implements Globals {
   public static final int FLG_SQUARE = (1 << (USER_FLAG_BITS - 1));
 

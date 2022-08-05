@@ -5,6 +5,7 @@ import java.awt.geom.*;
 import java.util.*;
 import base.*;
 
+@Deprecated
 public class EdDisc extends EdPoint {
   //  private static final boolean db = false;
 
