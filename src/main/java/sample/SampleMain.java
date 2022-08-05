@@ -1,6 +1,5 @@
 package sample;
 
-import geom.EditorPanel;
 import geom.ScriptWrapper;
 import js.app.App;
 import js.json.JSMap;
@@ -276,9 +275,5 @@ public class SampleMain extends TestBed {
     return ScriptWrapper.DEFAULT_INSTANCE;
   }
 
-  @Override
-  public EditorPanel getEditorPanel() {
-    throw notSupported();
-  }
 
 }

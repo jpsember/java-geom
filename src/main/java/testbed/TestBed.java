@@ -1,7 +1,6 @@
 package testbed;
 
 import base.*;
-import geom.EditorPanel;
 import geom.GeomApp;
 import geom.oper.OpenFileOper;
 import js.guiapp.MenuBarWrapper;
@@ -9,8 +8,8 @@ import js.guiapp.MenuBarWrapper;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.*;
 import javax.swing.*;
+import java.util.List;
 
 import static js.base.Tools.*;
 
@@ -23,7 +22,7 @@ public abstract class TestBed extends GeomApp {
   static void procAction(TBAction a) {
     try {
       alert("processAction no longer exists");
-    //  app.processAction0(a);
+      //  app.processAction0(a);
     } catch (TBError e) {
       showError(e.toString());
       if (parms.debug) {
@@ -32,136 +31,135 @@ public abstract class TestBed extends GeomApp {
     }
   }
 
-//  private static void resetFocus() {
-//    todo("requestFocus?  Or just avoid text input?");
-//    //    boolean f = TestBed.getAppContainer().requestFocusInWindow();
-//    //    Streams.out.println("req foc in TestBed app cont=" + f);
-//    //    C.menuPanel().requestFocusInWindow();
-//  }
+  //  private static void resetFocus() {
+  //    todo("requestFocus?  Or just avoid text input?");
+  //    //    boolean f = TestBed.getAppContainer().requestFocusInWindow();
+  //    //    Streams.out.println("req foc in TestBed app cont=" + f);
+  //    //    C.menuPanel().requestFocusInWindow();
+  //  }
 
-  
   // I think this method is unnecessary now that we have Commands and UserOperations...?
-  
-//  /**
-//   * Process an application action; if it is processed, its code may be modified
-//   * or cleared to 0
-//   *
-//   * @param a
-//   *          : TBAction to view and/or modify
-//   */
-//  private void processAction0(TBAction a) {
-//
-//    //     Streams.out.println("processAction "+a);
-//
-//    if (!programBegun) {
-//      a.code = TBAction.NONE;
-//      return;
-//    }
-//
-//    if (a.code != 0 && a.code != TBAction.HOVER) {
-//      resetFocus();
-//
-//      if (false) {
-//        System.out.println("TestBed action() " + a);
-//        if (a.ctrlId != 0)
-//          Streams.out.println("CtrlId= " + a.ctrlId);
-//      }
-//    }
-//
-//    boolean clearAction = false;
-//    boolean clearButUpdate = false;
-//
-//    switch (a.code) {
-//
-//    case TBAction.UPDATETITLE:
-//      todo("set/update title");
-//      //      setExtendedTitle(a.strArg);
-//      //      updateTitle();
-//      break;
-//
-//    case TBAction.CTRLVALUE:
-//      switch (a.ctrlId) {
-//      case TBGlobals.GRIDSIZE:
-//        V.updateGridSize(C.vi(TBGlobals.GRIDSIZE));
-//        break;
-//
-//      case TBGlobals.GLOBALSCALE:
-//        clearButUpdate = true;
-//        break;
-//
-//      //      case TBGlobals.QUIT:
-//      //        exitProgram();
-//      //        break;
-//      //      case TBGlobals.FILLCOLOR: {
-//      //        Color fillColor = new Color(C.vi(TBGlobals.sFILLCOLOR));
-//      //        Color cl = JColorChooser.showDialog(appFrame, "Select background color", fillColor);
-//      //        if (cl != null) {
-//      //          C.seti(TBGlobals.sFILLCOLOR, cl.getRGB() & 0xffffff);
-//      //        }
-//      //      }
-//      //        break;
-//
-//      case TBGlobals.TRACEBWD:
-//      case TBGlobals.TRACEBTNBWD:
-//        C.seti(TBGlobals.TRACESTEP, C.vi(TBGlobals.TRACESTEP) - 1);
-//        break;
-//      case TBGlobals.TRACEFWD:
-//      case TBGlobals.TRACEBTNFWD:
-//        C.seti(TBGlobals.TRACESTEP, C.vi(TBGlobals.TRACESTEP) + 1);
-//        break;
-//      case TBGlobals.BTN_TOGGLECTRLS:
-//      case TBGlobals.BTN_TOGGLECONSOLE: {
-//        JSplitPane sp = (a.ctrlId == TBGlobals.BTN_TOGGLECTRLS) ? spCtrls : spConsole;
-//        int x = sp.getDividerLocation(), x1 = sp.getMaximumDividerLocation();
-//        if (x > x1 || x < 20) {
-//          sp.resetToPreferredSizes();
-//        } else {
-//          sp.setDividerLocation(1.0);
-//        }
-//      }
-//        break;
-//
-//      case TBGlobals.BTN_TOGGLEWORKSPACE:
-//        workFile.setVisible(!workFile.isVisible());
-//        break;
-//
-//      }
-//      break;
-//
-//    case TBAction.ITEMENABLE: {
-//      // call application to determine if this item should
-//      // be enabled.
-//      boolean s = processMenuEnable(a.menuId, a.ctrlId);
-//      // change menu item's state if necessary.
-//      C.get(a.ctrlId).getComponent().setEnabled(s);
-//    }
-//      break;
-//    }
-//
-//    if (clearButUpdate) {
-//      clearAction = true;
-//      updateView();
-//    }
-//    if (clearAction) {
-//      a.code = TBAction.NONE;
-//    }
-//
-//    if (a.code != TBAction.NONE && !operList.isEmpty()) {
-//      oper().processAction(a);
-//    }
-//
-//    // call application-specific handler
-//    processAction(a);
-//
-//    // update the view in case state has changed as a result
-//    // of the main controls
-//    if (a.code != 0)
-//      updateView();
-//
-//    //    // reset the focus?
-//    //    Tools.warn("always resetting focus");
-//    //    resetFocus();
-//  }
+
+  //  /**
+  //   * Process an application action; if it is processed, its code may be modified
+  //   * or cleared to 0
+  //   *
+  //   * @param a
+  //   *          : TBAction to view and/or modify
+  //   */
+  //  private void processAction0(TBAction a) {
+  //
+  //    //     Streams.out.println("processAction "+a);
+  //
+  //    if (!programBegun) {
+  //      a.code = TBAction.NONE;
+  //      return;
+  //    }
+  //
+  //    if (a.code != 0 && a.code != TBAction.HOVER) {
+  //      resetFocus();
+  //
+  //      if (false) {
+  //        System.out.println("TestBed action() " + a);
+  //        if (a.ctrlId != 0)
+  //          Streams.out.println("CtrlId= " + a.ctrlId);
+  //      }
+  //    }
+  //
+  //    boolean clearAction = false;
+  //    boolean clearButUpdate = false;
+  //
+  //    switch (a.code) {
+  //
+  //    case TBAction.UPDATETITLE:
+  //      todo("set/update title");
+  //      //      setExtendedTitle(a.strArg);
+  //      //      updateTitle();
+  //      break;
+  //
+  //    case TBAction.CTRLVALUE:
+  //      switch (a.ctrlId) {
+  //      case TBGlobals.GRIDSIZE:
+  //        V.updateGridSize(C.vi(TBGlobals.GRIDSIZE));
+  //        break;
+  //
+  //      case TBGlobals.GLOBALSCALE:
+  //        clearButUpdate = true;
+  //        break;
+  //
+  //      //      case TBGlobals.QUIT:
+  //      //        exitProgram();
+  //      //        break;
+  //      //      case TBGlobals.FILLCOLOR: {
+  //      //        Color fillColor = new Color(C.vi(TBGlobals.sFILLCOLOR));
+  //      //        Color cl = JColorChooser.showDialog(appFrame, "Select background color", fillColor);
+  //      //        if (cl != null) {
+  //      //          C.seti(TBGlobals.sFILLCOLOR, cl.getRGB() & 0xffffff);
+  //      //        }
+  //      //      }
+  //      //        break;
+  //
+  //      case TBGlobals.TRACEBWD:
+  //      case TBGlobals.TRACEBTNBWD:
+  //        C.seti(TBGlobals.TRACESTEP, C.vi(TBGlobals.TRACESTEP) - 1);
+  //        break;
+  //      case TBGlobals.TRACEFWD:
+  //      case TBGlobals.TRACEBTNFWD:
+  //        C.seti(TBGlobals.TRACESTEP, C.vi(TBGlobals.TRACESTEP) + 1);
+  //        break;
+  //      case TBGlobals.BTN_TOGGLECTRLS:
+  //      case TBGlobals.BTN_TOGGLECONSOLE: {
+  //        JSplitPane sp = (a.ctrlId == TBGlobals.BTN_TOGGLECTRLS) ? spCtrls : spConsole;
+  //        int x = sp.getDividerLocation(), x1 = sp.getMaximumDividerLocation();
+  //        if (x > x1 || x < 20) {
+  //          sp.resetToPreferredSizes();
+  //        } else {
+  //          sp.setDividerLocation(1.0);
+  //        }
+  //      }
+  //        break;
+  //
+  //      case TBGlobals.BTN_TOGGLEWORKSPACE:
+  //        workFile.setVisible(!workFile.isVisible());
+  //        break;
+  //
+  //      }
+  //      break;
+  //
+  //    case TBAction.ITEMENABLE: {
+  //      // call application to determine if this item should
+  //      // be enabled.
+  //      boolean s = processMenuEnable(a.menuId, a.ctrlId);
+  //      // change menu item's state if necessary.
+  //      C.get(a.ctrlId).getComponent().setEnabled(s);
+  //    }
+  //      break;
+  //    }
+  //
+  //    if (clearButUpdate) {
+  //      clearAction = true;
+  //      updateView();
+  //    }
+  //    if (clearAction) {
+  //      a.code = TBAction.NONE;
+  //    }
+  //
+  //    if (a.code != TBAction.NONE && !operList.isEmpty()) {
+  //      oper().processAction(a);
+  //    }
+  //
+  //    // call application-specific handler
+  //    processAction(a);
+  //
+  //    // update the view in case state has changed as a result
+  //    // of the main controls
+  //    if (a.code != 0)
+  //      updateView();
+  //
+  //    //    // reset the focus?
+  //    //    Tools.warn("always resetting focus");
+  //    //    resetFocus();
+  //  }
 
   /**
    * Process actions for main controls. Default implementation does nothing
@@ -172,21 +170,21 @@ public abstract class TestBed extends GeomApp {
   public void processAction(TBAction a) {
   }
 
-//  /**
-//   * Perform enable/disable of a menu's items in preparation for it being shown.
-//   * 
-//   * @param menu
-//   *          : menu containing item
-//   * @param item
-//   *          : the item to enable/disable
-//   * @return new enabled state of item
-//   */
-//  protected boolean processMenuEnable(int menu, int item) {
-//    boolean ret = true;
-//    if (Editor.initialized())
-//      ret = Editor.processMenuEnable(menu, item);
-//    return ret;
-//  }
+  //  /**
+  //   * Perform enable/disable of a menu's items in preparation for it being shown.
+  //   * 
+  //   * @param menu
+  //   *          : menu containing item
+  //   * @param item
+  //   *          : the item to enable/disable
+  //   * @return new enabled state of item
+  //   */
+  //  protected boolean processMenuEnable(int menu, int item) {
+  //    boolean ret = true;
+  //    if (Editor.initialized())
+  //      ret = Editor.processMenuEnable(menu, item);
+  //    return ret;
+  //  }
 
   private String configFile;
 
@@ -209,8 +207,8 @@ public abstract class TestBed extends GeomApp {
    * Write configuration file. If program hasn't finished initializing, does
    * nothing.
    */
- public void writeConfigFile() {
-    if ( programBegun) {
+  public void writeConfigFile() {
+    if (programBegun) {
       writeConfigFile2();
     }
   }
@@ -218,30 +216,30 @@ public abstract class TestBed extends GeomApp {
   private void writeConfigFile2() {
     if (alert("disabled"))
       return;
-//    final boolean db = false;
-//
-//    // write to a string, then see if writing to disk is actually necessary.
-//    StringWriter sw = new StringWriter();
-//    PrintWriter pw = new PrintWriter(sw);
-//    C.printGadgets(pw, true);
-//
-//    // writeAppConfigArguments(pw);
-//
-//    String str = sw.toString();
-//    if (!str.equals(oldConfigFile)) {
-//      synchronized (app) {
-//        oldConfigFile = str;
-//        if (db)
-//          Streams.out.println("writing new config file: " + str.hashCode());
-//        try {
-//          Writer w = Streams.writer(getConfigFile());
-//          w.write(str);
-//          w.close();
-//        } catch (IOException e) {
-//          showError(e.toString());
-//        }
-//      }
-//    }
+    //    final boolean db = false;
+    //
+    //    // write to a string, then see if writing to disk is actually necessary.
+    //    StringWriter sw = new StringWriter();
+    //    PrintWriter pw = new PrintWriter(sw);
+    //    C.printGadgets(pw, true);
+    //
+    //    // writeAppConfigArguments(pw);
+    //
+    //    String str = sw.toString();
+    //    if (!str.equals(oldConfigFile)) {
+    //      synchronized (app) {
+    //        oldConfigFile = str;
+    //        if (db)
+    //          Streams.out.println("writing new config file: " + str.hashCode());
+    //        try {
+    //          Writer w = Streams.writer(getConfigFile());
+    //          w.write(str);
+    //          w.close();
+    //        } catch (IOException e) {
+    //          showError(e.toString());
+    //        }
+    //      }
+    //    }
   }
 
   /**
@@ -255,7 +253,7 @@ public abstract class TestBed extends GeomApp {
     }
     try {
       String s = Streams.readTextFile(getConfigFile());
-//      oldConfigFile = s;
+      //      oldConfigFile = s;
       if (db) {
         System.out.println(" string=" + s);
       }
@@ -431,8 +429,8 @@ public abstract class TestBed extends GeomApp {
       C.sOpenTab(TBGlobals.AUXTAB_VIEW, "View");
       {
         C.sIntSpinner(TBGlobals.GLOBALSCALE, "scale:", "Sets global scale factor", 1, 40, 7, 1);
-//        if (parms.withEditor)
-//          Editor.addControls();
+        //        if (parms.withEditor)
+        //          Editor.addControls();
       }
       C.sCheckBox(TBGlobals.ENFORCE_ASP, "fixed aspect", "Enforce aspect ratio", false);
       C.sNewColumn();
@@ -464,12 +462,12 @@ public abstract class TestBed extends GeomApp {
     C.sStoreIntField(TBGlobals.TBCONSOLESLIDER, -1);
   }
 
-//  /**
-//   * Cause a repaint of the view panel in the next 1/10 second
-//   */
-//  public static void updateView() {
-//    V.repaint();
-//  }
+  //  /**
+  //   * Cause a repaint of the view panel in the next 1/10 second
+  //   */
+  //  public static void updateView() {
+  //    V.repaint();
+  //  }
 
   /**
    * Add console. Redirects all writer output to the console's text area. The
@@ -550,15 +548,15 @@ public abstract class TestBed extends GeomApp {
 
   @Override
   public void populateFrame(JPanel parentPanel) {
-    mEditorPanel = new EditorPanel();
-    mEditorPanel.PLOT_RED = true;
+    constructEditorPanel();
+    getEditorPanel().PLOT_RED = true;
 
     {
-//      app = this;
+      //      app = this;
       operList = new DArray();
-//      workFile = null;
-//      oldConfigFile = "";
-//      app = this;
+      //      workFile = null;
+      //      oldConfigFile = "";
+      //      app = this;
 
       setParameters0();
 
@@ -573,7 +571,7 @@ public abstract class TestBed extends GeomApp {
     Component p1;
     {
       Component ctrlPanel = C.getControlPanel(TBGlobals.CT_MAIN);
-      JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mEditorPanel, ctrlPanel);
+      JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), ctrlPanel);
       sp2.setOneTouchExpandable(true);
       sp2.setResizeWeight(1);
       p1 = sp2;
@@ -609,13 +607,13 @@ public abstract class TestBed extends GeomApp {
     addMenus0();
 
     if (parms.withEditor) {
-//      Editor.init();
+      //      Editor.init();
 
       initEditor();
-//      if (!Editor.menuAdded) {
-//        Editor.openMenu();
-//        Editor.closeMenu();
-//      }
+      //      if (!Editor.menuAdded) {
+      //        Editor.openMenu();
+      //        Editor.closeMenu();
+      //      }
     }
 
     processConfigFile();
@@ -625,44 +623,44 @@ public abstract class TestBed extends GeomApp {
     }
 
     V.initGrid();
-//
-//    if (parms.withEditor)
-//      Editor.init2();
+    //
+    //    if (parms.withEditor)
+    //      Editor.init2();
 
     programBegun = true;
-//    workFile = new WorkFile();
+    //    workFile = new WorkFile();
 
     initTestbed();
 
-    if (false) {
-      Tools.warn("adding listener");
-      KeyboardFocusManager.getCurrentKeyboardFocusManager()
-          .addPropertyChangeListener(new FocusChangeListener());
-    }
+    //    if (false) {
+    //      Tools.warn("adding listener");
+    //      KeyboardFocusManager.getCurrentKeyboardFocusManager()
+    //          .addPropertyChangeListener(new FocusChangeListener());
+    //    }
   }
 
-  class FocusChangeListener implements PropertyChangeListener {
-    public void propertyChange(PropertyChangeEvent evt) {
-      Component oldComp = (Component) evt.getOldValue();
-      Component newComp = (Component) evt.getNewValue();
-
-      if ("focusOwner".equals(evt.getPropertyName())) {
-        if (oldComp == null) {
-          Streams.out.println("cfocus gain=" + newComp);
-        } else {
-          Streams.out.println("cfocus loss=" + oldComp);
-        }
-      } else if ("focusedWindow".equals(evt.getPropertyName())) {
-        if (oldComp == null) {
-          Streams.out.println("wfocus gain=" + newComp);
-        } else {
-          Streams.out.println("wfocus loss=" + oldComp);
-
-        }
-      }
-    }
-
-  }
+  //  class FocusChangeListener implements PropertyChangeListener {
+  //    public void propertyChange(PropertyChangeEvent evt) {
+  //      Component oldComp = (Component) evt.getOldValue();
+  //      Component newComp = (Component) evt.getNewValue();
+  //
+  //      if ("focusOwner".equals(evt.getPropertyName())) {
+  //        if (oldComp == null) {
+  //          Streams.out.println("cfocus gain=" + newComp);
+  //        } else {
+  //          Streams.out.println("cfocus loss=" + oldComp);
+  //        }
+  //      } else if ("focusedWindow".equals(evt.getPropertyName())) {
+  //        if (oldComp == null) {
+  //          Streams.out.println("wfocus gain=" + newComp);
+  //        } else {
+  //          Streams.out.println("wfocus loss=" + oldComp);
+  //
+  //        }
+  //      }
+  //    }
+  //
+  //  }
 
   // TODO: we need to call readGadgetGUIValues at startup at some point
 
@@ -809,14 +807,14 @@ public abstract class TestBed extends GeomApp {
   //  //  filePath = f;
   //  }
 
-//  static String getSpecialSavePath(String orig, String ext) {
-//    String f = orig;
-//    if (f == null || f.length() == 0)
-//      f = fileStats.getPath();
-//    if (f != null)
-//      f = Path.changeExtension(f, ext);
-//    return f;
-//  }
+  //  static String getSpecialSavePath(String orig, String ext) {
+  //    String f = orig;
+  //    if (f == null || f.length() == 0)
+  //      f = fileStats.getPath();
+  //    if (f != null)
+  //      f = Path.changeExtension(f, ext);
+  //    return f;
+  //  }
 
   // true if beginProgram() has been called yet.  If not,
   // we consume any actions without reporting them to the program.
@@ -832,11 +830,11 @@ public abstract class TestBed extends GeomApp {
     return operList.size();
   }
 
-//  public static void setFileStats(FileStats s) {
-//    fileStats = s;
-//  }
-//
-//  private static FileStats fileStats;
+  //  public static void setFileStats(FileStats s) {
+  //    fileStats = s;
+  //  }
+  //
+  //  private static FileStats fileStats;
 
   private static void addOperCtrls() {
     if (nOpers() > 0) {
@@ -888,19 +886,19 @@ public abstract class TestBed extends GeomApp {
   }
 
   // --------- These static members must be initialized by doInit() ----
-  private static DArray operList;
-//  private static WorkFile workFile;
+  private static List<TestBedOperation> operList;
+  //  private static WorkFile workFile;
   //private static String filePath;
   // TestBed parameters
   public static TestBedParameters parms = new TestBedParameters();
   //  // desired bounds for application window
   //  private static Rectangle desiredApplicationBounds;
 
-//  // cache for old configuration file contents, to determine if new one
-//  // needs to be written when program exits
-//  private static String oldConfigFile = "";
+  //  // cache for old configuration file contents, to determine if new one
+  //  // needs to be written when program exits
+  //  private static String oldConfigFile = "";
   // singleton TestBed instance
-//  public static TestBed app;
+  //  public static TestBed app;
 
   /**
    * Modify GUI appearance to match values in gadgets. If program not
@@ -1013,5 +1011,4 @@ public abstract class TestBed extends GeomApp {
     addItem("open", "Open", new OpenFileOper());
   }
 
-  private EditorPanel mEditorPanel;
 }

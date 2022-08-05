@@ -210,11 +210,16 @@ public abstract class GeomApp extends GUIApp {
 
   public abstract ScriptWrapper getScript();
 
-  public abstract EditorPanel getEditorPanel();
+  public final EditorPanel getEditorPanel() {return mEditorPanel;}
 
+  public void constructEditorPanel() {
+    mEditorPanel = new EditorPanel();
+   }
+  
   // TODO: consider moving these?
   public static final int REPAINT_EDITOR = (1 << 0);
   public static final int REPAINT_INFO = (1 << 1);
   public static final int REPAINT_ALL = ~0;
 
+  private EditorPanel mEditorPanel;
 }
