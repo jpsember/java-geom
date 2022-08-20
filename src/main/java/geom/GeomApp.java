@@ -64,52 +64,6 @@ public abstract class GeomApp extends GUIApp {
   }
 
   // ------------------------------------------------------------------
-  // Current script and edit state
-  // ------------------------------------------------------------------
-
-  //  @Deprecated // Move to separate class
-  //  public void closeFile() {
-  //    flushScript();
-  //    replaceCurrentScriptWith(ScriptWrapper.DEFAULT_INSTANCE);
-  //  }
-  //
-  //  @Deprecated // Move to separate class
-  //  public void openFile(File scriptFile) {
-  //  }
-  //
-  //  /**
-  //   * Get (immutable) current script state
-  //   */
-  //  @Deprecated // Move to separate class
-  //  public ScriptEditState state() {
-  //    return mState;
-  //  }
-  //
-  //  @Deprecated // Move to separate class
-  //  public void setState(ScriptEditState state) {
-  //    mState = state.build();
-  //    if (mScript.defined()) {
-  //      // We have to construct an array of ScriptElements, since we can't
-  //      // just pass an array of EditorElements (even though each element implements ScriptElement)
-  //      List<ScriptElement> elements = new ArrayList<>(mState.elements());
-  //      Script.Builder b = Script.newBuilder();
-  //      b.usage(mScript.data().usage());
-  //      b.items(elements);
-  //      mScript.setData(b.build());
-  //    }
-  //  }
-  //
-  //  @Deprecated // Move to separate class
-  //  public ScriptWrapper currentScript() {
-  //    return mScript;
-  //  }
-  //
-  //  @Deprecated // Move to separate class
-  //  public void flushScript() {
-  //    mScript.flush();
-  //  }
-
-  // ------------------------------------------------------------------
   // Commands
   // ------------------------------------------------------------------
 

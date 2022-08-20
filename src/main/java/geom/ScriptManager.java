@@ -62,20 +62,16 @@ public class ScriptManager {
   }
 
   public void replaceCurrentScriptWith(ScriptWrapper newScript) {
-     todo("scrEdit is not updating script properly when switching");
-     pr("replaceCurrentScriptWith:",newScript.debugInfo());
-     if (newScript == mScript)
+    if (newScript == mScript)
       return;
 
     // Copy the clipboard from the current script, so we can copy or paste with the new script
     ScriptEditState oldState = mState;
     mScript = newScript;
     if (mScript.isNone() || mScript.isAnonymous()) {
-      pr("script isnone",mScript.isNone(),"anon:",mScript.isAnonymous());
       return;
     }
-    pr("replace current script with:",newScript.debugInfo());
-    
+
     // Parse the ScriptElement objects, constructing an appropriate
     // EditorElement for each
     List<EditorElement> editorElements = arrayList();
@@ -97,7 +93,6 @@ public class ScriptManager {
       editorElements.add(validatedElement);
     }
 
-    pr("setting state for new elements:",editorElements);
     setState(ScriptEditState.newBuilder() //
         .elements(editorElements)//
         .clipboard(oldState.clipboard())//
