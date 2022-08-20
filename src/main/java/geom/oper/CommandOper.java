@@ -78,7 +78,7 @@ public abstract class CommandOper extends UserOperation {
    * valid. Caches the result to avoid unnecessary computation
    */
   private Command.Builder command() {
-    ScriptEditState editState = editor().state();
+    ScriptEditState editState = scriptManager().state();
     if (mCommandBuilder == null || !editState.equals(mCachedScriptEditState)) {
       mCachedScriptEditState = editState;
       mCommandBuilder = editor().buildCommand(getClass().getSimpleName());

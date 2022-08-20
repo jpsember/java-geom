@@ -48,7 +48,7 @@ public class RedoOper extends UserOperation {
   @Override
   public void start() {
     ScriptEditState restoredState = undoManager().performRedo();
-    editor().setState(restoredState);
+    scriptManager().setState(restoredState);
     editor().performRepaint(GeomApp.REPAINT_ALL);
   }
 

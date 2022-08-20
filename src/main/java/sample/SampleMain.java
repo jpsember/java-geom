@@ -1,6 +1,5 @@
 package sample;
 
-import geom.ScriptWrapper;
 import js.app.App;
 import js.json.JSMap;
 import testbed.*;
@@ -21,6 +20,7 @@ public class SampleMain extends TestBed {
   public static final int DISCS = 0, SQUARES = 1, RECTS = 2, POLYGONS = 3;
 
   public static void main(String[] args) {
+    loadTools();
     App app = new SampleMain();
     app.startApplication(args);
   }
@@ -30,10 +30,6 @@ public class SampleMain extends TestBed {
         .appName("Sample") //
         .keyboardShortcutRegistry(JSMap.fromResource(this.getClass(), "key_shortcut_defaults.json")) //;
     ;
-  }
-
-  @Override
-  public void repaintPanels(int repaintFlags) {
   }
 
   // -------------------------------------------------------
@@ -268,12 +264,5 @@ public class SampleMain extends TestBed {
 //  private static EdRect[] rects;
 //  private static EdRect[] rects2;
 //  private static EdPolygon[] polygons;
-
-  @Override
-  public ScriptWrapper getScript() {
-    todo("getScript");
-    return ScriptWrapper.DEFAULT_INSTANCE;
-  }
-
 
 }

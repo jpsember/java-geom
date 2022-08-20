@@ -2,20 +2,14 @@ package geom;
 
 import static js.base.Tools.*;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import geom.gen.Command;
-import geom.gen.ScriptEditState;
 import geom.oper.*;
-import js.graphics.ScriptElement;
-import js.graphics.gen.Script;
 import js.guiapp.GUIApp;
 import js.guiapp.MenuBarWrapper;
-//import js.guiapp.UserOperation;
+import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
+import static geom.GeomTools.*;
 
 /**
  * A GUIApp that supports editing of geometric objects
@@ -73,84 +67,47 @@ public abstract class GeomApp extends GUIApp {
   // Current script and edit state
   // ------------------------------------------------------------------
 
-  
-  public void closeFile() {
-    flushScript();
-    replaceCurrentScriptWith(ScriptWrapper.DEFAULT_INSTANCE);
-  }
-  
-  public void openFile(File scriptFile) {
-  }
-  
-  /**
-   * Get (immutable) current script state
-   */
-  public ScriptEditState state() {
-    return mState;
-  }
-
-  public void setState(ScriptEditState state) {
-    mState = state.build();
-    if (mScript.defined()) {
-      // We have to construct an array of ScriptElements, since we can't
-      // just pass an array of EditorElements (even though each element implements ScriptElement)
-      List<ScriptElement> elements = new ArrayList<>(mState.elements());
-      Script.Builder b = Script.newBuilder();
-      b.usage(mScript.data().usage());
-      b.items(elements);
-      mScript.setData(b.build());
-    }
-  }
-
-  private ScriptEditState mState = ScriptEditState.DEFAULT_INSTANCE;
-
-  public ScriptWrapper currentScript() {
-    return mScript;
-  }
-
-  public void flushScript() {
-    mScript.flush();
-  }
-
-  private ScriptWrapper mScript = ScriptWrapper.DEFAULT_INSTANCE;
-
-  public void replaceCurrentScriptWith(ScriptWrapper newScript) {
-    if (newScript == mScript)
-      return;
-
-    // Copy the clipboard from the current script, so we can copy or paste with the new script
-    ScriptEditState oldState = mState;
-    mScript = newScript;
-
-    // Parse the ScriptElement objects, constructing an appropriate
-    // EditorElement for each
-    List<EditorElement> editorElements = arrayList();
-    for (ScriptElement element : newScript.data().items()) {
-      // It is possible that elements are null, if they were unable to be parsed
-      if (element == null)
-        continue;
-      EditorElement parser = EditorElementRegistry.sharedInstance().factoryForTag(element.tag(), false);
-      if (parser == null) {
-        pr("*** No EditorElement parser found for tag:", quote(element.tag()));
-        continue;
-      }
-      EditorElement elem = parser.toEditorElement(element);
-      EditorElement validatedElement = elem.validate();
-      if (validatedElement == null) {
-        pr("*** failed to validate element:", INDENT, elem);
-        continue;
-      }
-      editorElements.add(validatedElement);
-    }
-
-    setState(ScriptEditState.newBuilder() //
-        .elements(editorElements)//
-        .clipboard(oldState.clipboard())//
-    );
-
-    // Discard undo manager, since it refers to a different script
-    mUndoManager = null;
-  }
+  //  @Deprecated // Move to separate class
+  //  public void closeFile() {
+  //    flushScript();
+  //    replaceCurrentScriptWith(ScriptWrapper.DEFAULT_INSTANCE);
+  //  }
+  //
+  //  @Deprecated // Move to separate class
+  //  public void openFile(File scriptFile) {
+  //  }
+  //
+  //  /**
+  //   * Get (immutable) current script state
+  //   */
+  //  @Deprecated // Move to separate class
+  //  public ScriptEditState state() {
+  //    return mState;
+  //  }
+  //
+  //  @Deprecated // Move to separate class
+  //  public void setState(ScriptEditState state) {
+  //    mState = state.build();
+  //    if (mScript.defined()) {
+  //      // We have to construct an array of ScriptElements, since we can't
+  //      // just pass an array of EditorElements (even though each element implements ScriptElement)
+  //      List<ScriptElement> elements = new ArrayList<>(mState.elements());
+  //      Script.Builder b = Script.newBuilder();
+  //      b.usage(mScript.data().usage());
+  //      b.items(elements);
+  //      mScript.setData(b.build());
+  //    }
+  //  }
+  //
+  //  @Deprecated // Move to separate class
+  //  public ScriptWrapper currentScript() {
+  //    return mScript;
+  //  }
+  //
+  //  @Deprecated // Move to separate class
+  //  public void flushScript() {
+  //    mScript.flush();
+  //  }
 
   // ------------------------------------------------------------------
   // Commands
@@ -162,14 +119,14 @@ public abstract class GeomApp extends GUIApp {
    */
   public Command.Builder buildCommand(String description) {
     Command.Builder b = Command.newBuilder().description(description);
-    b.newState(state());
+    b.newState(scriptManager().state());
     return b;
   }
 
   public void perform(Command command) {
     command = command.build();
     undoManager().record(command);
-    setState(command.newState());
+    scriptManager().setState(command.newState());
   }
 
   public void perform(CommandOper oper) {
@@ -186,8 +143,12 @@ public abstract class GeomApp extends GUIApp {
 
   public UndoManager undoManager() {
     if (mUndoManager == null)
-      mUndoManager = new UndoManager(state());
+      mUndoManager = new UndoManager(scriptManager().state());
     return mUndoManager;
+  }
+
+  public void discardUndoManager() {
+    mUndoManager = null;
   }
 
   private UndoManager mUndoManager;
@@ -208,18 +169,44 @@ public abstract class GeomApp extends GUIApp {
     return (int) (20 / zoomFactor());
   }
 
-  public abstract ScriptWrapper getScript();
-
-  public final EditorPanel getEditorPanel() {return mEditorPanel;}
+  public final EditorPanel getEditorPanel() {
+    return mEditorPanel;
+  }
 
   public void constructEditorPanel() {
     mEditorPanel = new EditorPanel();
-   }
-  
+  }
+
   // TODO: consider moving these?
   public static final int REPAINT_EDITOR = (1 << 0);
   public static final int REPAINT_INFO = (1 << 1);
   public static final int REPAINT_ALL = ~0;
 
+  @Override
+  public void startedGUI() {
+    todo("open last script by looking at config file, or an anonymous one");
+    ScriptManager.setSingleton(new ScriptManager());
+    ScriptManager.singleton().replaceCurrentScriptWith(ScriptWrapper.buildUntitled());
+  }
+
+  @Override
+  public void userEventManagerListener(UserEvent event) {
+    // Avoid repainting if default operation and just a mouse move
+    // (though later we may want to render the mouse's position in an info box)
+    int repaintFlags = UserEventManager.sharedInstance().getOperation().repaintRequiredFlags(event);
+    if (repaintFlags != 0)
+      performRepaint(repaintFlags);
+    else
+      pr("not performing repaint");
+  }
+
+  @Override
+  public void repaintPanels(int repaintFlags) {
+    if (0 != (repaintFlags & REPAINT_EDITOR)) {
+      getEditorPanel().repaint();
+    }
+  }
+
   private EditorPanel mEditorPanel;
+
 }

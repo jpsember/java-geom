@@ -67,14 +67,27 @@ public final class ScriptWrapper extends BaseObject {
     return !isNone();
   }
 
+  public boolean isAnonymous() {
+    return defined() && Files.empty(mScriptFile);
+  }
+
+  public static ScriptWrapper buildUntitled() {
+    ScriptWrapper w = new ScriptWrapper(Files.DEFAULT);
+    return w;
+  }
+
   /**
    * Parse the Script from the file. Caches the result for subsequent calls
    */
   public Script data() {
     if (isNone())
       return Script.DEFAULT_INSTANCE;
-    if (mScriptData == null)
-      mScriptData = Files.parseAbstractDataOpt(Script.DEFAULT_INSTANCE, mScriptFile);
+    if (mScriptData == null) {
+      if (isAnonymous())
+        mScriptData = Script.DEFAULT_INSTANCE;
+      else
+        mScriptData = Files.parseAbstractDataOpt(Script.DEFAULT_INSTANCE, mScriptFile);
+    }
     return mScriptData;
   }
 
@@ -87,12 +100,14 @@ public final class ScriptWrapper extends BaseObject {
     if (isNone())
       return false;
     if (mImageFile == null) {
-      List<File> imageCandidates = ScriptUtil.findImagePathsForScript(scriptFile());
-      if (imageCandidates.size() > 1)
-        throw badState("Multiple image candidates for script:", scriptFile(), INDENT, imageCandidates);
-      mImageFile = Files.DEFAULT;
-      if (!imageCandidates.isEmpty())
-        mImageFile = first(imageCandidates);
+      if (Files.nonEmpty(scriptFile())) {
+        List<File> imageCandidates = ScriptUtil.findImagePathsForScript(scriptFile());
+        if (imageCandidates.size() > 1)
+          throw badState("Multiple image candidates for script:", scriptFile(), INDENT, imageCandidates);
+        mImageFile = Files.DEFAULT;
+        if (!imageCandidates.isEmpty())
+          mImageFile = first(imageCandidates);
+      }
     }
     return Files.nonEmpty(mImageFile);
   }
@@ -132,16 +147,17 @@ public final class ScriptWrapper extends BaseObject {
     if (isNone())
       return;
 
-    if (ScriptUtil.isUseful(mScriptData)) {
-      String content = DataUtil.toString(mScriptData);
+    Script script = data();
+    if (ScriptUtil.isUseful(script)) {
+      String content = DataUtil.toString(script);
       if (Files.S.writeIfChanged(scriptFile(), content)) {
         if (verbose())
-          log("flushed changes; new content:", INDENT, mScriptData);
+          log("flushed changes; new content:", INDENT, script);
       }
     } else {
       if (scriptFile().exists()) {
         if (verbose())
-          log("deleting useless script:", INDENT, mScriptData);
+          log("deleting useless script:", INDENT, script);
         Files.S.deleteFile(scriptFile());
       }
     }
@@ -191,8 +207,27 @@ public final class ScriptWrapper extends BaseObject {
 
   // ------------------------------------------------------------------
 
+  public String debugInfo() {
+    StringBuilder sb = new StringBuilder();
+    if (isNone())
+      sb.append("<none>");
+    else if (isAnonymous())
+      sb.append("<anonymous>");
+    else {
+      sb.append(scriptFile().getName());
+      sb.append(" items:");
+      sb.append(data().items().size());
+      if (data().metadata() != null) {
+        sb.append(" metadata:");
+        sb.append(data().metadata().toJson());
+      }
+    }
+    return sb.toString();
+  }
+
   private final File mScriptFile;
   // File containing script's image, or Files.DEFAULT if there is no image
   private File mImageFile;
   private Script mScriptData;
+
 }

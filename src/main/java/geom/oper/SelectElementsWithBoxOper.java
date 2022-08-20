@@ -81,7 +81,7 @@ public class SelectElementsWithBoxOper extends UserOperation implements UserEven
     if (r == null)
       return;
 
-    ScriptEditState state = editor().state();
+    ScriptEditState state = scriptManager().state();
     IntArray.Builder slots = IntArray.newBuilder();
     int slot = INIT_INDEX;
     for (EditorElement element : state.elements()) {

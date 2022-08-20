@@ -49,7 +49,7 @@ public class UndoOper extends UserOperation {
   @Override
   public void start() {
     ScriptEditState restoredState = undoManager().performUndo();
-    editor().setState(restoredState);
+    scriptManager().setState(restoredState);
     editor().performRepaint(GeomApp.REPAINT_ALL);
   }
 

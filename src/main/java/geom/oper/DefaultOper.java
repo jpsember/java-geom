@@ -99,7 +99,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
   }
 
   private void constructPickSet(UserEvent event) {
-    ScriptEditState state = editor().state();
+    ScriptEditState state = scriptManager().state();
     IntArray.Builder b1 = IntArray.newBuilder();
     IntArray.Builder b2 = IntArray.newBuilder();
 
@@ -145,7 +145,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
       if (!pickSet().isEmpty()) {
         int index = last(pickSet());
         IntArray single = IntArray.with(index);
-        IntArray current = IntArray.with(editor().state().selectedElements());
+        IntArray current = IntArray.with(scriptManager().state().selectedElements());
         if (current.contains(index))
           current = SlotList.minus(current, single);
         else
@@ -165,7 +165,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
     // Look through pick set to find item following last selected item
     int outputSlot = -1;
     // Walk from highest to lowest, since frontmost are highest
-    IntArray current = IntArray.with(editor().state().selectedElements());
+    IntArray current = IntArray.with(scriptManager().state().selectedElements());
     for (int cursor = pickSet().size() - 1; cursor >= 0; cursor--) {
       int slot = pickSet().get(cursor);
       if (current.contains(slot)) {
@@ -231,7 +231,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
         // we'll start that operation (so user doesn't need to first select the item)
 
         int slot = last(pickSet());
-        EditorElement obj = ed.state().elements().get(slot);
+        EditorElement obj = scriptManager().state().elements().get(slot);
         oper = obj.isEditingSelectedObject(ed, slot, mInitialDownEvent);
         if (oper == null) {
           IntArray selItem = IntArray.with(slot);
@@ -254,16 +254,16 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
    * null
    */
   private UserOperation findOperationForEditableObject() {
-    if (editor().state().selectedElements().length != 1)
+    if (scriptManager().state().selectedElements().length != 1)
       return null;
-    int editableSlot = editor().state().selectedElements()[0];
+    int editableSlot = scriptManager().state().selectedElements()[0];
 
-    if (editor().state().elements().size() <= editableSlot) {
+    if (scriptManager().state().elements().size() <= editableSlot) {
       die("findOperationForEditableObject selected elements disagrees with elements:", INDENT,
-          editor().state());
+          scriptManager().state());
     }
 
-    EditorElement obj = (EditorElement) editor().state().elements().get(editableSlot);
+    EditorElement obj = (EditorElement) scriptManager().state().elements().get(editableSlot);
     return obj.isEditingSelectedObject(editor(), editableSlot, mInitialDownEvent);
   }
 
