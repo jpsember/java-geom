@@ -26,7 +26,7 @@ package geom;
 
 import java.io.File;
 
-import geom.gen.ScreditDefaults;
+import geom.gen.GeomAppDefaults;
 
 import static js.base.Tools.*;
 
@@ -57,17 +57,17 @@ public final class AppDefaults extends BaseObject {
     //alertVerbose();
   }
 
-  public ScreditDefaults read() {
+  public GeomAppDefaults read() {
     // We may be reading this before we've started up the app, i.e. outside of the Swing thread
     if (mDefaults == null) {
-      mDefaults = Files.parseAbstractDataOpt(ScreditDefaults.DEFAULT_INSTANCE, file()).toBuilder();
+      mDefaults = Files.parseAbstractDataOpt(GeomAppDefaults.DEFAULT_INSTANCE, file()).toBuilder();
       if (verbose())
         log("Read ScreditDefaults from:", file(), INDENT, mDefaults);
     }
     return mDefaults;
   }
 
-  public ScreditDefaults.Builder edit() {
+  public GeomAppDefaults.Builder edit() {
     read();
     return mDefaults;
   }
@@ -83,5 +83,5 @@ public final class AppDefaults extends BaseObject {
     return new File(ScriptUtil.scriptProjectsDirectory(), "scredit_defaults.json");
   }
 
-  private ScreditDefaults.Builder mDefaults;
+  private GeomAppDefaults.Builder mDefaults;
 }

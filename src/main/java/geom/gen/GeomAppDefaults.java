@@ -4,7 +4,7 @@ import js.data.AbstractData;
 import js.gui.gen.RecentFilesList;
 import js.json.JSMap;
 
-public class ScreditDefaults implements AbstractData {
+public class GeomAppDefaults implements AbstractData {
 
   public RecentFilesList recentProjects() {
     return mRecentProjects;
@@ -36,16 +36,16 @@ public class ScreditDefaults implements AbstractData {
   }
 
   @Override
-  public ScreditDefaults build() {
+  public GeomAppDefaults build() {
     return this;
   }
 
   @Override
-  public ScreditDefaults parse(Object obj) {
-    return new ScreditDefaults((JSMap) obj);
+  public GeomAppDefaults parse(Object obj) {
+    return new GeomAppDefaults((JSMap) obj);
   }
 
-  private ScreditDefaults(JSMap m) {
+  private GeomAppDefaults(JSMap m) {
     {
       mRecentProjects = RecentFilesList.DEFAULT_INSTANCE;
       Object x = (Object) m.optUnsafe(_0);
@@ -64,9 +64,9 @@ public class ScreditDefaults implements AbstractData {
   public boolean equals(Object object) {
     if (this == object)
       return true;
-    if (object == null || !(object instanceof ScreditDefaults))
+    if (object == null || !(object instanceof GeomAppDefaults))
       return false;
-    ScreditDefaults other = (ScreditDefaults) object;
+    GeomAppDefaults other = (GeomAppDefaults) object;
     if (other.hashCode() != hashCode())
       return false;
     if (!(mRecentProjects.equals(other.mRecentProjects)))
@@ -92,9 +92,9 @@ public class ScreditDefaults implements AbstractData {
   protected boolean mDevFeatures;
   protected int m__hashcode;
 
-  public static final class Builder extends ScreditDefaults {
+  public static final class Builder extends GeomAppDefaults {
 
-    private Builder(ScreditDefaults m) {
+    private Builder(GeomAppDefaults m) {
       mRecentProjects = m.mRecentProjects;
       mDevFeatures = m.mDevFeatures;
     }
@@ -111,8 +111,8 @@ public class ScreditDefaults implements AbstractData {
     }
 
     @Override
-    public ScreditDefaults build() {
-      ScreditDefaults r = new ScreditDefaults();
+    public GeomAppDefaults build() {
+      GeomAppDefaults r = new GeomAppDefaults();
       r.mRecentProjects = mRecentProjects;
       r.mDevFeatures = mDevFeatures;
       return r;
@@ -130,9 +130,9 @@ public class ScreditDefaults implements AbstractData {
 
   }
 
-  public static final ScreditDefaults DEFAULT_INSTANCE = new ScreditDefaults();
+  public static final GeomAppDefaults DEFAULT_INSTANCE = new GeomAppDefaults();
 
-  private ScreditDefaults() {
+  private GeomAppDefaults() {
     mRecentProjects = RecentFilesList.DEFAULT_INSTANCE;
   }
 
