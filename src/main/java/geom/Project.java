@@ -47,7 +47,6 @@ public final class Project extends BaseObject {
   }
 
   public Project(File directory) {
-    todo("Issue #1: Project class should maybe be in geom repo");
     mDirectory = directory;
     mProjectFile = isDefault() ? null : ScriptUtil.projectFileForProject(directory);
   }
@@ -56,7 +55,6 @@ public final class Project extends BaseObject {
     log("readProjectState, directory:", directory());
     log("projectForDefaultStateOrNull:", Files.infoMap(projectForDefaultStateOrNull));
 
-    todo("Issue #1: project_state should be in geom repo");
     ProjectState projectState = null;
 
     {

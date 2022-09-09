@@ -2,13 +2,18 @@ package geom;
 
 import static js.base.Tools.*;
 
+import java.io.File;
+
 import geom.gen.Command;
 import geom.oper.*;
+import js.file.Files;
 import js.guiapp.GUIApp;
 import js.guiapp.MenuBarWrapper;
+import js.guiapp.RecentFiles;
 import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
+
 import static geom.GeomTools.*;
 
 /**
@@ -32,9 +37,171 @@ public abstract class GeomApp extends GUIApp {
     return new DefaultOper();
   }
 
+  @Override
+  public final void processOptionalArgs() {
+    if (cmdLineArgs().hasNextArg()) {
+      mStartProjectFile = new File(cmdLineArgs().nextArg());
+      log(DASHES, "set start project:", INDENT, mStartProjectFile, VERT_SP);
+    }
+  }
+
+  private File mStartProjectFile = Files.DEFAULT;
+
   // ------------------------------------------------------------------
-  // Menu construction methods, can be called from populateMenuBar()
+  // Current project
   // ------------------------------------------------------------------
+
+  public final Project currentProject() {
+    return mCurrentProject;
+  }
+
+  public final void closeProject() {
+    if (currentProject().isDefault())
+      return;
+    flushProject();
+    mCurrentProject = Project.DEFAULT_INSTANCE;
+    removeUIElements();
+    recentProjects().setCurrentFile(null);
+    scriptManager().replaceCurrentScriptWith(ScriptWrapper.DEFAULT_INSTANCE);
+    discardMenuBar();
+    updateTitle();
+  }
+
+  public final void openProject(File file) {
+    closeProject();
+
+    Project project = new Project(file);
+
+    // If there are recent projects, use their state as the default for this one in case it is a new project
+
+    project.open(recentProjects().getMostRecentFile());
+    mCurrentProject = project;
+    recentProjects().setCurrentFile(project.directory());
+    AppDefaults.sharedInstance().edit().recentProjects(recentProjects().state());
+    rebuildFrameContent();
+    if (infoPanel() != null)
+      infoPanel().opening(project);
+
+    scriptManager().replaceCurrentScriptWith(currentProject().script());
+
+    // TODO: restore panel visibilities, etc according to project
+    appFrame().setBounds(projectState().appFrame());
+    updateTitle();
+    discardMenuBar();
+
+    // Make sure the UI is updated to represent this project's state,
+    // and to make sure the keyboard shortcuts work (something to do with focus?)
+    //
+    performRepaint(REPAINT_ALL);
+  }
+
+  public final void openAppropriateProject() {
+    AppDefaults def = AppDefaults.sharedInstance();
+    recentProjects().restore(def.read().recentProjects());
+    def.edit().recentProjects(recentProjects().state());
+
+    File desiredProjFile = mStartProjectFile;
+    if (Files.empty(desiredProjFile))
+      desiredProjFile = recentProjects().getMostRecentFile();
+    if (Files.empty(desiredProjFile))
+      desiredProjFile = Files.currentDirectory();
+
+    if (!desiredProjFile.isDirectory()) {
+      pr("*** No such project directory:", desiredProjFile);
+      desiredProjFile = Files.currentDirectory();
+    }
+    desiredProjFile = Files.absolute(desiredProjFile);
+    openProject(desiredProjFile);
+  }
+
+  public final void flushProject() {
+    if (!currentProject().defined())
+      return;
+    // Store the app frame location, in case it has changed
+    projectState().appFrame(appFrame().bounds());
+    currentProject().flush();
+  }
+
+  public void switchToScript(int index) {
+    scriptManager().flushScript();
+    if (currentProject().scriptIndex() != index) {
+      currentProject().setScriptIndex(index);
+      scriptManager().replaceCurrentScriptWith(currentProject().script());
+    }
+  }
+
+  public ProjectState.Builder projectState() {
+    return currentProject().state();
+  }
+
+  private Project mCurrentProject = Project.DEFAULT_INSTANCE;
+
+  private void removeUIElements() {
+    contentPane().removeAll();
+    todo("who owns the EditorPanel?  Do we need to get rid of it here?");
+    todo("add support for ControlPanel");
+    //mControlPanel = null;
+  }
+
+  //  public final void openProject(File file) {
+  //    closeProject();
+  //
+  //    Project project = new Project(file);
+  //
+  //    // If there are recent projects, use their state as the default for this one in case it is a new project
+  //
+  //    project.open(recentProjects().getMostRecentFile());
+  //    mCurrentProject = project;
+  //    recentProjects().setCurrentFile(project.directory());
+  //    AppDefaults.sharedInstance().edit().recentProjects(recentProjects().state());
+  //    rebuildFrameContent();
+  //    mInfoPanel.opening(project);
+  //
+  //    scriptManager().replaceCurrentScriptWith(currentProject().script());
+  //
+  //    // TODO: restore panel visibilities, etc according to project
+  //    appFrame().setBounds(projectState().appFrame());
+  //    updateTitle();
+  //    discardMenuBar();
+  //
+  //    // Make sure the UI is updated to represent this project's state,
+  //    // and to make sure the keyboard shortcuts work (something to do with focus?)
+  //    //
+  //    performRepaint(REPAINT_ALL);
+  //  }
+
+  public final RecentFiles recentProjects() {
+    if (mRecentProjects == null) {
+      mRecentProjects = new RecentFiles();
+      mRecentProjects.setDirectoryMode();
+    }
+    return mRecentProjects;
+  }
+
+  private RecentFiles mRecentProjects;
+
+  // ------------------------------------------------------------------
+  // Menu bar
+  // ------------------------------------------------------------------
+
+  @Override
+  public abstract void populateMenuBar(MenuBarWrapper m);
+
+  public void addProjectMenu(MenuBarWrapper m) {
+    if (!usesProjects())
+      return;
+    m.addMenu("Project");
+    addItem("project_open", "Open", new ProjectOpenOper());
+    addItem("project_close", "Close", new ProjectCloseOper());
+    m.addSubMenu(
+        recentProjects().constructMenu("Open Recent", UserEventManager.sharedInstance(), new UserOperation() {
+          @Override
+          public void start() {
+            openProject(recentProjects().getCurrentFile());
+          }
+        }));
+    addItem("project_open_next", "Open Next", new OpenNextProjectOper());
+  }
 
   public void addEditMenu(MenuBarWrapper m) {
     m.addMenu("Edit", null);
@@ -163,4 +330,13 @@ public abstract class GeomApp extends GUIApp {
 
   private EditorPanel mEditorPanel;
 
+  public void constructInfoPanel() {
+    mInfoPanel = new InfoPanel();
+  }
+
+  public InfoPanel infoPanel() {
+    return mInfoPanel;
+  }
+
+  private InfoPanel mInfoPanel;
 }
