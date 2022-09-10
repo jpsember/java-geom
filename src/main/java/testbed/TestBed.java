@@ -2,8 +2,6 @@ package testbed;
 
 import base.*;
 import geom.GeomApp;
-import geom.oper.OpenFileOper;
-import js.guiapp.MenuBarWrapper;
 
 import java.io.*;
 import java.awt.*;
@@ -322,41 +320,41 @@ public abstract class TestBed extends GeomApp {
     //      desiredApplicationBounds = r;
   }
 
-//  /**
-//   * Initialize the editor, if one is to be used. User can also add items to the
-//   * editor menu, and add any additional menus. Default implementation does
-//   * nothing. <br>
-//   * Typical user code:
-//   * 
-//   * <pre>
-//   * // specify object types manipulated by editor
-//   * Editor.addObjectType(EdPoint.FACTORY);
-//   * Editor.addObjectType(EdSegment.FACTORY);
-//   * </pre>
-//   * 
-//   * A more involved version might look like:
-//   * 
-//   * <pre>
-//   * Editor.addObjectType(EdPolygon.FACTORY);
-//   * Editor.addObjectType(EdDisc.FACTORY);
-//   * Editor.addObjectType(EdSegment.FACTORY);
-//   * Editor.addObjectType(EdDiameter.FACTORY);
-//   * Editor.addObjectType(EdPoint.FACTORY);
-//   * 
-//   * Editor.openMenu();
-//   * C.sMenuItem(G_TOGGLEDISCS, "Toggle discs/points", "!^t");
-//   * C.sMenuItem(G_MAKETANGENT, "Set disc tangent", "!^3");
-//   * C.sMenuItem(G_MAKESUPPORTED, "Set disc supported", "!^4");
-//   * Editor.closeMenu();
-//   * 
-//   * C.sOpenMenu(INVERT, "Invert");
-//   * C.sMenuItem(INV_SEGS, "Segments", null);
-//   * C.sMenuItem(INV_DISCS, "Discs", null);
-//   * C.sCloseMenu();
-//   * </pre>
-//   */
-//  public void initEditor() {
-//  }
+  //  /**
+  //   * Initialize the editor, if one is to be used. User can also add items to the
+  //   * editor menu, and add any additional menus. Default implementation does
+  //   * nothing. <br>
+  //   * Typical user code:
+  //   * 
+  //   * <pre>
+  //   * // specify object types manipulated by editor
+  //   * Editor.addObjectType(EdPoint.FACTORY);
+  //   * Editor.addObjectType(EdSegment.FACTORY);
+  //   * </pre>
+  //   * 
+  //   * A more involved version might look like:
+  //   * 
+  //   * <pre>
+  //   * Editor.addObjectType(EdPolygon.FACTORY);
+  //   * Editor.addObjectType(EdDisc.FACTORY);
+  //   * Editor.addObjectType(EdSegment.FACTORY);
+  //   * Editor.addObjectType(EdDiameter.FACTORY);
+  //   * Editor.addObjectType(EdPoint.FACTORY);
+  //   * 
+  //   * Editor.openMenu();
+  //   * C.sMenuItem(G_TOGGLEDISCS, "Toggle discs/points", "!^t");
+  //   * C.sMenuItem(G_MAKETANGENT, "Set disc tangent", "!^3");
+  //   * C.sMenuItem(G_MAKESUPPORTED, "Set disc supported", "!^4");
+  //   * Editor.closeMenu();
+  //   * 
+  //   * C.sOpenMenu(INVERT, "Invert");
+  //   * C.sMenuItem(INV_SEGS, "Segments", null);
+  //   * C.sMenuItem(INV_DISCS, "Discs", null);
+  //   * C.sCloseMenu();
+  //   * </pre>
+  //   */
+  //  public void initEditor() {
+  //  }
 
   private boolean console() {
     return parms.consoleRows > 0;
@@ -979,21 +977,5 @@ public abstract class TestBed extends GeomApp {
   }
 
   private float mZoomFactor = 1f;
-
-  // ------------------------------------------------------------------
-  // Menu bar
-  // ------------------------------------------------------------------
-
-  @Override
-  public void populateMenuBar(MenuBarWrapper m) {
-    addFileMenu(m);
-    addEditMenu(m);
-    addViewMenu(m);
-  }
-
-  private void addFileMenu(MenuBarWrapper m) {
-    m.addMenu("File", null);
-    addItem("open", "Open", new OpenFileOper());
-  }
 
 }

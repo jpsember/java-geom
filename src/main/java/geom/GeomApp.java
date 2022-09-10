@@ -185,7 +185,21 @@ public abstract class GeomApp extends GUIApp {
   // ------------------------------------------------------------------
 
   @Override
-  public abstract void populateMenuBar(MenuBarWrapper m);
+  public final void populateMenuBar(MenuBarWrapper m) {
+    addProjectMenu(m);
+    if (currentProject().definedAndNonEmpty()) {
+      populateMenuBarForProject(m);
+    }
+  }
+
+  /**
+   * Add menus to for current open project. Not called if no project is open
+   */
+  public void populateMenuBarForProject(MenuBarWrapper m) {
+    addFileMenu(m);
+    addEditMenu(m);
+    addViewMenu(m);
+  }
 
   public void addProjectMenu(MenuBarWrapper m) {
     m.addMenu("Project");
@@ -199,6 +213,24 @@ public abstract class GeomApp extends GUIApp {
           }
         }));
     addItem("project_open_next", "Open Next", new OpenNextProjectOper());
+  }
+
+  public void addFileMenu(MenuBarWrapper m) {
+    m.addMenu("File", null);
+    UserOperation prevOper = new FileStepOper(-1);
+    UserOperation nextOper = new FileStepOper(1);
+    UserOperation prevUsedOper = new FileStepUsedOper(-1);
+    UserOperation nextUsedOper = new FileStepUsedOper(1);
+    addItem("script_step_bwd", "Prev", prevOper);
+    addItem("script_step_fwd", "Next", nextOper);
+    addItem("script_step_bwd2", "Prev_", prevOper);
+    addItem("script_step_fwd2", "Next_", nextOper);
+    addItem("script_page_bwd", "Page Bwd", new FileStepOper(-1).withAccel());
+    addItem("script_page_fwd", "Page Fwd", new FileStepOper(1).withAccel());
+    addItem("script_used_prev", "Prev Used", prevUsedOper);
+    addItem("script_used_next", "Next Used", nextUsedOper);
+    addItem("script_jump_first", "First", new FileJumpOper(-1));
+    addItem("script_jump_last", "Last", new FileJumpOper(1));
   }
 
   public void addEditMenu(MenuBarWrapper m) {

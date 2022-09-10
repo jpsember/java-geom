@@ -68,7 +68,6 @@ public class InfoPanel extends JPanel {
 
     String scriptDisplay = "";
     if (!script.isNone()) {
-      todo("is editor() callable here?");
       Project project = editor().currentProject();  
       StringBuilder sb = new StringBuilder();
       sb.append(project.scriptIndex());
