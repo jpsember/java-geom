@@ -38,11 +38,6 @@ public class SampleMain extends TestBed {
 
 
   @Override
-  public boolean usesProjects() {
-    return false;
-  }
-
-  @Override
   public void addOperations() {
     addOper(new SimpleOper());
     addOper(new GeneratorOper());

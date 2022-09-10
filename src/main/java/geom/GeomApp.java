@@ -188,8 +188,6 @@ public abstract class GeomApp extends GUIApp {
   public abstract void populateMenuBar(MenuBarWrapper m);
 
   public void addProjectMenu(MenuBarWrapper m) {
-    if (!usesProjects())
-      return;
     m.addMenu("Project");
     addItem("project_open", "Open", new ProjectOpenOper());
     addItem("project_close", "Close", new ProjectCloseOper());
