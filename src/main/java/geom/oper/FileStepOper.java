@@ -40,7 +40,6 @@ import geom.Project;
 public final class FileStepOper extends UserOperation {
 
   public FileStepOper(int stepVelocity) {
-    todo("move this to geom project");
     loadTools();
     mStepVelocity = stepVelocity;
     mStepSpeed = Math.abs(mStepVelocity);

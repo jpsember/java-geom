@@ -3,6 +3,7 @@ package geom;
 import static js.base.Tools.*;
 
 import java.io.File;
+import java.util.List;
 
 import geom.gen.Command;
 import geom.oper.*;
@@ -45,8 +46,18 @@ public abstract class GeomApp extends GUIApp {
     }
   }
 
+  @Override
+  public List<Object> getOptionalArgDescriptions() {
+    return arrayList("[<project directory>]");
+  }
+
   private File mStartProjectFile = Files.DEFAULT;
 
+  /**
+   * Return true iff this project has support for images
+   */
+  public abstract boolean hasImageSupport();
+  
   // ------------------------------------------------------------------
   // Current project
   // ------------------------------------------------------------------
@@ -141,6 +152,15 @@ public abstract class GeomApp extends GUIApp {
     todo("who owns the EditorPanel?  Do we need to get rid of it here?");
     todo("add support for ControlPanel");
     //mControlPanel = null;
+  }
+
+  @Override
+  public final /* final for now */ String getAlertText() {
+    if (!currentProject().defined())
+      return "No project selected; open one from the Project menu";
+    if (!currentProject().definedAndNonEmpty())
+      return "This project is empty! Open another from the Project menu";
+    return null;
   }
 
   //  public final void openProject(File file) {
@@ -334,12 +354,12 @@ public abstract class GeomApp extends GUIApp {
   public static final int REPAINT_ALL = ~0;
 
   @Override
-  public void startedGUI() {
-    todo("open last script by looking at config file, or an anonymous one");
+  public final /*for now*/ void startedGUI() {
     ScriptManager.setSingleton(new ScriptManager());
-    ScriptManager.singleton().replaceCurrentScriptWith(ScriptWrapper.buildUntitled());
+    openAppropriateProject();
   }
 
+  
   @Override
   public void userEventManagerListener(UserEvent event) {
     // Avoid repainting if default operation and just a mouse move
@@ -369,4 +389,27 @@ public abstract class GeomApp extends GUIApp {
   }
 
   private InfoPanel mInfoPanel;
+
+  // ------------------------------------------------------------------
+  // Periodic background tasks (e.g. flushing changes to script)
+  // ------------------------------------------------------------------
+
+  @Override
+  public final /* for now */ void swingBackgroundTask() {
+    if (!currentProject().defined())
+      return;
+
+    mTaskTicker++;
+    scriptManager().flushScript();
+    if ((mTaskTicker & 0x3) == 0) {
+      if (currentProject().defined())
+        flushProject();
+      else
+        alert("wtf? current project was not defined");
+      AppDefaults.sharedInstance().flush();
+    }
+  }
+
+  private int mTaskTicker;
+
 }

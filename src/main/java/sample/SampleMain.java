@@ -25,6 +25,11 @@ public class SampleMain extends TestBed {
     app.startApplication(args);
   }
 
+  @Override
+  public boolean hasImageSupport() {
+    return false;
+  }
+
   private SampleMain() {
     guiAppConfig() //
         .appName("Sample") //

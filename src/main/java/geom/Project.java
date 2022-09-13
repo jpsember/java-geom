@@ -134,10 +134,11 @@ public final class Project extends BaseObject {
   }
 
   private void buildScriptList() {
-    List<ScriptFileEntry> scriptFileList = ScriptUtil.buildScriptList(directory());
+    boolean hasImages = GeomTools.editor().hasImageSupport();
+    List<ScriptFileEntry> scriptFileList = ScriptUtil.buildScriptList(directory(), hasImages);
     List<ScriptWrapper> scripts = arrayList();
 
-    File scriptsDirectory = ScriptUtil.scriptDirForProject(directory());
+    File scriptsDirectory = ScriptUtil.scriptDirForProject(directory(), hasImages);
 
     int logCount = 0;
     for (ScriptFileEntry entry : scriptFileList) {
