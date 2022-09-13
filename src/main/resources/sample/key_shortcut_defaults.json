@@ -1,17 +1,4 @@
 {
- ".version" : { "code" : 1 },
-
-"open" : { "code" : "O", "flags" : "c" },
-
-
-"zoom_in" : {"code" : 61, "flags" : "c"},
-"zoom_out" : {"code" : 45, "flags" : "c"},
-"zoom_reset" : {"code" : 48, "flags" : "c"},
-
-"box_add": {"code" : 32},
-"pt_add" : { "code" : 80 },
-"polygon_add" : {"code" : 89 },
-
 "cut" : {"code" : 88, "flags" : "c"},
 "copy" : {"code" : 67, "flags" : "c"},
 "paste" : {"code" : 86, "flags" : "c"},
@@ -21,6 +8,38 @@
 
 "select_none" : {  "code" : 27},
 "select_all" : {  "code" : 65, "flags" : "c"},
+
+"project_open" : { "code" : "O", "flags" : "c" },
+"project_close" : { "code" : "W", "flags" : "c" },
+"project_open_next" : {  "code" : "o","flags" : "cm"},
+"project_find_problems" : {  "code" : "p","flags" : "cm"},
+
+"script_step_bwd" : {"code" : 37},
+"script_step_fwd" : {"code" : 39},
+
+"script_step_fwd2" : { "code" : 68 },
+"script_step_bwd2" : { "code" : 83 },
+
+"script_jump_first" : {  "code" : 37,
+                         "flags" : "cs" },
+"script_jump_last" : {  "code" : 39,
+                        "flags" : "cs" },
+"script_used_next" : { "code" : 93 },
+"script_used_prev" : { "code" : 91 },
+
+"script_page_bwd" : {"code" : 37, "flags" : "s" },
+"script_page_fwd" : {"code" : 39, "flags" : "s" },
+
+"zoom_in" : {"code" : 61, "flags" : "c"},
+"zoom_out" : {"code" : 45, "flags" : "c"},
+"zoom_reset" : {"code" : 48, "flags" : "c"},
+
+"box_add": {"code" : 32},
+"pt_add" : { "code" : 80 },
+"polygon_add" : {"code" : 89 },
+"curve_add" : {"code" : 79 },
+"curve_add2" : {"code" : 65 },
+"rotation_toggle" : {"code" : 82, "flags" : "c" },
 
 // This is helpful:  https://stackoverflow.com/questions/15313469
 }
