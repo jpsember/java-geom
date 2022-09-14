@@ -40,6 +40,8 @@ import geom.Project;
 public final class FileStepOper extends UserOperation {
 
   public FileStepOper(int stepVelocity) {
+    if (ISSUE_2)
+      setVerbose();
     loadTools();
     mStepVelocity = stepVelocity;
     mStepSpeed = Math.abs(mStepVelocity);
@@ -52,6 +54,8 @@ public final class FileStepOper extends UserOperation {
 
   @Override
   public boolean shouldBeEnabled() {
+    if (ISSUE_2)
+      pr("shouldbeenabled");
     mNextFileIndex = null;
     Project project = editor().currentProject();
     if (!project.definedAndNonEmpty())
@@ -90,13 +94,19 @@ public final class FileStepOper extends UserOperation {
       currScript = updatedIndex;
       mNextFileIndex = updatedIndex;
     }
+    if (ISSUE_2)
+      pr("nextFileIndex:", mNextFileIndex);
     return mNextFileIndex != null;
   }
 
   @Override
   public void start() {
+    if (ISSUE_2)
+      pr("start, mnext:", mNextFileIndex);
     if (mNextFileIndex == null)
       return;
+    if (ISSUE_2)
+      pr("switching to script:", mNextFileIndex);
     editor().switchToScript(mNextFileIndex);
     mLastOperationTime = System.currentTimeMillis();
   }

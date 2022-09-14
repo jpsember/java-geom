@@ -57,7 +57,7 @@ public abstract class GeomApp extends GUIApp {
    * Return true iff this project has support for images
    */
   public abstract boolean hasImageSupport();
-  
+
   // ------------------------------------------------------------------
   // Current project
   // ------------------------------------------------------------------
@@ -354,12 +354,11 @@ public abstract class GeomApp extends GUIApp {
   public static final int REPAINT_ALL = ~0;
 
   @Override
-  public final /*for now*/ void startedGUI() {
+  public final /* for now */ void startedGUI() {
     ScriptManager.setSingleton(new ScriptManager());
     openAppropriateProject();
   }
 
-  
   @Override
   public void userEventManagerListener(UserEvent event) {
     // Avoid repainting if default operation and just a mouse move

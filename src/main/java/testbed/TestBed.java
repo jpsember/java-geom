@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.util.List;
 
 import static js.base.Tools.*;
+import static geom.GeomTools.*;
 
 public abstract class TestBed extends GeomApp {
 
@@ -569,16 +570,23 @@ public abstract class TestBed extends GeomApp {
     Component p1;
     {
       Component ctrlPanel = C.getControlPanel(TBGlobals.CT_MAIN);
-      JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), ctrlPanel);
+      JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), ctrlPanel); 
+      
+      if (ISSUE_2 && alert("doing mock panel"))
+        sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(),new JPanel());
+      
+      
       sp2.setOneTouchExpandable(true);
       sp2.setResizeWeight(1);
       p1 = sp2;
 
       spCtrls = sp2;
     }
+    if (false && alert("not showing other panel"))
+      p1 = getEditorPanel();
 
     Component spToAdd = p1;
-    if (console()) {
+    if (console() && (ISSUE_2 && !alert("DISABLED"))) {
       JPanel p2 = C.getControlPanel(TBGlobals.CT_CONSOLE);
       JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, p1, p2);
       spConsole = sp;
