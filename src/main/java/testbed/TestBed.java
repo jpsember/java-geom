@@ -549,82 +549,89 @@ public abstract class TestBed extends GeomApp {
   public void populateFrame(JPanel parentPanel) {
     constructEditorPanel();
     getEditorPanel().PLOT_RED = true;
-    
-    
-    parentPanel.add(getEditorPanel(), SwingConstants.CENTER);
-//
-//    {
-//      //      app = this;
-//      operList = new DArray();
-//      //      workFile = null;
-//      //      oldConfigFile = "";
-//      //      app = this;
-//
-//      setParameters0();
-//
-//      //    JComponent main = new JPanel(new BorderLayout());
-//
-//      todo("avoid calling V.init");
-//      V.init();
-//
-//      C.init();
-//    }
-//
-//    Component p1;
-//    {
-//      Component ctrlPanel = C.getControlPanel(TBGlobals.CT_MAIN);
-//      JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), ctrlPanel); 
-//      
-//      if (ISSUE_2 && alert("doing mock panel"))
-//        sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(),new JPanel());
-//      
-//      
-//      sp2.setOneTouchExpandable(true);
-//      sp2.setResizeWeight(1);
-//      p1 = sp2;
-//
-//      spCtrls = sp2;
-//    }
-//    if (false && alert("not showing other panel"))
-//      p1 = getEditorPanel();
-//
-//    Component spToAdd = p1;
-//    if (console() && (ISSUE_2 && !alert("DISABLED"))) {
-//      JPanel p2 = C.getControlPanel(TBGlobals.CT_CONSOLE);
-//      JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, p1, p2);
-//      spConsole = sp;
-//
-//      sp.setOneTouchExpandable(true);
-//      sp.setResizeWeight(1);
-//      spToAdd = sp;
-//    }
-//    parentPanel.add(spToAdd, SwingConstants.CENTER);
-//
-//    if (console()) {
-//      addConsole(parms.consoleRows, false);
-//    }
-//    {
-//      C.openScript();
-//      mainControlScript0();
-//      addOperations();
-//      addControls();
-//      addOperCtrls();
-//      String scr = C.closeScript();
-//      C.addControls(scr);
-//    }
-//
-//    addMenus0();
-//
-//    processConfigFile();
-//    if (console()) {
-//      CtConsole c = (CtConsole) C.get(TBGlobals.ID_CONSOLE);
-//      c.redirectSystemOutput();
-//    }
-//
-//    V.initGrid();
-//    //
-//    //    if (parms.withEditor)
-//    //      Editor.init2();
+
+    if (false) {
+      parentPanel.add(getEditorPanel(), SwingConstants.CENTER);
+    } else {
+
+      {
+        //      app = this;
+        operList = new DArray();
+        //      workFile = null;
+        //      oldConfigFile = "";
+        //      app = this;
+
+        setParameters0();
+
+        //    JComponent main = new JPanel(new BorderLayout());
+
+        todo("avoid calling V.init");
+        V.init();
+
+        C.init();
+      }
+
+      Component p1;
+      {
+        Component ctrlPanel = C.getControlPanel(TBGlobals.CT_MAIN);
+        JSplitPane sp2 = null;
+
+        if (false && ISSUE_2 && alert("doing mock panel"))
+          sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), new JPanel());
+
+        if (sp2 == null)
+          sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), ctrlPanel);
+
+      //  sp2.setOneTouchExpandable(true);
+        sp2.setResizeWeight(1);
+        p1 = sp2;
+
+        //getEditorPanel().requestFocusInWindow();
+        spCtrls = sp2;
+      }
+
+      alert("using a JSplitPane seems to screw things up for Issue #2");
+      if (false && alert("not showing other panel"))
+        p1 = getEditorPanel();
+
+      Component spToAdd = p1;
+      if (console() && (ISSUE_2 && !alert("DISABLED"))) {
+        JPanel p2 = C.getControlPanel(TBGlobals.CT_CONSOLE);
+        JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, p1, p2);
+        spConsole = sp;
+
+        sp.setOneTouchExpandable(true);
+        sp.setResizeWeight(1);
+        spToAdd = sp;
+      }
+      parentPanel.add(spToAdd, SwingConstants.CENTER);
+
+      if (console()) {
+        addConsole(parms.consoleRows, false);
+      }
+      {
+        C.openScript();
+        mainControlScript0();
+        addOperations();
+        addControls();
+        addOperCtrls();
+        String scr = C.closeScript();
+        C.addControls(scr);
+      }
+
+      addMenus0();
+
+      processConfigFile();
+      if (console()) {
+        CtConsole c = (CtConsole) C.get(TBGlobals.ID_CONSOLE);
+        c.redirectSystemOutput();
+      }
+
+      V.initGrid();
+      //
+      //    if (parms.withEditor)
+      //      Editor.init2();
+    }
 
     programBegun = true;
     //    workFile = new WorkFile();
