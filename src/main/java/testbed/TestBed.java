@@ -550,88 +550,92 @@ public abstract class TestBed extends GeomApp {
     constructEditorPanel();
     getEditorPanel().PLOT_RED = true;
 
-    if (false) {
-      parentPanel.add(getEditorPanel(), SwingConstants.CENTER);
-    } else {
+    parentPanel.setLayout(new BorderLayout());
+    // Try placing the editor in the center, and the controls to the east.
 
-      {
-        //      app = this;
-        operList = new DArray();
-        //      workFile = null;
-        //      oldConfigFile = "";
-        //      app = this;
+    parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
 
-        setParameters0();
+    {
+      //      app = this;
+      operList = new DArray();
+      //      workFile = null;
+      //      oldConfigFile = "";
+      //      app = this;
 
-        //    JComponent main = new JPanel(new BorderLayout());
+      setParameters0();
 
-        todo("avoid calling V.init");
-        V.init();
+      //    JComponent main = new JPanel(new BorderLayout());
 
-        C.init();
-      }
+      todo("avoid calling V.init");
+      V.init();
 
-      Component p1;
-      {
-        Component ctrlPanel = C.getControlPanel(TBGlobals.CT_MAIN);
-        JSplitPane sp2 = null;
-
-        if (false && ISSUE_2 && alert("doing mock panel"))
-          sp2 = new MySplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), new JPanel());
-
-        if (sp2 == null)
-          sp2 = new MySplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), ctrlPanel);
-
-        //  sp2.setOneTouchExpandable(true);
-        sp2.setResizeWeight(1);
-        p1 = sp2;
-
-        //getEditorPanel().requestFocusInWindow();
-        spCtrls = sp2;
-      }
-
-      alert("using a JSplitPane seems to screw things up for Issue #2");
-      if (false && alert("not showing other panel"))
-        p1 = getEditorPanel();
-
-      Component spToAdd = p1;
-      if (console() && (ISSUE_2 && !alert("DISABLED"))) {
-        JPanel p2 = C.getControlPanel(TBGlobals.CT_CONSOLE);
-        JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, p1, p2);
-        spConsole = sp;
-
-        sp.setOneTouchExpandable(true);
-        sp.setResizeWeight(1);
-        spToAdd = sp;
-      }
-      parentPanel.add(spToAdd, SwingConstants.CENTER);
-
-      if (console()) {
-        addConsole(parms.consoleRows, false);
-      }
-      {
-        C.openScript();
-        mainControlScript0();
-        addOperations();
-        addControls();
-        addOperCtrls();
-        String scr = C.closeScript();
-        C.addControls(scr);
-      }
-
-      addMenus0();
-
-      processConfigFile();
-      if (console()) {
-        CtConsole c = (CtConsole) C.get(TBGlobals.ID_CONSOLE);
-        c.redirectSystemOutput();
-      }
-
-      V.initGrid();
-      //
-      //    if (parms.withEditor)
-      //      Editor.init2();
+      C.init();
     }
+
+    Component p1;
+    {
+      Component ctrlPanel = C.getControlPanel(TBGlobals.CT_MAIN);
+      //  JSplitPane sp2 = null;
+      //
+      //        if (false && ISSUE_2 && alert("doing mock panel"))
+      //          sp2 = new MySplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), new JPanel());
+      //
+      //        if (sp2 == null)
+      //          sp2 = new MySplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), ctrlPanel);
+
+      //  sp2.setOneTouchExpandable(true);
+      //        sp2.setResizeWeight(1);
+      //        p1 = sp2;
+      //
+      //        //getEditorPanel().requestFocusInWindow();
+      //        spCtrls = sp2;
+      parentPanel.add(ctrlPanel, BorderLayout.LINE_END);
+      if (false && alert("hiding control panel"))
+        ctrlPanel.setVisible(false);
+    }
+
+    //      alert("using a JSplitPane seems to screw things up for Issue #2");
+    //      if (false && alert("not showing other panel"))
+    //        p1 = getEditorPanel();
+
+    //      Component spToAdd = p1;
+    //      if (console() && (ISSUE_2 && !alert("DISABLED"))) {
+    //        JPanel p2 = C.getControlPanel(TBGlobals.CT_CONSOLE);
+    //        JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, p1, p2);
+    //        spConsole = sp;
+    //
+    //        sp.setOneTouchExpandable(true);
+    //        sp.setResizeWeight(1);
+    //        spToAdd = sp;
+    //      }
+    //      parentPanel.add(spToAdd, SwingConstants.CENTER);
+
+    todo("console is no longer supported");
+    //      if (console()) {
+    //        addConsole(parms.consoleRows, false);
+    //      }
+    {
+      C.openScript();
+      mainControlScript0();
+      addOperations();
+      addControls();
+      addOperCtrls();
+      String scr = C.closeScript();
+      C.addControls(scr);
+    }
+
+    addMenus0();
+
+    processConfigFile();
+    if (console()) {
+      CtConsole c = (CtConsole) C.get(TBGlobals.ID_CONSOLE);
+      c.redirectSystemOutput();
+    }
+
+    V.initGrid();
+    //
+    //    if (parms.withEditor)
+    //      Editor.init2();
 
     programBegun = true;
     //    workFile = new WorkFile();
@@ -826,9 +830,6 @@ public abstract class TestBed extends GeomApp {
   // we consume any actions without reporting them to the program.
   private boolean programBegun;
 
-  // pane containing controls
-  private JSplitPane spCtrls;
-
   // pane containing console
   private JSplitPane spConsole;
 
@@ -927,23 +928,6 @@ public abstract class TestBed extends GeomApp {
       //      } else {
       //        appFrame().setLocationRelativeTo(null);
       //      }
-
-      int dv = C.vi(TBGlobals.TBCTRLSLIDER);
-
-      if (dv >= 0) {
-        if (db)
-          Streams.out.println(" setting ctrl slider to " + dv);
-
-        spCtrls.setDividerLocation(dv);
-      }
-      if (spConsole != null) {
-        dv = C.vi(TBGlobals.TBCONSOLESLIDER);
-        if (dv >= 0) {
-          if (db)
-            Streams.out.println(" setting console slider to " + dv);
-          spConsole.setDividerLocation(dv);
-        }
-      }
     }
   }
 
@@ -968,17 +952,6 @@ public abstract class TestBed extends GeomApp {
       //      C.seti(TBGlobals.TBFRAME + 1, r.y);
       //      C.seti(TBGlobals.TBFRAME + 2, r.width);
       //      C.seti(TBGlobals.TBFRAME + 3, r.height);
-
-      if (spCtrls != null) {
-        int loc = spCtrls.getDividerLocation();
-
-        C.seti(TBGlobals.TBCTRLSLIDER, loc);
-        if (db)
-          System.out.println("storing div loc " + loc);
-      }
-      if (spConsole != null) {
-        C.seti(TBGlobals.TBCONSOLESLIDER, spConsole.getDividerLocation());
-      }
     }
   }
 
