@@ -582,7 +582,7 @@ public abstract class TestBed extends GeomApp {
         if (sp2 == null)
           sp2 = new MySplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), ctrlPanel);
 
-      //  sp2.setOneTouchExpandable(true);
+        //  sp2.setOneTouchExpandable(true);
         sp2.setResizeWeight(1);
         p1 = sp2;
 
@@ -995,5 +995,20 @@ public abstract class TestBed extends GeomApp {
   }
 
   private float mZoomFactor = 1f;
+
+  /**
+   * Subclass of JSplitPane to avoid having it steal left/right keyboard actions
+   */
+  private static class MySplitPane extends JSplitPane {
+
+    public MySplitPane(int newOrientation, Component newLeftComponent, Component newRightComponent) {
+      super(newOrientation, newLeftComponent, newRightComponent);
+    }
+
+    @Override
+    protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
+      return false;
+    }
+  }
 
 }
