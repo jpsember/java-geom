@@ -577,10 +577,10 @@ public abstract class TestBed extends GeomApp {
         JSplitPane sp2 = null;
 
         if (false && ISSUE_2 && alert("doing mock panel"))
-          sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), new JPanel());
+          sp2 = new MySplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), new JPanel());
 
         if (sp2 == null)
-          sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), ctrlPanel);
+          sp2 = new MySplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), ctrlPanel);
 
       //  sp2.setOneTouchExpandable(true);
         sp2.setResizeWeight(1);
