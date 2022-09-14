@@ -10,7 +10,6 @@ import javax.swing.*;
 import java.util.List;
 
 import static js.base.Tools.*;
-import static geom.GeomTools.*;
 
 public abstract class TestBed extends GeomApp {
 
@@ -357,20 +356,12 @@ public abstract class TestBed extends GeomApp {
   //  public void initEditor() {
   //  }
 
-  private boolean console() {
-    return parms.consoleRows > 0;
-  }
-
   private void addMenus0() {
 
     C.sOpenMenu(TBGlobals.MENU_TESTBED, parms.menuTitle);
 
     C.sMenuItem(TBGlobals.ABOUT, "About Testbed", null);
     C.sMenuSep();
-    C.sMenuItem(TBGlobals.BTN_TOGGLECTRLS, "Toggle controls", "!^1");
-    if (console()) {
-      C.sMenuItem(TBGlobals.BTN_TOGGLECONSOLE, "Toggle console", "!^2");
-    }
 
     C.sMenuSep();
     if (parms.algTrace) {
@@ -469,22 +460,6 @@ public abstract class TestBed extends GeomApp {
   //  }
 
   /**
-   * Add console. Redirects all writer output to the console's text area. The
-   * console's id is fixed at ID_CONSOLE.
-   *
-   * @param rows
-   *          : number of rows of text
-   * @param commandLine
-   *          : true if user can enter commands
-   */
-  private void addConsole(int rows, boolean commandLine) {
-    C.openScript();
-    C.sConsole(TBGlobals.ID_CONSOLE, rows, commandLine);
-    String scr = C.closeScript();
-    C.addControls(scr, TBGlobals.CT_CONSOLE);
-  }
-
-  /**
    * Get title of application
    */
   protected final String title() {
@@ -524,96 +499,24 @@ public abstract class TestBed extends GeomApp {
   public void initTestbed() {
   }
 
-  //  /**
-  //   * Update window, slider positions to reflect values stored in controls
-  //   * @deprecated refactor this
-  //   */
-  //  void updateWindowPosition() {
-  //    int dv = C.vi(TBGlobals.TBCTRLSLIDER);
-  //
-  //    if (DBF)
-  //      System.out.println("just read TBCTRLSLIDER:" + dv);
-  //
-  //    if (dv >= 0) {
-  //      spCtrls.setDividerLocation(dv);
-  //    }
-  //    if (spConsole != null) {
-  //      dv = C.vi(TBGlobals.TBCONSOLESLIDER);
-  //      if (dv >= 0) {
-  //        spConsole.setDividerLocation(dv);
-  //      }
-  //    }
-  //  }
-
   @Override
   public void populateFrame(JPanel parentPanel) {
     constructEditorPanel();
     getEditorPanel().PLOT_RED = true;
 
     parentPanel.setLayout(new BorderLayout());
-    // Try placing the editor in the center, and the controls to the east.
-
     parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
 
     {
-      //      app = this;
       operList = new DArray();
-      //      workFile = null;
-      //      oldConfigFile = "";
-      //      app = this;
-
       setParameters0();
-
-      //    JComponent main = new JPanel(new BorderLayout());
-
       todo("avoid calling V.init");
       V.init();
 
       C.init();
     }
 
-    Component p1;
-    {
-      Component ctrlPanel = C.getControlPanel(TBGlobals.CT_MAIN);
-      //  JSplitPane sp2 = null;
-      //
-      //        if (false && ISSUE_2 && alert("doing mock panel"))
-      //          sp2 = new MySplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), new JPanel());
-      //
-      //        if (sp2 == null)
-      //          sp2 = new MySplitPane(JSplitPane.HORIZONTAL_SPLIT, getEditorPanel(), ctrlPanel);
-
-      //  sp2.setOneTouchExpandable(true);
-      //        sp2.setResizeWeight(1);
-      //        p1 = sp2;
-      //
-      //        //getEditorPanel().requestFocusInWindow();
-      //        spCtrls = sp2;
-      parentPanel.add(ctrlPanel, BorderLayout.LINE_END);
-      if (false && alert("hiding control panel"))
-        ctrlPanel.setVisible(false);
-    }
-
-    //      alert("using a JSplitPane seems to screw things up for Issue #2");
-    //      if (false && alert("not showing other panel"))
-    //        p1 = getEditorPanel();
-
-    //      Component spToAdd = p1;
-    //      if (console() && (ISSUE_2 && !alert("DISABLED"))) {
-    //        JPanel p2 = C.getControlPanel(TBGlobals.CT_CONSOLE);
-    //        JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, p1, p2);
-    //        spConsole = sp;
-    //
-    //        sp.setOneTouchExpandable(true);
-    //        sp.setResizeWeight(1);
-    //        spToAdd = sp;
-    //      }
-    //      parentPanel.add(spToAdd, SwingConstants.CENTER);
-
-    todo("console is no longer supported");
-    //      if (console()) {
-    //        addConsole(parms.consoleRows, false);
-    //      }
+    parentPanel.add(C.getControlPanel(TBGlobals.CT_MAIN), BorderLayout.LINE_END);
     {
       C.openScript();
       mainControlScript0();
@@ -627,50 +530,14 @@ public abstract class TestBed extends GeomApp {
     addMenus0();
 
     processConfigFile();
-    if (console()) {
-      CtConsole c = (CtConsole) C.get(TBGlobals.ID_CONSOLE);
-      c.redirectSystemOutput();
-    }
 
     V.initGrid();
-    //
-    //    if (parms.withEditor)
-    //      Editor.init2();
 
     programBegun = true;
-    //    workFile = new WorkFile();
 
     initTestbed();
-
-    //    if (false) {
-    //      Tools.warn("adding listener");
-    //      KeyboardFocusManager.getCurrentKeyboardFocusManager()
-    //          .addPropertyChangeListener(new FocusChangeListener());
-    //    }
   }
 
-  //  class FocusChangeListener implements PropertyChangeListener {
-  //    public void propertyChange(PropertyChangeEvent evt) {
-  //      Component oldComp = (Component) evt.getOldValue();
-  //      Component newComp = (Component) evt.getNewValue();
-  //
-  //      if ("focusOwner".equals(evt.getPropertyName())) {
-  //        if (oldComp == null) {
-  //          Streams.out.println("cfocus gain=" + newComp);
-  //        } else {
-  //          Streams.out.println("cfocus loss=" + oldComp);
-  //        }
-  //      } else if ("focusedWindow".equals(evt.getPropertyName())) {
-  //        if (oldComp == null) {
-  //          Streams.out.println("wfocus gain=" + newComp);
-  //        } else {
-  //          Streams.out.println("wfocus loss=" + oldComp);
-  //
-  //        }
-  //      }
-  //    }
-  //
-  //  }
 
   // TODO: we need to call readGadgetGUIValues at startup at some point
 
@@ -732,11 +599,6 @@ public abstract class TestBed extends GeomApp {
      * configuration file: _{title}config_.txt
      */
     public String menuTitle = "TestBed";
-
-    /**
-     * If > 0, number of rows of console to display
-     */
-    public int consoleRows = 0;
 
     /**
      * Width of static text fields
@@ -829,9 +691,6 @@ public abstract class TestBed extends GeomApp {
   // true if beginProgram() has been called yet.  If not,
   // we consume any actions without reporting them to the program.
   private boolean programBegun;
-
-  // pane containing console
-  private JSplitPane spConsole;
 
   static int nOpers() {
     return operList.size();
@@ -937,9 +796,6 @@ public abstract class TestBed extends GeomApp {
    */
   void writeGadgetGUIValues() {
     if (programBegun) {
-
-      final boolean db = false;
-
       todo("persist frame bounds somewhere");
       //      // read frame bounds to gadgets, so they are serialized along with other
       //      // persistent values
@@ -968,20 +824,5 @@ public abstract class TestBed extends GeomApp {
   }
 
   private float mZoomFactor = 1f;
-
-  /**
-   * Subclass of JSplitPane to avoid having it steal left/right keyboard actions
-   */
-  private static class MySplitPane extends JSplitPane {
-
-    public MySplitPane(int newOrientation, Component newLeftComponent, Component newRightComponent) {
-      super(newOrientation, newLeftComponent, newRightComponent);
-    }
-
-    @Override
-    protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed) {
-      return false;
-    }
-  }
 
 }

@@ -12,6 +12,4 @@ public final class GeomTools {
     return ScriptManager.singleton();
   }
 
-  public static final boolean ISSUE_2 = true && alert("ISSUE_2 File/Next in effect");
-
 }

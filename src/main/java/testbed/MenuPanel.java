@@ -7,7 +7,6 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import java.awt.*;
 import static js.base.Tools.*;
-import static geom.GeomTools.*;
 
 /*
  EBNF for menu scripts
@@ -311,10 +310,8 @@ class MenuPanel extends JMenuBar implements Globals, ActionListener, MenuListene
     JMenuItem c = null;
     c = ((CtMenu) item).getItem();
     KeyStroke k = getAccelerator();
-    if (k != null) {
-    if (ISSUE_2)  pr("setting accelerator for gadget",item.getId(),"to:",k);
+    if (k != null)
       c.setAccelerator(k);
-    }
     c.addActionListener(this);
   }
 
