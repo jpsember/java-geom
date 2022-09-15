@@ -39,11 +39,6 @@ public class EdRect extends EdObject implements Globals {
     if (db)
       Streams.out.println("setPoint #" + p + " to " + point);
 
-    if (!useGrid)
-      point = new FPoint2(point);
-    else
-      point = V.snapToGrid(point);
-
     if (!complete())
       init(point, point);
 
@@ -109,11 +104,9 @@ public class EdRect extends EdObject implements Globals {
     FRect r = ro.getBounds();
 
     FPoint2 n0 = FPoint2.add(orig.getPoint(0), delta, null);
-    n0 = V.snapToGrid(n0);
 
     //    FPoint2 size = ro.size();
     FPoint2 tr = FPoint2.add(n0, r.size(), null);
-    tr = V.snapToGrid(tr);
     init(n0.x, n0.y, tr.x, tr.y);
   }
 

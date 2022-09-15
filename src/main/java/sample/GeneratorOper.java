@@ -1,28 +1,39 @@
 package sample;
 
-import testbed.*;
+import java.util.List;
+import java.util.Random;
 
+import geom.EditorElement;
+import geom.GeomTools;
+import geom.ScriptManager;
+import geom.elem.EditableRectElement;
+import geom.gen.ScriptEditState;
+import js.geometry.FPoint;
+import js.geometry.FRect;
+import js.geometry.IRect;
+import testbed.*;
+import static js.base.Tools.*;
 
 public class GeneratorOper implements TestBedOperation, Globals {
-  /*! .enum  .private 1600
-  seed count minrad maxrad _ _ position _  
-   type rndsqr circle spiral  rnddisc shadows square segs
-  */
+  /*
+   * ! .enum .private 1600 seed count minrad maxrad _ _ position _ type rndsqr
+   * circle spiral rnddisc shadows square segs
+   */
 
-    private static final int SEED             = 1600;//!
-    private static final int COUNT            = 1601;//!
-    private static final int MINRAD           = 1602;//!
-    private static final int MAXRAD           = 1603;//!
-    private static final int POSITION         = 1606;//!
-    private static final int TYPE             = 1608;//!
-    private static final int RNDSQR           = 1609;//!
-    private static final int CIRCLE           = 1610;//!
-    private static final int SPIRAL           = 1611;//!
-    private static final int RNDDISC          = 1612;//!
-    private static final int SHADOWS          = 1613;//!
-    private static final int SQUARE           = 1614;//!
-    private static final int SEGS             = 1615;//!
-/*!*/
+  private static final int SEED = 1600;//!
+  private static final int COUNT = 1601;//!
+  private static final int MINRAD = 1602;//!
+  private static final int MAXRAD = 1603;//!
+  private static final int POSITION = 1606;//!
+  private static final int TYPE = 1608;//!
+  private static final int RNDSQR = 1609;//!
+  private static final int CIRCLE = 1610;//!
+  private static final int SPIRAL = 1611;//!
+  private static final int RNDDISC = 1612;//!
+  private static final int SHADOWS = 1613;//!
+  private static final int SQUARE = 1614;//!
+  private static final int SEGS = 1615;//!
+  /* ! */
 
   public void addControls() {
     C.sOpenTab("Gen");
@@ -42,8 +53,7 @@ public class GeneratorOper implements TestBedOperation, Globals {
       C.sOpen();
       {
         C.sOpen();
-        C.sIntSlider(SEED, "Seed",
-            "Random number generator seed (zero for unseeded)", 0, 100, 0, 1);
+        C.sIntSlider(SEED, "Seed", "Random number generator seed (zero for unseeded)", 0, 100, 0, 1);
         C.sNewColumn();
         C.sIntSpinner(COUNT, "Count", "Number to generate", 0, 100, 12, 1);
         C.sClose();
@@ -57,8 +67,7 @@ public class GeneratorOper implements TestBedOperation, Globals {
       }
       {
         C.sOpen();
-        C.sIntSlider(POSITION, "Position", "Distance from center (circular)",
-            0, 200, 30, 1);
+        C.sIntSlider(POSITION, "Position", "Distance from center (circular)", 0, 200, 30, 1);
         C.sNewColumn();
         C.sClose();
       }
@@ -71,183 +80,38 @@ public class GeneratorOper implements TestBedOperation, Globals {
   public static void generateRandom() {
     genRand(C.vi(TYPE));
   }
-  
-  private static void genRand(int type) {
-//    {
-//      DArray items = new DArray();
-//
-//      int seed = C.vi(SEED);
-//      Random r = seed == 0 ? new Random() : new Random(seed);
-//      int c = C.vi(COUNT);
-//
-//      int radMin = Math.min(C.vi(MINRAD), C.vi(MAXRAD));
-//      int radMax = Math.max(C.vi(MINRAD), C.vi(MAXRAD));
-//      double range = (radMax - radMin) * .1;
-//      final int PADDING = 3;
-//      FPoint2 size = V.logicalSize();
-//      double sx = size.x - 2 * PADDING;
-//      double sy = size.y - 2 * PADDING;
-//
-//      switch (type) {
-//      default:
-//        {
-//          for (int i = 0; i < c; i++) {
-//            double rv = r.nextDouble();
-//            double rad = rv * rv * range + radMin;
-//            alert("update this");
-////            EdDisc e = new EdDisc(//
-////                new FPoint2(//
-////                    r.nextDouble() * sx + PADDING, //
-////                    r.nextDouble() * sy + PADDING //
-////                ), rad);
-////            items.add(e);
-//          }
-//        }
-//        break;
-//      case SHADOWS:
-//        {
-////          double fx = 50;
-////          double fy = 35;
-////
-////          double szMax = C.vi(POSITION);
-////
-////          double xl = fx - szMax;
-////          double xr = fx + szMax;
-////          double basey = fy - szMax;
-////
-////          // add left, right base discs
-////          double rad = 5;
-////          alert("update this");
-//////          items.add(new EdDisc(MyMath.ptOnCircle(new FPoint2(xl, basey),
-//////              Math.PI * .75, rad), rad));
-//////          items.add(new EdDisc(MyMath.ptOnCircle(new FPoint2(xr, basey),
-//////              Math.PI * .25, rad), rad));
-////
-////          double xMax = fx + szMax * 1.2;
-////          double xMin = fx + szMax * .1;
-////
-////          double p = .95;
-////
-////          for (int i = 0; i < c; i++) {
-////            double x = xMin + i * ((xMax - xMin) / c);
-////            double fnx = Math.pow((x - fx), p) + fy;
-////
-////            // calculate gradient along x
-////            double grad = p * Math.pow((x - fx), p - 1);
-////
-////            double t = (fx - x) / -grad;
-////            double y = fnx + t;
-////            FPoint2 onCurve = new FPoint2(x, fnx);
-////
-////            FPoint2 origin = new FPoint2(fx, y);
-//////            items.add(new EdDisc(origin, onCurve.distance(origin)));
-////          }
-//        }
-//        break;
-////      case SEGS:
-////      case RNDDISC:
-////        {
-////          double szMax = C.vi(POSITION) * (80.0 / 30.0) / 100.0;
-////
-////          for (int i = 0; i < c; i++) {
-////            double rv = r.nextDouble();
-////            double rad = rv * rv * range + radMin;
-////            double theta = r.nextDouble() * Math.PI * 2;
-////            double rd = Math.sqrt(r.nextDouble()) * szMax * .5;
-////
-////            EdDisc e = new EdDisc(//
-////                new FPoint2(size.x / 2 + Math.cos(theta) * sx * rd, size.y / 2
-////                    + Math.sin(theta) * sy * rd), rad);
-////            items.add(e);
-////          }
-////        }
-////        break;
-////      case CIRCLE:
-////        {
-////          for (int i = 0; i < c; i++) {
-////            FPoint2 cn = MyMath.ptOnCircle(new FPoint2(50, 50), MyMath
-////                .radians(i * 360.0 / c), C.vi(POSITION));
-////            EdDisc e = new EdDisc(cn, C.vi(MINRAD));
-////            items.add(e);
-////          }
-////        }
-////        break;
-////      case SPIRAL:
-////        {
-////          double s2 = c * .4;
-////
-////          int r0 = C.vi(MINRAD);
-////          int r1 = Math.max(r0, C.vi(MAXRAD));
-////          if (r1 == r0)
-////            r1++;
-////
-////          for (int i = 0; i < c; i++) {
-////            double scl = (i + c * .3) / (double) (c - 1);
-////
-////            FPoint2 cn = MyMath.ptOnCircle(new FPoint2(50, 50), MyMath
-////                .radians(i * 360.0 / s2), C.vi(POSITION) * scl);
-////            EdDisc e = new EdDisc(cn, .05 * r.nextInt(r1 - r0) + r0);
-////            items.add(e);
-////          }
-////        }
-////        break;
-//      }
-////      if (type == SEGS) {
-////        for (int i = 0; i < items.size(); i++) {
-////          EdDisc d = (EdDisc) items.get(i);
-////          double ra = d.getRadius();
-////          FPoint2 or = d.getOrigin();
-////          double the = r.nextDouble() * Math.PI;
-////          EdSegment s = new EdSegment(MyMath.ptOnCircle(or, the, ra), MyMath
-////              .ptOnCircle(or, the + Math.PI, ra));
-////          items.set(i, s);
-////        }
-////      } else {
-////        int rt = SampleMain.regionType();
-////        switch (rt) {
-////        case SampleMain.RECTS:
-////        case SampleMain.SQUARES:
-////          for (int i = 0; i < items.size(); i++) {
-////            EdDisc d = (EdDisc) items.get(i);
-////            FRect b = d.getBounds();
-////
-////            if (SampleMain.regionType() == SampleMain.RECTS) {
-////              b.width = MyMath.rnd(range) + radMin;
-////              b.height = MyMath.rnd(range) + radMin;
-////            }
-////
-////            EdRect rc = new EdRect(b);
-////
-////            items.set(i, rc);
-////          }
-////          break;
-////        case SampleMain.POLYGONS:
-////          {
-////            int nPts = 6;
-////
-////            for (int i = 0; i < items.size(); i++) {
-////              EdDisc d = (EdDisc) items.get(i);
-////
-////              DArray pts = new DArray();
-////              for (int j = 0; j < nPts; j++)
-////                pts.add(MyMath.rndPtInDisc(d.getOrigin(), d.getRadius(), null));
-////
-////              DArray hp = MyMath.convexHull(pts);
-////              EdPolygon p = new EdPolygon();
-////              for (int j = 0; j < hp.size(); j++)
-////                p.addPoint(pts.getFPoint2(hp.getInt(j)));
-////
-////              items.set(i, p);
-////            }
-////          }
-////          break;
-////        }
-////      }
-//      todo("replaceObjects disabled");
-////      Editor.replaceAllObjects(items);
-//    }
 
+  private static void genRand(int type) {
+    int seed = C.vi(SEED);
+    Random r = seed == 0 ? new Random() : new Random(seed);
+    int c = C.vi(COUNT);
+    List<EditorElement> elemList = arrayList();
+
+    int radMin = Math.min(C.vi(MINRAD), C.vi(MAXRAD));
+    int radMax = Math.max(C.vi(MINRAD), C.vi(MAXRAD));
+    float range = (radMax - radMin) * .1f;
+    final int PADDING = 3;
+    FPoint size = V.logicalSize();
+    float sx = size.x - 2 * PADDING;
+    float sy = size.y - 2 * PADDING;
+    for (int i = 0; i < c; i++) {
+      float rv = r.nextFloat();
+      float rad = rv * rv * range + radMin;
+      IRect bounds = new FRect(r.nextFloat() * sx + PADDING, r.nextFloat() * sy + PADDING, rad, rad)
+          .toIRect();
+      EditableRectElement elem = EditableRectElement.DEFAULT_INSTANCE.withBounds(bounds);
+      elemList.add(elem);
+    }
+
+    todo("make this an undoable command");
+
+    ScriptManager m = GeomTools.scriptManager();
+    ScriptEditState.Builder s = m.state().toBuilder();
+    s.elements(elemList);
+    m.setState(s);
+    GeomTools.editor().repaintPanels(~0);
   }
+
   //  private int genType = RANDOM;
   public void processAction(TBAction a) {
     if (a.code == TBAction.CTRLVALUE) {
@@ -259,12 +123,12 @@ public class GeneratorOper implements TestBedOperation, Globals {
       }
     }
   }
-  
+
   public void runAlgorithm() {
   }
-  
+
   public void paintView() {
-   // Editor.render();
+    // Editor.render();
   }
 
 }

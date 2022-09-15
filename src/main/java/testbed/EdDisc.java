@@ -137,7 +137,7 @@ public class EdDisc extends EdPoint {
 
     switch (fieldNumber) {
     case 0:
-      setCenter(V.snapToGrid(point));
+      setCenter( point );
       break;
     case 1:
       {
@@ -148,7 +148,7 @@ public class EdDisc extends EdPoint {
 
           FPoint2 orig = this.getOrigin();
 
-          dist = V.snapToGrid(new FPoint2(orig.x, orig.y + adj)).y - orig.y;
+          dist =  new FPoint2(orig.x, orig.y + adj) .y - orig.y;
           if (db)
             Streams.out.println("adjust radius, adj=" + adj + " snapped="
                 + dist);

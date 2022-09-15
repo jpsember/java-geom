@@ -1,7 +1,5 @@
 package geom;
 
-import static js.base.Tools.*;
-
 public final class GeomTools {
 
   public static GeomApp editor() {

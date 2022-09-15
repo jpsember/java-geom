@@ -9,13 +9,11 @@ import static js.base.Tools.*;
 public class SampleMain extends TestBed {
 
   private static final int RANDOM = 4011;//!
-  private static final int RNDTEST = 4012;//!
   private static final int TYPE = 4013;//!
   private static final int DISC = 4014;//!
   private static final int SQUARE = 4015;//!
   private static final int RECT = 4016;//!
   private static final int POLY = 4017;//!
-  /* ! */
 
   public static final int DISCS = 0, SQUARES = 1, RECTS = 2, POLYGONS = 3;
 
@@ -85,29 +83,13 @@ public class SampleMain extends TestBed {
   //    Editor.closeMenu();
   //  }
 
+  @Override
   public void processAction(TBAction a) {
     if (a.code == TBAction.CTRLVALUE) {
       switch (a.ctrlId) {
       case RANDOM:
         GeneratorOper.generateRandom();
         break;
-      case RNDTEST:
-        if (C.vb(RNDTEST))
-          GeneratorOper.generateRandom();
-        break;
-
-      //      case TOGGLEDISCS: {
-      //        for (int i = 0; i < discs2.length; i++) {
-      //          EdDisc c = discs2[i];
-      //          if (!c.isSelected())
-      //            continue;
-      //          c.togglePointMode();
-      //        }
-      //      }
-      //        break;
-      //      case MAKETANGENT:
-      //        makeTangent();
-      //        break;
       }
     }
   }

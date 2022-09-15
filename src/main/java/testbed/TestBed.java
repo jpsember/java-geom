@@ -17,18 +17,6 @@ public abstract class TestBed extends GeomApp {
   // Construction
   // ------------------------------------------------------------------
 
-  static void procAction(TBAction a) {
-    try {
-      alert("processAction no longer exists");
-      //  app.processAction0(a);
-    } catch (TBError e) {
-      showError(e.toString());
-      if (parms.debug) {
-        Streams.out.println(Tools.stackTrace(0, 8, e));
-      }
-    }
-  }
-
   //  private static void resetFocus() {
   //    todo("requestFocus?  Or just avoid text input?");
   //    //    boolean f = TestBed.getAppContainer().requestFocusInWindow();
@@ -159,13 +147,25 @@ public abstract class TestBed extends GeomApp {
   //    //    resetFocus();
   //  }
 
+  static void procAction(TBAction a) {
+    try {
+      singleton().processAction(a);
+    } catch (TBError e) {
+      showError(e.toString());
+      if (parms.debug) {
+        Streams.out.println(Tools.stackTrace(0, 8, e));
+      }
+    }
+  }
+
   /**
    * Process actions for main controls. Default implementation does nothing
-   * 
-   * @param a
-   *          action to process
    */
   public void processAction(TBAction a) {
+  }
+
+  public static TestBed singleton() {
+    return (TestBed) GeomApp.singleton();
   }
 
   //  /**
@@ -531,13 +531,10 @@ public abstract class TestBed extends GeomApp {
 
     processConfigFile();
 
-    V.initGrid();
-
     programBegun = true;
 
     initTestbed();
   }
-
 
   // TODO: we need to call readGadgetGUIValues at startup at some point
 

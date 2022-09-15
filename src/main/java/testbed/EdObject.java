@@ -2,13 +2,16 @@ package testbed;
 
 import java.awt.*;
 import base.*;
+import js.geometry.FPoint;
 
 @Deprecated
 public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Replace object's points with those of another object
-   * @param src : source object
+   * 
+   * @param src
+   *          : source object
    */
   public void copyPointsFrom(EdObject src) {
     pts = new DArray();
@@ -18,6 +21,7 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Construct a string that uniquely describes this object
+   * 
    * @return
    */
   public String getHash() {
@@ -46,7 +50,9 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Toggle state of certain flags
-   * @param flg flags to toggle
+   * 
+   * @param flg
+   *          flags to toggle
    */
   public void toggleFlags(int flg) {
     this.flags ^= flg;
@@ -61,7 +67,9 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Plot label for object, if one is defined
-   * @param loc location of label
+   * 
+   * @param loc
+   *          location of label
    */
   public void plotLabel(FPoint2 loc) {
     plotLabel(loc.x, loc.y);
@@ -69,8 +77,10 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Plot label for object, if one is defined
-   * @param x  
-   * @param y location of label
+   * 
+   * @param x
+   * @param y
+   *          location of label
    */
   public void plotLabel(double x, double y) {
     String s = getLabel();
@@ -80,21 +90,27 @@ public abstract class EdObject implements Cloneable, Renderable {
   }
 
   /**
-   * Plot label for object, if one is defined and 
-   * the appropriate labels option is selected
-   * @param vert true if vertex label vs object label
-   * @param loc location of label
+   * Plot label for object, if one is defined and the appropriate labels option
+   * is selected
+   * 
+   * @param vert
+   *          true if vertex label vs object label
+   * @param loc
+   *          location of label
    */
   public void plotLabel(boolean vert, FPoint2 loc) {
     plotLabel(vert, loc.x, loc.y);
   }
 
   /**
-   * Plot label for object, if one is defined and 
-   * the 'show labels' option is selected
-   * @param vert true if vertex label vs object label
-   * @param x  
-   * @param y location of label
+   * Plot label for object, if one is defined and the 'show labels' option is
+   * selected
+   * 
+   * @param vert
+   *          true if vertex label vs object label
+   * @param x
+   * @param y
+   *          location of label
    */
   public void plotLabel(boolean vert, double x, double y) {
     if (Editor.withLabels(vert))
@@ -109,6 +125,7 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Determine if object is selected
+   * 
    * @return true if so
    */
   public boolean isSelected() {
@@ -117,16 +134,18 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Set object's selected state
-   * @param f new state
+   * 
+   * @param f
+   *          new state
    */
   public void setSelected(boolean f) {
     setFlags(FLAG_SELECTED, f);
   }
 
   /**
-   * Get bounding rectangle of object.
-   * Default implementation calculates minimum bounding rectangle of 
-   * the object's points
+   * Get bounding rectangle of object. Default implementation calculates minimum
+   * bounding rectangle of the object's points
+   * 
    * @return FRect
    */
   public FRect getBounds() {
@@ -143,13 +162,16 @@ public abstract class EdObject implements Cloneable, Renderable {
   /**
    * Determine if object is in a complete state; i.e. if a polygon has at least
    * three vertices
+   * 
    * @return true if so
    */
   public abstract boolean complete();
 
   /**
    * Delete a point, if it exists
-   * @param ptIndex index of point to delete
+   * 
+   * @param ptIndex
+   *          index of point to delete
    */
   public void deletePoint(int ptIndex) {
     if (pts.exists(ptIndex))
@@ -158,16 +180,20 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Set point, snapping to grid if active
-   * @param ptIndex index of point
-   * @param point new location of point
+   * 
+   * @param ptIndex
+   *          index of point
+   * @param point
+   *          new location of point
    */
   public final void setPoint(int ptIndex, FPoint2 point) {
     setPoint(ptIndex, point, true, null);
   }
 
   /**
-   * Set transformed location of point.  Default method calls
-   * setPoint().  For discs, radius point should be calculated from others.
+   * Set transformed location of point. Default method calls setPoint(). For
+   * discs, radius point should be calculated from others.
+   * 
    * @param ptIndex
    * @param point
    */
@@ -177,33 +203,39 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Set point, with optional snapping to grid
-   * @param ptIndex index of point
-   * @param point new location of point
-   * @param useGrid if true, snaps to grid (if one is active)
-   * @param action if not null, action that caused this edit
+   * 
+   * @param ptIndex
+   *          index of point
+   * @param point
+   *          new location of point
+   * @param useGrid
+   *          if true, snaps to grid (if one is active)
+   * @param action
+   *          if not null, action that caused this edit
    */
-  public void setPoint(int ptIndex, FPoint2 point, boolean useGrid,
-      TBAction action) {
-    if (!useGrid)
-      point = new FPoint2(point);
-    else
-      point = V.snapToGrid(point);
+  public void setPoint(int ptIndex, FPoint2 point, boolean useGrid, TBAction action) {
     storePoint(ptIndex, point);
   }
 
   /**
-   * Store a point, without copying it.
-   * Grows set accordingly.  Performs no grid snapping.
-   * @param ptIndex index of point
-   * @param point location of point
+   * Store a point, without copying it. Grows set accordingly. Performs no grid
+   * snapping.
+   * 
+   * @param ptIndex
+   *          index of point
+   * @param point
+   *          location of point
    */
   private void storePoint(int ptIndex, FPoint2 point) {
     pts.growSet(ptIndex, point);
   }
 
   /**
-   * Add a point at a particular location, shifting following points to make room
-   * @param ptIndex location to insert point 
+   * Add a point at a particular location, shifting following points to make
+   * room
+   * 
+   * @param ptIndex
+   *          location to insert point
    * @param point
    */
   public void addPoint(int ptIndex, FPoint2 point) {
@@ -212,8 +244,10 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Add a point to the object; adds to end of current points
+   * 
    * @param x
-   * @param y : point to add
+   * @param y
+   *          : point to add
    */
   public void addPoint(double x, double y) {
     addPoint(x, y, true);
@@ -221,16 +255,22 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Add a point to the object; adds to end of current points
+   * 
    * @param x
-   * @param y : point to add
-   * @param useGrid : if true, snaps to grid if it is active
+   * @param y
+   *          : point to add
+   * @param useGrid
+   *          : if true, snaps to grid if it is active
    */
   public void addPoint(double x, double y, boolean useGrid) {
     addPoint(new FPoint2(x, y), useGrid);
   }
+
   /**
    * Add a point to the object; adds to end of current points
-   * @param pt : FPoint2 to add
+   * 
+   * @param pt
+   *          : FPoint2 to add
    */
   public void addPoint(FPoint2 pt) {
     addPoint(pt, true);
@@ -238,8 +278,11 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Add a point to the object; adds to end of current points
-   * @param pt : FPoint2 to add
-   * @param useGrid : if true, snaps to grid if it is active
+   * 
+   * @param pt
+   *          : FPoint2 to add
+   * @param useGrid
+   *          : if true, snaps to grid if it is active
    */
   public void addPoint(FPoint2 pt, boolean useGrid) {
     if (pt == null)
@@ -249,6 +292,7 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Return points of object as an array
+   * 
    * @return FPoint2[] array
    */
   public FPoint2[] getPoints() {
@@ -257,6 +301,7 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Get number of points of object
+   * 
    * @return # points in object
    */
   public int nPoints() {
@@ -265,7 +310,9 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Get location of a particular point
-   * @param ptIndex  index of point
+   * 
+   * @param ptIndex
+   *          index of point
    * @return location, or null if that point doesn't exist
    */
   public FPoint2 getPoint(int ptIndex) {
@@ -276,10 +323,11 @@ public abstract class EdObject implements Cloneable, Renderable {
   }
 
   /**
-   * Get location of a particular point, where index is taken modulo the 
-   * number of points (useful for walking around a polygon's vertices, for 
-   * instance)
-   * @param ptIndex index of point; it is converted to modulo(nPoints())
+   * Get location of a particular point, where index is taken modulo the number
+   * of points (useful for walking around a polygon's vertices, for instance)
+   * 
+   * @param ptIndex
+   *          index of point; it is converted to modulo(nPoints())
    * @return location, or null if that point doesn't exist
    */
   public FPoint2 getPointMod(int ptIndex) {
@@ -288,6 +336,7 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Determine Hausdorff distance of object from a point
+   * 
    * @param pt
    * @return distance from point, or -1 if no points exist
    */
@@ -295,14 +344,18 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Get factory responsible for making these objects
-   * @return factory 
+   * 
+   * @return factory
    */
   public abstract EdObjectFactory getFactory();
 
   /**
    * Determine distance of an object's point from a point
-   * @param ptIndex  index of object's point
-   * @param pt point to compare that point to
+   * 
+   * @param ptIndex
+   *          index of object's point
+   * @param pt
+   *          point to compare that point to
    * @return distance, or < 0 if no point ptIndex exists
    */
   public double distFrom(int ptIndex, FPoint2 pt) {
@@ -315,7 +368,9 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Add a large highlight to a point, if it exists
-   * @param ptIndex point index
+   * 
+   * @param ptIndex
+   *          point index
    */
   public void hlLarge(int ptIndex) {
     FPoint2 pt = getPoint(ptIndex);
@@ -328,7 +383,9 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Add a small highlight to a point, if it exists
-   * @param ptIndex point index
+   * 
+   * @param ptIndex
+   *          point index
    */
   public void hlSmall(int ptIndex) {
     FPoint2 pt = getPoint(ptIndex);
@@ -342,6 +399,7 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Construct a rectangle to display around a point, using current view scale
+   * 
    * @param pt
    * @return
    */
@@ -351,9 +409,12 @@ public abstract class EdObject implements Cloneable, Renderable {
   }
 
   /**
-   * Construct a rectangle to display around a point, using arbitrary padding size
+   * Construct a rectangle to display around a point, using arbitrary padding
+   * size
+   * 
    * @param pt
-   * @param padding : amount of padding to each side
+   * @param padding
+   *          : amount of padding to each side
    * @return
    */
   private static FRect getDisplayBoundingRect(FPoint2 pt, double padding) {
@@ -361,10 +422,13 @@ public abstract class EdObject implements Cloneable, Renderable {
   }
 
   /**
-   * Move entire object by a displacement
-   * Default implementation just adjusts each point.
-   * @param orig : a copy of the original object
-   * @param delta : amount to move by
+   * Move entire object by a displacement Default implementation just adjusts
+   * each point.
+   * 
+   * @param orig
+   *          : a copy of the original object
+   * @param delta
+   *          : amount to move by
    */
   public void moveBy(EdObject orig, FPoint2 delta) {
     for (int i = 0;; i++) {
@@ -376,15 +440,17 @@ public abstract class EdObject implements Cloneable, Renderable {
   }
 
   /**
-   * Get next point to insert.
-   * Either create a new point and return its index, or return -1 to indicate
-   * this object is complete
-   * @param a current TBAction (e.g., to examine modifier keys)
-   * @param ptIndex : index of point being inserted
-   * @param drift if not null, offset of current mouse loc from last event loc
-   * @return index of point to continue editing with, 
-   *    -1 if done,
-   *    -2 to continue waiting
+   * Get next point to insert. Either create a new point and return its index,
+   * or return -1 to indicate this object is complete
+   * 
+   * @param a
+   *          current TBAction (e.g., to examine modifier keys)
+   * @param ptIndex
+   *          : index of point being inserted
+   * @param drift
+   *          if not null, offset of current mouse loc from last event loc
+   * @return index of point to continue editing with, -1 if done, -2 to continue
+   *         waiting
    */
   public int getNextPointToInsert(TBAction a, int ptIndex, FPoint2 drift) {
     int ret = -1;
@@ -393,28 +459,20 @@ public abstract class EdObject implements Cloneable, Renderable {
     return ret;
   }
 
-  /**
-   * Snap object to grid.  Default implementation snaps every point
-   * to the grid.
-   * @param g grid
-   */
-  public void snapTo(Grid g) {
-    for (int i = 0; i < nPoints(); i++)
-      setPoint(i, g.snap(getPoint(i)));
-  }
 
   /**
-   * Clean up an object after editing is complete.
-   * If it is damaged, leave in an incomplete state.
-   * This is used to filter out duplicate vertices in polygons, for instance.
+   * Clean up an object after editing is complete. If it is damaged, leave in an
+   * incomplete state. This is used to filter out duplicate vertices in
+   * polygons, for instance.
    */
   public void cleanUp() {
   }
 
   /**
-   * Determine if object is active.  By default, objects are active.
-   * User can flag objects as inactive, so they are excluded from some operations,
-   * and/or appear different.
+   * Determine if object is active. By default, objects are active. User can
+   * flag objects as inactive, so they are excluded from some operations, and/or
+   * appear different.
+   * 
    * @return true if it's active
    */
   public boolean isActive() {
@@ -422,10 +480,11 @@ public abstract class EdObject implements Cloneable, Renderable {
   }
 
   /**
-   * Set object's inactive flag
-   * A convenience, so that user may decide not to include it in 
-   * certain operations if it is marked as such.
-   * @param f true for inactive, false for active
+   * Set object's inactive flag A convenience, so that user may decide not to
+   * include it in certain operations if it is marked as such.
+   * 
+   * @param f
+   *          true for inactive, false for active
    * @deprecated use setActive
    */
   public void setInactive(boolean f) {
@@ -434,7 +493,9 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Set object's active flag
-   * @param f true for active, false for inactive
+   * 
+   * @param f
+   *          true for active, false for inactive
    */
   public void setActive(boolean f) {
     setFlags(FLAG_INACTIVE, !f);
@@ -442,7 +503,9 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Replace existing flags with new ones
-   * @param f new flags
+   * 
+   * @param f
+   *          new flags
    */
   public void setFlags(int f) {
     this.flags = f;
@@ -450,8 +513,11 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Add or clear flags
-   * @param flags flags to modify
-   * @param value true to set, false to clear
+   * 
+   * @param flags
+   *          flags to modify
+   * @param value
+   *          true to set, false to clear
    */
   public void setFlags(int flags, boolean value) {
     if (!value)
@@ -462,7 +528,9 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Turn specific flags on
-   * @param f flags to turn on
+   * 
+   * @param f
+   *          flags to turn on
    */
   public void addFlags(int f) {
     setFlags(flags | f);
@@ -470,7 +538,9 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Determine if a set of flags are set
-   * @param f flags to test
+   * 
+   * @param f
+   *          flags to test
    * @return true if every one of these flags is set
    */
   public boolean hasFlags(int f) {
@@ -479,7 +549,9 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Turn specific flags off
-   * @param f flags to turn off
+   * 
+   * @param f
+   *          flags to turn off
    */
   public void clearFlags(int f) {
     setFlags(flags & ~f);
@@ -487,6 +559,7 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Get current flags
+   * 
    * @return flags
    */
   public int flags() {
@@ -495,6 +568,7 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Get label that's been assigned to this object
+   * 
    * @return label, or null if none exists
    */
   public final String getLabel() {
@@ -503,16 +577,18 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Label this object
-   * @param lbl label to assign, or null
+   * 
+   * @param lbl
+   *          label to assign, or null
    */
   public final void setLabel(String lbl) {
     this.label = lbl;
   }
 
   /**
-  * Render object within editor.
-  * Override this to change highlighting behaviour for points.
-  */
+   * Render object within editor. Override this to change highlighting behaviour
+   * for points.
+   */
   public void render() {
     render(null, -1, -1);
     if (isSelected()) {
@@ -525,31 +601,33 @@ public abstract class EdObject implements Cloneable, Renderable {
   private static final int FLAG_INACTIVE = (1 << 30);
   public static final int FLAG_PLOTDASHED = (1 << 29);
   /**
-   * Number of bits available for user flags.
-   * For instance, any flag from 2^0 to 2^(USER_FLAG_BITS-1) are
-   * available for user use.  The others are used for the object's
-   * selected and active states.
-   * Some of these may be used by other objects; for instance,
-   * the EdPolygon uses one of these already.
+   * Number of bits available for user flags. For instance, any flag from 2^0 to
+   * 2^(USER_FLAG_BITS-1) are available for user use. The others are used for
+   * the object's selected and active states. Some of these may be used by other
+   * objects; for instance, the EdPolygon uses one of these already.
    */
   public static final int USER_FLAG_BITS = 24;
 
   /**
    * Scale a point relative to the center of the view
-   * @param pt point to scale
-   * @param factor scaling factor
+   * 
+   * @param pt
+   *          point to scale
+   * @param factor
+   *          scaling factor
    */
   public static void scalePoint(FPoint2 pt, double factor) {
-    FPoint2 ls = V.logicalSize();
+    FPoint ls = V.logicalSize();
     double mx = ls.x / 2, my = ls.y / 2;
 
     pt.setLocation((pt.x - mx) * factor + mx, (pt.y - my) * factor + my);
   }
 
   /**
-   * Scale object.
-   * Default implementation just scales all the object's points.
-   * @param factor  scaling factor
+   * Scale object. Default implementation just scales all the object's points.
+   * 
+   * @param factor
+   *          scaling factor
    */
   public void scale(double factor) {
     for (int i = 0;; i++) {
@@ -577,6 +655,7 @@ public abstract class EdObject implements Cloneable, Renderable {
 
   /**
    * Return the DArray used to store the points
+   * 
    * @return DArray containing FPoint2's
    */
   public DArray getPts() {

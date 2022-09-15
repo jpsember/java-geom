@@ -1,6 +1,8 @@
 package testbed;
 
 import base.*;
+import js.geometry.FPoint;
+
 import java.awt.*;
 import java.awt.geom.*;
 
@@ -267,7 +269,7 @@ public class V implements Globals {
    *          dimensions of view
    */
   private static void setLogicalView(double width, double height) {
-    logicalSize = new FPoint2(width, height);
+    logicalSize = new FPoint (width, height);
     viewRect = new FRect(0, 0, width, height);
   }
 
@@ -995,7 +997,7 @@ public class V implements Globals {
 
   private static double screenScaleFactor = 1.0;
 
-  private static FPoint2 logicalSize;
+  private static FPoint  logicalSize;
 
   /**
    * Get current scale factor
@@ -1011,7 +1013,7 @@ public class V implements Globals {
    * 
    * @return size of view
    */
-  public static FPoint2 logicalSize() {
+  public static FPoint logicalSize() {
     return logicalSize;
   }
 
@@ -1042,44 +1044,35 @@ public class V implements Globals {
 //    panel.repaint(tm);
 //  }
 
-  /**
-   * Set grid
-   * 
-   * @param g
-   *          Grid
-   */
-  public static void setGrid(Grid g) {
-    grid = g;
-  }
 
-  static Grid grid;
+//  static Grid grid;
 
-  /**
-   * Return a copy of a point, that has been snapped to the current grid (if it
-   * is active)
-   * 
-   * @param pt
-   * @return copy of pt, possibly snapped to grid
-   */
-  public static FPoint2 snapToGrid(FPoint2 pt) {
-    if (TestBed.parms.includeGrid && C.vb(TBGlobals.GRIDACTIVE)) {
-      pt = grid.snap(pt);
-    } else
-      pt = new FPoint2(pt);
-    return pt;
-  }
+//  /**
+//   * Return a copy of a point, that has been snapped to the current grid (if it
+//   * is active)
+//   * 
+//   * @param pt
+//   * @return copy of pt, possibly snapped to grid
+//   */
+//  public static FPoint2 snapToGrid(FPoint2 pt) {
+//    if (TestBed.parms.includeGrid && C.vb(TBGlobals.GRIDACTIVE)) {
+//      pt = grid.snap(pt);
+//    } else
+//      pt = new FPoint2(pt);
+//    return pt;
+//  }
 
-  static void initGrid() {
-    setGrid(new SquareGrid());
-    grid.setSize(10, logicalSize());
-    if (TestBed.parms.includeGrid)
-      updateGridSize(C.vi(TBGlobals.GRIDSIZE));
-  }
+//  static void initGrid() {
+//    setGrid(new SquareGrid());
+//    grid.setSize(10, logicalSize());
+//    if (TestBed.parms.includeGrid)
+//      updateGridSize(C.vi(TBGlobals.GRIDSIZE));
+//  }
 
-  static void updateGridSize(int size) {
-    grid.setSize(size, logicalSize());
-  }
-
+//  static void updateGridSize(int size) {
+//    grid.setSize(size, logicalSize());
+//  }
+//
   static void cleanUpRender() {
     if (!plotStack.isEmpty()) {
       Tools.warn("plot stack not empty");
