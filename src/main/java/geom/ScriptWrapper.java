@@ -188,9 +188,10 @@ public final class ScriptWrapper extends BaseObject {
 
   private static final IPoint DEFAULT_PAGE_SIZE = new IPoint(1200, 900);
 
-  private void assertNotNone() {
+  public ScriptWrapper assertNotNone() {
     if (isNone())
-      throw notSupported("not supported for default instance");
+      throw notSupported("not supported for ScriptWrapper = DEFAULT_INSTANCE");
+    return this;
   }
 
   // ------------------------------------------------------------------

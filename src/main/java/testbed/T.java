@@ -1,9 +1,12 @@
 package testbed;
 
 import base.*;
+import js.geometry.IPoint;
+
 import java.awt.*;
 import java.util.*;
 import java.awt.geom.*;
+import static geom.GeomTools.*;
 
 /**
  * Algorithm Tracing
@@ -598,7 +601,10 @@ public class T extends TBError implements Globals {
       V.pushStroke(stroke, this.stroke);
       if (markType < 0)
         markType = this.markType;
-      double[] t = v.clipToRect(V.viewRect);
+      
+     IPoint pageSize = editor().getEditorPanel().pageSize();
+      
+      double[] t = v.clipToRect(new FRect(0,0,pageSize.x,pageSize.y));
       if (t != null) {
         FPoint2 p1 = v.pt(t[0]);
         FPoint2 p2 = v.pt(t[1]);

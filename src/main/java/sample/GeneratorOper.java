@@ -88,7 +88,8 @@ public class GeneratorOper implements TestBedOperation, Globals {
     int radMax = Math.max(C.vi(MINRAD), C.vi(MAXRAD));
     float range = (radMax - radMin) ;
     final int PADDING = 3;
-    IPoint size = V.logicalSize();
+    
+    IPoint size = editor().getEditorPanel().pageSize();
     float sx = size.x - 2 * PADDING;
     float sy = size.y - 2 * PADDING;
     for (int i = 0; i < c; i++) {

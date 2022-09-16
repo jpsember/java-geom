@@ -6,15 +6,13 @@ import js.geometry.IPoint;
 import java.awt.*;
 import java.awt.geom.*;
 
-import static js.base.Tools.*;
+import static geom.GeomTools.*;
 
 /**
  * Main view of TestBed applications. It has the short name 'V' to minimize
  * typing.
  */
 public class V implements Globals {
-
-  public static FRect viewRect;
 
   //  /**
   //   * Determine if a mouse event involves the second button (button1)
@@ -35,10 +33,6 @@ public class V implements Globals {
   //  static JPanel getPanel() {
   //    return panel;
   //  }
-
-  static Color getBackgroundColor() {
-    return new Color(C.vi(TBGlobals.sFILLCOLOR));
-  }
 
   //  private static class ourPanel extends JPanel {
   //
@@ -256,25 +250,6 @@ public class V implements Globals {
   //    }
   //  }
 
-  // private static ourPanel panel;
-
-  static void init() {
-    setLogicalView(1000, 1000);
-    todo("how to define view size when there are no images?");
-    //  panel = new ourPanel();
-  }
-
-  /**
-   * Set logical view size
-   * 
-   * @param width
-   * @param height
-   *          dimensions of view
-   */
-  private static void setLogicalView(int width, int height) {
-    logicalSize = new IPoint(width, height);
-    viewRect = new FRect(0, 0, width, height);
-  }
 
   /**
    * Draw a string (with flags set to zero)
@@ -623,8 +598,9 @@ public class V implements Globals {
     // System.out.println(" before clamped="+x0+","+y0);
     // System.out.println("lx0="+lx0+" ly0="+ly0+" lx1="+lx1+" ly1="+ly1);
     if ((flags & TX_CLAMP) != 0) {
-      x0 = MyMath.clamp(x0, 0, logicalSize.x - xs);
-      y0 = MyMath.clamp(y0, 0, logicalSize.y - ys);
+      IPoint pageSize = editor().getEditorPanel().pageSize();
+      x0 = MyMath.clamp(x0, 0, pageSize.x - xs);
+      y0 = MyMath.clamp(y0, 0, pageSize.y - ys);
     }
 
     g.translate(x0, y0);
@@ -1000,8 +976,6 @@ public class V implements Globals {
 
   private static double screenScaleFactor = 1.0;
 
-  private static IPoint logicalSize;
-
   /**
    * Get current scale factor
    * 
@@ -1009,15 +983,6 @@ public class V implements Globals {
    */
   public static double getScale() {
     return screenScaleFactor;
-  }
-
-  /**
-   * Get size of view, in view space. Default is width, height both 100.
-   * 
-   * @return size of view
-   */
-  public static IPoint logicalSize() {
-    return logicalSize;
   }
 
   //private static Dimension physicalSize;
