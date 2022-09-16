@@ -130,9 +130,6 @@ public class SampleMain extends TestBed {
   //  }
 
   public void setParameters() {
-    parms.appTitle = "Possible 1-Centers";
-    parms.menuTitle = "Main";
-    parms.fileExt = "dat";
   }
 
   public void paintView() {

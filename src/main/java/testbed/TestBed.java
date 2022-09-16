@@ -5,7 +5,6 @@ import geom.GeomApp;
 
 import java.io.*;
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import java.util.List;
 
@@ -152,7 +151,7 @@ public abstract class TestBed extends GeomApp {
       singleton().processAction(a);
     } catch (TBError e) {
       showError(e.toString());
-      if (parms.debug) {
+      if (false) {
         Streams.out.println(Tools.stackTrace(0, 8, e));
       }
     }
@@ -189,10 +188,10 @@ public abstract class TestBed extends GeomApp {
   private String getConfigFile() {
     if (configFile == null) {
       StringBuilder sb = new StringBuilder();
+      sb.append(".");
+      sb.append(name().toLowerCase());
       sb.append("_");
-      sb.append(parms.menuTitle);
-      sb.append("config");
-      sb.append("_.txt");
+      sb.append("config.txt");
       for (int i = sb.length() - 1; i >= 0; i--)
         if (sb.charAt(i) == ' ')
           sb.deleteCharAt(i);
@@ -358,19 +357,19 @@ public abstract class TestBed extends GeomApp {
 
   private void addMenus0() {
 
-    C.sOpenMenu(TBGlobals.MENU_TESTBED, parms.menuTitle);
-
-    C.sMenuItem(TBGlobals.ABOUT, "About Testbed", null);
-    C.sMenuSep();
-
-    C.sMenuSep();
-    if (parms.algTrace) {
-      C.sMenuItem(TBGlobals.TRACEBWD, "Trace bwd", "!^#" + KeyEvent.VK_LEFT);
-      C.sMenuItem(TBGlobals.TRACEFWD, "Trace fwd", "!^#" + KeyEvent.VK_RIGHT);
-
-    }
-    C.sMenuItem(TBGlobals.QUIT, "Quit", "!^q");
-    C.sCloseMenu();
+    //    C.sOpenMenu(TBGlobals.MENU_TESTBED, parms.menuTitle);
+    //
+    //    C.sMenuItem(TBGlobals.ABOUT, "About Testbed", null);
+    //    C.sMenuSep();
+    //
+    //    C.sMenuSep();
+    //    if (parms.algTrace) {
+    //      C.sMenuItem(TBGlobals.TRACEBWD, "Trace bwd", "!^#" + KeyEvent.VK_LEFT);
+    //      C.sMenuItem(TBGlobals.TRACEFWD, "Trace fwd", "!^#" + KeyEvent.VK_RIGHT);
+    //
+    //    }
+    //    C.sMenuItem(TBGlobals.QUIT, "Quit", "!^q");
+    //    C.sCloseMenu();
   }
 
   /**
@@ -400,13 +399,12 @@ public abstract class TestBed extends GeomApp {
     C.sStoreIntField(TBGlobals.sFILLCOLOR, 16777215);
 
     C.sOpenTabSet(TBGlobals.AUXTABSET);
-    if (parms.algTrace) {
+    {
       C.sOpenTab(TBGlobals.AUXTAB_TRACE, "Trace");
       C.sCheckBox(TBGlobals.TRACEENABLED, "Enabled", "if true, enables algorithm tracing", true);
       C.sCheckBox(TBGlobals.TRACEPLOT, "Messages", "plots trace text", true);
       C.sNewColumn();
-      C.sIntSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, parms.traceSteps,
-          0, 1);
+      C.sIntSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
       C.sOpen();
       C.sButton(TBGlobals.TRACEBTNBWD, "<<", "Move one step backward in algorithm");
       C.sNewColumn();
@@ -428,19 +426,19 @@ public abstract class TestBed extends GeomApp {
       C.sDoubleSpinner(TBGlobals.ASPECTRATIO, "ratio", "Aspect Ratio", .1, 10, 1.458, .1);
       C.sCloseTab();
     }
-    if (parms.includeGrid) {
-      C.sOpenTab(TBGlobals.AUXTAB_GRID, "Grid");
-      {
-        C.sIntSpinner(TBGlobals.GRIDSIZE, "size:", "size of grid", 1, 1000, 5, 1);
-        C.sTextField(TBGlobals.MOUSELOC, "!", "mouse position", 8, true, "");
-        C.sNewColumn();
-        C.sCheckBox(TBGlobals.GRIDON, "plot", "plot grid", false);
-        C.sCheckBox(TBGlobals.GRIDLABELS, "labels", "include grid labels", false);
-        C.sCheckBox(TBGlobals.GRIDACTIVE, "snap", //
-            "snap objects to grid", false);
-      }
-      C.sCloseTab();
-    }
+    //    if (parms.includeGrid) {
+    //      C.sOpenTab(TBGlobals.AUXTAB_GRID, "Grid");
+    //      {
+    //        C.sIntSpinner(TBGlobals.GRIDSIZE, "size:", "size of grid", 1, 1000, 5, 1);
+    //        C.sTextField(TBGlobals.MOUSELOC, "!", "mouse position", 8, true, "");
+    //        C.sNewColumn();
+    //        C.sCheckBox(TBGlobals.GRIDON, "plot", "plot grid", false);
+    //        C.sCheckBox(TBGlobals.GRIDLABELS, "labels", "include grid labels", false);
+    //        C.sCheckBox(TBGlobals.GRIDACTIVE, "snap", //
+    //            "snap objects to grid", false);
+    //      }
+    //      C.sCloseTab();
+    //    }
     C.sCloseTabSet();
 
     // add controls for serializing TestBed variables
@@ -460,39 +458,6 @@ public abstract class TestBed extends GeomApp {
   //  }
 
   /**
-   * Get title of application
-   */
-  protected final String title() {
-    // we must give user application an opportunity to
-    // set the application title 
-    setParameters0();
-    return parms.appTitle;
-  }
-
-  /**
-   * Set parameters for Testbed program. Should customize the values of the
-   * parms object's fields, if necessary.
-   */
-  public abstract void setParameters();
-
-  /**
-   * Call setParameters() if it hasn't already been called
-   */
-  private void setParameters0() {
-    //    Tools.warn("always calling setParam");
-    //    setParameters();
-    //    if (false) {
-    if (!paramSetFlag) {
-      parms = new TestBedParameters();
-      setParameters();
-      paramSetFlag = true;
-    }
-    //    }
-  }
-
-  private boolean paramSetFlag;
-
-  /**
    * Perform any initialization operations. User should override this method if
    * desired. Default implementation does nothing.
    */
@@ -509,7 +474,6 @@ public abstract class TestBed extends GeomApp {
 
     {
       operList = new DArray();
-      setParameters0();
       todo("avoid calling V.init");
       todo("repaint when controls change");
       V.init();
@@ -567,67 +531,6 @@ public abstract class TestBed extends GeomApp {
    */
   public static void showError(String msg) {
     JOptionPane.showMessageDialog(null /* appFrame().frame() */, msg, "Error", JOptionPane.ERROR_MESSAGE);
-  }
-
-  public static class TestBedParameters {
-    public String appTitle = "TestBed";
-
-    /**
-     * If true, includes extra debug printing
-     */
-    public boolean debug;
-
-    /**
-     * If true, includes algorithm tracing controls
-     */
-    public boolean algTrace = true;
-
-    /**
-     * Maximum number of steps in algorithm tracing slider
-     */
-    public int traceSteps = 500;
-
-    /**
-     * If true, view displays 3d graphics
-     */
-    public boolean threeD;
-
-    /**
-     * Name of application; appears in leftmost menu; also used as name of
-     * configuration file: _{title}config_.txt
-     */
-    public String menuTitle = "TestBed";
-
-    /**
-     * Width of static text fields
-     */
-    public int staticTextWidth = 45;
-
-    /**
-     * If true, includes grid controls
-     */
-    public boolean includeGrid = true;
-
-    /**
-     * If true, includes editor
-     */
-    public boolean withEditor = true;
-
-    /**
-     * If true, includes 'do nothing' operation as first operation, to allow
-     * editing of objects without running algorithm of any other operation
-     */
-    public boolean includeEditOper = true;
-
-    /**
-     * File extension of files that editor can read/write
-     */
-    public String fileExt = "tbd";
-
-    /**
-     * If true, traces control scripts (for debug purposes)
-     */
-    public boolean traceScript;
   }
 
   //  protected void exitProgram() {
@@ -713,7 +616,7 @@ public abstract class TestBed extends GeomApp {
   }
 
   public static void addOper(TestBedOperation oper) {
-    if (operList.isEmpty() && parms.withEditor && parms.includeEditOper) {
+    if (operList.isEmpty()) {
       operList.add(new TestBedOperation() {
         public void addControls() {
           C.sOpenTab("Edit");
@@ -753,8 +656,6 @@ public abstract class TestBed extends GeomApp {
   private static List<TestBedOperation> operList;
   //  private static WorkFile workFile;
   //private static String filePath;
-  // TestBed parameters
-  public static TestBedParameters parms = new TestBedParameters();
   //  // desired bounds for application window
   //  private static Rectangle desiredApplicationBounds;
 
