@@ -43,10 +43,10 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
   }
 
   public boolean PLOT_RED;
-  
+
   @Override
   public void paintComponent(Graphics g) {
-    ScriptWrapper script = scriptManager().currentScript(); 
+    ScriptWrapper script = scriptManager().currentScript();
     if (!script.isNone()) {
       mGraphics = (Graphics2D) g;
       mCurrentZoom = editor().zoomFactor();
@@ -59,15 +59,14 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     if (PLOT_RED) {
       g.setColor(Color.red);
       int p = 30;
-      g.fillRect(p, p, 20,20); //getWidth() - 2 * p, getHeight() - 2 * p);
+      g.fillRect(p, p, 20, 20); //getWidth() - 2 * p, getHeight() - 2 * p);
     }
     // To avoid having the InfoPanel (or some Swing widgets within it) intercepting keyboard events
     // (that we'd like available for the menu items), always have the editor panel request the focus:
     requestFocus();
   }
 
-  private void determineTransform(ScriptWrapper script) {
-    IPoint imageSize = script.imageSize();
+  private void determineTransform(IPoint imageSize) {
 
     Matrix t;
     {
@@ -123,23 +122,18 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-    determineTransform(script);
+    IPoint pageSize = script.pageSize();
+    determineTransform(pageSize);
     g.transform(mTransform.toAffineTransform());
-
-    IPoint imageSize = null;
 
     if (script.hasImage()) {
       g.drawImage(script.image(), 0, 0, null);
-      imageSize = script.imageSize();
     } else {
-      todo("determine bounds of editor 'page', as an option or something");
-      
       int gray = 192;
-      imageSize = new IPoint(320, 256);
       g.setColor(new Color(gray, gray, gray));
-      g.fillRect(0, 0, imageSize.x, imageSize.y);
+      g.fillRect(0, 0, pageSize.x, pageSize.y);
       g.setColor(Color.black);
-      g.drawRect(0, 0, imageSize.x, imageSize.y);
+      g.drawRect(0, 0, pageSize.x, pageSize.y);
     }
 
     UserOperation op = UserEventManager.sharedInstance().getOperation();

@@ -29,7 +29,6 @@ import javax.swing.JPanel;
 
 import static js.base.Tools.*;
 
-import js.geometry.IPoint;
 import js.widget.SwingWidgetManager;
 import js.widget.Widget;
 import js.widget.WidgetManager;
@@ -76,14 +75,6 @@ public class InfoPanel extends JPanel {
       sb.append(" ");
       String nameOnly = script.name();
       sb.append(nameOnly);
-
-      if (false) // Not terribly useful
-      {
-        IPoint imageSize = script.imageSize();
-        if (imageSize.nonZero()) {
-          sb.append(" (" + imageSize.x + " x " + imageSize.y + ")");
-        }
-      }
       scriptDisplay = sb.toString();
     }
     mFilePath.setText(scriptDisplay);

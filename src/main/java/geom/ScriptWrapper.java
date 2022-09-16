@@ -176,13 +176,17 @@ public final class ScriptWrapper extends BaseObject {
   }
 
   /**
-   * If script has an image, return its size; otherwise, zero
+   * Get size of the editor 'page'. If script has an image, return its size;
+   * otherwise, some default value
    */
-  public IPoint imageSize() {
-    if (!hasImage())
-      return IPoint.ZERO;
+  public IPoint pageSize() {
+    if (!hasImage()) {
+      return DEFAULT_PAGE_SIZE;
+    }
     return ImgUtil.size(image());
   }
+
+  private static final IPoint DEFAULT_PAGE_SIZE = new IPoint(1200, 900);
 
   private void assertNotNone() {
     if (isNone())
