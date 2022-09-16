@@ -8,8 +8,8 @@ import geom.GeomApp;
 import geom.elem.EditableRectElement;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
-import js.geometry.FPoint;
 import js.geometry.FRect;
+import js.geometry.IPoint;
 import js.geometry.IRect;
 import testbed.*;
 
@@ -88,7 +88,7 @@ public class GeneratorOper implements TestBedOperation, Globals {
     int radMax = Math.max(C.vi(MINRAD), C.vi(MAXRAD));
     float range = (radMax - radMin) ;
     final int PADDING = 3;
-    FPoint size = V.logicalSize();
+    IPoint size = V.logicalSize();
     float sx = size.x - 2 * PADDING;
     float sy = size.y - 2 * PADDING;
     for (int i = 0; i < c; i++) {

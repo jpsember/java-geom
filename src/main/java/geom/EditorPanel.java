@@ -132,6 +132,8 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
       g.drawImage(script.image(), 0, 0, null);
       imageSize = script.imageSize();
     } else {
+      todo("determine bounds of editor 'page', as an option or something");
+      
       int gray = 192;
       imageSize = new IPoint(320, 256);
       g.setColor(new Color(gray, gray, gray));

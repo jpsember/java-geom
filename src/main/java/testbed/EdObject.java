@@ -2,7 +2,7 @@ package testbed;
 
 import java.awt.*;
 import base.*;
-import js.geometry.FPoint;
+import static js.base.Tools.*;
 
 @Deprecated
 public abstract class EdObject implements Cloneable, Renderable {
@@ -617,10 +617,11 @@ public abstract class EdObject implements Cloneable, Renderable {
    *          scaling factor
    */
   public static void scalePoint(FPoint2 pt, double factor) {
-    FPoint ls = V.logicalSize();
-    double mx = ls.x / 2, my = ls.y / 2;
-
-    pt.setLocation((pt.x - mx) * factor + mx, (pt.y - my) * factor + my);
+    throw notSupported();
+//    FPoint ls = V.logicalSize();
+//    double mx = ls.x / 2, my = ls.y / 2;
+//
+//    pt.setLocation((pt.x - mx) * factor + mx, (pt.y - my) * factor + my);
   }
 
   /**

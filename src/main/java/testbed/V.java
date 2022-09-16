@@ -1,7 +1,7 @@
 package testbed;
 
 import base.*;
-import js.geometry.FPoint;
+import js.geometry.IPoint;
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -271,8 +271,8 @@ public class V implements Globals {
    * @param height
    *          dimensions of view
    */
-  private static void setLogicalView(double width, double height) {
-    logicalSize = new FPoint(width, height);
+  private static void setLogicalView(int width, int height) {
+    logicalSize = new IPoint(width, height);
     viewRect = new FRect(0, 0, width, height);
   }
 
@@ -1000,7 +1000,7 @@ public class V implements Globals {
 
   private static double screenScaleFactor = 1.0;
 
-  private static FPoint logicalSize;
+  private static IPoint logicalSize;
 
   /**
    * Get current scale factor
@@ -1016,7 +1016,7 @@ public class V implements Globals {
    * 
    * @return size of view
    */
-  public static FPoint logicalSize() {
+  public static IPoint logicalSize() {
     return logicalSize;
   }
 
