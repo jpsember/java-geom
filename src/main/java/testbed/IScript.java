@@ -11,7 +11,6 @@ static final int
  T_BUTTON = 262,
  T_CHECKBOX = 263,
  T_COMBOBOX = 264,
- T_CONSOLE = 265,
  T_LABEL = 266,
  T_SLIDER_INT = 267,
  T_SLIDER_DBL = 268,

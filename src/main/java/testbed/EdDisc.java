@@ -86,17 +86,6 @@ public class EdDisc extends EdPoint {
     return MyMath.ptOnCircle(getOrigin(), ang, getRadius());
   }
 
-  public static int getFirstActive(ObjArray a) {
-    int ret = -1;
-    for (int i = 0; i < a.size(); i++) {
-      EdDisc d = (EdDisc) a.obj(i);
-      if (d.isActive()) {
-        ret = i;
-        break;
-      }
-    }
-    return ret;
-  }
 
   private static final double RAD_OFFSET = 1.5;
   /**

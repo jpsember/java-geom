@@ -244,17 +244,6 @@ class ControlPanel extends JPanel implements Globals, IScript {
         tk.setTrace(!tk.trace());
         break;
 
-      case T_CONSOLE:
-        {
-          // C <id:int> <rows:int> <cols:int> <commandline:bool>
-          int id = tk.readInt();
-          int nRows = tk.readInt();
-          int nCols = tk.readInt();
-          boolean withInput = tk.readIfBool(false);
-          addControl(new CtConsole(id, nRows, nCols, withInput), null);
-        }
-        break;
-
       case T_LABEL:
         {
           int colWidth = tk.readIfInt(0);

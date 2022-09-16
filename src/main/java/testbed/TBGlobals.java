@@ -9,7 +9,7 @@ interface TBGlobals {
   static final int
   // control panel indexes
       CT_MAIN = 0,
-      CT_CONSOLE = 1, CT_TOTAL = 2;
+     CT_TOTAL = 2;
 
   /**
    * Reserved gadget ids

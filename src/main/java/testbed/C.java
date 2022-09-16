@@ -1,6 +1,5 @@
 package testbed;
 
-import base.*;
 import java.awt.*;
 import java.io.*;
 import static js.base.Tools.*;
@@ -665,14 +664,6 @@ public class C implements Globals {
     ctrlPanels[panel].processScript(script);
   }
 
-  /**
-   * Clear console (if one exists)
-   */
-  public static void cls() {
-    if (consoleTextArea != null) {
-      consoleTextArea.cls();
-    }
-  }
 
   /**
    * Get the next anonymous id
@@ -703,21 +694,6 @@ public class C implements Globals {
     pw.println(s);
   }
 
-  static void unsetConsole() {
-    if (savedOut != null) {
-      Streams.out = savedOut;
-      savedOut = null;
-      consoleTextArea = null;
-    }
-  }
-
-  static void setConsole(WorkTextArea w) {
-    if (savedOut == null) {
-      savedOut = Streams.out;
-    }
-    Streams.out = w.printStream();
-    consoleTextArea = w;
-  }
 
 
   /**
@@ -757,24 +733,20 @@ public class C implements Globals {
 
   static void init( ) {
     anonIdBase = TBGlobals.ID_ANON_START;
-    consoleTextArea = null;
     ctrlPanels = new ControlPanel[TBGlobals.CT_TOTAL];
     for (int i = 0; i < TBGlobals.CT_TOTAL; i++)
       ctrlPanels[i] = new ControlPanel();
     inComboBox = false;
     list = new GadgetList();
-    savedOut = null;
     script = null;
     tabPaneCount = 0;
     tabSetCount = 0;
   }
 
   private static int anonIdBase;
-  private static WorkTextArea consoleTextArea;
   private static ControlPanel[] ctrlPanels;
   private static boolean inComboBox;
   static GadgetList list;
-  private static PrintStream savedOut;
   private static StringBuilder script;
   private static int tabPaneCount;
   private static int tabSetCount;
