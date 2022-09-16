@@ -663,17 +663,7 @@ public class C implements Globals {
    */
   static void addControls(String script, int panel) {
     ctrlPanels[panel].processScript(script);
-    todo("validate?");
-//    TestBed.topLevelContainer().validate();
   }
-
-//  /**
-//   * Remove a menu from the menu bar
-//   * @param id id of menu
-//   */
-//  public static void removeMenu(int id) {
-//    menuPanel.removeMenu(id);
-//  }
 
   /**
    * Clear console (if one exists)
@@ -683,10 +673,6 @@ public class C implements Globals {
       consoleTextArea.cls();
     }
   }
-
-//  static MenuPanel menuPanel() {
-//    return menuPanel;
-//  }
 
   /**
    * Get the next anonymous id
@@ -733,19 +719,6 @@ public class C implements Globals {
     consoleTextArea = w;
   }
 
-  /**
-   * Open a menu.  Must be balanced by a call to sCloseMenu().
-   * @param id id of menu
-   * @param title title of menu
-   */
-  public static void sOpenMenu(int id, String title) {
-    // <id:int> ( {<menuitem> | <menusep> } )
-    C.openScript();
-    sIValue(id);
-    script.append("( ");
-    sLbl(title);
-    sNewLine();
-  }
 
   /**
    * Add an item to the current menu
@@ -782,17 +755,6 @@ public class C implements Globals {
     sNewLine();
   }
 
-  /**
-   * Close menu (previously opened with sOpenMenu())
-   */
-  public static void sCloseMenu() {
-    script.append(")");
-    sNewLine();
-    todo("unsupported menu stuff?");
-//    menuPanel.processScript(C.closeScript());
-    //    C.addMenu(C.closeScript());
-  }
-
   static void init( ) {
     anonIdBase = TBGlobals.ID_ANON_START;
     consoleTextArea = null;
@@ -801,7 +763,6 @@ public class C implements Globals {
       ctrlPanels[i] = new ControlPanel();
     inComboBox = false;
     list = new GadgetList();
-//    menuPanel = new MenuPanel(forMenu);
     savedOut = null;
     script = null;
     tabPaneCount = 0;
@@ -813,7 +774,6 @@ public class C implements Globals {
   private static ControlPanel[] ctrlPanels;
   private static boolean inComboBox;
   static GadgetList list;
-//  private static MenuPanel menuPanel;
   private static PrintStream savedOut;
   private static StringBuilder script;
   private static int tabPaneCount;

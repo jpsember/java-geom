@@ -149,9 +149,7 @@ public abstract class GeomApp extends GUIApp {
 
   private void removeUIElements() {
     contentPane().removeAll();
-    todo("who owns the EditorPanel?  Do we need to get rid of it here?");
     todo("add support for ControlPanel");
-    //mControlPanel = null;
   }
 
   @Override
@@ -163,32 +161,6 @@ public abstract class GeomApp extends GUIApp {
     return null;
   }
 
-  //  public final void openProject(File file) {
-  //    closeProject();
-  //
-  //    Project project = new Project(file);
-  //
-  //    // If there are recent projects, use their state as the default for this one in case it is a new project
-  //
-  //    project.open(recentProjects().getMostRecentFile());
-  //    mCurrentProject = project;
-  //    recentProjects().setCurrentFile(project.directory());
-  //    AppDefaults.sharedInstance().edit().recentProjects(recentProjects().state());
-  //    rebuildFrameContent();
-  //    mInfoPanel.opening(project);
-  //
-  //    scriptManager().replaceCurrentScriptWith(currentProject().script());
-  //
-  //    // TODO: restore panel visibilities, etc according to project
-  //    appFrame().setBounds(projectState().appFrame());
-  //    updateTitle();
-  //    discardMenuBar();
-  //
-  //    // Make sure the UI is updated to represent this project's state,
-  //    // and to make sure the keyboard shortcuts work (something to do with focus?)
-  //    //
-  //    performRepaint(REPAINT_ALL);
-  //  }
 
   public final RecentFiles recentProjects() {
     if (mRecentProjects == null) {

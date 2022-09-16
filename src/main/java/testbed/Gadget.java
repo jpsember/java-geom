@@ -7,6 +7,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.beans.*;
+import static js.base.Tools.*;
 
 /**
  * Base class for control gadgets
@@ -207,6 +208,7 @@ abstract class Gadget implements Globals, ChangeListener,
 
     public void actionPerformed(ActionEvent e) {
       // send application a CTRLVALUE action with the gadget id.
+      pr("sending procAction with:",e);
       TestBed.procAction(new TBAction(TBAction.CTRLVALUE, id()));
     }
 

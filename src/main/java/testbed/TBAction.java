@@ -4,11 +4,9 @@ import base.*;
 import java.awt.event.*;
 import static js.base.Tools.*;
 
-
 public class TBAction {
 
-  public static final int NONE = 0, DOWN1 = 1, UP1 = 2, DOWN2 = 3, UP2 = 4,
-      DRAG = 5,
+  public static final int NONE = 0, DOWN1 = 1, UP1 = 2, DOWN2 = 3, UP2 = 4, DRAG = 5,
       // begin an operation (application use only)
       ENTER = 6,
       // ending an operation (application use only)
@@ -56,8 +54,7 @@ public class TBAction {
         break;
       }
       if (mouse.getModifiers() != a.mouse.getModifiers()) {
-        System.out.println("mouseMod= " + mouse.getModifiers() + " a="
-            + a.mouse.getModifiers());
+        System.out.println("mouseMod= " + mouse.getModifiers() + " a=" + a.mouse.getModifiers());
         d = true;
         break;
       }
@@ -70,10 +67,6 @@ public class TBAction {
   public TBAction(int code, String strArg) {
     this.code = code;
     this.strArg = strArg;
-  }
-
-  public TBAction(int code) {
-    this.code = code;
   }
 
   public TBAction(int code, int controlId) {
@@ -89,8 +82,11 @@ public class TBAction {
 
   /**
    * Constructor
-   * @param code   type of action
-   * @param evt    mouse event (or null if not mouse related)
+   * 
+   * @param code
+   *          type of action
+   * @param evt
+   *          mouse event (or null if not mouse related)
    */
   protected TBAction(int code, MouseEvent evt) {
     this.code = code;
@@ -100,7 +96,7 @@ public class TBAction {
       vLoc = new FPoint2(evt.getX(), evt.getY());
       loc = new FPoint2();
       todo("viewToLogic no longer supported");
-//      V.viewToLogic(vLoc, loc);
+      //      V.viewToLogic(vLoc, loc);
     }
   }
 
@@ -110,6 +106,7 @@ public class TBAction {
 
   /**
    * Returns true if it's a mouse event AND the ctrl key was pressed.
+   * 
    * @return boolean
    */
   public boolean ctrlPressed() {
@@ -124,9 +121,8 @@ public class TBAction {
     return (mouse != null && ((mouse.getModifiers() & MyAction.modifierMask(3)) != 0));
   }
 
-  private static final String[] codes = { "NONE", "DOWN1", "UP1", "DOWN2",
-      "UP2", "DRAG", "ENTER", "EXIT", "ITEMENABLE", "CTRLVALUE", "COMMAND",
-      "HOVER", "UPDATETITLE", };
+  private static final String[] codes = { "NONE", "DOWN1", "UP1", "DOWN2", "UP2", "DRAG", "ENTER", "EXIT",
+      "ITEMENABLE", "CTRLVALUE", "COMMAND", "HOVER", "UPDATETITLE", };
 
   public String toString() {
 
