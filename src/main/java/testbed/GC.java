@@ -7,12 +7,6 @@ import base.*;
 class GC extends GridBagConstraints {
   private static GC gc = new GC();
 
-  /**
-   * We add empty 'glue' panels to force components upward when
-   * there is free space vertically.
-   */
-  public static final boolean USEGLUE = true;
-
   public static GC gc(int gridX, int gridY, int gridWidth, int gridHeight,
       int weightX, int weightY) {
     gc.gridx = gridX;

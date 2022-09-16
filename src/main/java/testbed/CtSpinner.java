@@ -3,17 +3,10 @@ package testbed;
 import base.*;
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 
 class CtSpinner extends Gadget {
   private static final boolean db = false;
-  //  private static final boolean NEWEXT = true;
 
-  //  static {
-  //    if (NEWEXT)
-  //      Tools.warn("trying new extent calls");
-  //  }
-  //
   public int gcFill() {
     if (isSlider) {
       return GridBagConstraints.HORIZONTAL;
@@ -23,6 +16,7 @@ class CtSpinner extends Gadget {
 
   /**
    * Get string describing object
+   * 
    * @return String
    */
   public String toString() {
@@ -62,14 +56,8 @@ class CtSpinner extends Gadget {
     comp.setEnabled(state);
   }
 
-  /**
-   * Constructor
-   * @param label String
-   * @param alignment int
-   */
-  public CtSpinner(int id, String label, double dmin, double dmax,
-      double dvalue, double step, boolean sliderFlag, boolean withTicks,
-      boolean dbl) {
+  public CtSpinner(int id, String label, double dmin, double dmax, double dvalue, double step,
+      boolean sliderFlag, boolean withTicks, boolean dbl) {
 
     this.dataType = dbl ? DT_DOUBLE : DT_INT;
     this.isSlider = sliderFlag;
@@ -96,211 +84,72 @@ class CtSpinner extends Gadget {
       comp = c1;
       panel.add(c1);
     } else {
-      if (true) {
-        BoxLayout layout = new BoxLayout(panel, BoxLayout.X_AXIS);
+      BoxLayout layout = new BoxLayout(panel, BoxLayout.X_AXIS);
 
-        panel.setLayout(layout);
-        mySlider cs = null;
-        //        if (!dbl) {
-        //          cs = new mySlider((int) dmin, (int) dmax, (int) dvalue, (int)step);
-        //        } else {
-        cs = new mySlider(dbl, dmin, dmax, dvalue, step);
-        //        }
+      panel.setLayout(layout);
+      mySlider cs = null;
+      cs = new mySlider(dbl, dmin, dmax, dvalue, step);
 
-        cs.addChangeListener(this);
-        if (label != null) {
-          if (!label.endsWith(":"))
-            label = label + ":";
-          JLabel lbl = new JLabel(label);
-          lbl.setAlignmentX(Component.RIGHT_ALIGNMENT);
-          panel.add(lbl);
-        }
-
-        if (withTicks) {
-          final boolean db = false;
-          if (db) {
-            System.out.println("slider ticks, dmax=" + dmax + ", dmin=" + dmin);
-          }
-          {
-            int steps = 0;
-            double r = dmax - dmin;
-            if (dbl) {
-              int nsteps = (int) (r / step);
-              int stepV = (int) (r / nsteps);
-
-              if (nsteps <= 12) {
-                cs.setMinorTickSpacing(stepV);
-                cs.setMajorTickSpacing(2 * stepV);
-                cs.createStandardLabels(2 * stepV);
-                cs.setSnapToTicks(true);
-              } else {
-                nsteps = Math.min(nsteps, 50);
-                double major = (r / 4 / step);
-                double minor = major / 2;
-
-                cs.setMinorTickSpacing((int) minor);
-                cs.setMajorTickSpacing((int) major);
-                cs.createStandardLabels((int) (r / 4));
-              }
-            } else {
-              steps = (int) (dmax + 1 - dmin);
-
-              if (steps <= 12) {
-                cs.setMinorTickSpacing(1);
-                cs.setMajorTickSpacing(2);
-                cs.createStandardLabels(2);
-                cs.setSnapToTicks(true);
-              } else {
-                cs.setMinorTickSpacing(steps / 20);
-                cs.setMajorTickSpacing(steps / 4);
-                cs.createStandardLabels(steps / 4);
-              }
-
-            }
-            if (db) {
-              System.out.println(" steps=" + steps);
-            }
-            cs.setPaintTicks(true);
-            cs.setPaintLabels(true);
-
-            if (false && steps > 12) {
-              Dictionary labels = new Hashtable();
-              for (int i = 0; i < 5; i++) {
-                int val = (i * steps) / 4;
-
-                double x = (val * r) / steps + dmin;
-                String s = null;
-                if (db) {
-                  System.out.println(" x = " + x);
-                }
-                if (dmin < -5 || dmax > 5) {
-                  if (dbl) {
-                    s = Double.toString(x);
-                  } else {
-                    s = Integer.toString((int) x);
-                  }
-                } else {
-                  if (dbl) {
-                    s = Tools.f(x);
-                  } else {
-                    s = Tools.f((int) x);
-                  }
-                }
-                if (db) {
-                  System.out.println("adding label " + val + " " + s);
-                }
-                labels.put(new Integer(val), new JLabel(s));
-              }
-              cs.setLabelTable(labels);
-            }
-          }
-        }
-        comp = cs;
-        panel.add(cs);
-      } else {
-        //        if (label != null)
-        //          Gfx.addBorder(panel, Gfx.BD_LINE_PAD, label, labelAlignment);
-        //        label = null;
-        //
-        //        BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
-        //
-        //        panel.setLayout(layout);
-        //        mySlider cs = null;
-        //        //        if (!dbl) {
-        //        //          cs = new mySlider((int) dmin, (int) dmax, (int) dvalue, (int)step);
-        //        //        } else {
-        //        cs = new mySlider(dbl, dmin, dmax, dvalue, step);
-        //        //        }
-        //
-        //        cs.addChangeListener(this);
-        //        if (label != null) {
-        //          JLabel lbl = new JLabel(label);
-        //          lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
-        //          panel.add(lbl);
-        //        }
-        //
-        //        if (withTicks) {
-        //          final boolean db = false;
-        //          if (db) {
-        //            System.out.println("slider ticks, dmax=" + dmax + ", dmin=" + dmin);
-        //          }
-        //          {
-        //            int steps = 0;
-        //            double r = dmax - dmin;
-        //            if (dbl) {
-        //              int nsteps = (int) (r / step);
-        //              int stepV = (int) (r / nsteps);
-        //
-        //              if (nsteps <= 12) {
-        //                cs.setMinorTickSpacing(stepV);
-        //                cs.setMajorTickSpacing(2 * stepV);
-        //                cs.createStandardLabels(2 * stepV);
-        //                cs.setSnapToTicks(true);
-        //              } else {
-        //                nsteps = Math.min(nsteps, 50);
-        //                double major = (r / 4 / step);
-        //                double minor = major / 2;
-        //
-        //                cs.setMinorTickSpacing((int) minor);
-        //                cs.setMajorTickSpacing((int) major);
-        //                cs.createStandardLabels((int) (r / 4));
-        //              }
-        //            } else {
-        //              steps = (int) (dmax + 1 - dmin);
-        //
-        //              if (steps <= 12) {
-        //                cs.setMinorTickSpacing(1);
-        //                cs.setMajorTickSpacing(2);
-        //                cs.createStandardLabels(2);
-        //                cs.setSnapToTicks(true);
-        //              } else {
-        //                cs.setMinorTickSpacing(steps / 20);
-        //                cs.setMajorTickSpacing(steps / 4);
-        //                cs.createStandardLabels(steps / 4);
-        //              }
-        //
-        //            }
-        //            if (db) {
-        //              System.out.println(" steps=" + steps);
-        //            }
-        //            cs.setPaintTicks(true);
-        //            cs.setPaintLabels(true);
-        //
-        //            if (false && steps > 12) {
-        //              Dictionary labels = new Hashtable();
-        //              for (int i = 0; i < 5; i++) {
-        //                int val = (i * steps) / 4;
-        //
-        //                double x = (val * r) / steps + dmin;
-        //                String s = null;
-        //                if (db) {
-        //                  System.out.println(" x = " + x);
-        //                }
-        //                if (dmin < -5 || dmax > 5) {
-        //                  if (dbl) {
-        //                    s = Double.toString(x);
-        //                  } else {
-        //                    s = Integer.toString((int) x);
-        //                  }
-        //                } else {
-        //                  if (dbl) {
-        //                    s = Tools.f(x);
-        //                  } else {
-        //                    s = Tools.f((int) x);
-        //                  }
-        //                }
-        //                if (db) {
-        //                  System.out.println("adding label " + val + " " + s);
-        //                }
-        //                labels.put(new Integer(val), new JLabel(s));
-        //              }
-        //              cs.setLabelTable(labels);
-        //            }
-        //          }
-        //        }
-        //        comp = cs;
-        //        panel.add(cs);
+      cs.addChangeListener(this);
+      if (label != null) {
+        if (!label.endsWith(":"))
+          label = label + ":";
+        JLabel lbl = new JLabel(label);
+        lbl.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        panel.add(lbl);
       }
+
+      if (withTicks) {
+        final boolean db = false;
+        if (db) {
+          System.out.println("slider ticks, dmax=" + dmax + ", dmin=" + dmin);
+        }
+        {
+          int steps = 0;
+          double r = dmax - dmin;
+          if (dbl) {
+            int nsteps = (int) (r / step);
+            int stepV = (int) (r / nsteps);
+
+            if (nsteps <= 12) {
+              cs.setMinorTickSpacing(stepV);
+              cs.setMajorTickSpacing(2 * stepV);
+              cs.createStandardLabels(2 * stepV);
+              cs.setSnapToTicks(true);
+            } else {
+              nsteps = Math.min(nsteps, 50);
+              double major = (r / 4 / step);
+              double minor = major / 2;
+
+              cs.setMinorTickSpacing((int) minor);
+              cs.setMajorTickSpacing((int) major);
+              cs.createStandardLabels((int) (r / 4));
+            }
+          } else {
+            steps = (int) (dmax + 1 - dmin);
+
+            if (steps <= 12) {
+              cs.setMinorTickSpacing(1);
+              cs.setMajorTickSpacing(2);
+              cs.createStandardLabels(2);
+              cs.setSnapToTicks(true);
+            } else {
+              cs.setMinorTickSpacing(steps / 20);
+              cs.setMajorTickSpacing(steps / 4);
+              cs.createStandardLabels(steps / 4);
+            }
+
+          }
+          if (db) {
+            System.out.println(" steps=" + steps);
+          }
+          cs.setPaintTicks(true);
+          cs.setPaintLabels(true);
+
+        }
+      }
+      comp = cs;
+      panel.add(cs);
     }
     setComponent(panel);
   }
@@ -367,8 +216,7 @@ class CtSpinner extends Gadget {
     //
     //    }
 
-    public mySlider(boolean dbls, double dmin, double dmax, double dvalue,
-        double step) {
+    public mySlider(boolean dbls, double dmin, double dmax, double dvalue, double step) {
       dblFlag = dbls;
       double range = dmax - dmin;
       if (dbls)

@@ -42,8 +42,6 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     addMouseMotionListener(this);
   }
 
-  public boolean PLOT_RED;
-
   @Override
   public void paintComponent(Graphics g) {
     ScriptWrapper script = scriptManager().currentScript();
@@ -56,11 +54,6 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
       mCurrentZoom = null;
     }
 
-    if (PLOT_RED) {
-      g.setColor(Color.red);
-      int p = 30;
-      g.fillRect(p, p, 20, 20); //getWidth() - 2 * p, getHeight() - 2 * p);
-    }
     // To avoid having the InfoPanel (or some Swing widgets within it) intercepting keyboard events
     // (that we'd like available for the menu items), always have the editor panel request the focus:
     requestFocus();

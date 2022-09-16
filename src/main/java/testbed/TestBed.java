@@ -160,7 +160,7 @@ public abstract class TestBed extends GeomApp {
   /**
    * Process actions for main controls. Default implementation does nothing
    */
-  public void processAction(TBAction a) {
+  public   void processAction(TBAction a) {
   }
 
   public static TestBed singleton() {
@@ -467,7 +467,6 @@ public abstract class TestBed extends GeomApp {
   @Override
   public void populateFrame(JPanel parentPanel) {
     constructEditorPanel();
-    getEditorPanel().PLOT_RED = true;
 
     parentPanel.setLayout(new BorderLayout());
     parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
