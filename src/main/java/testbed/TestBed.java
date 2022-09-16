@@ -511,6 +511,7 @@ public abstract class TestBed extends GeomApp {
       operList = new DArray();
       setParameters0();
       todo("avoid calling V.init");
+      todo("repaint when controls change");
       V.init();
 
       C.init();

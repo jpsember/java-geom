@@ -4,36 +4,33 @@ import java.util.List;
 import java.util.Random;
 
 import geom.EditorElement;
-import geom.GeomTools;
-import geom.ScriptManager;
+import geom.GeomApp;
 import geom.elem.EditableRectElement;
+import geom.gen.Command;
 import geom.gen.ScriptEditState;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.IRect;
 import testbed.*;
+
+import static geom.GeomTools.*;
 import static js.base.Tools.*;
 
 public class GeneratorOper implements TestBedOperation, Globals {
-  /*
-   * ! .enum .private 1600 seed count minrad maxrad _ _ position _ type rndsqr
-   * circle spiral rnddisc shadows square segs
-   */
 
-  private static final int SEED = 1600;//!
-  private static final int COUNT = 1601;//!
-  private static final int MINRAD = 1602;//!
-  private static final int MAXRAD = 1603;//!
-  private static final int POSITION = 1606;//!
-  private static final int TYPE = 1608;//!
-  private static final int RNDSQR = 1609;//!
-  private static final int CIRCLE = 1610;//!
-  private static final int SPIRAL = 1611;//!
-  private static final int RNDDISC = 1612;//!
-  private static final int SHADOWS = 1613;//!
-  private static final int SQUARE = 1614;//!
-  private static final int SEGS = 1615;//!
-  /* ! */
+  private static final int SEED = 1600;
+  private static final int COUNT = 1601;
+  private static final int MINRAD = 1602;
+  private static final int MAXRAD = 1603;
+  private static final int POSITION = 1606;
+  private static final int TYPE = 1608;
+  private static final int RNDSQR = 1609;
+  private static final int CIRCLE = 1610;
+  private static final int SPIRAL = 1611;
+  private static final int RNDDISC = 1612;
+  private static final int SHADOWS = 1613;
+  private static final int SQUARE = 1614;
+  private static final int SEGS = 1615;
 
   public void addControls() {
     C.sOpenTab("Gen");
@@ -89,7 +86,7 @@ public class GeneratorOper implements TestBedOperation, Globals {
 
     int radMin = Math.min(C.vi(MINRAD), C.vi(MAXRAD));
     int radMax = Math.max(C.vi(MINRAD), C.vi(MAXRAD));
-    float range = (radMax - radMin) * .1f;
+    float range = (radMax - radMin) ;
     final int PADDING = 3;
     FPoint size = V.logicalSize();
     float sx = size.x - 2 * PADDING;
@@ -103,16 +100,13 @@ public class GeneratorOper implements TestBedOperation, Globals {
       elemList.add(elem);
     }
 
-    todo("make this an undoable command");
-
-    ScriptManager m = GeomTools.scriptManager();
-    ScriptEditState.Builder s = m.state().toBuilder();
-    s.elements(elemList);
-    m.setState(s);
-    GeomTools.editor().repaintPanels(~0);
+    Command.Builder b = Command.newBuilder();
+    ScriptEditState editState = scriptManager().state();
+    b.newState(editState.toBuilder().elements(elemList));
+    editor().perform(b);
+    editor().performRepaint(GeomApp.REPAINT_EDITOR);
   }
 
-  //  private int genType = RANDOM;
   public void processAction(TBAction a) {
     if (a.code == TBAction.CTRLVALUE) {
       switch (a.ctrlId) {
