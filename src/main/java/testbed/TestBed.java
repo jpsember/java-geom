@@ -148,7 +148,8 @@ public abstract class TestBed extends GeomApp {
 
   static void procAction(TBAction a) {
     try {
-      singleton().processAction(a);
+      if (singleton().appStarted())
+        singleton().processAction(a);
     } catch (TBError e) {
       showError(e.toString());
       if (false) {
@@ -160,7 +161,7 @@ public abstract class TestBed extends GeomApp {
   /**
    * Process actions for main controls. Default implementation does nothing
    */
-  public   void processAction(TBAction a) {
+  public void processAction(TBAction a) {
   }
 
   public static TestBed singleton() {
@@ -612,23 +613,16 @@ public abstract class TestBed extends GeomApp {
   }
 
   public static void addOper(TestBedOperation oper) {
-    if (operList.isEmpty()) {
-      operList.add(new TestBedOperation() {
-        public void addControls() {
-          C.sOpenTab("Edit");
-          C.sCloseTab();
-        }
-
-        public void runAlgorithm() {
-        }
-
-        public void paintView() {
-        }
-
-        public void processAction(TBAction a) {
-        }
-      });
-    }
+    /**
+     * if (operList.isEmpty()) { operList.add(new TestBedOperation() { public
+     * void addControls() { C.sOpenTab("Edit"); C.sCloseTab(); }
+     * 
+     * public void runAlgorithm() { }
+     * 
+     * public void paintView() { }
+     * 
+     * public void processAction(TBAction a) { } }); }
+     */
     operList.add(oper);
   }
 

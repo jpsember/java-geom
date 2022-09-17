@@ -8,15 +8,6 @@ import static js.base.Tools.*;
 
 public class SampleMain extends TestBed {
 
-  private static final int RANDOM = 4011;//!
-  private static final int TYPE = 4013;//!
-  private static final int DISC = 4014;//!
-  private static final int SQUARE = 4015;//!
-  private static final int RECT = 4016;//!
-  private static final int POLY = 4017;//!
-
-  public static final int DISCS = 0, SQUARES = 1, RECTS = 2, POLYGONS = 3;
-
   public static void main(String[] args) {
     loadTools();
     App app = new SampleMain();
@@ -45,53 +36,14 @@ public class SampleMain extends TestBed {
     addOper(new GeneratorOper());
   }
 
-  public static int regionType() {
-    return C.vi(TYPE) - DISC;
-  }
-
   @Override
   public void addControls() {
-    C.sOpen();
-    // C.sCheckBox(RECTS, "Rectangles", null, false);
-
-    {
-      C.sOpen();
-      C.sButton(RANDOM, "Random", "Generate random discs");
-
-      C.sOpenComboBox(TYPE, "Regions", "Select uncertain regions", false);
-      C.sChoice(DISC, "disc");
-      C.sChoice(SQUARE, "square");
-      C.sChoice(RECT, "rectangle");
-      C.sChoice(POLY, "polygon");
-      C.sCloseComboBox();
-      C.sClose();
-    }
-
-    C.sClose();
   }
-
-  //  public void initEditor() {
-  //    Editor.addObjectType(EdPolygon.FACTORY);
-  //    Editor.addObjectType(EdDisc.FACTORY);
-  //    Editor.addObjectType(EdSegment.FACTORY);
-  //    Editor.addObjectType(EdPoint.FACTORY);
-  //    Editor.addObjectType(EdRect.FACTORY);
-  //
-  //    Editor.openMenu();
-  //    C.sMenuItem(TOGGLEDISCS, "Toggle discs/points", "!^t");
-  //    C.sMenuItem(MAKETANGENT, "Set disc tangent", "!^3"); //"!^g");
-  //    Editor.closeMenu();
-  //  }
 
   @Override
   public void processAction(TBAction a) {
-    if (a.code == TBAction.CTRLVALUE) {
-      switch (a.ctrlId) {
-      case RANDOM:
-        GeneratorOper.generateRandom();
-        break;
-      }
-    }
+    todo("is this necessary?  probably should be the default");
+    TestBed.oper().processAction(a);
   }
 
   //  private static DArray getCandidate(final EdDisc c) {

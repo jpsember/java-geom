@@ -12,8 +12,7 @@ import static js.base.Tools.*;
 /**
  * Base class for control gadgets
  */
-abstract class Gadget implements Globals, ChangeListener,
-    PropertyChangeListener {
+abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener {
 
   public void stateChanged(ChangeEvent changeEvent) {
     TestBed.procAction(new TBAction(TBAction.CTRLVALUE, getId()));
@@ -26,12 +25,13 @@ abstract class Gadget implements Globals, ChangeListener,
     TestBed.procAction(new TBAction(TBAction.CTRLVALUE, getId()));
   }
 
-  public static final int DT_STRING = 0, DT_INT = 1, DT_DOUBLE = 2,
-      DT_BOOL = 3;
+  public static final int DT_STRING = 0, DT_INT = 1, DT_DOUBLE = 2, DT_BOOL = 3;
 
   /**
    * Determine if data type for gadget matches a value
-   * @param t : value to match
+   * 
+   * @param t
+   *          : value to match
    * @return boolean
    */
   public boolean dataType(int t) {
@@ -40,6 +40,7 @@ abstract class Gadget implements Globals, ChangeListener,
 
   /**
    * Get number of children of this gadget
+   * 
    * @return int
    */
   public int nChildren0() {
@@ -51,7 +52,9 @@ abstract class Gadget implements Globals, ChangeListener,
    */
   /**
    * Get a child
-   * @param i : index of child
+   * 
+   * @param i
+   *          : index of child
    * @return id of child
    */
   public int child0(int i) {
@@ -60,15 +63,20 @@ abstract class Gadget implements Globals, ChangeListener,
 
   /**
    * Create an action for the gadget
-   * @param id : id of gadget
-   * @param label : label for gadget
-   * @param l : who will be listening for these actions
-   * @param toolTip : if not null, tooltip text to display with gadget
-   * @param accel : if not null, KeyStroke to trigger action
+   * 
+   * @param id
+   *          : id of gadget
+   * @param label
+   *          : label for gadget
+   * @param l
+   *          : who will be listening for these actions
+   * @param toolTip
+   *          : if not null, tooltip text to display with gadget
+   * @param accel
+   *          : if not null, KeyStroke to trigger action
    * @return Action
    */
-  public static Action createAction(int id, String label, String toolTip,
-      KeyStroke accel) {
+  public static Action createAction(int id, String label, String toolTip, KeyStroke accel) {
 
     final boolean db = false;
 
@@ -107,6 +115,7 @@ abstract class Gadget implements Globals, ChangeListener,
 
   /**
    * Get the ID assigned to this component
+   * 
    * @return int
    */
   public int getId() {
@@ -115,6 +124,7 @@ abstract class Gadget implements Globals, ChangeListener,
 
   /**
    * Get the ID assigned to this component
+   * 
    * @return int
    */
   public void setId(int id) {
@@ -123,6 +133,7 @@ abstract class Gadget implements Globals, ChangeListener,
 
   /**
    * Get the value stored in this component
+   * 
    * @return Object : a String, Double, Integer, etc.
    */
   public Object readValue() {
@@ -131,7 +142,9 @@ abstract class Gadget implements Globals, ChangeListener,
 
   /**
    * Store a new value to this component
-   * @param v : a String, Double, Integer, etc.
+   * 
+   * @param v
+   *          : a String, Double, Integer, etc.
    */
   public void writeValue(Object v) {
     this.value = v;
@@ -139,6 +152,7 @@ abstract class Gadget implements Globals, ChangeListener,
 
   /**
    * Get Swing component associated with gadget
+   * 
    * @return Component
    */
   public Component getComponent() {
@@ -149,17 +163,18 @@ abstract class Gadget implements Globals, ChangeListener,
     this.component = c;
   }
 
-//  /**
-//   * Set renderer for gadget.
-//   * Override to support lists and whatnot.
-//   * @param r ListCellRenderer
-//   */
-//  public void setRenderer(ListCellRenderer r) {
-//    //    Tools.ASSERT(false, "setRenderer not supported by " + this);
-//  }
+  //  /**
+  //   * Set renderer for gadget.
+  //   * Override to support lists and whatnot.
+  //   * @param r ListCellRenderer
+  //   */
+  //  public void setRenderer(ListCellRenderer r) {
+  //    //    Tools.ASSERT(false, "setRenderer not supported by " + this);
+  //  }
 
   /**
    * Get GridBagConstraints fill parameter for this gadget
+   * 
    * @return int
    */
   public int gcFill() {
@@ -167,8 +182,8 @@ abstract class Gadget implements Globals, ChangeListener,
   }
 
   /**
-   * Determine if this gadget has a value that needs to be serialized.
-   * The default implementation returns true if gadget has a value defined.
+   * Determine if this gadget has a value that needs to be serialized. The
+   * default implementation returns true if gadget has a value defined.
    *
    * @return boolean
    */
@@ -183,10 +198,15 @@ abstract class Gadget implements Globals, ChangeListener,
 
     /**
      * Constructor
-     * @param id : id of gadget associated with action
-     * @param name : name of action (i.e., menu item label)
-     * @param toolTip : tooltip message
-     * @param accel : keystroke to use as accelerator
+     * 
+     * @param id
+     *          : id of gadget associated with action
+     * @param name
+     *          : name of action (i.e., menu item label)
+     * @param toolTip
+     *          : tooltip message
+     * @param accel
+     *          : keystroke to use as accelerator
      */
     public GadgetAction(int id, String name, String toolTip, KeyStroke accel) {
 
@@ -208,7 +228,7 @@ abstract class Gadget implements Globals, ChangeListener,
 
     public void actionPerformed(ActionEvent e) {
       // send application a CTRLVALUE action with the gadget id.
-      pr("sending procAction with:",e);
+      pr("sending procAction with:", e);
       TestBed.procAction(new TBAction(TBAction.CTRLVALUE, id()));
     }
 
