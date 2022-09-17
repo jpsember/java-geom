@@ -56,7 +56,9 @@ public class BoundsOper implements TestBedOperation, Globals {
       T.msg("algorithm step 2");
   }
 
+  @Override
   public void paintView() {
+    pr("paintView not doing anything");
   }
 
   private void generate() {
