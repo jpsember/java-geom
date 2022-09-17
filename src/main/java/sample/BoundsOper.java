@@ -16,9 +16,7 @@ import js.geometry.IPoint;
 import js.geometry.IRect;
 import testbed.*;
 
-public class SimpleOper implements TestBedOperation, Globals {
-
-  public static SimpleOper singleton = new SimpleOper();
+public class BoundsOper implements TestBedOperation, Globals {
 
   private static final int SEED = 1800;
   private static final int COUNT = 1801;
