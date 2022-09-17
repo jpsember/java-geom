@@ -25,8 +25,8 @@ public class SimpleOper implements TestBedOperation, Globals {
 
   public void addControls() {
 
-    C.sOpenTab("Simple");
-    C.sStaticText("Simple operation to demonstrate algorithm tracking");
+    C.sOpenTab("Bounds");
+    C.sStaticText("Calculate minimum bounding box of objects");
 
     {
       C.sOpen();

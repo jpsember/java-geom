@@ -13,6 +13,7 @@ class CtTextFieldNew extends Gadget implements ActionListener {
     else
       return jButton.getText();
   }
+
   public void writeValue(Object v) {
     if (readOnly())
       jText.setText(v.toString());
@@ -22,15 +23,18 @@ class CtTextFieldNew extends Gadget implements ActionListener {
 
   /**
    * Construct a CtTextField for a string value
-   * @param id  
-   * @param label if "!", field is read only 
-   * @param value 
-   * @param maxStrLen  maximum # characters for value (for sizing
-   *  purposes only; no edit length limit is enforced)
-   * @param fixedWidth ignored
+   * 
+   * @param id
+   * @param label
+   *          if "!", field is read only
+   * @param value
+   * @param maxStrLen
+   *          maximum # characters for value (for sizing purposes only; no edit
+   *          length limit is enforced)
+   * @param fixedWidth
+   *          ignored
    */
-  public CtTextFieldNew(int id, String label, String value, int maxStrLen,
-      boolean fixedWidth) {
+  public CtTextFieldNew(int id, String label, String value, int maxStrLen, boolean fixedWidth) {
     setId(id);
     dataType = DT_STRING;
 
@@ -61,24 +65,27 @@ class CtTextFieldNew extends Gadget implements ActionListener {
       c.add(jButton);
     setComponent(c);
   }
+
   public void actionPerformed(ActionEvent e) {
     String lbl = null;
     if (jLabel != null)
       lbl = jLabel.getText();
 
     String sOrig = jButton.getText();
-    String s = (String) JOptionPane.showInputDialog(null, null, lbl,
-        JOptionPane.PLAIN_MESSAGE, null, null, sOrig);
+    String s = (String) JOptionPane.showInputDialog(null, null, lbl, JOptionPane.PLAIN_MESSAGE, null, null,
+        sOrig);
 
     //If a string was returned, say so.
     if (s != null && !s.equals(sOrig)) {
       jButton.setText(s);
-      TestBed.procAction(new TBAction(TBAction.CTRLVALUE, getId()));
+      TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
     }
   }
+
   private boolean readOnly() {
     return jButton == null;
   }
+
   private JPanel c;
   private JTextField jText;
   private JButton jButton;

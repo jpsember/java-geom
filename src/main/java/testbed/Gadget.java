@@ -1,5 +1,7 @@
 package testbed;
 
+import static js.base.Tools.*;
+
 import base.*;
 import java.awt.*;
 import java.awt.Component;
@@ -7,7 +9,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.beans.*;
-import static js.base.Tools.*;
 
 /**
  * Base class for control gadgets
@@ -15,14 +16,15 @@ import static js.base.Tools.*;
 abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener {
 
   public void stateChanged(ChangeEvent changeEvent) {
-    TestBed.procAction(new TBAction(TBAction.CTRLVALUE, getId()));
+    loadTools();
+    TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
   }
 
   // ------------------------------------------------------
   // PropertyChangeListener interface
   // ------------------------------------------------------
   public void propertyChange(PropertyChangeEvent e) {
-    TestBed.procAction(new TBAction(TBAction.CTRLVALUE, getId()));
+    TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
   }
 
   public static final int DT_STRING = 0, DT_INT = 1, DT_DOUBLE = 2, DT_BOOL = 3;
@@ -228,8 +230,7 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
 
     public void actionPerformed(ActionEvent e) {
       // send application a CTRLVALUE action with the gadget id.
-      pr("sending procAction with:", e);
-      TestBed.procAction(new TBAction(TBAction.CTRLVALUE, id()));
+      TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, id()));
     }
 
   }

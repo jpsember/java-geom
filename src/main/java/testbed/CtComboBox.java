@@ -91,7 +91,7 @@ class CtComboBox extends Gadget implements ActionListener {
     int selId = cbox.getSelectedId();
     if (db)
       Streams.out.println("CtComboBox actionPerformed: selected=" + selId);
-    TestBed.procAction(new TBAction(TBAction.CTRLVALUE, selId));
+    TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, selId));
   }
 
   /**

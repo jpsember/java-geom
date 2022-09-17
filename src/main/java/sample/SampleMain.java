@@ -40,12 +40,6 @@ public class SampleMain extends TestBed {
   public void addControls() {
   }
 
-  @Override
-  public void processAction(TBAction a) {
-    todo("is this necessary?  probably should be the default");
-    TestBed.oper().processAction(a);
-  }
-
   //  private static DArray getCandidate(final EdDisc c) {
   //    // find best two candidates for supporting this disc
   //    DArray can = new DArray(discs);

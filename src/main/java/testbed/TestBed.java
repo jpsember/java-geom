@@ -146,22 +146,21 @@ public abstract class TestBed extends GeomApp {
   //    //    resetFocus();
   //  }
 
-  static void procAction(TBAction a) {
+
+  /**
+   * Process actions for main controls. Default implementation passes action to
+   * current operation
+   */
+  public void processAction(TBAction a) {
     try {
-      if (singleton().appStarted())
-        singleton().processAction(a);
+      if (appStarted())
+        oper().processAction(a);
     } catch (TBError e) {
       showError(e.toString());
       if (false) {
         Streams.out.println(Tools.stackTrace(0, 8, e));
       }
     }
-  }
-
-  /**
-   * Process actions for main controls. Default implementation does nothing
-   */
-  public void processAction(TBAction a) {
   }
 
   public static TestBed singleton() {
@@ -474,7 +473,6 @@ public abstract class TestBed extends GeomApp {
 
     {
       operList = new DArray();
-      todo("repaint when controls change");
       C.init();
     }
 
