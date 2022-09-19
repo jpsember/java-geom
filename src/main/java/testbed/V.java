@@ -1,12 +1,12 @@
 package testbed;
 
 import base.*;
-import js.geometry.IPoint;
+import geom.GeomTools;
 
 import java.awt.*;
 import java.awt.geom.*;
 
-import static geom.GeomTools.*;
+import static js.base.Tools.*;
 
 /**
  * Main view of TestBed applications. It has the short name 'V' to minimize
@@ -16,8 +16,14 @@ public class V implements Globals {
 
   public static void setGraphics(Graphics2D graphics) {
     g = graphics;
-    if (graphics != null)
-      TBFont.prepare();
+    if (graphics == null)
+      return;
+
+    TBFont.prepare();
+    float z = 
+    GeomTools.editor().zoomFactor();
+    pr("zoom:",z);
+    screenScaleFactor = 2.5f/z;
   }
 
   //  /**
@@ -40,6 +46,47 @@ public class V implements Globals {
   //    return panel;
   //  }
 
+  //  private void calculateTransform() {
+  // 
+  //    
+  //        //  updateScaleFactor();
+  //    
+  ////          recalcLogicalView(g);
+  //    
+  ////          FPoint2 logSize = logicalSize();
+  ////          int screenWidth = getWidth();
+  ////          int screenHeight = getHeight();
+  ////          int screenOffsetX = 0;
+  ////          int screenOffsetY = 0;
+  ////    
+  ////          if (C.vb(TBGlobals.ENFORCE_ASP)) {
+  ////            double aspRatio = C.vd(TBGlobals.ASPECTRATIO);
+  ////            double logWidth = 100.0 * aspRatio;
+  ////            double logHeight = 100.0;
+  ////    
+  ////            if (aspRatio > screenWidth / (double) screenHeight) {
+  ////              int q = (int) (screenWidth / aspRatio);
+  ////              screenOffsetY = (screenHeight - q) / 2;
+  ////    
+  ////              screenHeight = q;
+  ////            } else {
+  ////              int q = (int) (screenHeight * aspRatio);
+  ////              screenOffsetX = (screenWidth - q) / 2;
+  ////              screenWidth = q;
+  ////            }
+  ////            logSize = new FPoint2(logWidth, logHeight);
+  ////          }
+  ////          FPoint2 depscr0 = new FPoint2(screenOffsetX, screenOffsetY);
+  ////          FPoint2 depscr1 = new FPoint2(screenWidth + screenOffsetX, screenHeight + screenOffsetY);
+  ////    
+  ////          if (TestBed.parms.includeGrid)
+  ////            grid.setSize(C.vi(TBGlobals.GRIDSIZE), logSize);
+  ////    
+  ////          TBFont.prepare();
+  //
+  //  
+  //  }
+  //  
   //  private static class ourPanel extends JPanel {
   //
   //    /**
@@ -348,14 +395,14 @@ public class V implements Globals {
     draw(str, loc.x, loc.y, flags);
   }
 
-  /**
-   * Get size in viewspace of a 1x1 logical pixel
-   * 
-   * @return width in viewspace
-   */
-  private static double logicalPixelSize() {
-    return logPixelSize;
-  }
+  //  /**
+  //   * Get size in viewspace of a 1x1 logical pixel
+  //   * 
+  //   * @return width in viewspace
+  //   */
+  //  private static double logicalPixelSize() {
+  //    return logPixelSize;
+  //  }
 
   private V() {
   }
@@ -380,29 +427,29 @@ public class V implements Globals {
     g.setStroke(strokes[s]);
   }
 
-  //  /**
-  //   * Modify internal variables to reflect current 'GLOBALSCALE' gadget value.
-  //   * Sets screenScaleFactor to be 240 * GLOBALSCALE / screen width.
-  //   */
-  //  private static void updateScaleFactor() {
-  //    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-  //    screenScaleFactor = (240.0 * C.vi(TBGlobals.GLOBALSCALE)) / screenSize.width;
-  //  }
+  //    /**
+  //     * Modify internal variables to reflect current 'GLOBALSCALE' gadget value.
+  //     * Sets screenScaleFactor to be 240 * GLOBALSCALE / screen width.
+  //     */
+  //    private static void updateScaleFactor() {
+  //      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+  //      screenScaleFactor = (240.0 * C.vi(TBGlobals.GLOBALSCALE)) / screenSize.width;
+  //    }
 
-  //  private static void recalcLogicalView(Graphics g) {
-  //    final boolean db = false;
-  //
-  //    double xs, ys;
-  //
-  //    Rectangle r = g.getClipBounds();
-  //    double n = Math.min(r.width, r.height);
-  //    xs = r.width / n;
-  //    ys = r.height / n;
-  //    if (db)
-  //      Streams.out.println("setLogicalView xs=" + Tools.f(xs) + " ys=" + Tools.f(ys));
-  //
-  //    setLogicalView(xs * 100, ys * 100);
-  //  }
+  //    private static void recalcLogicalView(Graphics g) {
+  //      final boolean db = false;
+  //  
+  //      double xs, ys;
+  //  
+  //      Rectangle r = g.getClipBounds();
+  //      double n = Math.min(r.width, r.height);
+  //      xs = r.width / n;
+  //      ys = r.height / n;
+  //      if (db)
+  //        Streams.out.println("setLogicalView xs=" + Tools.f(xs) + " ys=" + Tools.f(ys));
+  //  
+  //      setLogicalView(xs * 100, ys * 100);
+  //    }
 
   /**
    * Save current scaling factor on stack, scale by some factor
@@ -413,7 +460,7 @@ public class V implements Globals {
   public static void pushScale(double scaleAdj) {
     plotStack.push(new Double(screenScaleFactor));
     screenScaleFactor *= scaleAdj;
-    scale = screenScaleFactor / logicalPixelSize();
+    calcScale();
     plotStack.push(ST_SCALE);
   }
 
@@ -425,8 +472,15 @@ public class V implements Globals {
     Double val = (Double) popValue(ST_SCALE);
     if (val != null) {
       screenScaleFactor = val.doubleValue();
-      scale = screenScaleFactor / logicalPixelSize();
+      calcScale();
     }
+  }
+
+  private static void calcScale() {
+    //    if (logicalPixelSize() <= 0)
+    //      throw badArg("logicalPixelSize is zero");
+    scale = screenScaleFactor; // / logicalPixelSize();
+    //pr("calc scale, screenScaleFactor:",screenScaleFactor,"logicalPixelSize:",logicalPixelSize(),"scale:",scale);
   }
 
   //  private static double screenScaleFactor() {
@@ -509,7 +563,6 @@ public class V implements Globals {
    *          </pre>
    */
   public static void draw(String str, double x, double y, int flags) {
-
     TBFont f = TBFont.get(activeFont);
 
     DArray strings = new DArray();
@@ -588,28 +641,28 @@ public class V implements Globals {
     double textW = maxStrLen * fsize;
     double rowH = (ascent + descent) * .8;
     double textH = rowH * (strings.size() + .2);
-    /*
-     * System.out.print("ascent="+ascent+" descent="+descent);
-     * System.out.print(" width="+fontCharWidth); System.out.print("
-     * height="+fontMetrics.getHeight()); System.out.print("
-     * leading="+fontMetrics.getLeading()); System.out.println();
-     */
-    double scl = scale;
-
-    double xs = scl * textW, ys = scl * textH;
-
-    double x0 = x - xs * .5, y0 = y - ys * .5;
-
-    // System.out.println(" before clamped="+x0+","+y0);
-    // System.out.println("lx0="+lx0+" ly0="+ly0+" lx1="+lx1+" ly1="+ly1);
-    if ((flags & TX_CLAMP) != 0) {
-      IPoint pageSize = editor().getEditorPanel().pageSize();
-      x0 = MyMath.clamp(x0, 0, pageSize.x - xs);
-      y0 = MyMath.clamp(y0, 0, pageSize.y - ys);
-    }
-
-    g.translate(x0, y0);
-    g.scale(scl, -scl);
+    //    /*
+    //     * System.out.print("ascent="+ascent+" descent="+descent);
+    //     * System.out.print(" width="+fontCharWidth); System.out.print("
+    //     * height="+fontMetrics.getHeight()); System.out.print("
+    //     * leading="+fontMetrics.getLeading()); System.out.println();
+    //     */
+    //    double scl = scale;
+    //pr("scl:",scl);
+    //    double xs = scl * textW, ys = scl * textH;
+    //
+    //    double x0 = x - xs * .5, y0 = y - ys * .5;
+    //
+    //    // System.out.println(" before clamped="+x0+","+y0);
+    //    // System.out.println("lx0="+lx0+" ly0="+ly0+" lx1="+lx1+" ly1="+ly1);
+    //    if ((flags & TX_CLAMP) != 0) {
+    //      IPoint pageSize = editor().getEditorPanel().pageSize();
+    //      x0 = MyMath.clamp(x0, 0, pageSize.x - xs);
+    //      y0 = MyMath.clamp(y0, 0, pageSize.y - ys);
+    //    }
+    //
+    //    g.translate(x0, y0);
+    //    g.scale(scl, -scl);
 
     if (flags != 0) {
       textRect.setFrame(0, -textH, textW, textH);
@@ -977,9 +1030,9 @@ public class V implements Globals {
   //  private static AffineTransform logicToViewTF = new AffineTransform(), viewToLogicTF = new AffineTransform();
 
   // size, in viewspace, of a 1x1 rectangle in logicspace
-  private static double logPixelSize;
+  //  private static double logPixelSize ; // Not sure necessary
 
-  private static double screenScaleFactor = 1.0;
+  private static double screenScaleFactor ;
 
   /**
    * Get current scale factor

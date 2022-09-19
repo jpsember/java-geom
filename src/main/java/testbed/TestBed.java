@@ -509,7 +509,8 @@ public abstract class TestBed extends GeomApp {
   //  }
 
   /**
-   * Process a paintComponent() for the view. Default implementation does nothing
+   * Process a paintComponent() for the view. Default implementation does
+   * nothing
    */
   public void paintView() {
   }
@@ -711,12 +712,12 @@ public abstract class TestBed extends GeomApp {
   @Override
   public void paintStart(Graphics2D graphics) {
     V.setGraphics(graphics);
-    AlgorithmStepper.runAlgorithm(oper());
+    AlgorithmStepper.sharedInstance().runAlgorithm(oper());
   }
-  
+
   @Override
   public void paintStop() {
-    AlgorithmStepper.renderAlgorithmResults();
+    AlgorithmStepper.sharedInstance().renderAlgorithmResults();
     V.setGraphics(null);
   }
 }

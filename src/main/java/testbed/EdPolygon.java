@@ -38,7 +38,7 @@ public class EdPolygon extends EdObject implements IEditorScript, Globals {
       markType = MARK_DISC;
 
     EdPolygon p = new EdPolygon(points);
-    return AlgorithmStepper.show(p, color, stroke, markType);
+    return AlgorithmStepper.sharedInstance().show(p, color, stroke, markType);
   }
   public static String show(Collection points, Color color, int stroke) {
     return show(points, color, stroke, -1);
@@ -102,12 +102,6 @@ public class EdPolygon extends EdObject implements IEditorScript, Globals {
    */
   public EdPolygon clipTo(FPoint2 s0, FPoint2 s1) {
 
-    final boolean db = false;
-
-    if (db && AlgorithmStepper.update())
-      AlgorithmStepper.msg("EdPolygon clipTo," + AlgorithmStepper.show(this) + " s0=" + s0 + " s1=" + s1
-          + EdSegment.show(s0, s1));
-
     EdPolygon c = new EdPolygon();
 
     FPoint2 prevPt = null;
@@ -116,11 +110,7 @@ public class EdPolygon extends EdObject implements IEditorScript, Globals {
       FPoint2 pt = getPointMod(i);
       boolean inside = MyMath.sideOfLine(s0, s1, pt) >= 0;
 
-      if (db && AlgorithmStepper.update())
-        AlgorithmStepper.msg(EdSegment.show(s0, s1) + " pt #" + i + AlgorithmStepper.show(pt) + " is inside="
-            + inside + " prevPt=" + prevPt + AlgorithmStepper.show(prevPt, MyColor.cDARKGREEN)
-            + " prevInside=" + prevInside);
-
+      
       if (i > 0) {
         if (!prevInside) {
           if (inside) {
@@ -128,15 +118,8 @@ public class EdPolygon extends EdObject implements IEditorScript, Globals {
 
             if (ept != null) {
               // add point where it enters poly
-              if (db && AlgorithmStepper.update())
-                AlgorithmStepper.msg(EdSegment.show(s0, s1) + "adding enter point"
-                    + AlgorithmStepper.show(ept));
               c.addPoint(ept, false);
             }
-            // add the current point, which is inside
-            if (db && AlgorithmStepper.update())
-              AlgorithmStepper.msg(EdSegment.show(s0, s1) + "adding current point, inside;"
-                  + AlgorithmStepper.show(pt));
             c.addPoint(pt, false);
           }
         } else {
@@ -144,15 +127,9 @@ public class EdPolygon extends EdObject implements IEditorScript, Globals {
             // add point where it exits poly
             FPoint2 ept = MyMath.linesIntersection(s0, s1, prevPt, pt, null);
             if (ept != null) {
-              if (db && AlgorithmStepper.update())
-                AlgorithmStepper.msg(EdSegment.show(s0, s1) + "adding exit point"
-                    + AlgorithmStepper.show(ept));
               c.addPoint(ept, false);
             }
           } else {
-            if (db && AlgorithmStepper.update())
-              AlgorithmStepper.msg(EdSegment.show(s0, s1) + "adding current point, inside;"
-                  + AlgorithmStepper.show(pt));
             c.addPoint(pt, false);
           }
         }
@@ -160,13 +137,9 @@ public class EdPolygon extends EdObject implements IEditorScript, Globals {
       prevInside = inside;
       prevPt = pt;
     }
-    if (db && AlgorithmStepper.update())
-      AlgorithmStepper.msg(EdSegment.show(s0, s1) + "clipped" + AlgorithmStepper.show(c));
 
     if (false) {
       c.filterCollinear(1e-2);
-      if (db && AlgorithmStepper.update())
-        AlgorithmStepper.msg(EdSegment.show(s0, s1) + "after filtering" + AlgorithmStepper.show(c));
     }
     EdPolygon p = null;
 
@@ -392,10 +365,6 @@ public class EdPolygon extends EdObject implements IEditorScript, Globals {
    */
   public int isPointInside(FPoint2 pt) {
 
-    final boolean db = false;
-
-    if (db && AlgorithmStepper.update())
-      AlgorithmStepper.msg("isPointInside?" + AlgorithmStepper.show(this, MyColor.cRED) + AlgorithmStepper.show(pt));
     int ret = 0;
 
     // if the sum of the angles swept by seg from pt to each vertex is
@@ -407,9 +376,6 @@ public class EdPolygon extends EdObject implements IEditorScript, Globals {
     for (int i = 0; i <= nSides(); i++) {
       FPoint2 v = getPointMod(i);
       if (v.equals(pt)) {
-        if (db && AlgorithmStepper.update())
-          AlgorithmStepper.msg("vertex equals query point" + EdSegment.showDirected(pt, v));
-
         continue;
       }
       double theta = MyMath.polarAngle(pt, v);
@@ -417,19 +383,13 @@ public class EdPolygon extends EdObject implements IEditorScript, Globals {
         double add = MyMath.normalizeAngle(theta - prevTheta);
         sum += add;
       }
-
-      if (db && AlgorithmStepper.update())
-        AlgorithmStepper.msg("vertex" + EdSegment.showDirected(pt, v) + " theta="
-            + MyMath.degrees(theta) + " sum=" + +MyMath.degrees(sum));
-
+ 
       prevThetaDefined = true;
       prevTheta = theta;
     }
     if (Math.abs(sum) > 1e-2) {
       ret = (sum > 0) ? 1 : -1;
     }
-    if (db && AlgorithmStepper.update())
-      AlgorithmStepper.msg("returning " + ret);
     return ret;
   }
 
@@ -575,9 +535,6 @@ public class EdPolygon extends EdObject implements IEditorScript, Globals {
    * @return interior point, or null if failed to find one
    */
   public FPoint2 findInteriorPoint() {
-    final boolean db = false;
-    if (db && AlgorithmStepper.update())
-      AlgorithmStepper.msg("findInteriorPoint" + AlgorithmStepper.show(this, null, STRK_THICK, -1));
     FPoint2 ret = null;
     outer: do {
 
@@ -594,8 +551,6 @@ public class EdPolygon extends EdObject implements IEditorScript, Globals {
         double thMid = MyMath.normalizeAnglePositive(th0 - th1) / 2 + th1;
         cw = MyMath.ptOnCircle(cv, thMid, 10.0);
       }
-      if (db && AlgorithmStepper.update())
-        AlgorithmStepper.msg("vertex and midpoint" + AlgorithmStepper.show(cv) + AlgorithmStepper.show(cw));
       for (int attempt = 0; attempt < this.nPoints(); attempt++) {
         if (isPointInside(cw) == 1) {
           ret = cw;

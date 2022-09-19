@@ -43,12 +43,14 @@ public class BoundsOper implements TestBedOperation, Globals {
   }
 
   public void runAlgorithm() {
-    if (AlgorithmStepper.update())
-      AlgorithmStepper.msg("algorithm step 1");
+    AlgorithmStepper s = AlgorithmStepper.sharedInstance();
+    
+    if (s.update())
+      s.msg("algorithm step 1");
 
     for (int i = 0; i<50; i++)
-      if (AlgorithmStepper.update())
-        AlgorithmStepper.msg("update, i:"+i);
+      if (s.update())
+        s.msg("update, i:",i);
     
     //    EdDisc[] obj = SampleMain.getDiscs();
     //    for (EdDisc d : obj) {
@@ -56,8 +58,8 @@ public class BoundsOper implements TestBedOperation, Globals {
     //        T.msg("disc"+T.show(d));
     //    }
 
-    if (AlgorithmStepper.update())
-      AlgorithmStepper.msg("algorithm step 2");
+    if (s.update())
+      s.msg("algorithm step 2");
   }
 
   @Override

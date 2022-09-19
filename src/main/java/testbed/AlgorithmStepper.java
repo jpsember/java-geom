@@ -2,6 +2,7 @@ package testbed;
 
 import base.*;
 import js.geometry.IPoint;
+import js.graphics.AbstractScriptElement;
 
 import java.awt.*;
 import java.util.*;
@@ -12,13 +13,19 @@ import static js.base.Tools.*;
 
 public class AlgorithmStepper implements Globals {
 
-  public static void disable() {
-    algTraceDisabled++;
+  public static AlgorithmStepper sharedInstance() {
+    return sAlgorithmStepper;
   }
 
-  public static void enable() {
-    algTraceDisabled--;
-    Tools.ASSERT(algTraceDisabled >= 0);
+  private static AlgorithmStepper sAlgorithmStepper = new AlgorithmStepper();
+
+  public void disable() {
+    mDisabled++;
+  }
+
+  public void enable() {
+    mDisabled--;
+    Tools.ASSERT(mDisabled >= 0);
   }
 
   /**
@@ -28,16 +35,17 @@ public class AlgorithmStepper implements Globals {
    *          : algorithm to execute
    * @return true if algorithm ran to completion
    */
-  static boolean runAlgorithm(TestBedOperation alg) {
-    lastEvent = null;
-    algRunning = C.exists(TBGlobals.TRACEENABLED) && C.vb(TBGlobals.TRACEENABLED);
-    algTraceDisabled = 0;
+  public boolean runAlgorithm(TestBedOperation alg) {
+    loadTools();
+    mLastException = null;
+    mRunning = C.exists(TBGlobals.TRACEENABLED) && C.vb(TBGlobals.TRACEENABLED);
+    mDisabled = 0;
 
-    if (algRunning) {
-      traceStop = C.vi(TBGlobals.TRACESTEP);
-      traceStep = 0;
-      if (traceStop == 0)
-        algRunning = false;
+    if (mRunning) {
+      mTraceStop = C.vi(TBGlobals.TRACESTEP);
+      mTraceStep = 0;
+      if (mTraceStop == 0)
+        mRunning = false;
     }
 
     AlgorithmException event = null;
@@ -46,7 +54,7 @@ public class AlgorithmStepper implements Globals {
     } catch (AlgorithmException traceEvent) {
       event = traceEvent;
     } finally {
-      algRunning = false;
+      mRunning = false;
     }
 
     //    if (event != null) {
@@ -56,14 +64,13 @@ public class AlgorithmStepper implements Globals {
     //          Editor.storeErrorItems();
     //      }
     //    }
-    lastEvent = event;
+    mLastException = event;
     return (event == null);
   }
 
-  public static void renderAlgorithmResults() {
-    if (lastEvent != null) {
-      pr("plotTrace event:", lastEvent);
-      plotTrace(lastEvent);
+  public void renderAlgorithmResults() {
+    if (mLastException != null) {
+      plotTrace(mLastException);
     }
   }
 
@@ -72,8 +79,8 @@ public class AlgorithmStepper implements Globals {
    * 
    * @return T, or null if last algorithm ran to completion
    */
-  public static AlgorithmException lastEvent() {
-    return lastEvent;
+  public AlgorithmException lastEvent() {
+    return mLastException;
   }
 
   /**
@@ -84,11 +91,11 @@ public class AlgorithmStepper implements Globals {
    * @param color
    *          : if not null, color to override default with
    */
-  public static void renderAll(Collection c, Color color) {
+  public void renderAll(Collection c, Color color) {
     renderAll(c, color, -1, -1);
   }
 
-  public static void render(Object item) {
+  public void render(Object item) {
     render(item, null, -1, -1);
   }
 
@@ -100,7 +107,7 @@ public class AlgorithmStepper implements Globals {
    * @param color
    *          : if not null, color to override default with
    */
-  public static void render(Object item, Color color) {
+  public void render(Object item, Color color) {
     render(item, color, -1, -1);
   }
 
@@ -116,7 +123,7 @@ public class AlgorithmStepper implements Globals {
    * @param markType
    *          if >= 0, mark type to override default with
    */
-  public static void render(Object item, Color color, int stroke, int markType) {
+  public void render(Object item, Color color, int stroke, int markType) {
     Renderable t = make(item, color, stroke, markType);
     if (t != null)
       t.render(color, stroke, markType);
@@ -221,10 +228,11 @@ public class AlgorithmStepper implements Globals {
    *          if >= 0, mark type to override default with
    * @return empty string
    */
-  public static String show(Object t, Color c, int stroke, int markType) {
+  @Deprecated
+  public String show(Object t, Color c, int stroke, int markType) {
     Renderable r = make(t, c, stroke, markType);
     if (r != null) {
-      plotList.add(new PlotItem(r, c, stroke, markType));
+      //plotList.add(new PlotItem(r, c, stroke, markType));
     }
     return "";
   }
@@ -241,7 +249,7 @@ public class AlgorithmStepper implements Globals {
    * @param markType
    *          if >= 0, mark type to override default with
    */
-  public static void renderAll(Collection c, Color color, int stroke, int markType) {
+  public void renderAll(Collection c, Color color, int stroke, int markType) {
     if (c != null)
       for (Iterator it = c.iterator(); it.hasNext();) {
         Object obj = it.next();
@@ -261,7 +269,7 @@ public class AlgorithmStepper implements Globals {
    * @param markType
    *          if >= 0, mark type to override default with
    */
-  public static void renderAll(Object[] array, Color color, int stroke, int markType) {
+  public void renderAll(Object[] array, Color color, int stroke, int markType) {
     if (array != null)
       for (int i = 0; i < array.length; i++) {
         Object obj = array[i];
@@ -272,41 +280,60 @@ public class AlgorithmStepper implements Globals {
       }
   }
 
+  private void renderElem(AbstractScriptElement elem) {
+  }
+
   /**
    * Display items shown during algorithm, including any added by trace message.
    * 
    * @param evt
    *          trace object thrown during algorithm processing, or null
    */
-  private static void plotTrace(AlgorithmException tr) {
-    DArray oldPlotList = plotList;
-    plotList = new DArray();
-    for (int i = 0; i < oldPlotList.size(); i++) {
-      PlotItem t = (PlotItem) oldPlotList.get(i);
-      render(t.item, t.color, t.stroke, t.markType);
+  private void plotTrace(AlgorithmException tr) {
+
+    //    DArray oldPlotList = plo
+    //    tList;
+    //    plotList = new DArray();
+
+    for (AbstractScriptElement elem : tr.plotables()) {
+      renderElem(elem);
+
     }
 
-    if (tr != null) {
-      StringBuilder msgOnly = new StringBuilder(tr.getMessage());
-      if (tr.error()) {
-        Tools.addCr(msgOnly);
-        msgOnly.append("\n");
-        msgOnly.append(Tools.stackTrace(1, 5, tr));
-      }
+    //    
+    //    for (int i = 0; i < oldPlotList.size(); i++) {
+    //      PlotItem t = (PlotItem) oldPlotList.get(i);
+    //      render(t.item, t.color, t.stroke, t.markType);
+    //    }
 
-      if (tr.error() || TestBed.plotTraceMessages()) {
-        // plot text of message in view
+    //    if (tr != null) {
+    //      StringBuilder msgOnly = new StringBuilder(tr.getMessage());
+    //      if (tr.error()) {
+    //        Tools.addCr(msgOnly);
+    //        msgOnly.append("\n");
+    //        msgOnly.append(Tools.stackTrace(1, 5, tr));
+    //      }
+    //
+    //      if (tr.error() || TestBed.plotTraceMessages()) {
+    //        // plot text of message in view
+    //
+    //        String msg = msgOnly.toString();
+    //        if (msg.length() > 0) {
+    //          V.pushColor(MyColor.get(MyColor.RED, .32));
+    //          V.pushScale(.8);
+    //          V.draw(msg, mDefaultLoc, TX_BGND | TX_FRAME | TX_CLAMP | 80);
+    //          V.pop(2);
+    //        }
+    //      }
+    //    }
 
-        String msg = msgOnly.toString();
-        if (msg.length() > 0) {
-          V.pushColor(MyColor.get(MyColor.RED, .32));
-          V.pushScale(.8);
-          V.draw(msg, defaultLoc, TX_BGND | TX_FRAME | TX_CLAMP | 80);
-          V.pop(2);
-        }
-      }
+    String msg = tr.getMessage();
+    if (!msg.isEmpty()) {
+      V.pushColor(MyColor.get(MyColor.RED, .32));
+      V.pushScale(.8);
+      V.draw(msg, mDefaultLoc, TX_BGND | TX_FRAME | TX_CLAMP | 80);
+      V.pop(2);
     }
-
     V.cleanUpRender();
   }
 
@@ -315,8 +342,8 @@ public class AlgorithmStepper implements Globals {
    * 
    * @return true if so
    */
-  public static boolean active() {
-    return algRunning && algTraceDisabled == 0;
+  public boolean active() {
+    return mRunning && mDisabled == 0;
   }
 
   /**
@@ -324,11 +351,11 @@ public class AlgorithmStepper implements Globals {
    *
    * @return true if this is the trace step
    */
-  public static boolean update() {
+  public boolean update() {
     boolean out = false;
     if (active()) {
-      traceStep++;
-      out = (traceStep == traceStop);
+      mTraceStep++;
+      out = (mTraceStep == mTraceStop);
     }
     return out;
   }
@@ -340,7 +367,7 @@ public class AlgorithmStepper implements Globals {
    * @param s
    *          : Object describing problem
    */
-  public static void err(Object s) {
+  public void err(Object s) {
     AlgorithmException e = new AlgorithmException(s);
     e.setError();
     throw e;
@@ -352,7 +379,7 @@ public class AlgorithmStepper implements Globals {
    * @param s
    *          : Object describing problem
    */
-  public static void msg(Object s) {
+  public void msg(Object... s) {
     AlgorithmException e = new AlgorithmException(s);
     throw e;
   }
@@ -366,7 +393,7 @@ public class AlgorithmStepper implements Globals {
    *          if not null, color to override default with
    * @return empty string
    */
-  public static String showAll(Collection tList, Color c) {
+  public String showAll(Collection tList, Color c) {
     return showAll(tList, c, -1, -1);
   }
 
@@ -383,7 +410,7 @@ public class AlgorithmStepper implements Globals {
    *          if >= 0, mark type to override default with
    * @return empty string
    */
-  public static String showAll(Collection tList, Color c, int stroke, int markType) {
+  public String showAll(Collection tList, Color c, int stroke, int markType) {
     if (tList != null)
       for (Iterator it = tList.iterator(); it.hasNext();) {
         Object obj = it.next();
@@ -400,7 +427,7 @@ public class AlgorithmStepper implements Globals {
    * @return empty string
    * @deprecated
    */
-  public static String showAll(Collection tList) {
+  public String showAll(Collection tList) {
     return showAll(tList, null, -1, -1);
   }
 
@@ -413,7 +440,7 @@ public class AlgorithmStepper implements Globals {
    *          if not null, color to override default with
    * @return empty string
    */
-  public static String showAll(Object[] array, Color c) {
+  public String showAll(Object[] array, Color c) {
     return showAll(array, c, -1, -1);
   }
 
@@ -430,7 +457,7 @@ public class AlgorithmStepper implements Globals {
    *          if >= 0, mark type to override default with
    * @return empty string
    */
-  public static String showAll(Object[] array, Color c, int stroke, int markType) {
+  public String showAll(Object[] array, Color c, int stroke, int markType) {
     if (array != null)
       for (int i = 0; i < array.length; i++) {
         Object obj = array[i];
@@ -446,72 +473,72 @@ public class AlgorithmStepper implements Globals {
    *          if not null, array of items to show
    * @return empty string
    */
-  public static String showAll(Object[] array) {
+  public String showAll(Object[] array) {
     return showAll(array, null, -1, -1);
   }
 
-  public static String show(Object t) {
+  public String show(Object t) {
     return show(t, null, -1, -1);
   }
 
-  public static String show(Object t, Color c) {
+  public String show(Object t, Color c) {
     return show(t, c, -1, -1);
   }
 
-  private static DArray plotList = new DArray();
+  // private DArray plotList = new DArray();
 
-  public static String show(String str, Color color, FPoint2 loc, int flags, double scale) {
+  public String show(String str, Color color, FPoint2 loc, int flags, double scale) {
     return show(str, color, loc.x, loc.y, flags, scale);
   }
 
-  public static String show(String str, Color color, FPoint2 loc, int flags) {
+  public String show(String str, Color color, FPoint2 loc, int flags) {
     return show(str, color, loc, flags, 1.0);
   }
 
-  public static String show(String str, Color color, double x, double y, int flags) {
+  public String show(String str, Color color, double x, double y, int flags) {
     return show(str, color, x, y, flags, 1.0);
   }
 
-  public static String show(String str, Color color, double x, double y, int flags, double scale) {
+  public String show(String str, Color color, double x, double y, int flags, double scale) {
     if (flags == -1)
       flags = TX_BGND | TX_FRAME | TX_CLAMP;
 
     return show(new TraceString(str, color, x, y, flags, scale), color);
   }
 
-  private static int traceStop;
+  private int mTraceStop;
 
-  private static int traceStep;
+  private int mTraceStep;
 
   // location for trace message
-  private static final FPoint2 defaultLoc = new FPoint2(5, 10);
+  private final FPoint2 mDefaultLoc = new FPoint2(5, 10);
 
   // true if algorithm tracing is enabled
-  private static boolean algRunning;
+  private boolean mRunning;
   // if > 0, algorithm tracing has been disabled
-  private static int algTraceDisabled;
+  private int mDisabled;
   // event that interrupted last algorithm run
-  private static AlgorithmException lastEvent;
+  private AlgorithmException mLastException;
 
-  /**
-   * Wrapper class for adding color, mark attributes to traceables
-   */
-  private static class PlotItem {
-    public PlotItem(Renderable t, Color c, int stroke, int markType) {
-      this.item = t;
-      this.color = c;
-      this.stroke = stroke;
-      this.markType = markType;
-    }
-
-    //    public PlotItem(Renderable t) {
-    //      this(t, null, -1, -1);
-    //    }
-    public int stroke;
-    public int markType;
-    public Renderable item;
-    public Color color;
-  }
+  //  /**
+  //   * Wrapper class for adding color, mark attributes to traceables
+  //   */
+  //  private static class PlotItem {
+  //    public PlotItem(Renderable t, Color c, int stroke, int markType) {
+  //      this.item = t;
+  //      this.color = c;
+  //      this.stroke = stroke;
+  //      this.markType = markType;
+  //    }
+  //
+  //    //    public PlotItem(Renderable t) {
+  //    //      this(t, null, -1, -1);
+  //    //    }
+  //    public int stroke;
+  //    public int markType;
+  //    public Renderable item;
+  //    public Color color;
+  //  }
 
   /**
    * Wrapper class for tracing IVectors
@@ -560,9 +587,10 @@ public class AlgorithmStepper implements Globals {
         stroke = this.stroke;
       if (markType < 0)
         markType = this.markType;
+      AlgorithmStepper s = sharedInstance();
       for (Iterator it = this.c.iterator(); it.hasNext();) {
         Object obj = it.next();
-        AlgorithmStepper.render(obj, color, stroke, markType);
+        s.render(obj, color, stroke, markType);
       }
     }
 
