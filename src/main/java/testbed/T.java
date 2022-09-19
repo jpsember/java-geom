@@ -13,7 +13,7 @@ import static js.base.Tools.*;
 /**
  * Algorithm Tracing
  */
-public class T extends TBError implements Globals {
+public class T implements Globals {
 
   public static void disable() {
     algTraceDisabled++;
@@ -32,33 +32,25 @@ public class T extends TBError implements Globals {
    * @return true if algorithm ran to completion
    */
   static boolean runAlgorithm(TestBedOperation alg) {
-
-    pr("traceEnabled exists?", C.exists(TBGlobals.TRACEENABLED));
-    pr("traceEnabled?", C.vb(TBGlobals.TRACEENABLED));
+    lastEvent = null;
     algRunning = C.exists(TBGlobals.TRACEENABLED) && C.vb(TBGlobals.TRACEENABLED);
-    pr("algRunning:", algRunning);
     algTraceDisabled = 0;
 
     if (algRunning) {
       traceStop = C.vi(TBGlobals.TRACESTEP);
-      pr("traceStop:", traceStop);
       traceStep = 0;
       if (traceStop == 0)
         algRunning = false;
     }
 
-    T event = null;
+    AlgorithmException event = null;
     try {
       alg.runAlgorithm();
-    } catch (T traceEvent) {
+    } catch (AlgorithmException traceEvent) {
       event = traceEvent;
     } finally {
       algRunning = false;
     }
-
-    alg.paintView();
-    //    if (event != null) {
-    plotTrace(event);
 
     //    if (event != null) {
     //      // if error, save editor buffer for user recall
@@ -72,6 +64,10 @@ public class T extends TBError implements Globals {
   }
 
   public static void renderAlgorithmResults() {
+    if (lastEvent != null) {
+     pr("plotTrace event:",lastEvent);
+      plotTrace(lastEvent);
+    }
   }
 
   /**
@@ -79,7 +75,7 @@ public class T extends TBError implements Globals {
    * 
    * @return T, or null if last algorithm ran to completion
    */
-  public static T lastEvent() {
+  public static AlgorithmException lastEvent() {
     return lastEvent;
   }
 
@@ -285,7 +281,7 @@ public class T extends TBError implements Globals {
    * @param evt
    *          trace object thrown during algorithm processing, or null
    */
-  private static void plotTrace(T tr) {
+  private static void plotTrace(AlgorithmException tr) {
     DArray oldPlotList = plotList;
     plotList = new DArray();
     for (int i = 0; i < oldPlotList.size(); i++) {
@@ -294,14 +290,14 @@ public class T extends TBError implements Globals {
     }
 
     if (tr != null) {
-      StringBuilder msgOnly = new StringBuilder(tr.msg);
-      if (tr.error) {
+      StringBuilder msgOnly = new StringBuilder(tr.getMessage());
+      if (tr.error()) {
         Tools.addCr(msgOnly);
         msgOnly.append("\n");
         msgOnly.append(Tools.stackTrace(1, 5, tr));
       }
 
-      if (tr.error || TestBed.plotTraceMessages()) {
+      if (tr.error() || TestBed.plotTraceMessages()) {
         // plot text of message in view
 
         String msg = msgOnly.toString();
@@ -333,7 +329,6 @@ public class T extends TBError implements Globals {
    */
   public static boolean update() {
     boolean out = false;
-    pr("active?", active(), "trace:", traceStep, "stop:", traceStop);
     if (active()) {
       traceStep++;
       out = (traceStep == traceStop);
@@ -349,7 +344,7 @@ public class T extends TBError implements Globals {
    *          : Object describing problem
    */
   public static void err(Object s) {
-    throw new T(s.toString(), true);
+    throw new AlgorithmException(s.toString(), true);
   }
 
   /**
@@ -360,7 +355,7 @@ public class T extends TBError implements Globals {
    */
   public static void msg(Object s) {
     pr("alg msg:", s);
-    throw new T(s.toString(), false);
+    throw new AlgorithmException(s.toString(), false);
   }
 
   /**
@@ -466,12 +461,6 @@ public class T extends TBError implements Globals {
 
   private static DArray plotList = new DArray();
 
-  private T(String msg, boolean error) {
-    super(msg);
-    this.msg = msg;
-    this.error = error;
-  }
-
   public static String show(String str, Color color, FPoint2 loc, int flags, double scale) {
     return show(str, color, loc.x, loc.y, flags, scale);
   }
@@ -495,9 +484,6 @@ public class T extends TBError implements Globals {
 
   private static int traceStep;
 
-  private String msg;
-  private boolean error;
-
   // location for trace message
   private static final FPoint2 defaultLoc = new FPoint2(5, 10);
 
@@ -506,7 +492,7 @@ public class T extends TBError implements Globals {
   // if > 0, algorithm tracing has been disabled
   private static int algTraceDisabled;
   // event that interrupted last algorithm run
-  private static T lastEvent;
+  private static AlgorithmException lastEvent;
 
   /**
    * Wrapper class for adding color, mark attributes to traceables

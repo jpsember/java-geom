@@ -43,7 +43,6 @@ public class BoundsOper implements TestBedOperation, Globals {
   }
 
   public void runAlgorithm() {
-    pr("running algorithm");
     if (T.update())
       T.msg("algorithm step 1");
 

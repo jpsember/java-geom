@@ -509,12 +509,9 @@ public abstract class TestBed extends GeomApp {
   //  }
 
   /**
-   * Process a paintComponent() for the view. Default implementation runs the
-   * algorithm of the current operation.
+   * Process a paintComponent() for the view. Default implementation does nothing
    */
   public void paintView() {
-    if (!operList.isEmpty())
-      T.runAlgorithm(oper());
   }
 
   /**
