@@ -14,6 +14,11 @@
 "project_open_next" : {  "code" : "o","flags" : "cm"},
 "project_find_problems" : {  "code" : "p","flags" : "cm"},
 
+
+"alg_step_bwd" : {"code" : "1", "flags" : "" },
+"alg_step_fwd" : {"code" : "2", "flags" : "" },
+"alg_step_reset" : {"code" : "3", "flags" : "" },
+
 "script_step_bwd" : {"code" : 37},
 "script_step_fwd" : {"code" : 39},
 

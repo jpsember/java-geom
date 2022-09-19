@@ -2,11 +2,18 @@ package testbed;
 
 import base.*;
 import geom.GeomTools;
+import js.geometry.IPoint;
+import js.geometry.Matrix;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.geom.*;
+import java.util.List;
 
 import static js.base.Tools.*;
+import static geom.GeomTools.*;
 
 /**
  * Main view of TestBed applications. It has the short name 'V' to minimize
@@ -20,10 +27,10 @@ public class V implements Globals {
       return;
 
     TBFont.prepare();
-    float z = 
-    GeomTools.editor().zoomFactor();
-    pr("zoom:",z);
-    screenScaleFactor = 2.5f/z;
+    float z = GeomTools.editor().zoomFactor();
+    screenScaleFactor = 2f / z;
+
+    V.setFont(FNT_MEDIUM);
   }
 
   //  /**
@@ -471,7 +478,7 @@ public class V implements Globals {
 
     Double val = (Double) popValue(ST_SCALE);
     if (val != null) {
-      screenScaleFactor = val.doubleValue();
+      screenScaleFactor = val.floatValue();
       calcScale();
     }
   }
@@ -487,7 +494,7 @@ public class V implements Globals {
   //    return screenScaleFactor;
   //  }
 
-  private static double scale;
+  private static float scale;
 
   private static DArray plotStack = new DArray();
 
@@ -565,25 +572,20 @@ public class V implements Globals {
   public static void draw(String str, double x, double y, int flags) {
     TBFont f = TBFont.get(activeFont);
 
-    DArray strings = new DArray();
+    List<String> strings = arrayList();
 
     // determine the number of rows
 
     int maxStrLen = 0;
     int lineWidth = (flags & TX_LINEWIDTH);
-    final boolean db = false && (lineWidth > 0);
 
     boolean centered = true;
-
     if (lineWidth != 0) {
       centered = false;
       int s = 0;
       int lastSpace = -1;
       int c = 0;
-      // int cnt = 0;
       while (true) {
-        // Tools.ASSERT(++cnt < 20000,
-        // "overflow splitting string: \n[" + str + "]");
         char ch = ' ';
         if (c < str.length()) {
           ch = str.charAt(c);
@@ -592,9 +594,6 @@ public class V implements Globals {
           lastSpace = c;
         }
 
-        if (db) {
-          System.out.println(" ch=" + ch + ", c=" + c + ", s=" + s + ", lastSpace=" + lastSpace);
-        }
         // If beyond maximum width, back up to last space printed
 
         if (ch == '\n' || c - s > lineWidth || c == str.length()) {
@@ -622,52 +621,44 @@ public class V implements Globals {
       strings.add(str);
       maxStrLen = str.length();
     }
-    if (db) {
-      System.out.println(" strings: " + strings);
-    }
-
-    // modify the transform so text is not upside-down
 
     AffineTransform saveXform = g.getTransform();
+    pr(Matrix.from(saveXform));
 
-    double fsize = f.charWidth();
-    //    if (TestBed.DEBUG) {
-    //      Tools.ASSERT(fsize >= 0);
-    //    }
+    float fsize = (float) f.charWidth();
+    float ascent = f.metrics().getAscent();
+    float descent = f.metrics().getDescent();
 
-    double ascent = f.metrics().getAscent();
-    double descent = f.metrics().getDescent();
+    float textW = maxStrLen * fsize;
+    float rowH = (ascent + descent) * .8f;
+    float textH = rowH * (strings.size() + .2f);
 
-    double textW = maxStrLen * fsize;
-    double rowH = (ascent + descent) * .8;
-    double textH = rowH * (strings.size() + .2);
-    //    /*
-    //     * System.out.print("ascent="+ascent+" descent="+descent);
-    //     * System.out.print(" width="+fontCharWidth); System.out.print("
-    //     * height="+fontMetrics.getHeight()); System.out.print("
-    //     * leading="+fontMetrics.getLeading()); System.out.println();
-    //     */
-    //    double scl = scale;
-    //pr("scl:",scl);
-    //    double xs = scl * textW, ys = scl * textH;
-    //
-    //    double x0 = x - xs * .5, y0 = y - ys * .5;
-    //
-    //    // System.out.println(" before clamped="+x0+","+y0);
-    //    // System.out.println("lx0="+lx0+" ly0="+ly0+" lx1="+lx1+" ly1="+ly1);
-    //    if ((flags & TX_CLAMP) != 0) {
-    //      IPoint pageSize = editor().getEditorPanel().pageSize();
-    //      x0 = MyMath.clamp(x0, 0, pageSize.x - xs);
-    //      y0 = MyMath.clamp(y0, 0, pageSize.y - ys);
-    //    }
-    //
-    //    g.translate(x0, y0);
-    //    g.scale(scl, -scl);
+    float scl = scale;
+    //pr("scale:",scl,"inv:",1/scl);
+    float origX = (float) (x - textW * .5f);
+    float origY = (float) (y - textH * .5f);
+
+    // System.out.println(" before clamped="+x0+","+y0);
+    // System.out.println("lx0="+lx0+" ly0="+ly0+" lx1="+lx1+" ly1="+ly1);
+    if ((flags & TX_CLAMP) != 0) {
+      IPoint pageSize = editor().getEditorPanel().pageSize();
+      //IPoint scaledPageSize = pageSize.scaledBy(1 / (float) scl);
+      origX = MyMath.clamp(origX, 0, pageSize.x - textW);
+      origY = MyMath.clamp(origY, 0, pageSize.y - textH);
+
+      todo("clamping height doesn't take into account scaling");
+      pr("strings size:", strings.size(), "rowH:", rowH, "textH:", textH, "scale:", scl, "pageSize:",
+          pageSize, "origX:", origX, "origY:", origY);
+    }
+
+    g.translate(origX, origY);  
+    g.scale(scl, scl);
 
     if (flags != 0) {
-      textRect.setFrame(0, -textH, textW, textH);
+      int pad = 5;
+      textRect.setFrame(-pad, -pad, textW + pad * 2, textH + pad * 2);
       if ((flags & TX_BGND) != 0) {
-        pushColor(Color.white); //g.getBackground());
+        pushColor(Color.white);
         g.fill(textRect);
         popColor();
       }
@@ -675,16 +666,16 @@ public class V implements Globals {
         g.draw(textRect);
       }
     }
-    double ry = (ascent - textH);
-    for (int i = 0; i < strings.size(); i++) {
-      String s = strings.getString(i);
+    int rowNumber = INIT_INDEX;
+    for (String s : strings) {
+      rowNumber++;
+      float ry = rowNumber * rowH + ascent;
       double px = 0;
       if (centered) {
         px = (textW + 1 - s.length() * fsize) * .5;
       }
 
       g.drawString(s, (float) px, (float) (ry) - 1);
-      ry += rowH;
     }
     g.setTransform(saveXform);
   }
@@ -1032,14 +1023,9 @@ public class V implements Globals {
   // size, in viewspace, of a 1x1 rectangle in logicspace
   //  private static double logPixelSize ; // Not sure necessary
 
-  private static double screenScaleFactor ;
+  private static float screenScaleFactor;
 
-  /**
-   * Get current scale factor
-   * 
-   * @return scale factor
-   */
-  public static double getScale() {
+  public static float getScale() {
     return screenScaleFactor;
   }
 

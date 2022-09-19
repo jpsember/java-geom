@@ -165,7 +165,6 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     }
     op.paint();
 
-    todo("Where do we trigger algorithm execution?");
     GeomApp.singleton().paintStop();
   }
 

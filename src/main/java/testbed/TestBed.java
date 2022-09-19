@@ -2,6 +2,7 @@ package testbed;
 
 import base.*;
 import geom.GeomApp;
+import js.guiapp.MenuBarWrapper;
 
 import java.io.*;
 import java.awt.*;
@@ -402,13 +403,7 @@ public abstract class TestBed extends GeomApp {
       C.sOpenTab(TBGlobals.AUXTAB_TRACE, "Trace");
       C.sCheckBox(TBGlobals.TRACEENABLED, "Enabled", "if true, enables algorithm tracing", true);
       C.sCheckBox(TBGlobals.TRACEPLOT, "Messages", "plots trace text", true);
-      C.sNewColumn();
       C.sIntSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
-      C.sOpen();
-      C.sButton(TBGlobals.TRACEBTNBWD, "<<", "Move one step backward in algorithm");
-      C.sNewColumn();
-      C.sButton(TBGlobals.TRACEBTNFWD, ">>", "Move one step forward in algorithm");
-      C.sClose();
       C.sCloseTab();
     }
 
@@ -720,4 +715,14 @@ public abstract class TestBed extends GeomApp {
     AlgorithmStepper.sharedInstance().renderAlgorithmResults();
     V.setGraphics(null);
   }
+
+  @Override
+  public void populateMenuBarForProject(MenuBarWrapper m) {
+    super.populateMenuBarForProject(m);
+    m.addMenu("Alg");
+    addItem("alg_step_bwd", "Step backward", AlgorithmStepper.buildStepOper(-1));
+    addItem("alg_step_fwd", "Step forward", AlgorithmStepper.buildStepOper(1));
+    addItem("alg_step_reset", "Reset step", AlgorithmStepper.buildResetOper());
+  }
+
 }

@@ -3,6 +3,7 @@ package testbed;
 import base.*;
 import js.geometry.IPoint;
 import js.graphics.AbstractScriptElement;
+import js.guiapp.UserOperation;
 
 import java.awt.*;
 import java.util.*;
@@ -26,6 +27,10 @@ public class AlgorithmStepper implements Globals {
   public void enable() {
     mDisabled--;
     Tools.ASSERT(mDisabled >= 0);
+  }
+
+  public int step() {
+    return mTraceStep;
   }
 
   /**
@@ -297,7 +302,6 @@ public class AlgorithmStepper implements Globals {
 
     for (AbstractScriptElement elem : tr.plotables()) {
       renderElem(elem);
-
     }
 
     //    
@@ -327,12 +331,15 @@ public class AlgorithmStepper implements Globals {
     //      }
     //    }
 
-    String msg = tr.getMessage();
-    if (!msg.isEmpty()) {
-      V.pushColor(MyColor.get(MyColor.RED, .32));
-      V.pushScale(.8);
-      V.draw(msg, mDefaultLoc, TX_BGND | TX_FRAME | TX_CLAMP | 80);
-      V.pop(2);
+    if (TestBed.plotTraceMessages()) {
+      String msg = tr.getMessage();
+      if (!msg.isEmpty()) {
+        V.pushColor(MyColor.get(MyColor.RED, .32));
+        V.pushScale(.8);
+        V.draw(msg, new FPoint2(0, 20000) // set y very large so we plot it as low as possible
+            , TX_BGND | TX_FRAME | TX_CLAMP | 80);
+        V.pop(2);
+      }
     }
     V.cleanUpRender();
   }
@@ -502,16 +509,12 @@ public class AlgorithmStepper implements Globals {
   public String show(String str, Color color, double x, double y, int flags, double scale) {
     if (flags == -1)
       flags = TX_BGND | TX_FRAME | TX_CLAMP;
-
     return show(new TraceString(str, color, x, y, flags, scale), color);
   }
 
   private int mTraceStop;
 
   private int mTraceStep;
-
-  // location for trace message
-  private final FPoint2 mDefaultLoc = new FPoint2(5, 10);
 
   // true if algorithm tracing is enabled
   private boolean mRunning;
@@ -741,6 +744,14 @@ public class AlgorithmStepper implements Globals {
     private Renderable r;
     private int markType;
     private Color color;
+  }
+
+  public static UserOperation buildStepOper(int i) {
+    return new AlgStepOper(i);
+  }
+
+  public static UserOperation buildResetOper() {
+    return new AlgStepOper(0);
   }
 
 }

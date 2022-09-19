@@ -44,14 +44,15 @@ public class BoundsOper implements TestBedOperation, Globals {
 
   public void runAlgorithm() {
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
-    
+
     if (s.update())
       s.msg("algorithm step 1");
 
-    for (int i = 0; i<50; i++)
+    for (int i = 0; i < 50; i++)
       if (s.update())
-        s.msg("update, i:",i);
-    
+        s.msg("update, i:", i, CR, "hello", CR,
+            "another line that is pretty long and might overflow the screen pretty long and might overflow the screen ");
+
     //    EdDisc[] obj = SampleMain.getDiscs();
     //    for (EdDisc d : obj) {
     //      if (T.update())
