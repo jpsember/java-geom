@@ -146,7 +146,6 @@ public abstract class TestBed extends GeomApp {
   //    //    resetFocus();
   //  }
 
-
   /**
    * Process actions for main controls. Default implementation passes action to
    * current operation
@@ -712,4 +711,15 @@ public abstract class TestBed extends GeomApp {
 
   private float mZoomFactor = 1f;
 
+  @Override
+  public void paintStart(Graphics2D graphics) {
+    V.setGraphics(graphics);
+    T.runAlgorithm(oper());
+  }
+  
+  @Override
+  public void paintStop() {
+    T.renderAlgorithmResults();
+    V.setGraphics(null);
+  }
 }

@@ -2,6 +2,7 @@ package geom;
 
 import static js.base.Tools.*;
 
+import java.awt.Graphics2D;
 import java.io.File;
 import java.util.List;
 
@@ -57,6 +58,19 @@ public abstract class GeomApp extends GUIApp {
    * Return true iff this project has support for images
    */
   public abstract boolean hasImageSupport();
+
+  /**
+   * Called from EditorPanel; default implementation does
+   * nothing
+   */
+  public void paintStart(Graphics2D graphics) {
+  }
+  /**
+   * Called from EditorPanel; default implementation does
+   * nothing
+   */
+  public void paintStop() {
+  }
 
   // ------------------------------------------------------------------
   // Current project
@@ -160,7 +174,6 @@ public abstract class GeomApp extends GUIApp {
       return "This project is empty! Open another from the Project menu";
     return null;
   }
-
 
   public final RecentFiles recentProjects() {
     if (mRecentProjects == null) {

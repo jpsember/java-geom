@@ -8,6 +8,8 @@ import java.util.*;
 import java.awt.geom.*;
 import static geom.GeomTools.*;
 
+import static js.base.Tools.*;
+
 /**
  * Algorithm Tracing
  */
@@ -31,11 +33,15 @@ public class T extends TBError implements Globals {
    */
   static boolean runAlgorithm(TestBedOperation alg) {
 
+    pr("traceEnabled exists?", C.exists(TBGlobals.TRACEENABLED));
+    pr("traceEnabled?", C.vb(TBGlobals.TRACEENABLED));
     algRunning = C.exists(TBGlobals.TRACEENABLED) && C.vb(TBGlobals.TRACEENABLED);
+    pr("algRunning:", algRunning);
     algTraceDisabled = 0;
 
     if (algRunning) {
       traceStop = C.vi(TBGlobals.TRACESTEP);
+      pr("traceStop:", traceStop);
       traceStep = 0;
       if (traceStop == 0)
         algRunning = false;
@@ -54,15 +60,18 @@ public class T extends TBError implements Globals {
     //    if (event != null) {
     plotTrace(event);
 
-//    if (event != null) {
-//      // if error, save editor buffer for user recall
-//      if (event.error) {
-//        if (Editor.initialized())
-//          Editor.storeErrorItems();
-//      }
-//    }
+    //    if (event != null) {
+    //      // if error, save editor buffer for user recall
+    //      if (event.error) {
+    //        if (Editor.initialized())
+    //          Editor.storeErrorItems();
+    //      }
+    //    }
     lastEvent = event;
     return (event == null);
+  }
+
+  public static void renderAlgorithmResults() {
   }
 
   /**
@@ -324,6 +333,7 @@ public class T extends TBError implements Globals {
    */
   public static boolean update() {
     boolean out = false;
+    pr("active?", active(), "trace:", traceStep, "stop:", traceStop);
     if (active()) {
       traceStep++;
       out = (traceStep == traceStop);
@@ -349,6 +359,7 @@ public class T extends TBError implements Globals {
    *          : Object describing problem
    */
   public static void msg(Object s) {
+    pr("alg msg:", s);
     throw new T(s.toString(), false);
   }
 
@@ -601,10 +612,10 @@ public class T extends TBError implements Globals {
       V.pushStroke(stroke, this.stroke);
       if (markType < 0)
         markType = this.markType;
-      
-     IPoint pageSize = editor().getEditorPanel().pageSize();
-      
-      double[] t = v.clipToRect(new FRect(0,0,pageSize.x,pageSize.y));
+
+      IPoint pageSize = editor().getEditorPanel().pageSize();
+
+      double[] t = v.clipToRect(new FRect(0, 0, pageSize.x, pageSize.y));
       if (t != null) {
         FPoint2 p1 = v.pt(t[0]);
         FPoint2 p2 = v.pt(t[1]);

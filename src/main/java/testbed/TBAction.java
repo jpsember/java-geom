@@ -6,22 +6,22 @@ import static js.base.Tools.*;
 
 public class TBAction {
 
-  public static final int NONE = 0, DOWN1 = 1, UP1 = 2, DOWN2 = 3, UP2 = 4, DRAG = 5,
-      // begin an operation (application use only)
-      ENTER = 6,
-      // ending an operation (application use only)
-      EXIT = 7,
-      // enable/disable item as required
-      ITEMENABLE = 8,
+  public static final int NONE = 0, //DOWN1 = 1, UP1 = 2, DOWN2 = 3, UP2 = 4, DRAG = 5,
+//      // begin an operation (application use only)
+//      ENTER = 6,
+//      // ending an operation (application use only)
+//      EXIT = 7,
+//      // enable/disable item as required
+//      ITEMENABLE = 8,
       // CtButton has been pressed,
       // or valued control has changed
       CTRLVALUE = 9,
       // command issued by user in console
-      COMMAND = 10,
-      // mouse moving over window, but not pressed
-      HOVER = 11,
-      // update of application title required
-      UPDATETITLE = 12,
+//      COMMAND = 10,
+//      // mouse moving over window, but not pressed
+//      HOVER = 11,
+//      // update of application title required
+//      UPDATETITLE = 12,
 
       _UNUSED_ = 999;
 
@@ -121,8 +121,9 @@ public class TBAction {
     return (mouse != null && ((mouse.getModifiers() & MyAction.modifierMask(3)) != 0));
   }
 
-  private static final String[] codes = { "NONE", "DOWN1", "UP1", "DOWN2", "UP2", "DRAG", "ENTER", "EXIT",
-      "ITEMENABLE", "CTRLVALUE", "COMMAND", "HOVER", "UPDATETITLE", };
+  private static final String[] codes = { "NONE", //"DOWN1", "UP1", "DOWN2", "UP2", "DRAG", "ENTER", "EXIT",
+      //"ITEMENABLE",
+      "CTRLVALUE", }; // "COMMAND", "HOVER", "UPDATETITLE", };
 
   public String toString() {
 
@@ -144,10 +145,10 @@ public class TBAction {
 
     sb.append(' ');
     switch (code) {
-    case ITEMENABLE:
-      sb.append("[" + menuId + ":" + ctrlId);
-      sb.append("]");
-      break;
+//    case ITEMENABLE:
+//      sb.append("[" + menuId + ":" + ctrlId);
+//      sb.append("]");
+//      break;
     case CTRLVALUE:
       sb.append(ctrlId);
       break;

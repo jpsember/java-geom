@@ -123,6 +123,8 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     determineTransform(pageSize);
     g.transform(mTransform.toAffineTransform());
 
+    GeomApp.singleton().paintStart(g);
+    
     if (script.hasImage()) {
       g.drawImage(script.image(), 0, 0, null);
     } else {
@@ -164,6 +166,7 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     op.paint();
 
     todo("Where do we trigger algorithm execution?");
+    GeomApp.singleton().paintStop();
   }
 
   // ------------------------------------------------------------------

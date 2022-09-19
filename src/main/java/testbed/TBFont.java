@@ -4,23 +4,17 @@ import java.awt.*;
 import base.*;
 import static js.base.Tools.*;
 
-  class TBFont implements IEditorScript {
+class TBFont implements IEditorScript {
 
+  private static String[] ifonts = { "Monospaced p 12", "Monospaced p 16", "Monospaced b 20", "Times i 16", };
 
-  private static String[] ifonts = {
-      "Monospaced p 12",
-      "Monospaced p 16",
-      "Monospaced b 20",
-      "Times i 16",
-  };
-
-  public static void prepare( ) {
+  public static void prepare() {
     if (fonts == null) {
+      loadTools();
       fonts = new TBFont[ifonts.length];
       for (int i = 0; i < ifonts.length; i++) {
         fonts[i] = parse(ifonts[i]);
       }
-
     }
   }
 
@@ -34,75 +28,68 @@ import static js.base.Tools.*;
   }
 
   /**
-   * Parse a string and construct a TBFont.  Each string has the format:
+   * Parse a string and construct a TBFont. Each string has the format:
    *
-   *    name   style   size
+   * name style size
    *
-   * name is a font name
-   * style is [p|i|b] plain/italic/bold
-   * size is integer size
+   * name is a font name style is [p|i|b] plain/italic/bold size is integer size
    *
-   * @param str String of arguments separated by whitespace
+   * @param str
+   *          String of arguments separated by whitespace
    * @return TBFont
    */
-  private static TBFont parse(  String str) {
+  private static TBFont parse(String str) {
     TBFont f = null;
     int s = Font.PLAIN;
     int sf = 0;
     Tokenizer tk = new Tokenizer(str, true);
 
-
-//    tk.parse(str, 0);
+    //    tk.parse(str, 0);
     String name = tk.read(T_WORD).text();
     String style = tk.read(T_WORD).text();
     int size = tk.readInt();
 
-//Streams.out.println("TBFont, reading name="+name+", style="+style+", size="+size);
+    //Streams.out.println("TBFont, reading name="+name+", style="+style+", size="+size);
 
     for (int i = 0; i < style.length(); i++) {
       switch (style.charAt(i)) {
-        case 'p':
-          sf = 0;
-          break;
-        case 'i':
-          sf |= Font.ITALIC;
-          break;
-        case 'b':
-          sf |= Font.BOLD;
-          break;
-        default:
-          throw new TBError("TBFont parse problem: " + s);
+      case 'p':
+        sf = 0;
+        break;
+      case 'i':
+        sf |= Font.ITALIC;
+        break;
+      case 'b':
+        sf |= Font.BOLD;
+        break;
+      default:
+        throw new TBError("TBFont parse problem: " + s);
       }
     }
-    f = new TBFont(  name, sf, size);
+    f = new TBFont(name, sf, size);
 
     return f;
   }
 
-public static Font fixedWidthFont() {
-  return fixedWidthFont;
+  public static Font fixedWidthFont() {
+    return fixedWidthFont;
 
-}
+  }
+
   private static Font fixedWidthFont =
-//      new Font("Times",Font.ITALIC,13);
-    new Font("Monospaced", Font.PLAIN, 13);
+      //      new Font("Times",Font.ITALIC,13);
+      new Font("Monospaced", Font.PLAIN, 13);
 
-
-  public TBFont(  String name, int style, int size) {
+  public TBFont(String name, int style, int size) {
     font = new Font(name, style, size);
-    
- //   new FontMetrics(Font.getFont("Courier"));
-    
-    fontCharWidth = fontMetrics.charWidth(' ');
+    fontCharWidth = metrics().charWidth(' ');
   }
 
   public FontMetrics metrics() {
     if (fontMetrics == null) {
-      die("font metrics");
-//      fontMetrics = V.getPanel().getGraphics().getFontMetrics(font);
-
+      fontMetrics = V.get2DGraphics().getFontMetrics(font);
     }
-    
+
     return fontMetrics;
   }
 
@@ -115,7 +102,7 @@ public static Font fixedWidthFont() {
   }
 
   /**
-   * Debug utility:  show font names
+   * Debug utility: show font names
    */
   public static void showFonts() {
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -124,7 +111,6 @@ public static Font fixedWidthFont() {
       System.out.println(names[i]);
     }
   }
-
 
   // array of fonts
   private static TBFont[] fonts;

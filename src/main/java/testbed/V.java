@@ -14,6 +14,12 @@ import static geom.GeomTools.*;
  */
 public class V implements Globals {
 
+  public static void setGraphics(Graphics2D graphics) {
+    g = graphics;
+    if (graphics != null)
+      TBFont.prepare();
+  }
+
   //  /**
   //   * Determine if a mouse event involves the second button (button1)
   //   * 
@@ -249,7 +255,6 @@ public class V implements Globals {
   //      });
   //    }
   //  }
-
 
   /**
    * Draw a string (with flags set to zero)

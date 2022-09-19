@@ -43,9 +43,14 @@ public class BoundsOper implements TestBedOperation, Globals {
   }
 
   public void runAlgorithm() {
+    pr("running algorithm");
     if (T.update())
       T.msg("algorithm step 1");
 
+    for (int i = 0; i<50; i++)
+      if (T.update())
+        T.msg("update, i:"+i);
+    
     //    EdDisc[] obj = SampleMain.getDiscs();
     //    for (EdDisc d : obj) {
     //      if (T.update())
@@ -58,7 +63,6 @@ public class BoundsOper implements TestBedOperation, Globals {
 
   @Override
   public void paintView() {
-    pr("paintView not doing anything");
   }
 
   private void generate() {
