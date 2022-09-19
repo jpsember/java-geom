@@ -5,19 +5,19 @@ package testbed;
  */
 public final class AlgorithmException extends RuntimeException {
 
-  public AlgorithmException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
-  public AlgorithmException(String message, boolean error) {
-    this(message, null);
-    mError = error;
+  public void setError() {
+    mError = true;
   }
 
   public boolean error() {
     return mError;
   }
 
+  public AlgorithmException(Object... message) {
+    mMessages = message;
+  }
+
+  private Object[] mMessages;
   private boolean mError;
 
 }

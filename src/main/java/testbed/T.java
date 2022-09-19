@@ -65,7 +65,7 @@ public class T implements Globals {
 
   public static void renderAlgorithmResults() {
     if (lastEvent != null) {
-     pr("plotTrace event:",lastEvent);
+      pr("plotTrace event:", lastEvent);
       plotTrace(lastEvent);
     }
   }
@@ -344,7 +344,9 @@ public class T implements Globals {
    *          : Object describing problem
    */
   public static void err(Object s) {
-    throw new AlgorithmException(s.toString(), true);
+    AlgorithmException e = new AlgorithmException(s);
+    e.setError();
+    throw e;
   }
 
   /**
@@ -354,8 +356,8 @@ public class T implements Globals {
    *          : Object describing problem
    */
   public static void msg(Object s) {
-    pr("alg msg:", s);
-    throw new AlgorithmException(s.toString(), false);
+    AlgorithmException e = new AlgorithmException(s);
+    throw e;
   }
 
   /**
