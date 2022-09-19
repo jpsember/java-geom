@@ -128,7 +128,7 @@ public class EdSegment extends EdObject implements Globals {
 
   private static String show(double x0, double y0, double x1, double y1,
       Color c, int stroke, int arrowFlags) {
-    return T.show(new MiscLine(x0, y0, x1, y1, c, stroke, arrowFlags));
+    return AlgorithmStepper.show(new MiscLine(x0, y0, x1, y1, c, stroke, arrowFlags));
   }
 
   public static String showDirected(FPoint2 p0, FPoint2 p1, Color c, int stroke) {

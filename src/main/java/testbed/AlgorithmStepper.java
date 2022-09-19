@@ -10,10 +10,7 @@ import static geom.GeomTools.*;
 
 import static js.base.Tools.*;
 
-/**
- * Algorithm Tracing
- */
-public class T implements Globals {
+public class AlgorithmStepper implements Globals {
 
   public static void disable() {
     algTraceDisabled++;
@@ -565,7 +562,7 @@ public class T implements Globals {
         markType = this.markType;
       for (Iterator it = this.c.iterator(); it.hasNext();) {
         Object obj = it.next();
-        T.render(obj, color, stroke, markType);
+        AlgorithmStepper.render(obj, color, stroke, markType);
       }
     }
 
