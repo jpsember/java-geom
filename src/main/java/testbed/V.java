@@ -6,6 +6,7 @@ import js.geometry.IPoint;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.*;
@@ -246,14 +247,23 @@ public class V implements Globals {
     } else {
       plotStack.push(ST_IGNORE);
     }
+    plotStack.push(ST_FONT_INDEX);
+  }
+
+  public static void pushFont(Font font) {
+    checkArgument(font != null);
+    // Push {Font, activeFont, "FONT"}
+    plotStack.push(g.getFont());
+    plotStack.push(activeFont);
     plotStack.push(ST_FONT);
+    g.setFont(font);
   }
 
   /**
    * Pop font from stack
    */
   public static void popFont() {
-    Integer val = (Integer) popValue(ST_FONT);
+    Integer val = (Integer) popValue(ST_FONT_INDEX);
     if (val != null)
       setFont(val.intValue());
   }
@@ -342,8 +352,8 @@ public class V implements Globals {
       maxStrLen = Math.max(maxStrLen, s.length());
 
     // Determine scaling factor to apply so that text is always the same size
-    float scaleAdj = scale;
-    TBFont f = TBFont.get(activeFont).scaledBy(scaleAdj);
+    float textScaleFactor = scale;
+    TBFont f = getScaledFont(textScaleFactor);
 
     float fsize = (float) f.charWidth();
     float ascent = f.metrics().getAscent();
@@ -353,62 +363,65 @@ public class V implements Globals {
     float rowH = (ascent + descent) * .8f;
     float textH = rowH * (strings.size() + .2f);
 
-    float origX = (float) (x - textW * .5f);
-    float origY = (float) (y - textH * .5f);
+    float textX = (float) (x - textW * .5f);
+    float textY = (float) (y - textH * .5f);
 
     if ((flags & TX_CLAMP) != 0) {
       IPoint pageSize = editor().getEditorPanel().pageSize();
-      origX = MyMath.clamp(origX, 0, pageSize.x - textW);
-      origY = MyMath.clamp(origY, 0, pageSize.y - textH);
-      pr("strings size:", strings.size(), "rowH:", rowH, "textH:", textH, "pageSize:", pageSize, "origX:",
-          origX, "origY:", origY);
+      textX = MyMath.clamp(textX, 0, pageSize.x - textW);
+      textY = MyMath.clamp(textY, 0, pageSize.y - textH);
     }
 
+    pushStroke(new BasicStroke(textScaleFactor * 2));
+    pushFont(f.font());
+
     if (flags != 0) {
-      float pad = 5 * scaleAdj;
-      textRect.setFrame(origX - pad, origY - pad, textW + pad * 2, textH + pad * 2);
+      float pad = 5 * textScaleFactor;
+      textRect.setFrame(textX - pad, textY - pad, textW + pad * 2, textH + pad * 2);
       if ((flags & TX_BGND) != 0) {
         pushColor(Color.white);
         g.fill(textRect);
         popColor();
       }
-      if ((flags & TX_FRAME) != 0) {
-        g.setStroke(new BasicStroke(scaleAdj * 2));
+      if ((flags & TX_FRAME) != 0)
         g.draw(textRect);
-      }
     }
     int rowNumber = INIT_INDEX;
     for (String s : strings) {
       rowNumber++;
-      float ry = origY + rowNumber * rowH + ascent;
+      float ry = textY + rowNumber * rowH + ascent;
       double px = 0;
       if (lineWidth == 0) {
-        px = origX + (textW + 1 - s.length() * fsize) * .5;
+        px = textX + (textW + 1 - s.length() * fsize) * .5;
       }
-      g.setFont(f.font());
       g.drawString(s, (float) px, (float) (ry) - 1);
     }
-    todo("not restoring stroke or font");
+    pop(2);
   }
 
-  private static final boolean ds = false;
+  /**
+   * Construct scaled version of active font, caching to avoid unnecessary
+   * reconstruction (perhaps an unnecessary optimization)
+   */
+  private static TBFont getScaledFont(float scaleAdj) {
+    if (sScaledFont == null || sScaledFontIndex != activeFont || scaleAdj != sCachedScaledValue) {
+      sScaledFontIndex = activeFont;
+      sCachedScaledValue = scaleAdj;
+      sScaledFont = TBFont.get(activeFont).scaledBy(scaleAdj);
+    }
+    return sScaledFont;
+  }
+
+  private static TBFont sScaledFont;
+  private static int sScaledFontIndex;
+  private static float sCachedScaledValue;
 
   /**
    * Pop stroke from stack
    */
+  @Deprecated
   public static void popStroke() {
-
-    Stroke val = (Stroke) popValue(ST_STROKE);
-
-    if (ds)
-      Streams.out.println("popStroke, val=" + val);
-
-    if (val != null) {
-      if (ds)
-        Streams.out.println(" setting stroke to " + val);
-
-      g.setStroke(val);
-    }
+    die("no longer supported");
   }
 
   /**
@@ -487,12 +500,28 @@ public class V implements Globals {
     Object tag = plotStack.peek(0);
     if (tag == ST_COLOR)
       popColor();
-    else if (tag == ST_STROKE)
-      popStroke();
-    else if (tag == ST_SCALE)
+    else if (tag == ST_STROKE) {
+      popValue();
+      Stroke s = (Stroke) plotStack.pop();
+      g.setStroke(s);
+    } else if (tag == ST_SCALE)
       popScale();
-    else if (tag == ST_FONT)
+    else if (tag == ST_FONT_INDEX)
       popFont();
+    else if (tag == ST_FONT) {
+      // Pop {Font, activeFont, "FONT"}
+      popValue();
+      activeFont = (Integer) plotStack.pop();
+      g.setFont((Font) plotStack.pop());
+    } else
+      badArg("unsupported stack element:", tag);
+  }
+
+  public static void dumpStack() {
+    pr("Render state stack:");
+    for (Object obj : plotStack) {
+      pr(obj, TAB(20), obj.getClass());
+    }
   }
 
   /**
@@ -504,8 +533,12 @@ public class V implements Globals {
       g.setColor(nc);
   }
 
+  private static Object popValue() {
+    return plotStack.pop();
+  }
+
   private static Object popValue(Object expectedTag) {
-    Object tag = plotStack.pop();
+    Object tag = popValue();
     if (tag != expectedTag) {
       throw new IllegalStateException("render stack problem: popped " + tag + ", expected " + expectedTag);
     }
@@ -621,9 +654,6 @@ public class V implements Globals {
 
   /**
    * Save current stroke on stack, set to new
-   * 
-   * @param s
-   *          new stroke (STRK_xxx)
    */
   public static void pushStroke(int s) {
     pushStroke(s, -1);
@@ -631,26 +661,21 @@ public class V implements Globals {
 
   /**
    * Save current stroke on stack, set to new
-   * 
-   * @param s
-   *          new stroke (STRK_xxx)
    */
   public static void pushStroke(int s, int defaultStroke) {
+
     if (s < 0)
       s = defaultStroke;
+    if (s < 0)
+      badArg("Not sure whether this is supported; default stroke is neg");
+    pushStroke(strokes[s]);
+  }
 
-    if (ds)
-      Streams.out.println("pushStroken s=" + s);
-
-    if (s >= 0) {
-      if (ds)
-        Streams.out.println(" saving current stroke " + g.getStroke());
-
-      plotStack.push(g.getStroke());
-      setStroke(s);
-    } else {
-      plotStack.push(ST_IGNORE);
-    }
+  public static void pushStroke(Stroke stroke) {
+    if (stroke == null)
+      badArg("null stroke");
+    plotStack.push(g.getStroke());
+    g.setStroke(stroke);
     plotStack.push(ST_STROKE);
   }
 
@@ -658,7 +683,8 @@ public class V implements Globals {
   private static final Object ST_IGNORE = "<no val>";
   private static final Object ST_COLOR = "COLOR";
   private static final Object ST_SCALE = "SCALE";
-  private static final Object ST_FONT = "FONT";
+  private static final Object ST_FONT_INDEX = "FONT_INDEX";
+  private static final Object ST_FONT = "FONT ";
 
   /**
    * Draw a filled rectangle
