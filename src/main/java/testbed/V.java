@@ -20,6 +20,9 @@ import static geom.GeomTools.*;
  */
 public class V implements Globals {
 
+  private V() {
+  }
+
   public static void setGraphics(Graphics2D graphics) {
     g = graphics;
     if (graphics == null)
@@ -28,26 +31,12 @@ public class V implements Globals {
     TBFont.prepare();
     float z = editor().zoomFactor();
     screenScaleFactor = 2f / z;
-
+    calcScale();
     V.setFont(FNT_MEDIUM);
   }
 
   /**
-   * Draw a string (with flags set to zero)
-   * 
-   * @param str
-   * @param loc
-   *          view coordinates
-   */
-  public static void draw(String str, FPoint2 loc) {
-    draw(str, loc.x, loc.y, 0);
-  }
-
-  /**
    * Mark a location with a small 'x'
-   * 
-   * @param pt
-   *          location
    */
   public static void mark(FPoint2 pt) {
     mark(pt, MARK_X);
@@ -55,11 +44,6 @@ public class V implements Globals {
 
   /**
    * Mark a location
-   * 
-   * @param pt
-   *          location
-   * @param markType
-   * @see {@link #mark(FPoint2, int, double)}
    */
   public static void mark(FPoint2 pt, int markType) {
     mark(pt, markType, 1.0);
@@ -67,11 +51,6 @@ public class V implements Globals {
 
   /**
    * Mark a location
-   * 
-   * @param pt
-   *          location
-   * @param markType
-   *          MARK_xxx
    */
   public static void mark(FPoint2 pt, int markType, double scale) {
     double pad = getScale() * scale * .4;
@@ -98,87 +77,12 @@ public class V implements Globals {
     }
   }
 
-  //  /**
-  //   * Transform a viewspace point to a logicspace point
-  //   * 
-  //   * @param view
-  //   *          FPoint2
-  //   * @param logic
-  //   *          FPoint2
-  //   */
-  //  static void viewToLogic(FPoint2 view, FPoint2 logic) {
-  //    viewToLogicTF.transform(view, logic);
-  //  }
-
   /**
    * Draw a string
-   * 
-   * @param str
-   *          string to draw
-   * @param loc
-   *          view coordinates
-   * @param flags
-   * @see {@link #draw(String, double, double, int)}
    */
   public static void draw(String str, FPoint2 loc, int flags) {
     draw(str, loc.x, loc.y, flags);
   }
-
-  //  /**
-  //   * Get size in viewspace of a 1x1 logical pixel
-  //   * 
-  //   * @return width in viewspace
-  //   */
-  //  private static double logicalPixelSize() {
-  //    return logPixelSize;
-  //  }
-
-  private V() {
-  }
-
-  //  private static float calcStrokeWidth(double width) {
-  //    double d = width * screenScaleFactor * 1.8 / logPixelSize;
-  //    return (float) d;
-  //  }
-  //
-  //  private static void buildStroke(int index, double width) {
-  //    float f = calcStrokeWidth(width);
-  //    strokes[index] = new BasicStroke(f);
-  //  }
-
-  /**
-   * Set stroke
-   * 
-   * @param s
-   *          stroke (STRK_xxx)
-   */
-  public static void setStroke(int s) {
-    g.setStroke(strokes[s]);
-  }
-
-  //    /**
-  //     * Modify internal variables to reflect current 'GLOBALSCALE' gadget value.
-  //     * Sets screenScaleFactor to be 240 * GLOBALSCALE / screen width.
-  //     */
-  //    private static void updateScaleFactor() {
-  //      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-  //      screenScaleFactor = (240.0 * C.vi(TBGlobals.GLOBALSCALE)) / screenSize.width;
-  //    }
-
-  //    private static void recalcLogicalView(Graphics g) {
-  //      final boolean db = false;
-  //  
-  //      double xs, ys;
-  //  
-  //      Rectangle r = g.getClipBounds();
-  //      double n = Math.min(r.width, r.height);
-  //      xs = r.width / n;
-  //      ys = r.height / n;
-  //      if (db)
-  //        Streams.out.println("setLogicalView xs=" + Tools.f(xs) + " ys=" + Tools.f(ys));
-  //  
-  //      setLogicalView(xs * 100, ys * 100);
-  //    }
 
   /**
    * Save current scaling factor on stack, scale by some factor
@@ -351,6 +255,12 @@ public class V implements Globals {
       maxStrLen = Math.max(maxStrLen, s.length());
 
     // Determine scaling factor to apply so that text is always the same size
+    //
+    // This is now sort of working, for the AlgorithmStepper, with some caveats:
+    //
+    // 1) the font changes and gets strange if you zoom in a lot
+    // 2) if we want the rendered text to be scaled along with all the other objects, this won't work
+    //
     float textScaleFactor = scale;
     TBFont f = getScaledFont(textScaleFactor);
 
