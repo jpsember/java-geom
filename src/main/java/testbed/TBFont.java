@@ -118,4 +118,11 @@ class TBFont implements IEditorScript {
   private FontMetrics fontMetrics;
   private double fontCharWidth;
   private Font font;
+
+  public TBFont scaledBy(float scale) {
+    float targetFontSize = font.getSize2D() * scale;
+    int tf = Math.round(targetFontSize);
+    pr("got font scaled by:",scale,"to:",tf);
+    return new TBFont(font.getName(), font.getStyle(), tf);
+  }
 }
