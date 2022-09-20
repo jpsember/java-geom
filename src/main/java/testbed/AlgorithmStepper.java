@@ -336,7 +336,7 @@ public class AlgorithmStepper implements Globals {
       if (!msg.isEmpty()) {
         V.pushColor(MyColor.get(MyColor.RED, .32));
         V.pushScale(.8);
-        V.draw(msg, new FPoint2(0, 20000) // set y very large so we plot it as low as possible
+        V.draw(msg, new FPoint2(-20000, 20000) // it will clamp this into range on the bottom left
             , TX_BGND | TX_FRAME | TX_CLAMP | 80);
         V.pop(2);
       }

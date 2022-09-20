@@ -1,13 +1,12 @@
 package testbed;
 
 import base.*;
-import geom.GeomTools;
-import js.geometry.IPoint;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.*;
 import java.util.List;
@@ -27,7 +26,7 @@ public class V implements Globals {
       return;
 
     TBFont.prepare();
-    float z = GeomTools.editor().zoomFactor();
+    float z = editor().zoomFactor();
     screenScaleFactor = 2f / z;
 
     V.setFont(FNT_MEDIUM);
@@ -366,17 +365,19 @@ public class V implements Globals {
     float textX = (float) (x - textW * .5f);
     float textY = (float) (y - textH * .5f);
 
+    float pad = 5 * textScaleFactor;
+
     if ((flags & TX_CLAMP) != 0) {
-      IPoint pageSize = editor().getEditorPanel().pageSize();
-      textX = MyMath.clamp(textX, 0, pageSize.x - textW);
-      textY = MyMath.clamp(textY, 0, pageSize.y - textH);
+      // Get the bounds of the editor window, in its own coordinate system
+      Rectangle bounds = g.getClipBounds();
+      textX = (float) MyMath.clamp(textX, bounds.getMinX() + pad * 2, bounds.getMaxX() - pad * 2 - textW);
+      textY = (float) MyMath.clamp(textY, bounds.getMinY() + pad * 2, bounds.getMaxY() - pad * 2 - textH);
     }
 
     pushStroke(new BasicStroke(textScaleFactor * 2));
     pushFont(f.font());
 
     if (flags != 0) {
-      float pad = 5 * textScaleFactor;
       textRect.setFrame(textX - pad, textY - pad, textW + pad * 2, textH + pad * 2);
       if ((flags & TX_BGND) != 0) {
         pushColor(Color.white);
@@ -390,7 +391,7 @@ public class V implements Globals {
     for (String s : strings) {
       rowNumber++;
       float ry = textY + rowNumber * rowH + ascent;
-      double px = 0;
+      double px = textX;
       if (lineWidth == 0) {
         px = textX + (textW + 1 - s.length() * fsize) * .5;
       }
