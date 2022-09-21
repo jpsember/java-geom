@@ -46,7 +46,6 @@ public final class FileStepUsedOper extends UserOperation {
 
   @Override
   public boolean shouldBeEnabled() {
-    todo("move to geom");
     mNextFileIndex = null;
     Project project = editor().currentProject();
     if (!project.definedAndNonEmpty())

@@ -60,14 +60,13 @@ public abstract class GeomApp extends GUIApp {
   public abstract boolean hasImageSupport();
 
   /**
-   * Called from EditorPanel; default implementation does
-   * nothing
+   * Called from EditorPanel; default implementation does nothing
    */
   public void paintStart(Graphics2D graphics) {
   }
+
   /**
-   * Called from EditorPanel; default implementation does
-   * nothing
+   * Called from EditorPanel; default implementation does nothing
    */
   public void paintStop() {
   }
@@ -93,9 +92,7 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public final void openProject(File file) {
-    
     todo("figure out cleaner way of suppressing event propagation during unstable periods?");
- 
     closeProject();
 
     Project project = new Project(file);
@@ -363,6 +360,9 @@ public abstract class GeomApp extends GUIApp {
     if (0 != (repaintFlags & REPAINT_EDITOR)) {
       getEditorPanel().repaint();
     }
+    if (infoPanel() != null)
+      if (0 != (repaintFlags & REPAINT_INFO))
+        infoPanel().refresh();
   }
 
   private EditorPanel mEditorPanel;

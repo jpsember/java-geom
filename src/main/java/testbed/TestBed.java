@@ -2,6 +2,7 @@ package testbed;
 
 import base.*;
 import geom.GeomApp;
+import geom.ScriptManager;
 import js.guiapp.MenuBarWrapper;
 
 import java.io.*;
@@ -153,7 +154,9 @@ public abstract class TestBed extends GeomApp {
    */
   public void processAction(TBAction a) {
     try {
-      if (appStarted())
+      // Don't propagate action if we aren't initialized and displaying a script
+      todo("more succinct way to check if script defined?");
+      if (appStarted() && ScriptManager.singleton().currentScript().defined())
         oper().processAction(a);
     } catch (TBError e) {
       showError(e.toString());
@@ -166,22 +169,6 @@ public abstract class TestBed extends GeomApp {
   public static TestBed singleton() {
     return (TestBed) GeomApp.singleton();
   }
-
-  //  /**
-  //   * Perform enable/disable of a menu's items in preparation for it being shown.
-  //   * 
-  //   * @param menu
-  //   *          : menu containing item
-  //   * @param item
-  //   *          : the item to enable/disable
-  //   * @return new enabled state of item
-  //   */
-  //  protected boolean processMenuEnable(int menu, int item) {
-  //    boolean ret = true;
-  //    if (Editor.initialized())
-  //      ret = Editor.processMenuEnable(menu, item);
-  //    return ret;
-  //  }
 
   private String configFile;
 
@@ -396,8 +383,6 @@ public abstract class TestBed extends GeomApp {
     C.sCheckBox(TBGlobals.CTRLSVISIBLE, null, null, true);
     C.sCheckBox(TBGlobals.CONSOLEVISIBLE, null, null, true);
 
-    C.sStoreIntField(TBGlobals.sFILLCOLOR, 16777215);
-
     C.sOpenTabSet(TBGlobals.AUXTABSET);
     {
       C.sOpenTab(TBGlobals.AUXTAB_TRACE, "Trace");
@@ -406,33 +391,6 @@ public abstract class TestBed extends GeomApp {
       C.sIntSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
       C.sCloseTab();
     }
-
-    {
-      C.sOpenTab(TBGlobals.AUXTAB_VIEW, "View");
-      {
-        C.sIntSpinner(TBGlobals.GLOBALSCALE, "scale:", "Sets global scale factor", 1, 40, 7, 1);
-        //        if (parms.withEditor)
-        //          Editor.addControls();
-      }
-      C.sCheckBox(TBGlobals.ENFORCE_ASP, "fixed aspect", "Enforce aspect ratio", false);
-      C.sNewColumn();
-      C.sButton(TBGlobals.FILLCOLOR, "bg color", "Adjust background color");
-      C.sDoubleSpinner(TBGlobals.ASPECTRATIO, "ratio", "Aspect Ratio", .1, 10, 1.458, .1);
-      C.sCloseTab();
-    }
-    //    if (parms.includeGrid) {
-    //      C.sOpenTab(TBGlobals.AUXTAB_GRID, "Grid");
-    //      {
-    //        C.sIntSpinner(TBGlobals.GRIDSIZE, "size:", "size of grid", 1, 1000, 5, 1);
-    //        C.sTextField(TBGlobals.MOUSELOC, "!", "mouse position", 8, true, "");
-    //        C.sNewColumn();
-    //        C.sCheckBox(TBGlobals.GRIDON, "plot", "plot grid", false);
-    //        C.sCheckBox(TBGlobals.GRIDLABELS, "labels", "include grid labels", false);
-    //        C.sCheckBox(TBGlobals.GRIDACTIVE, "snap", //
-    //            "snap objects to grid", false);
-    //      }
-    //      C.sCloseTab();
-    //    }
     C.sCloseTabSet();
 
     // add controls for serializing TestBed variables
@@ -461,10 +419,12 @@ public abstract class TestBed extends GeomApp {
   @Override
   public void populateFrame(JPanel parentPanel) {
     constructEditorPanel();
+    constructInfoPanel();
 
     parentPanel.setLayout(new BorderLayout());
     parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
-
+    parentPanel.add(infoPanel(), BorderLayout.SOUTH);
+    
     {
       operList = new DArray();
       C.init();
@@ -485,7 +445,7 @@ public abstract class TestBed extends GeomApp {
 
     processConfigFile();
 
-     programBegun = true;
+    programBegun = true;
 
     initTestbed();
   }

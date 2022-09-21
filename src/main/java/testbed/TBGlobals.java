@@ -19,8 +19,6 @@ interface TBGlobals {
       // but are written to configuration files
       CONFIGSTART = 8900,
       //
-      FILLCOLOR = 8901,
-      sFILLCOLOR = 8902,
       // start of ids for serializing TestBed variables
       TBFRAME = 8903, // x, y, width, height
       TBCTRLSLIDER = TBFRAME + 4,
@@ -31,10 +29,7 @@ interface TBGlobals {
 
       ABOUT = 9001,
       OPER = 9002,
-      ENFORCE_ASP = 9029,
-      GLOBALSCALE = 9030,
       MENU_TESTBED = 9031,
-             ASPECTRATIO = 9032, 
       QUIT = 9033, GRIDACTIVE = 9036,
       GRIDON = 9040,
       GRIDLABELS = 9041,
@@ -45,7 +40,8 @@ interface TBGlobals {
       CONSOLEVISIBLE = 9063,
       BTN_TOGGLEWORKSPACE = 9066,
       AUXTABSET = 9067,
-      AUXTAB_VIEW = 9068, AUXTAB_GRID = 9069, AUXTAB_TRACE = 9070,
+      AUXTAB_GRID = 9069, 
+      AUXTAB_TRACE = 9070,
 
       TRACESTEP = 9092, TRACEPLOT = 9093,
       TRACEENABLED = 9098,
