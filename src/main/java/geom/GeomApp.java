@@ -144,6 +144,7 @@ public abstract class GeomApp extends GUIApp {
       return;
     // Store the app frame location, in case it has changed
     projectState().appFrame(appFrame().bounds());
+    todo("write widget values into this structure");
     currentProject().flush();
   }
 

@@ -192,50 +192,53 @@ public abstract class TestBed extends GeomApp {
    * nothing.
    */
   public void writeConfigFile() {
+    todo("writeConfigFile; begun:",programBegun);
     if (programBegun) {
       writeConfigFile2();
     }
   }
 
   private void writeConfigFile2() {
-    if (alert("disabled"))
-      return;
-    //    final boolean db = false;
-    //
-    //    // write to a string, then see if writing to disk is actually necessary.
-    //    StringWriter sw = new StringWriter();
-    //    PrintWriter pw = new PrintWriter(sw);
-    //    C.printGadgets(pw, true);
-    //
-    //    // writeAppConfigArguments(pw);
-    //
-    //    String str = sw.toString();
-    //    if (!str.equals(oldConfigFile)) {
-    //      synchronized (app) {
-    //        oldConfigFile = str;
-    //        if (db)
-    //          Streams.out.println("writing new config file: " + str.hashCode());
-    //        try {
-    //          Writer w = Streams.writer(getConfigFile());
-    //          w.write(str);
-    //          w.close();
-    //        } catch (IOException e) {
-    //          showError(e.toString());
-    //        }
-    //      }
-    //    }
+        final boolean db = true;
+    
+        // write to a string, then see if writing to disk is actually necessary.
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        C.printGadgets(pw, true);
+    
+        // writeAppConfigArguments(pw);
+    
+        String str = sw.toString();
+        if (!str.equals(oldConfigFile)) {
+          synchronized (this) {
+            oldConfigFile = str;
+            if (db)
+              Streams.out.println("writing new config file: " + str.hashCode());
+            try {
+              Writer w = Streams.writer(getConfigFile());
+              w.write(str);
+              w.close();
+            } catch (IOException e) {
+              showError(e.toString());
+            }
+          }
+        }
   }
 
+  private String oldConfigFile = "";
+  
   /**
-   * Process configuration file (application only)
+   * Process configuration file 
    */
   private void processConfigFile() {
+    todo("replace this with projectState");
     final boolean db = false;
 
     if (db) {
       System.out.println("processConfigFile");
     }
     try {
+      todo("reading config file:",getConfigFile());
       String s = Streams.readTextFile(getConfigFile());
       //      oldConfigFile = s;
       if (db) {
@@ -306,42 +309,7 @@ public abstract class TestBed extends GeomApp {
     //      desiredApplicationBounds = r;
   }
 
-  //  /**
-  //   * Initialize the editor, if one is to be used. User can also add items to the
-  //   * editor menu, and add any additional menus. Default implementation does
-  //   * nothing. <br>
-  //   * Typical user code:
-  //   * 
-  //   * <pre>
-  //   * // specify object types manipulated by editor
-  //   * Editor.addObjectType(EdPoint.FACTORY);
-  //   * Editor.addObjectType(EdSegment.FACTORY);
-  //   * </pre>
-  //   * 
-  //   * A more involved version might look like:
-  //   * 
-  //   * <pre>
-  //   * Editor.addObjectType(EdPolygon.FACTORY);
-  //   * Editor.addObjectType(EdDisc.FACTORY);
-  //   * Editor.addObjectType(EdSegment.FACTORY);
-  //   * Editor.addObjectType(EdDiameter.FACTORY);
-  //   * Editor.addObjectType(EdPoint.FACTORY);
-  //   * 
-  //   * Editor.openMenu();
-  //   * C.sMenuItem(G_TOGGLEDISCS, "Toggle discs/points", "!^t");
-  //   * C.sMenuItem(G_MAKETANGENT, "Set disc tangent", "!^3");
-  //   * C.sMenuItem(G_MAKESUPPORTED, "Set disc supported", "!^4");
-  //   * Editor.closeMenu();
-  //   * 
-  //   * C.sOpenMenu(INVERT, "Invert");
-  //   * C.sMenuItem(INV_SEGS, "Segments", null);
-  //   * C.sMenuItem(INV_DISCS, "Discs", null);
-  //   * C.sCloseMenu();
-  //   * </pre>
-  //   */
-  //  public void initEditor() {
-  //  }
-
+ 
   private void addMenus0() {
 
     //    C.sOpenMenu(TBGlobals.MENU_TESTBED, parms.menuTitle);
