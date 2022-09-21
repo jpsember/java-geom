@@ -14,6 +14,8 @@ import geom.gen.ScriptEditState;
 import js.geometry.FRect;
 import js.geometry.IPoint;
 import js.geometry.IRect;
+import js.graphics.PointElement;
+import js.graphics.ScriptElement;
 import testbed.*;
 
 public class BoundsOper implements TestBedOperation, Globals {
@@ -38,26 +40,30 @@ public class BoundsOper implements TestBedOperation, Globals {
 
   public void processAction(TBAction a) {
     if (a.code == TBAction.CTRLVALUE) {
-      generate();
+      if (!alert("disabling this for now"))
+        generate();
     }
   }
 
   public void runAlgorithm() {
+
+    // Construct algorithm input: a list of points 
+
+    List<IPoint> points = arrayList();
+    for (ScriptElement elem : scriptManager().state().elements()) {
+      if (elem.is(PointElement.DEFAULT_INSTANCE))
+        points.add(elem.location());
+    }
+
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
 
     if (s.update())
       s.msg("algorithm step 1");
 
-    for (int i = 0; i < 50; i++)
+    for (IPoint pt : points) {
       if (s.update())
-        s.msg("update, i:", i, CR, "hello", CR,
-            "another line that is pretty long and might overflow the screen pretty long and might overflow the screen ");
-
-    //    EdDisc[] obj = SampleMain.getDiscs();
-    //    for (EdDisc d : obj) {
-    //      if (T.update())
-    //        T.msg("disc"+T.show(d));
-    //    }
+        s.msg("input point", pt);
+    }
 
     if (s.update())
       s.msg("algorithm step 2");

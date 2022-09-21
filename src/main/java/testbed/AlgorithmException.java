@@ -2,7 +2,9 @@ package testbed;
 
 import base.Tools;
 import js.base.BasePrinter;
+import js.geometry.IPoint;
 import js.graphics.AbstractScriptElement;
+import js.graphics.PointElement;
 
 import static js.base.Tools.*;
 
@@ -49,7 +51,9 @@ public final class AlgorithmException extends RuntimeException {
       if (obj != null) {
         if (obj instanceof AbstractScriptElement) {
           se = (AbstractScriptElement) obj;
-        } else
+        } else if (obj instanceof IPoint) {
+          se = new PointElement(null, (IPoint) obj);
+        } else if (!(obj instanceof String))
           todo("convert IRect, IPoint, etc to appropriate objects");
       }
       if (se != null)

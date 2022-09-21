@@ -1,14 +1,15 @@
 package testbed;
 
 import base.*;
+import js.geometry.IRect;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static js.base.Tools.*;
@@ -30,7 +31,8 @@ public class V implements Globals {
 
     TBFont.prepare();
     float z = editor().zoomFactor();
-    screenScaleFactor = 2f / z;
+    sScaleFactor = 2f / z;
+    prepareForRender();
     V.setFont(FNT_MEDIUM);
   }
 
@@ -87,14 +89,10 @@ public class V implements Globals {
    * Save current scaling factor on stack, scale by some factor
    */
   public static void pushScale(double scaleAdj) {
-    plotStack.push(new Double(screenScaleFactor));
-    screenScaleFactor *= scaleAdj;
-    plotStack.push(ST_SCALE);
+    pushElem(sScaleFactor);
+    sScaleFactor *= scaleAdj;
+    pushElem(ST_SCALE);
   }
-
-  private static DArray plotStack = new DArray();
-
-  private static int activeFont;
 
   /**
    * Set font
@@ -103,8 +101,8 @@ public class V implements Globals {
    *          FNT_xx
    */
   public static void setFont(int font) {
-    activeFont = font;
-    g.setFont(TBFont.getFont(activeFont));
+    sCurrentFontIndex = font;
+    g.setFont(TBFont.getFont(sCurrentFontIndex));
   }
 
   /**
@@ -115,31 +113,12 @@ public class V implements Globals {
    */
   public static void pushFont(int font) {
     if (font >= 0) {
-      plotStack.pushInt(activeFont);
+      pushElem(sCurrentFontIndex);
       setFont(font);
     } else {
-      plotStack.push(ST_IGNORE);
+      pushElem(ST_IGNORE);
     }
-    plotStack.push(ST_FONT_INDEX);
-  }
-
-  public static void pushFont(Font font) {
-    checkArgument(font != null);
-    // Push {Font, activeFont, "FONT"}
-    plotStack.push(g.getFont());
-    plotStack.push(activeFont);
-    plotStack.push(ST_FONT);
-    g.setFont(font);
-  }
-
-  /**
-   * Pop font from stack
-   */
-  @Deprecated
-  public static void popFont() {
-    Integer val = (Integer) popValue(ST_FONT_INDEX);
-    if (val != null)
-      setFont(val.intValue());
+    pushElem(ST_FONT_INDEX);
   }
 
   /**
@@ -225,7 +204,7 @@ public class V implements Globals {
     for (String s : strings)
       maxStrLen = Math.max(maxStrLen, s.length());
 
-    TBFont f = TBFont.get(activeFont);
+    TBFont f = TBFont.get(sCurrentFontIndex);
 
     float fsize = (float) f.charWidth();
     float ascent = f.metrics().getAscent();
@@ -248,6 +227,7 @@ public class V implements Globals {
     }
 
     if (flags != 0) {
+      FRect textRect = new FRect();
       textRect.setFrame(textX - pad, textY - pad, textW + pad * 2, textH + pad * 2);
       if ((flags & TX_BGND) != 0) {
         pushColor(Color.white);
@@ -300,6 +280,10 @@ public class V implements Globals {
     g.draw(r);
   }
 
+  public static void drawRect(IRect r) {
+    g.drawRect(r.x, r.y, r.width, r.height);
+  }
+
   /**
    * Draw a filled circle (disc)
    * 
@@ -333,44 +317,57 @@ public class V implements Globals {
       pop();
   }
 
+  private static void pushElem(Object value) {
+    sPlotStateStack.add(value);
+  }
+
+  private static <T> T popElem() {
+    return (T) js.base.Tools.pop(sPlotStateStack);
+  }
+
+  private static <T> T peekElem() {
+    return (T) js.base.Tools.peek(sPlotStateStack);
+  }
+
   /**
    * Pop a state attribute
    */
   public static void pop() {
-    if (plotStack.isEmpty())
+    if (sPlotStateStack.isEmpty())
       throw new IllegalStateException("render stack empty");
-    Object tag = plotStack.peek(0);
+    Object tag = peekElem();
     if (tag == ST_COLOR) {
-      popValue();
-      Color nc = (Color) plotStack.pop();
+      popElem();
+      Color nc = popElem();
       if (nc != null)
         g.setColor(nc);
     } else if (tag == ST_STROKE) {
-      popValue();
-      Stroke s = (Stroke) plotStack.pop();
+      popElem();
+      Stroke s = popElem();
       g.setStroke(s);
     } else if (tag == ST_SCALE) {
-      Double val = (Double) popValue(ST_SCALE);
+      popElem();
+      Double val = popElem();
       if (val != null) {
-        screenScaleFactor = val.floatValue();
+        sScaleFactor = val.floatValue();
       }
     } else if (tag == ST_FONT_INDEX) {
-      popValue();
-      Integer val = (Integer) plotStack.pop();
+      popElem();
+      Integer val = popElem();
       if (val != null)
         setFont(val.intValue());
     } else if (tag == ST_FONT) {
       // Pop {Font, activeFont, "FONT"}
-      popValue();
-      activeFont = (Integer) plotStack.pop();
-      g.setFont((Font) plotStack.pop());
+      popElem();
+      sCurrentFontIndex = popElem();
+      g.setFont(popElem());
     } else
       badArg("unsupported stack element:", tag);
   }
 
   public static void dumpStack() {
     pr("Render state stack:");
-    for (Object obj : plotStack) {
+    for (Object obj : sPlotStateStack) {
       pr(obj, TAB(20), obj.getClass());
     }
   }
@@ -381,21 +378,6 @@ public class V implements Globals {
   @Deprecated
   public static void popColor() {
     throw notSupported();
-  }
-
-  private static Object popValue() {
-    return plotStack.pop();
-  }
-
-  private static Object popValue(Object expectedTag) {
-    Object tag = popValue();
-    if (tag != expectedTag) {
-      throw new IllegalStateException("render stack problem: popped " + tag + ", expected " + expectedTag);
-    }
-    Object val = plotStack.pop();
-    if (val == ST_IGNORE)
-      val = null;
-    return val;
   }
 
   /**
@@ -428,13 +410,10 @@ public class V implements Globals {
     if (c == null) {
       checkArgument(defaultColor != null);
     }
-    plotStack.push(g.getColor());
-    plotStack.push(ST_COLOR);
+    pushElem(g.getColor());
+    pushElem(ST_COLOR);
     setColor(c);
   }
-
-  // graphics being updated by updateView()
-  private static Graphics2D g;
 
   /**
    * Draw a line segment
@@ -514,15 +493,15 @@ public class V implements Globals {
       if (defaultStroke < 0)
         notSupported();
     }
-    pushStroke(strokes[s]);
+    pushStroke(sStrokes[s]);
   }
 
   public static void pushStroke(Stroke stroke) {
     if (stroke == null)
       badArg("null stroke");
-    plotStack.push(g.getStroke());
+    pushElem(g.getStroke());
     g.setStroke(stroke);
-    plotStack.push(ST_STROKE);
+    pushElem(ST_STROKE);
   }
 
   private static final Object ST_STROKE = "STROKE";
@@ -595,83 +574,48 @@ public class V implements Globals {
     g.draw(r);
   }
 
-  private static FRect textRect = new FRect();
-
-  // table of BasicStroke objects for use by application
-  private static BasicStroke[] strokes = new BasicStroke[STRK_TOTAL];
-
-  //  // the transform to convert from logic -> view coords
-  //  private static AffineTransform logicToViewTF = new AffineTransform(), viewToLogicTF = new AffineTransform();
-
-  // size, in viewspace, of a 1x1 rectangle in logicspace
-  //  private static double logPixelSize ; // Not sure necessary
-
-  private static float screenScaleFactor;
-
   public static float getScale() {
-    return screenScaleFactor;
+    return sScaleFactor;
   }
 
-  //private static Dimension physicalSize;
-  //  /**
-  //   * Get size of view, in physical pixels.  Returns null
-  //   * if unknown
-  //   * @return size of view, in pixels, or null
-  //   */
-  //  public static Dimension physicalSize() {
-  //    return physicalSize;
-  //  }
-
-  //  /**
-  //   * Cause view to be repainted
-  //   */
-  //  public static void repaint() {
-  //    repaint(0);
-  //  }
-
-  //  /**
-  //   * Cause view to be repainted after a delay
-  //   * 
-  //   * @param tm
-  //   *          number of milliseconds
-  //   */
-  //  public static void repaint(long tm) {
-  //    panel.repaint(tm);
-  //  }
-
-  //  static Grid grid;
-
-  //  /**
-  //   * Return a copy of a point, that has been snapped to the current grid (if it
-  //   * is active)
-  //   * 
-  //   * @param pt
-  //   * @return copy of pt, possibly snapped to grid
-  //   */
-  //  public static FPoint2 snapToGrid(FPoint2 pt) {
-  //    if (TestBed.parms.includeGrid && C.vb(TBGlobals.GRIDACTIVE)) {
-  //      pt = grid.snap(pt);
-  //    } else
-  //      pt = new FPoint2(pt);
-  //    return pt;
-  //  }
-
-  //  static void initGrid() {
-  //    setGrid(new SquareGrid());
-  //    grid.setSize(10, logicalSize());
-  //    if (TestBed.parms.includeGrid)
-  //      updateGridSize(C.vi(TBGlobals.GRIDSIZE));
-  //  }
-
-  //  static void updateGridSize(int size) {
-  //    grid.setSize(size, logicalSize());
-  //  }
-  //
   static void cleanUpRender() {
-    if (!plotStack.isEmpty()) {
+    if (!sPlotStateStack.isEmpty()) {
       Tools.warn("plot stack not empty");
-      plotStack.clear();
+      sPlotStateStack.clear();
     }
   }
+
+  public static void prepareForRender() {
+    sStrokes = new Stroke[STRK_TOTAL];
+
+    // construct strokes so we have uniform thickness despite scaling
+    buildStroke(STRK_NORMAL, 1f);
+    buildStroke(STRK_THICK, 2f);
+    buildStroke(STRK_THIN, .4f);
+    buildStroke(STRK_VERYTHICK, 3f);
+    {
+      float[] dash = new float[2];
+      float sc = calcStrokeWidth(8);
+      dash[0] = sc;
+      dash[1] = sc * .5f;
+      sStrokes[STRK_RUBBERBAND] = new BasicStroke(calcStrokeWidth(.4f), BasicStroke.CAP_BUTT,
+          BasicStroke.JOIN_ROUND, 1.0f, dash, 0);
+    }
+  }
+
+  private static float calcStrokeWidth(float width) {
+    return width * getScale() * 1.8f;
+  }
+
+  private static void buildStroke(int index, float width) {
+    float f = calcStrokeWidth(width);
+    sStrokes[index] = new BasicStroke(f);
+  }
+
+  private static ArrayList<Object> sPlotStateStack = arrayList();
+  private static int sCurrentFontIndex;
+  private static Stroke[] sStrokes;
+  private static float sScaleFactor;
+  private static Graphics2D g;
 
 }

@@ -93,6 +93,9 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public final void openProject(File file) {
+    
+    todo("figure out cleaner way of suppressing event propagation during unstable periods?");
+ 
     closeProject();
 
     Project project = new Project(file);

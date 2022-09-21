@@ -485,7 +485,7 @@ public abstract class TestBed extends GeomApp {
 
     processConfigFile();
 
-    programBegun = true;
+     programBegun = true;
 
     initTestbed();
   }
@@ -692,13 +692,11 @@ public abstract class TestBed extends GeomApp {
 
   @Override
   public float zoomFactor() {
-    todo("zoomFactor");
     return mZoomFactor;
   }
 
   @Override
   public void setZoomFactor(float zoom) {
-    todo("zoomFactor");
     mZoomFactor = zoom;
   }
 

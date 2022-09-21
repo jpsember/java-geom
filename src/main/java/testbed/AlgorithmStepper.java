@@ -2,6 +2,7 @@ package testbed;
 
 import base.*;
 import js.geometry.IPoint;
+import js.geometry.IRect;
 import js.graphics.AbstractScriptElement;
 import js.guiapp.UserOperation;
 
@@ -296,40 +297,14 @@ public class AlgorithmStepper implements Globals {
    */
   private void plotTrace(AlgorithmException tr) {
 
-    //    DArray oldPlotList = plo
-    //    tList;
-    //    plotList = new DArray();
-
+    V.pushColor(Color.red);
+    V.pushStroke(STRK_NORMAL);
     for (AbstractScriptElement elem : tr.plotables()) {
       renderElem(elem);
+      IRect bounds = elem.bounds().withInset((int) (-5 * V.getScale()));
+      V.drawRect(bounds);
     }
-
-    //    
-    //    for (int i = 0; i < oldPlotList.size(); i++) {
-    //      PlotItem t = (PlotItem) oldPlotList.get(i);
-    //      render(t.item, t.color, t.stroke, t.markType);
-    //    }
-
-    //    if (tr != null) {
-    //      StringBuilder msgOnly = new StringBuilder(tr.getMessage());
-    //      if (tr.error()) {
-    //        Tools.addCr(msgOnly);
-    //        msgOnly.append("\n");
-    //        msgOnly.append(Tools.stackTrace(1, 5, tr));
-    //      }
-    //
-    //      if (tr.error() || TestBed.plotTraceMessages()) {
-    //        // plot text of message in view
-    //
-    //        String msg = msgOnly.toString();
-    //        if (msg.length() > 0) {
-    //          V.pushColor(MyColor.get(MyColor.RED, .32));
-    //          V.pushScale(.8);
-    //          V.draw(msg, mDefaultLoc, TX_BGND | TX_FRAME | TX_CLAMP | 80);
-    //          V.pop(2);
-    //        }
-    //      }
-    //    }
+    V.pop(2);
 
     if (TestBed.plotTraceMessages()) {
       String msg = tr.getMessage();

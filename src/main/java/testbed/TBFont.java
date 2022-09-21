@@ -3,28 +3,29 @@ package testbed;
 import java.awt.*;
 import base.*;
 import static js.base.Tools.*;
+import static testbed.IEditorScript.*;
 
-class TBFont implements IEditorScript {
+class TBFont {
 
   private static String[] ifonts = { "Monospaced p 12", "Monospaced p 16", "Monospaced b 20", "Times i 16", };
 
   public static void prepare() {
-    if (fonts == null) {
+    if (sFonts == null) {
       loadTools();
-      fonts = new TBFont[ifonts.length];
+      sFonts = new TBFont[ifonts.length];
       for (int i = 0; i < ifonts.length; i++) {
-        fonts[i] = parse(ifonts[i]);
+        sFonts[i] = parse(ifonts[i]);
       }
     }
   }
 
   public static Font getFont(int index) {
-    return get(index).font;
+    return get(index).mFont;
   }
 
   public static TBFont get(int index) {
-    Tools.ASSERT(fonts != null, "TBFont.prepare() not called");
-    return fonts[index];
+    Tools.ASSERT(sFonts != null, "TBFont.prepare() not called");
+    return sFonts[index];
   }
 
   /**
@@ -44,12 +45,9 @@ class TBFont implements IEditorScript {
     int sf = 0;
     Tokenizer tk = new Tokenizer(str, true);
 
-    //    tk.parse(str, 0);
     String name = tk.read(T_WORD).text();
     String style = tk.read(T_WORD).text();
     int size = tk.readInt();
-
-    //Streams.out.println("TBFont, reading name="+name+", style="+style+", size="+size);
 
     for (int i = 0; i < style.length(); i++) {
       switch (style.charAt(i)) {
@@ -76,29 +74,27 @@ class TBFont implements IEditorScript {
 
   }
 
-  private static Font fixedWidthFont =
-      //      new Font("Times",Font.ITALIC,13);
-      new Font("Monospaced", Font.PLAIN, 13);
+  private static Font fixedWidthFont = new Font("Monospaced", Font.PLAIN, 13);
 
   public TBFont(String name, int style, int size) {
-    font = new Font(name, style, size);
-    fontCharWidth = metrics().charWidth(' ');
+    mFont = new Font(name, style, size);
+    mFontCharWidth = metrics().charWidth(' ');
   }
 
   public FontMetrics metrics() {
-    if (fontMetrics == null) {
-      fontMetrics = V.get2DGraphics().getFontMetrics(font);
+    if (mFontMetrics == null) {
+      mFontMetrics = V.get2DGraphics().getFontMetrics(mFont);
     }
 
-    return fontMetrics;
+    return mFontMetrics;
   }
 
   public double charWidth() {
-    return fontCharWidth;
+    return mFontCharWidth;
   }
 
   public Font font() {
-    return font;
+    return mFont;
   }
 
   /**
@@ -112,16 +108,10 @@ class TBFont implements IEditorScript {
     }
   }
 
-  // array of fonts
-  private static TBFont[] fonts;
+  private static TBFont[] sFonts;
 
-  private FontMetrics fontMetrics;
-  private double fontCharWidth;
-  private Font font;
+  private FontMetrics mFontMetrics;
+  private double mFontCharWidth;
+  private Font mFont;
 
-  public TBFont scaledBy(float scale) {
-    float targetFontSize = font.getSize2D() * scale;
-    int intFontSize = Math.round(targetFontSize);
-    return new TBFont(font.getName(), font.getStyle(), intFontSize);
-  }
 }
