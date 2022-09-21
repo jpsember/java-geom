@@ -65,7 +65,7 @@ public class EditablePointElement extends PointElement implements EditorElement 
     return new EditablePointElement(properties(), tfm);
   }
 
-  private static final Color OBJECT_COLOR = new Color(50, 255, 50);
+  private static final Color OBJECT_COLOR = new Color(100, 100, 255);
   private static final Color SELECTED_BORDER_COLOR = Color.YELLOW;
 
   private static final Paint sObjectPaint = Paint.newBuilder().fill().color(OBJECT_COLOR).build();

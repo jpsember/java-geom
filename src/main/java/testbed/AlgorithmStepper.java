@@ -31,7 +31,7 @@ public class AlgorithmStepper implements Globals {
   }
 
   public int step() {
-    return mTraceStep;
+    return mStep;
   }
 
   /**
@@ -46,13 +46,13 @@ public class AlgorithmStepper implements Globals {
     mLastException = null;
     mRunning = C.exists(TBGlobals.TRACEENABLED) && C.vb(TBGlobals.TRACEENABLED);
     mDisabled = 0;
-
-    if (mRunning) {
-      mTraceStop = C.vi(TBGlobals.TRACESTEP);
-      mTraceStep = 0;
-      if (mTraceStop == 0)
-        mRunning = false;
-    }
+    mStep = 0;
+    mStepDecision = null;
+    mStepToStopAt = 0;
+    if (mRunning)
+      mStepToStopAt = C.vi(TBGlobals.TRACESTEP);
+    if (mStepToStopAt == 0)
+      mRunning = false;
 
     AlgorithmException event = null;
     try {
@@ -334,17 +334,43 @@ public class AlgorithmStepper implements Globals {
   }
 
   /**
-   * Determine if current algorithm step should be interrupted with message.
-   *
-   * @return true if this is the trace step
+   * Determine if current step is the stopping point. If this returns false,
+   * then the next call to msg() would have no effect
    */
   public boolean update() {
-    boolean out = false;
-    if (active()) {
-      mTraceStep++;
-      out = (mTraceStep == mTraceStop);
+    // Discard any older decision, in case user didn't consume it via msg()
+    mStepDecision = null;
+    return auxUpdate();
+  }
+
+  /**
+   * If at stopping point of algorithm, throw an exception that will display the
+   * message and render elements
+   * 
+   * Calls update(), if it hasn't already been called, to determine if this is
+   * the stopping point
+   */
+  public void msg(Object... messageAndRenderElements) {
+
+    // If user hasn't called update() yet, do so
+    boolean decision = auxUpdate();
+
+    // Discard the decision in case we aren't acting on it
+    mStepDecision = null;
+
+    if (decision)
+      throw new AlgorithmException(messageAndRenderElements);
+  }
+
+  private boolean auxUpdate() {
+    if (mStepDecision == null) {
+      if (active()) {
+        mStep++;
+        mStepDecision = (mStep == mStepToStopAt);
+      } else
+        mStepDecision = false;
     }
-    return out;
+    return mStepDecision;
   }
 
   /**
@@ -357,17 +383,6 @@ public class AlgorithmStepper implements Globals {
   public void err(Object s) {
     AlgorithmException e = new AlgorithmException(s);
     e.setError();
-    throw e;
-  }
-
-  /**
-   * Throw an algorithm message event.
-   * 
-   * @param s
-   *          : Object describing problem
-   */
-  public void msg(Object... s) {
-    AlgorithmException e = new AlgorithmException(s);
     throw e;
   }
 
@@ -491,17 +506,6 @@ public class AlgorithmStepper implements Globals {
       flags = TX_BGND | TX_FRAME | TX_CLAMP;
     return show(new TraceString(str, color, x, y, flags, scale), color);
   }
-
-  private int mTraceStop;
-
-  private int mTraceStep;
-
-  // true if algorithm tracing is enabled
-  private boolean mRunning;
-  // if > 0, algorithm tracing has been disabled
-  private int mDisabled;
-  // event that interrupted last algorithm run
-  private AlgorithmException mLastException;
 
   //  /**
   //   * Wrapper class for adding color, mark attributes to traceables
@@ -733,5 +737,16 @@ public class AlgorithmStepper implements Globals {
   public static UserOperation buildResetOper() {
     return new AlgStepOper(0);
   }
+
+  private int mStepToStopAt;
+  private int mStep;
+  private Boolean mStepDecision;
+
+  // true if algorithm tracing is enabled
+  private boolean mRunning;
+  // if > 0, algorithm tracing has been disabled
+  private int mDisabled;
+  // event that interrupted last algorithm run
+  private AlgorithmException mLastException;
 
 }

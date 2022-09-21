@@ -8,12 +8,10 @@ import java.util.Random;
 
 import geom.EditorElement;
 import geom.GeomApp;
-import geom.elem.EditableRectElement;
+import geom.elem.EditablePointElement;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
-import js.geometry.FRect;
 import js.geometry.IPoint;
-import js.geometry.IRect;
 import js.graphics.PointElement;
 import js.graphics.ScriptElement;
 import testbed.*;
@@ -40,8 +38,7 @@ public class BoundsOper implements TestBedOperation, Globals {
 
   public void processAction(TBAction a) {
     if (a.code == TBAction.CTRLVALUE) {
-      if (!alert("disabling this for now"))
-        generate();
+      generate();
     }
   }
 
@@ -57,16 +54,25 @@ public class BoundsOper implements TestBedOperation, Globals {
 
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
 
+    s.msg("algorithm step 1");
+
+    // We don't need to call s.update(), but we can do so, as an optimization, if we 
+    // wish to avoid unnecessary calls to s.msg() (i.e., so we avoid constructing an 
+    // array of arguments that will just be ignored).
+    // 
+    // This is a 'guarded' call to s.msg():
+    //
     if (s.update())
-      s.msg("algorithm step 1");
+      s.msg("guarded update call");
 
     for (IPoint pt : points) {
-      if (s.update())
-        s.msg("input point", pt);
+
+      // These are 'unguarded' calls to s.msg():
+      //
+      s.msg("input point", pt);
     }
 
-    if (s.update())
-      s.msg("algorithm step 2");
+    s.msg("algorithm step 2");
   }
 
   @Override
@@ -85,11 +91,8 @@ public class BoundsOper implements TestBedOperation, Globals {
     float sx = size.x - 2 * PADDING;
     float sy = size.y - 2 * PADDING;
     for (int i = 0; i < c; i++) {
-      float rad = 10;
-      IRect bounds = new FRect(r.nextFloat() * sx + PADDING, r.nextFloat() * sy + PADDING, rad, rad)
-          .toIRect();
-      EditableRectElement elem = EditableRectElement.DEFAULT_INSTANCE.withBounds(bounds);
-      elemList.add(elem);
+      elemList.add(EditablePointElement.DEFAULT_INSTANCE
+          .withLocation(new IPoint(r.nextFloat() * sx + PADDING, r.nextFloat() * sy + PADDING)));
     }
 
     Command.Builder b = Command.newBuilder();
