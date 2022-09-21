@@ -31,7 +31,6 @@ public class V implements Globals {
     TBFont.prepare();
     float z = editor().zoomFactor();
     screenScaleFactor = 2f / z;
-    calcScale();
     V.setFont(FNT_MEDIUM);
   }
 
@@ -86,41 +85,12 @@ public class V implements Globals {
 
   /**
    * Save current scaling factor on stack, scale by some factor
-   * 
-   * @param scaleAdj
-   *          amount to scale current factor by
    */
   public static void pushScale(double scaleAdj) {
     plotStack.push(new Double(screenScaleFactor));
     screenScaleFactor *= scaleAdj;
-    calcScale();
     plotStack.push(ST_SCALE);
   }
-
-  /**
-   * Pop scale factor from stack
-   */
-  public static void popScale() {
-
-    Double val = (Double) popValue(ST_SCALE);
-    if (val != null) {
-      screenScaleFactor = val.floatValue();
-      calcScale();
-    }
-  }
-
-  private static void calcScale() {
-    //    if (logicalPixelSize() <= 0)
-    //      throw badArg("logicalPixelSize is zero");
-    scale = screenScaleFactor; // / logicalPixelSize();
-    //pr("calc scale, screenScaleFactor:",screenScaleFactor,"logicalPixelSize:",logicalPixelSize(),"scale:",scale);
-  }
-
-  //  private static double screenScaleFactor() {
-  //    return screenScaleFactor;
-  //  }
-
-  private static float scale;
 
   private static DArray plotStack = new DArray();
 
@@ -165,6 +135,7 @@ public class V implements Globals {
   /**
    * Pop font from stack
    */
+  @Deprecated
   public static void popFont() {
     Integer val = (Integer) popValue(ST_FONT_INDEX);
     if (val != null)
@@ -254,15 +225,7 @@ public class V implements Globals {
     for (String s : strings)
       maxStrLen = Math.max(maxStrLen, s.length());
 
-    // Determine scaling factor to apply so that text is always the same size
-    //
-    // This is now sort of working, for the AlgorithmStepper, with some caveats:
-    //
-    // 1) the font changes and gets strange if you zoom in a lot
-    // 2) if we want the rendered text to be scaled along with all the other objects, this won't work
-    //
-    float textScaleFactor = scale;
-    TBFont f = getScaledFont(textScaleFactor);
+    TBFont f = TBFont.get(activeFont);
 
     float fsize = (float) f.charWidth();
     float ascent = f.metrics().getAscent();
@@ -275,7 +238,7 @@ public class V implements Globals {
     float textX = (float) (x - textW * .5f);
     float textY = (float) (y - textH * .5f);
 
-    float pad = 5 * textScaleFactor;
+    float pad = 5;
 
     if ((flags & TX_CLAMP) != 0) {
       // Get the bounds of the editor window, in its own coordinate system
@@ -284,15 +247,12 @@ public class V implements Globals {
       textY = (float) MyMath.clamp(textY, bounds.getMinY() + pad * 2, bounds.getMaxY() - pad * 2 - textH);
     }
 
-    pushStroke(new BasicStroke(textScaleFactor * 2));
-    pushFont(f.font());
-
     if (flags != 0) {
       textRect.setFrame(textX - pad, textY - pad, textW + pad * 2, textH + pad * 2);
       if ((flags & TX_BGND) != 0) {
         pushColor(Color.white);
         g.fill(textRect);
-        popColor();
+        pop();
       }
       if ((flags & TX_FRAME) != 0)
         g.draw(textRect);
@@ -307,25 +267,7 @@ public class V implements Globals {
       }
       g.drawString(s, (float) px, (float) (ry) - 1);
     }
-    pop(2);
   }
-
-  /**
-   * Construct scaled version of active font, caching to avoid unnecessary
-   * reconstruction (perhaps an unnecessary optimization)
-   */
-  private static TBFont getScaledFont(float scaleAdj) {
-    if (sScaledFont == null || sScaledFontIndex != activeFont || scaleAdj != sCachedScaledValue) {
-      sScaledFontIndex = activeFont;
-      sCachedScaledValue = scaleAdj;
-      sScaledFont = TBFont.get(activeFont).scaledBy(scaleAdj);
-    }
-    return sScaledFont;
-  }
-
-  private static TBFont sScaledFont;
-  private static int sScaledFontIndex;
-  private static float sCachedScaledValue;
 
   /**
    * Pop stroke from stack
@@ -357,17 +299,6 @@ public class V implements Globals {
   public static void drawRect(FRect r) {
     g.draw(r);
   }
-
-  //  /**
-  //   * Set graphics context being updated by updateView() (should only be called
-  //   * by the viewPanel class)
-  //   * 
-  //   * @param gr
-  //   *          : graphics context
-  //   */
-  //  private static void vu_setGraphics(Graphics2D gr) {
-  //    g = gr;
-  //  }
 
   /**
    * Draw a filled circle (disc)
@@ -409,17 +340,26 @@ public class V implements Globals {
     if (plotStack.isEmpty())
       throw new IllegalStateException("render stack empty");
     Object tag = plotStack.peek(0);
-    if (tag == ST_COLOR)
-      popColor();
-    else if (tag == ST_STROKE) {
+    if (tag == ST_COLOR) {
+      popValue();
+      Color nc = (Color) plotStack.pop();
+      if (nc != null)
+        g.setColor(nc);
+    } else if (tag == ST_STROKE) {
       popValue();
       Stroke s = (Stroke) plotStack.pop();
       g.setStroke(s);
-    } else if (tag == ST_SCALE)
-      popScale();
-    else if (tag == ST_FONT_INDEX)
-      popFont();
-    else if (tag == ST_FONT) {
+    } else if (tag == ST_SCALE) {
+      Double val = (Double) popValue(ST_SCALE);
+      if (val != null) {
+        screenScaleFactor = val.floatValue();
+      }
+    } else if (tag == ST_FONT_INDEX) {
+      popValue();
+      Integer val = (Integer) plotStack.pop();
+      if (val != null)
+        setFont(val.intValue());
+    } else if (tag == ST_FONT) {
       // Pop {Font, activeFont, "FONT"}
       popValue();
       activeFont = (Integer) plotStack.pop();
@@ -438,10 +378,9 @@ public class V implements Globals {
   /**
    * Pop color from stack
    */
+  @Deprecated
   public static void popColor() {
-    Color nc = (Color) popValue(ST_COLOR);
-    if (nc != null)
-      g.setColor(nc);
+    throw notSupported();
   }
 
   private static Object popValue() {
@@ -486,16 +425,12 @@ public class V implements Globals {
    *          new color
    */
   public static void pushColor(Color c, Color defaultColor) {
-    if (c == null)
-      c = defaultColor;
-
-    if (c != null) {
-      plotStack.push(g.getColor());
-      setColor(c);
-    } else {
-      plotStack.push(ST_IGNORE);
+    if (c == null) {
+      checkArgument(defaultColor != null);
     }
+    plotStack.push(g.getColor());
     plotStack.push(ST_COLOR);
+    setColor(c);
   }
 
   // graphics being updated by updateView()
@@ -574,11 +509,11 @@ public class V implements Globals {
    * Save current stroke on stack, set to new
    */
   public static void pushStroke(int s, int defaultStroke) {
-
-    if (s < 0)
+    if (s < 0) {
       s = defaultStroke;
-    if (s < 0)
-      badArg("Not sure whether this is supported; default stroke is neg");
+      if (defaultStroke < 0)
+        notSupported();
+    }
     pushStroke(strokes[s]);
   }
 

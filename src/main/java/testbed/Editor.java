@@ -1877,8 +1877,8 @@ public class Editor implements Globals, IEditorScript {
       V.pushColor(c);
       V.pushScale(.7);
       V.draw(label, x, y, box ? TX_BGND | TX_FRAME : 0);
-      V.popScale();
-      V.popColor();
+      V.pop(); // scale
+      V.pop(); // color
     }
   }
 

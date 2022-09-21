@@ -335,9 +335,15 @@ public class AlgorithmStepper implements Globals {
       String msg = tr.getMessage();
       if (!msg.isEmpty()) {
         V.pushColor(MyColor.get(MyColor.RED, .32));
-        V.draw(msg, new FPoint2(-20000, 20000) // it will clamp this into range on the bottom left
-            , TX_BGND | TX_FRAME | TX_CLAMP | 80);
-        V.pop( );
+        // Modify transform so we ignore the view's page location and scale factor
+        Graphics2D g = V.get2DGraphics();
+        AffineTransform savedTransform = g.getTransform();
+        float scl = 1.8f;
+        g.setTransform(AffineTransform.getScaleInstance(scl, scl));
+        V.draw(msg, -20000, 20000, // it will clamp this into range on the bottom left
+            TX_BGND | TX_FRAME | TX_CLAMP | 80);
+        g.setTransform(savedTransform);
+        V.pop();
       }
     }
     V.cleanUpRender();
@@ -566,7 +572,7 @@ public class AlgorithmStepper implements Globals {
         markType = this.markType;
       V.pushColor(c);
       V.mark(new FPoint2(v.x(), v.y()), markType);
-      V.popColor();
+      V.pop();
     }
   }
 
