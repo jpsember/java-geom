@@ -3,8 +3,10 @@ package testbed;
 import base.Tools;
 import js.base.BasePrinter;
 import js.geometry.IPoint;
+import js.geometry.IRect;
 import js.graphics.AbstractScriptElement;
 import js.graphics.PointElement;
+import js.graphics.RectElement;
 
 import static js.base.Tools.*;
 
@@ -53,8 +55,10 @@ public final class AlgorithmException extends RuntimeException {
           se = (AbstractScriptElement) obj;
         } else if (obj instanceof IPoint) {
           se = new PointElement(null, (IPoint) obj);
+        } else if (obj instanceof IRect) {
+          se = new RectElement(null, (IRect) obj);
         } else if (!(obj instanceof String))
-          todo("convert IRect, IPoint, etc to appropriate objects");
+          todo("convert IRect, IPoint, etc to appropriate objects;", obj.getClass().getName());
       }
       if (se != null)
         mPlotables.add(se);

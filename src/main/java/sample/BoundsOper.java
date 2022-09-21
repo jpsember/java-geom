@@ -12,6 +12,7 @@ import geom.elem.EditablePointElement;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
 import js.geometry.IPoint;
+import js.geometry.IRect;
 import js.graphics.PointElement;
 import js.graphics.ScriptElement;
 import testbed.*;
@@ -52,8 +53,11 @@ public class BoundsOper implements TestBedOperation, Globals {
         points.add(elem.location());
     }
 
+    mBounds = null;
+
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
 
+    // This is an 'unguarded' call to s.msg():
     s.msg("algorithm step 1");
 
     // We don't need to call s.update(), but we can do so, as an optimization, if we 
@@ -66,13 +70,17 @@ public class BoundsOper implements TestBedOperation, Globals {
       s.msg("guarded update call");
 
     for (IPoint pt : points) {
-
-      // These are 'unguarded' calls to s.msg():
-      //
-      s.msg("input point", pt);
+      if (mBounds == null) {
+        mBounds = new IRect(pt.x, pt.y, 0, 0);
+        s.msg("initial point", pt, mBounds);
+      } else {
+        mBounds = mBounds.including(pt);
+        s.msg("next point", pt, mBounds);
+      }
     }
 
     s.msg("algorithm step 2");
+    todo("have ability for rendering stuff after algorithm steps have concluded (even if interrupted)");
   }
 
   @Override
@@ -101,4 +109,6 @@ public class BoundsOper implements TestBedOperation, Globals {
     editor().perform(b);
     editor().performRepaint(GeomApp.REPAINT_EDITOR);
   }
+
+  private IRect mBounds;
 }

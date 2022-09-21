@@ -338,9 +338,15 @@ public class AlgorithmStepper implements Globals {
    * then the next call to msg() would have no effect
    */
   public boolean update() {
-    // Discard any older decision, in case user didn't consume it via msg()
-    mStepDecision = null;
-    return auxUpdate();
+    auxUpdate();
+    boolean result = mStepDecision;
+
+    // If decision is false, discard it (but return false),  so subsequent calls to
+    // update() or msg() increment the algorithm step and recalculate the decision value
+    //
+    if (!result)
+      mStepDecision = null;
+    return result;
   }
 
   /**
