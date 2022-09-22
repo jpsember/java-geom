@@ -16,8 +16,7 @@ class CtButton
    public boolean serialized() { return false; }
 
   public CtButton(int id, Action a) {
-    this.dataType = DT_STRING;
-
+    setDataType(DT_STRING);
     setId(id);
     b = new JButton(a);
     setComponent( b);

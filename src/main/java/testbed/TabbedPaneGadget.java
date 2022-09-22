@@ -70,8 +70,7 @@ class TabbedPaneGadget extends Gadget {
 //      Tools.warn("vert");
 //      vertical = false;
 //    }
-    
-    this.dataType = DT_INT;
+    setDataType(DT_INT);
     this.setId(id);
     JTabbedPane tabPane = new JTabbedPane(vertical ? JTabbedPane.TOP
         : JTabbedPane.LEFT);

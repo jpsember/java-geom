@@ -18,19 +18,21 @@ class CtComboBox extends Gadget implements ActionListener {
   /**
    * Constructor
    * 
-   * @param id : id of gadget.  The value of this gadget will be
-   *  the id of the selected item
-   * @param label : label for gadget (if not null, encloses gadget in
-   *   frame with label)
-   * @param asRadio : if true, appears as a radio button group
+   * @param id
+   *          : id of gadget. The value of this gadget will be the id of the
+   *          selected item
+   * @param label
+   *          : label for gadget (if not null, encloses gadget in frame with
+   *          label)
+   * @param asRadio
+   *          : if true, appears as a radio button group
    */
   public CtComboBox(int id, String label, String toolTip, boolean asRadio) {
     setId(id);
-    dataType = DT_INT;
+    setDataType(DT_INT);
 
     if (db) {
-      System.out.println("CtComboBox constructor, id=" + id + " label=" + label
-          + " asRadio=" + asRadio);
+      System.out.println("CtComboBox constructor, id=" + id + " label=" + label + " asRadio=" + asRadio);
     }
 
     if (asRadio) {
@@ -65,22 +67,18 @@ class CtComboBox extends Gadget implements ActionListener {
 
   /**
    * Add an item to the combo box
+   * 
    * @param itemid
    * @param field
    */
   public void addItem(int itemid, String field) {
     if (db) {
-      System.out
-          .println("CtComboBox addField id=" + itemid + " label=" + field);
+      System.out.println("CtComboBox addField id=" + itemid + " label=" + field);
     }
     CtComboBoxItem ci = new CtComboBoxItem(itemid);
     ci.writeValue(field);
-    children.addInt(itemid);
+    children().add(itemid);
     C.list.add(ci);
-
-    if (db)
-      Streams.out.println("added child " + ci + ", id=" + itemid + " to "
-          + this + ", nchildren now " + this.nChildren0());
     cbox.addItem(ci);
   }
 
@@ -95,27 +93,28 @@ class CtComboBox extends Gadget implements ActionListener {
   }
 
   /**
-   * Get the value of the comboBox as an Integer containing
-   * the id of the selected item, or -1 if no items are selected
+   * Get the value of the comboBox as an Integer containing the id of the
+   * selected item, or -1 if no items are selected
+   * 
    * @return Object
    */
   public Object readValue() {
     Object ret = new Integer(cbox.getSelectedId());
     if (db)
-      Streams.out.println("CtComboBox " + getId() + " readValue, returning "
-          + ret);
+      Streams.out.println("CtComboBox " + getId() + " readValue, returning " + ret);
     return ret;
   }
 
   /**
    * Set the value by changing the selected item
-   * @param v : an Integer containing the id to select
+   * 
+   * @param v
+   *          : an Integer containing the id to select
    */
   public void writeValue(Object v) {
     int itemId = ((Integer) v).intValue();
     if (db)
-      Streams.out.println("CtComboBox " + getId() + " writeValue " + v
-          + ", setting selected id " + itemId);
+      Streams.out.println("CtComboBox " + getId() + " writeValue " + v + ", setting selected id " + itemId);
     cbox.setSelectedId(itemId);
   }
 
@@ -130,16 +129,17 @@ class CtComboBox extends Gadget implements ActionListener {
     }
 
     /**
-    * Get string describing object
-    * @return String
-    */
+     * Get string describing object
+     * 
+     * @return String
+     */
     public String toString() {
       return readValue().toString();
     }
 
     public CtComboBoxItem(int id) {
       setId(id);
-      dataType = DT_STRING;
+      setDataType(DT_STRING);
     }
 
     private AbstractButton button;
@@ -167,23 +167,8 @@ class CtComboBox extends Gadget implements ActionListener {
     public abstract Component getComponent();
 
     public int idToIndex(int id) {
-      int ret = -1;
-
-      for (int i = 0; i < parent.nChildren0(); i++) {
-        if (parent.child0(i) == id) {
-          ret = i;
-          break;
-        }
-      }
-      return ret;
+      return parent.children().indexOf(id);
     }
-
-//    public int indexToId(int index) {
-//      int ret = -1;
-//      if (index >= 0 && index < parent.nChildren0())
-//        ret = parent.child0(index);
-//      return ret;
-//    }
 
     public abstract void setSelectedId(int id);
 
@@ -226,8 +211,7 @@ class CtComboBox extends Gadget implements ActionListener {
 
     public void setSelectedId(int id) {
       if (db)
-        Streams.out.println("setSelectedId=" + id + ", idToIndex="
-            + idToIndex(id));
+        Streams.out.println("setSelectedId=" + id + ", idToIndex=" + idToIndex(id));
 
       c.setSelectedIndex(idToIndex(id));
     }
@@ -269,7 +253,7 @@ class CtComboBox extends Gadget implements ActionListener {
         b.setToolTipText(toolTip);
 
       bgroup.add(b);
-      GridBagConstraints gc = GC.gc(0, parent.nChildren0() - 1, 1, 1, 0, 0);
+      GridBagConstraints gc = GC.gc(0, parent.children().size() - 1, 1, 1, 0, 0);
       cpanel.add(b, gc);
     }
 
@@ -300,8 +284,7 @@ class CtComboBox extends Gadget implements ActionListener {
       }
       this.selectedId = id;
       if (listener != null)
-        listener.actionPerformed(new ActionEvent(cbox, cbox.getId(),
-            "radio button selected"));
+        listener.actionPerformed(new ActionEvent(cbox, cbox.getId(), "radio button selected"));
 
     }
 
@@ -311,8 +294,7 @@ class CtComboBox extends Gadget implements ActionListener {
 
   }
 
-  private static class MyRadioButton extends JRadioButton implements
-      ActionListener {
+  private static class MyRadioButton extends JRadioButton implements ActionListener {
     private myRadioSet radioSet;
 
     private int id;

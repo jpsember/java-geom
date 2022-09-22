@@ -36,7 +36,7 @@ class CtTextFieldNew extends Gadget implements ActionListener {
    */
   public CtTextFieldNew(int id, String label, String value, int maxStrLen, boolean fixedWidth) {
     setId(id);
-    dataType = DT_STRING;
+    setDataType(DT_STRING);
 
     boolean readOnly = (label != null && label.startsWith("!"));
 

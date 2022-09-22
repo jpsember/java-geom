@@ -16,8 +16,7 @@ class CtCheckBox extends Gadget {
    */
   public CtCheckBox(int id, String label, boolean value, boolean inMenu,
       String toolTip, KeyStroke accel) {
-    setId(id);
-    this.dataType = DT_BOOL;
+    setId(id); setDataType(DT_BOOL);
     Action a = Gadget.createAction(id, label, toolTip, accel);
 
     if (inMenu) {

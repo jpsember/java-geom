@@ -130,7 +130,7 @@ class GadgetList implements IEditorScript, Comparator {
   public void setValue(int id, int v) {
     Object val = null;
     Gadget g = get(id);
-    if (g.dataType == Gadget.DT_STRING) {
+    if (g.dataType() == Gadget.DT_STRING) {
       val = Integer.toString(v);
     } else
       val = new Integer(v);
@@ -332,7 +332,7 @@ class GadgetList implements IEditorScript, Comparator {
 
       sb.append(g.getId());
       sb.append(' ');
-      switch (g.dataType) {
+      switch (g.dataType()) {
       case Gadget.DT_BOOL:
         sb.append(Tools.f(((Boolean) v).booleanValue()));
         break;
@@ -383,7 +383,7 @@ class GadgetList implements IEditorScript, Comparator {
         Object v = null;
         Gadget g = get(id);
         //pr("restoring widget value for:", id, "type:", g.dataType);
-        switch (g.dataType) {
+        switch (g.dataType()) {
         case Gadget.DT_BOOL:
           v = new Boolean(tk.readBoolean());
           break;
@@ -405,7 +405,7 @@ class GadgetList implements IEditorScript, Comparator {
             if (alert("special test")) {
               pr("restored value:", v);
               v = 98;
-              pr("replacing with:",v);
+              pr("replacing with:", v);
             }
           }
           break;
