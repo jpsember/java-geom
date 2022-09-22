@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import static js.base.Tools.*;
 
 /**
  * ComboBox gadget.
@@ -28,8 +29,7 @@ class CtComboBox extends Gadget implements ActionListener {
    *          : if true, appears as a radio button group
    */
   public CtComboBox(int id, String label, String toolTip, boolean asRadio) {
-    setId(id);
-    setDataType(DT_INT);
+    super(id, DT_INT);
 
     if (db) {
       System.out.println("CtComboBox constructor, id=" + id + " label=" + label + " asRadio=" + asRadio);
@@ -124,6 +124,7 @@ class CtComboBox extends Gadget implements ActionListener {
    * Child items
    */
   private static class CtComboBoxItem extends Gadget {
+
     public boolean serialized() {
       return false;
     }
@@ -138,16 +139,25 @@ class CtComboBox extends Gadget implements ActionListener {
     }
 
     public CtComboBoxItem(int id) {
-      setId(id);
-      setDataType(DT_STRING);
+      super(id, DT_STRING);
     }
 
     private AbstractButton button;
 
-    //
+    @Override
+    public Integer readValue() {
+      throw notFinished();
+    }
+
+    @Override
+    public void writeValue(Object boxIndex) {
+      throw notFinished();
+    }
+
     public void setButton(AbstractButton b) {
       this.button = b;
     }
+
   }
 
   private abstract static class IComboBox {

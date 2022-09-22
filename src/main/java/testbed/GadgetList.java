@@ -228,12 +228,6 @@ class GadgetList implements IEditorScript, Comparator {
     return f;
   }
 
-  public void free(int id) {
-    Gadget f = get(id);
-    set.remove(f);
-    f.setId(0);
-  }
-
   public void add(Gadget c) {
 
     int id = c.getId();

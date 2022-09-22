@@ -7,28 +7,29 @@ import java.awt.GridBagConstraints;
 /**
  * Button gadget
  */
-class CtButton
-    extends Gadget  {
+class CtButton extends Gadget {
 
   public int gcFill() {
-     return GridBagConstraints.HORIZONTAL;
-   }
-   public boolean serialized() { return false; }
+    return GridBagConstraints.HORIZONTAL;
+  }
+
+  public boolean serialized() {
+    return false;
+  }
 
   public CtButton(int id, Action a) {
-    setDataType(DT_STRING);
-    setId(id);
+    super(id, DT_STRING);
     b = new JButton(a);
-    setComponent( b);
+    setComponent(b);
   }
+
   public void writeValue(Object v) {
-    b.setText((String)v);
+    b.setText((String) v);
   }
 
   public Object readValue() {
     return b.getText();
   }
+
   private JButton b;
 }
-
-

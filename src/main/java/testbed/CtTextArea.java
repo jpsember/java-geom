@@ -34,7 +34,7 @@ class CtTextArea extends Gadget {
    */
   public CtTextArea(int id, String title, int titleAlignment, String value,
       int rows, int columns, boolean fixedWidth) {
-    setId(id);
+    super(id,DT_STRING);
 
     JTextArea cj = new JTextArea(value);
 

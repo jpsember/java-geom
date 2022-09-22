@@ -3,24 +3,28 @@ package testbed;
 import base.*;
 import javax.swing.*;
 import java.awt.*;
+import static js.base.Tools.*;
 
 /**
  * Label gadget
  */
 class CtLabel extends Gadget {
+
   public boolean serialized() {
     return false;
   }
 
   /**
    * Constructor
-   * @param colWidth  0 if not multiline, >0 for max # characters per column
-   *  for multiline
-   * @param label String
+   * 
+   * @param colWidth
+   *          0 if not multiline, >0 for max # characters per column for
+   *          multiline
+   * @param label
+   *          String
    */
   public CtLabel(int id, int colWidth, String label) {
-
-    this.setId(id);
+    super(id, DT_STRING); // datatype isn't used though
     JComponent c = null;
 
     if (colWidth == 0) {
@@ -39,6 +43,16 @@ class CtLabel extends Gadget {
       c = p;
     }
     setComponent(c);
+  }
+
+  @Override
+  public Object readValue() {
+    throw notFinished();
+  }
+
+  @Override
+  public void writeValue(Object v) {
+    throw notFinished();
   }
 
 }

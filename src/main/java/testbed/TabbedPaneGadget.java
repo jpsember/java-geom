@@ -9,8 +9,8 @@ class TabbedPaneGadget extends Gadget {
   static final boolean db = false;
 
   /**
-   * Read value.
-   * Returns the current pane's identifier.
+   * Read value. Returns the current pane's identifier.
+   * 
    * @return Object integer
    */
   public Object readValue() {
@@ -31,8 +31,10 @@ class TabbedPaneGadget extends Gadget {
 
   /**
    * Write value: set selected tabbed pane
-   * @param v integer; if >= ID_BASE, assumes it's an id of an item; otherwise,
-   * assumes it's an index
+   * 
+   * @param v
+   *          integer; if >= ID_BASE, assumes it's an id of an item; otherwise,
+   *          assumes it's an index
    */
   public void writeValue(Object v) {
     if (db)
@@ -60,22 +62,19 @@ class TabbedPaneGadget extends Gadget {
 
   /**
    * Constructor
-   * @param vertical true if vertical stack
-   * @param tabbed true if a tab panel
-   * @param destContainer   if not null, existing component that will
-   *  contain this stack's elements; it is assumed to use GridBagLayout
+   * 
+   * @param vertical
+   *          true if vertical stack
+   * @param tabbed
+   *          true if a tab panel
+   * @param destContainer
+   *          if not null, existing component that will contain this stack's
+   *          elements; it is assumed to use GridBagLayout
    */
   public TabbedPaneGadget(boolean vertical, int id) {
-//    if (true) {
-//      Tools.warn("vert");
-//      vertical = false;
-//    }
-    setDataType(DT_INT);
-    this.setId(id);
-    JTabbedPane tabPane = new JTabbedPane(vertical ? JTabbedPane.TOP
-        : JTabbedPane.LEFT);
+    super(id, DT_INT);
+    JTabbedPane tabPane = new JTabbedPane(vertical ? JTabbedPane.TOP : JTabbedPane.LEFT);
     tabPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
-  //  Tools.warn("tab layout="+tabPane.getTabLayoutPolicy());
     tabPane.addChangeListener(this);
     setComponent(tabPane);
   }
@@ -86,9 +85,12 @@ class TabbedPaneGadget extends Gadget {
 
   /**
    * Add a tab to the panel
-   * @param title title of tab
-   * @param pnlId identifier to assign this tab; if < ID_BASE, uses the 
-   *   tab index as its id
+   * 
+   * @param title
+   *          title of tab
+   * @param pnlId
+   *          identifier to assign this tab; if < ID_BASE, uses the tab index as
+   *          its id
    * @param component
    */
   public void addTab(String title, int pnlId, Component component) {

@@ -15,9 +15,24 @@ import java.util.List;
  */
 abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener {
 
+  public static final int DT_STRING = 0, DT_INT = 1, DT_DOUBLE = 2, DT_BOOL = 3;
+
   public static final int TEST_GADGET = 1801;
 
-  public void stateChanged(ChangeEvent changeEvent) {
+  public Gadget(int id, int dataType) {
+    mId = id;
+    mDataType = dataType;
+  }
+
+  public final int getId() {
+    return mId;
+  }
+
+  public final int dataType() {
+    return mDataType;
+  }
+
+  public final void stateChanged(ChangeEvent changeEvent) {
     loadTools();
     TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
   }
@@ -26,25 +41,11 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
   // PropertyChangeListener interface
   // ------------------------------------------------------
 
-  public void propertyChange(PropertyChangeEvent e) {
+  public final void propertyChange(PropertyChangeEvent e) {
     TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
   }
 
-  public static final int DT_STRING = 0, DT_INT = 1, DT_DOUBLE = 2, DT_BOOL = 3;
-
-  public int dataType() {
-    if (mDataType < 0)
-      throw badState("no datatype for:", id);
-    return mDataType;
-  }
-
-  public void setDataType(int datatype) {
-    if (mDataType >= 0)
-      badState("datatype already set for:", id);
-    mDataType = datatype;
-  }
-
-  public List<Integer> children() {
+  public final List<Integer> children() {
     return mChildIds;
   }
 
@@ -56,50 +57,19 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
     return action;
   }
 
-  /**
-   * Get the id assigned to this component
-   */
-  public int getId() {
-    return this.id;
-  }
+  public abstract Object readValue();
 
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  /**
-   * Get the value stored in this component
-   * 
-   * @return Object : a String, Double, Integer, etc.
-   */
-  public Object readValue() {
-    if (id == TEST_GADGET) {
-      pr("readValue, returning:", value);
-    }
-    return value;
-  }
-
-  /**
-   * Store a new value to this component
-   * 
-   * @param v
-   *          : a String, Double, Integer, etc.
-   */
-  public void writeValue(Object v) {
-    this.value = v;
-  }
+  public abstract void writeValue(Object v);
 
   /**
    * Get Swing component associated with gadget
-   * 
-   * @return Component
    */
   public Component getComponent() {
-    return this.component;
+    return mComponent;
   }
 
   public void setComponent(Component c) {
-    this.component = c;
+    mComponent = c;
   }
 
   /**
@@ -163,12 +133,10 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
 
   }
 
-  private Component component;
-  private int id;
-  private Object value;
-
+  private final int mId;
   // type of data (DT_xxx)
-  private int mDataType = -1;
+  private final int mDataType;
+  private Component mComponent;
   // list of child controls
   private List<Integer> mChildIds = arrayList();
 
