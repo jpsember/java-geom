@@ -8,10 +8,11 @@ import static js.base.Tools.*;
 import java.awt.*;
 
 class CtSpinner extends Gadget {
-  private static final boolean db = false;
+
+  private static final boolean db = true && alert("debug printing in effect");
 
   public int gcFill() {
-    if (isSlider) {
+    if (mIsSlider) {
       return GridBagConstraints.HORIZONTAL;
     }
     return super.gcFill();
@@ -26,7 +27,7 @@ class CtSpinner extends Gadget {
     StringBuilder sb = new StringBuilder();
     sb.append("CtSpinner");
     sb.append(" id=" + getId());
-    sb.append(" slider=" + Tools.f(isSlider));
+    sb.append(" slider=" + Tools.f(mIsSlider));
     return sb.toString();
   }
 
@@ -36,44 +37,37 @@ class CtSpinner extends Gadget {
       pr("...writing value:", v);
     }
     if (db) {
-      Streams.out.println("writing value " + v + " to CtSpinner " + this);
+      pr("writing value", v, "to CtSpinner", this);
     }
 
-    if (isSlider) {
-      ((mySlider) comp).writeValue(v);
+    if (mIsSlider) {
+      ((mySlider) mComponent).writeValue(v);
     } else {
-      ((mySpinner) comp).writeValue(v);
+      ((mySpinner) mComponent).writeValue(v);
     }
   }
 
   public Object readValue() {
-    if (db) {
-      Streams.out.println("reading value from CtSpinner " + this);
-    }
-    if (isSlider) {
-      return ((mySlider) comp).readValue();
+    Object result;
+    if (mIsSlider) {
+      result = ((mySlider) mComponent).readValue();
     } else {
-      return ((mySpinner) comp).readValue();
+      result = ((mySpinner) mComponent).readValue();
     }
+    if (db)
+      pr("reading value from CtSpinner", this, result);
+    return result;
   }
-
-  private Component comp;
 
   public void setEnabled(GadgetList gl, boolean state) {
-    comp.setEnabled(state);
+    mComponent.setEnabled(state);
   }
 
-  static int k;
   public CtSpinner(int id, String label, double dmin, double dmax, double dvalue, double step,
       boolean sliderFlag, boolean withTicks, boolean dbl) {
-
     pr("constructing CtSpinner, id:", id, "label:", label);
-if (id == TEST_GADGET) {
-  pr("constructed test gadget spinner;",INDENT,ST);
-checkState(k++ == 0);
-}
-this.dataType = dbl ? DT_DOUBLE : DT_INT;
-    this.isSlider = sliderFlag;
+    this.dataType = dbl ? DT_DOUBLE : DT_INT;
+    this.mIsSlider = sliderFlag;
     setId(id);
     if (db) {
       Streams.out.println("constructing CtSpinner " + this);
@@ -94,7 +88,7 @@ this.dataType = dbl ? DT_DOUBLE : DT_INT;
       if (label != null) {
         panel.add(new JLabel(label));
       }
-      comp = c1;
+      mComponent = c1;
       panel.add(c1);
     } else {
       BoxLayout layout = new BoxLayout(panel, BoxLayout.X_AXIS);
@@ -161,13 +155,11 @@ this.dataType = dbl ? DT_DOUBLE : DT_INT;
 
         }
       }
-      comp = cs;
+      mComponent = cs;
       panel.add(cs);
     }
     setComponent(panel);
   }
-
-  private boolean isSlider;
 
   private class mySpinner extends JSpinner implements GadgetComponent {
 
@@ -199,7 +191,7 @@ this.dataType = dbl ? DT_DOUBLE : DT_INT;
     public void writeValue(Object v) {
       SpinnerNumberModel m = (SpinnerNumberModel) getModel();
       if (!dblFlag) {
-        pr("....writing value:", v, "to spinner number model, id",getGadget().getId());
+        pr("....writing value:", v, "to spinner number model, id", getGadget().getId());
         m.setValue(v);
       } else {
         double vd = ((Double) v).doubleValue();
@@ -283,4 +275,8 @@ this.dataType = dbl ? DT_DOUBLE : DT_INT;
     }
 
   }
+
+  private boolean mIsSlider;
+  private Component mComponent;
+
 }
