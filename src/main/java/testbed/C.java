@@ -673,7 +673,7 @@ public class C implements Globals {
     return anonIdBase++;
   }
 
-  static void parseGadgets(Tokenizer tk) {
+ public static void parseGadgets(Tokenizer tk) {
     if (tk.peek(IEditorScript.T_BROP)) {
       list.setValues(tk);
       todo("readGadgetGUIValues");
@@ -687,7 +687,7 @@ public class C implements Globals {
    * @param configContext true if writing configuration file, false if writing
    *   editor file header
    */
-  static void printGadgets(PrintWriter pw, boolean configContext) {
+  public static void printGadgets(PrintWriter pw, boolean configContext) {
     todo("write gadget values");
 //    TestBed.app.writeGadgetGUIValues();
     String s = list.getValues(configContext);

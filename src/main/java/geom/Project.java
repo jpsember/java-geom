@@ -27,6 +27,7 @@ package geom;
 import java.io.File;
 import java.util.*;
 
+import geom.gen.ProjectState;
 import js.base.BaseObject;
 import js.data.DataUtil;
 import js.file.Files;
@@ -48,17 +49,21 @@ public final class Project extends BaseObject {
 
   public Project(File directory) {
     mDirectory = directory;
-    mProjectFile = isDefault() ? null : ScriptUtil.projectFileForProject(directory);
+    mProjectFile = isDefault() ? null : AppDefaults.projectFileForProject(directory);
   }
 
+  /**
+   * Read the ProjectState
+   * 
+   * @param projectForDefaultStateOrNull
+   *          If there is no state file yet for this project, and this is not
+   *          null and it exists, use this project state as the default
+   */
   private ProjectState readProjectState(File projectForDefaultStateOrNull) {
-    log("readProjectState, directory:", directory());
-    log("projectForDefaultStateOrNull:", Files.infoMap(projectForDefaultStateOrNull));
-
     ProjectState projectState = null;
 
     {
-      File stateFile = ScriptUtil.projectFileForProject(directory());
+      File stateFile = mProjectFile;
       if (stateFile.exists()) {
         log("parsing state from existing state file:", stateFile);
         try {
@@ -78,7 +83,7 @@ public final class Project extends BaseObject {
     if (projectState == null) {
       log("project state is null");
       if (Files.nonEmpty(projectForDefaultStateOrNull)) {
-        File stateFile = ScriptUtil.projectFileForProject(projectForDefaultStateOrNull);
+        File stateFile = AppDefaults.projectFileForProject(projectForDefaultStateOrNull);
         if (verbose())
           log("looking for template state in:", Files.infoMap(projectForDefaultStateOrNull));
         if (stateFile.exists()) {
@@ -97,7 +102,10 @@ public final class Project extends BaseObject {
   }
 
   public void open(File projectForDefaultStateOrNull) {
-    log("Project.open, dir:", directory(), INDENT, "projForDefState:", projectForDefaultStateOrNull);
+    ensureDefined();
+    log("Project.open, dir:", directory(), INDENT, "projectForDefaultStateOrNull:",
+        projectForDefaultStateOrNull);
+
     mProjectState = readProjectState(projectForDefaultStateOrNull).toBuilder();
     buildScriptList();
 

@@ -4,9 +4,12 @@ import static js.base.Tools.*;
 
 import java.awt.Graphics2D;
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 
 import geom.gen.Command;
+import geom.gen.ProjectState;
 import geom.oper.*;
 import js.file.Files;
 import js.guiapp.GUIApp;
@@ -15,6 +18,8 @@ import js.guiapp.RecentFiles;
 import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
+import testbed.C;
+import testbed.Tokenizer;
 
 import static geom.GeomTools.*;
 
@@ -101,6 +106,7 @@ public abstract class GeomApp extends GUIApp {
 
     project.open(recentProjects().getMostRecentFile());
     mCurrentProject = project;
+    restoreWidgetsState(projectState().widgetsState());
     recentProjects().setCurrentFile(project.directory());
     AppDefaults.sharedInstance().edit().recentProjects(recentProjects().state());
     rebuildFrameContent();
@@ -118,6 +124,8 @@ public abstract class GeomApp extends GUIApp {
     // and to make sure the keyboard shortcuts work (something to do with focus?)
     //
     performRepaint(REPAINT_ALL);
+    
+    pr("opening project, test gadget value:",C.vi(1801));
   }
 
   public final void openAppropriateProject() {
@@ -144,7 +152,7 @@ public abstract class GeomApp extends GUIApp {
       return;
     // Store the app frame location, in case it has changed
     projectState().appFrame(appFrame().bounds());
-    todo("write widget values into this structure");
+    projectState().widgetsState(compileWidgetsState());
     currentProject().flush();
   }
 
@@ -400,4 +408,21 @@ public abstract class GeomApp extends GUIApp {
 
   private int mTaskTicker;
 
+  // ------------------------------------------------------------------
+  // Persisting widgets state
+  // ------------------------------------------------------------------
+
+  private String compileWidgetsState() {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    C.printGadgets(pw, true);
+    return sw.toString();
+  }
+
+  private void restoreWidgetsState(String s) {
+    todo("catch exceptions here");
+      Tokenizer tk = new Tokenizer(s, true);
+      C.parseGadgets(tk);
+  }
+  
 }

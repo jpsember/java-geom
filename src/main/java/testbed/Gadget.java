@@ -15,6 +15,8 @@ import java.beans.*;
  */
 abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener {
 
+  public static final int TEST_GADGET = 1801;
+
   public void stateChanged(ChangeEvent changeEvent) {
     loadTools();
     TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
@@ -139,6 +141,9 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
    * @return Object : a String, Double, Integer, etc.
    */
   public Object readValue() {
+    if (id == TEST_GADGET) {
+      pr("readValue, returning:", value);
+    }
     return value;
   }
 

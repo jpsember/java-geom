@@ -31,10 +31,52 @@ import geom.gen.GeomAppDefaults;
 import static js.base.Tools.*;
 
 import js.base.BaseObject;
+import js.data.DataUtil;
 import js.file.Files;
-import js.graphics.ScriptUtil;
+import js.parsing.RegExp;
 
 public final class AppDefaults extends BaseObject {
+
+  /**
+   * Get directory containing all ephemeral configuration files for this app.
+   * 
+   * This includes the project-wide defaults file ("app_defaults.json"), as well
+   * as project-specific defaults, which include the path relative to the home
+   * directory in the filename
+   */
+  public static File projectsConfigurationDirectory() {
+    if (sProjectsConfigurationDirectory == null) {
+      String appName = GeomApp.singleton().name();
+      checkArgument(RegExp.patternMatchesString("\\w+", appName), "illegal app name:", appName);
+      String modifiedAppName = "app_defaults_" + DataUtil.convertCamelCaseToUnderscores(appName);
+      sProjectsConfigurationDirectory = new File(Files.homeDirectory(), "." + modifiedAppName);
+      Files.S.mkdirs(sProjectsConfigurationDirectory);
+    }
+    return sProjectsConfigurationDirectory;
+  }
+
+  private static File sProjectsConfigurationDirectory;
+
+  /**
+   * Get project file
+   */
+  public static File projectFileForProject(File projectDirectory) {
+    File absProjDir = projectDirectory.getAbsoluteFile();
+    File homeDir = Files.homeDirectory();
+    File relativeToHome = Files.fileRelativeToDirectory(absProjDir, homeDir);
+    String subdirPath = relativeToHome.toString();
+
+    // If it is not within the home directory tree, use the absolute path instead
+    if (subdirPath.contains("..")) {
+      subdirPath = chompPrefix(absProjDir.toString(), "/");
+      alert("project directory is not within home directory; using different prefix:", absProjDir);
+    }
+    checkArgument(!subdirPath.contains(".."));
+
+    File dir = new File(projectsConfigurationDirectory(), subdirPath);
+    Files.S.mkdirs(dir);
+    return new File(dir, "project.json");
+  }
 
   // ------------------------------------------------------------------
   // Shared instance
@@ -54,7 +96,6 @@ public final class AppDefaults extends BaseObject {
 
   private AppDefaults() {
     loadTools();
-    //alertVerbose();
   }
 
   public GeomAppDefaults read() {
@@ -80,7 +121,7 @@ public final class AppDefaults extends BaseObject {
   }
 
   private File file() {
-    return new File(ScriptUtil.scriptProjectsDirectory(), "scredit_defaults.json");
+    return new File(projectsConfigurationDirectory(), "app_defaults.json");
   }
 
   private GeomAppDefaults.Builder mDefaults;

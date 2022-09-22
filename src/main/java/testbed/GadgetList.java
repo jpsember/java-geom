@@ -3,11 +3,12 @@ package testbed;
 import static base.Tools.*;
 import base.*;
 import java.util.*;
+import static js.base.Tools.*;
 
 class GadgetList implements IEditorScript, Comparator {
 
   private static final boolean WARN = false;
-  
+
   // ----------- comparator interface
   public int compare(Object object, Object object1) {
     return id(object) - id(object1);
@@ -28,8 +29,11 @@ class GadgetList implements IEditorScript, Comparator {
 
   /**
    * Enable each gadget in a list
-   * @param idList : list of ids to enable
-   * @param state : enable state to set to
+   * 
+   * @param idList
+   *          : list of ids to enable
+   * @param state
+   *          : enable state to set to
    */
   public void setEnable(int[] idList, boolean state) {
     for (int i = 0; i < idList.length; i++) {
@@ -39,7 +43,9 @@ class GadgetList implements IEditorScript, Comparator {
 
   /**
    * Read enable state of gadget
-   * @param id : gadget id
+   * 
+   * @param id
+   *          : gadget id
    * @return true if gadget is enabled
    */
   public boolean enabled(int id) {
@@ -49,8 +55,11 @@ class GadgetList implements IEditorScript, Comparator {
 
   /**
    * Set enable status of a gadget and its children
-   * @param id : gadget id
-   * @param state : true to enable, false to disable
+   * 
+   * @param id
+   *          : gadget id
+   * @param state
+   *          : true to enable, false to disable
    */
   public void setEnable(int id, boolean state) {
     Gadget c = get(id);
@@ -59,14 +68,16 @@ class GadgetList implements IEditorScript, Comparator {
 
   /**
    * Get value of integer-valued gadget
-   * @param id : id of gadget
+   * 
+   * @param id
+   *          : id of gadget
    * @return value
    */
   public int intValue(int id) {
     Gadget obj = get(id);
     if (obj == null) {
-      if  (WARN)
-      Tools.warn("no such integer-valued gadget " + id);
+      if (WARN)
+        Tools.warn("no such integer-valued gadget " + id);
       return 0;
     }
     Integer iVal = null;
@@ -77,8 +88,8 @@ class GadgetList implements IEditorScript, Comparator {
       iVal = new Integer(Integer.parseInt(v.toString()));
     }
     if (iVal == null) {
-      if  (WARN)
-         Tools.warn("gadget " + obj + " has no value");
+      if (WARN)
+        Tools.warn("gadget " + obj + " has no value");
       return 0;
     }
     return iVal.intValue();
@@ -86,20 +97,22 @@ class GadgetList implements IEditorScript, Comparator {
 
   /**
    * Get value of boolean-valued gadget
-   * @param id : id of gadget
+   * 
+   * @param id
+   *          : id of gadget
    * @return value
    */
   public boolean booleanValue(int id) {
     Gadget g = get(id);
     if (g == null) {
-      if  (WARN)
-         Tools.warn("no such boolean-valued gadget " + id);
+      if (WARN)
+        Tools.warn("no such boolean-valued gadget " + id);
       return false;
     }
     Boolean b = (Boolean) g.readValue();
     if (b == null) {
-      if  (WARN)
-          Tools.warn("boolean gadget " + g + " has no value");
+      if (WARN)
+        Tools.warn("boolean gadget " + g + " has no value");
       b = Boolean.FALSE;
     }
 
@@ -108,8 +121,11 @@ class GadgetList implements IEditorScript, Comparator {
 
   /**
    * Set value of integer-valued gadget
-   * @param id int
-   * @param v int
+   * 
+   * @param id
+   *          int
+   * @param v
+   *          int
    */
   public void setValue(int id, int v) {
     Object val = null;
@@ -123,36 +139,43 @@ class GadgetList implements IEditorScript, Comparator {
 
   /**
    * Set value of boolean-valued gadget
-   * @param id int
-   * @param v boolean
+   * 
+   * @param id
+   *          int
+   * @param v
+   *          boolean
    */
   public void setValue(int id, boolean v) {
     Gadget g = get(id);
     if (g != null)
       g.writeValue(new Boolean(v));
     else {
-      if  (WARN)
-         Tools.warn("no gadget id=" + id + " found");
+      if (WARN)
+        Tools.warn("no gadget id=" + id + " found");
     }
   }
 
   /**
    * Get value of double-valued gadget
-   * @param id : id of gadget
+   * 
+   * @param id
+   *          : id of gadget
    * @return value
    */
   public double doubleValue(int id) {
     final boolean db = false;
     if (db)
-      System.out.println("doubleValue id=" + id + " readValue is "
-          + get(id).readValue());
+      System.out.println("doubleValue id=" + id + " readValue is " + get(id).readValue());
     return ((Double) get(id).readValue()).doubleValue();
   }
 
   /**
    * Set value of double-valued gadget
-   * @param id int
-   * @param v double
+   * 
+   * @param id
+   *          int
+   * @param v
+   *          double
    */
   public void setValue(int id, double v) {
     get(id).writeValue(new Double(v));
@@ -160,7 +183,9 @@ class GadgetList implements IEditorScript, Comparator {
 
   /**
    * Get value of string-valued gadget
-   * @param id : id of gadget
+   * 
+   * @param id
+   *          : id of gadget
    * @return value
    */
   public String stringValue(int id) {
@@ -169,8 +194,11 @@ class GadgetList implements IEditorScript, Comparator {
 
   /**
    * Set value of string-valued gadget
-   * @param id int
-   * @param v String
+   * 
+   * @param id
+   *          int
+   * @param v
+   *          String
    */
   public void setValue(int id, String v) {
     get(id).writeValue(v);
@@ -207,27 +235,23 @@ class GadgetList implements IEditorScript, Comparator {
   }
 
   public void add(Gadget c) {
-    
-    
-    
+
     int id = c.getId();
-    
+
     //pr("GadgetList.add "+id);
-   /* 
-    if (id == 9334) {
-    pr("stack trace:\n"+stackTrace(0,12));
-    }
-   */
- 
+    /*
+     * if (id == 9334) { pr("stack trace:\n"+stackTrace(0,12)); }
+     */
+
     if (exists(id)) {
-      ASSERT(!exists(id), "Id already exists:" + id + "\n"
-          + get(id).toString());
+      ASSERT(!exists(id), "Id already exists:" + id + "\n" + get(id).toString());
     }
     set.add(c);
   }
 
   /**
    * Get string describing object
+   * 
    * @return String
    */
   public String toString() {
@@ -247,14 +271,12 @@ class GadgetList implements IEditorScript, Comparator {
     while (it.hasNext()) {
       Gadget g = (Gadget) it.next();
       int id = g.getId();
-      
+
       // skip this; it messes up saving of window locations
       /*
-      if (!configContext) {
-        if (id >= TBGlobals.CONFIGSTART && id < TBGlobals.CONFIGEND)
-          continue;
-      }
-      */
+       * if (!configContext) { if (id >= TBGlobals.CONFIGSTART && id <
+       * TBGlobals.CONFIGEND) continue; }
+       */
       ret.addInt(id);
     }
     return ret;
@@ -270,7 +292,9 @@ class GadgetList implements IEditorScript, Comparator {
 
   /**
    * Get string describing gadget values
-   * @param configContext true if configuration file, false if editor file
+   * 
+   * @param configContext
+   *          true if configuration file, false if editor file
    * @return string containing values
    */
   String getValues(boolean configContext) {
@@ -299,8 +323,7 @@ class GadgetList implements IEditorScript, Comparator {
       if (!g.serialized())
         continue;
       if (db)
-        System.out.println(" attempting to read value for id " + id + ", g=\n"
-            + g);
+        System.out.println(" attempting to read value for id " + id + ", g=\n" + g);
       v = g.readValue();
       if (db)
         System.out.println(" value " + id + " is " + v);
@@ -336,10 +359,11 @@ class GadgetList implements IEditorScript, Comparator {
   }
 
   /**
-   * Parse a sequence of gadget values.
-   * Assumes the values are surrounded by '[' and ']' tokens.
+   * Parse a sequence of gadget values. Assumes the values are surrounded by '['
+   * and ']' tokens.
    *
-   * @param tk Tokenizer
+   * @param tk
+   *          Tokenizer
    */
   public void setValues(Tokenizer tk) {
     if (tk.readIf(T_BROP)) {
@@ -358,6 +382,7 @@ class GadgetList implements IEditorScript, Comparator {
 
         Object v = null;
         Gadget g = get(id);
+        //pr("restoring widget value for:", id, "type:", g.dataType);
         switch (g.dataType) {
         case Gadget.DT_BOOL:
           v = new Boolean(tk.readBoolean());
@@ -376,10 +401,17 @@ class GadgetList implements IEditorScript, Comparator {
           break;
         case Gadget.DT_INT:
           v = new Integer(tk.readInt());
+          if (id == Gadget.TEST_GADGET) {
+            if (alert("special test")) {
+              pr("restored value:", v);
+              v = 98;
+              pr("replacing with:",v);
+            }
+          }
           break;
         }
-
         //        Streams.out.println("attempting to write value="+Tools.d(v)+" to gadget "+g);
+        //pr("writing value:", v, "to gadget:", g.getId());
         g.writeValue(v);
       }
     }

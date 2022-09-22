@@ -31,6 +31,7 @@ public class BoundsOper implements TestBedOperation, Globals {
       C.sOpen();
       C.sIntSlider(SEED, "Seed", "Random number generator seed", 0, 100, 0, 1);
       C.sNewColumn();
+      pr("...adding COUNT");
       C.sIntSpinner(COUNT, "Count", "Number to generate", 0, 100, 12, 1);
       C.sClose();
     }

@@ -2,6 +2,9 @@ package testbed;
 
 import base.*;
 import javax.swing.*;
+
+import static js.base.Tools.*;
+
 import java.awt.*;
 
 class CtSpinner extends Gadget {
@@ -28,6 +31,10 @@ class CtSpinner extends Gadget {
   }
 
   public void writeValue(Object v) {
+
+    if (getId() == TEST_GADGET) {
+      pr("...writing value:", v);
+    }
     if (db) {
       Streams.out.println("writing value " + v + " to CtSpinner " + this);
     }
@@ -56,10 +63,16 @@ class CtSpinner extends Gadget {
     comp.setEnabled(state);
   }
 
+  static int k;
   public CtSpinner(int id, String label, double dmin, double dmax, double dvalue, double step,
       boolean sliderFlag, boolean withTicks, boolean dbl) {
 
-    this.dataType = dbl ? DT_DOUBLE : DT_INT;
+    pr("constructing CtSpinner, id:", id, "label:", label);
+if (id == TEST_GADGET) {
+  pr("constructed test gadget spinner;",INDENT,ST);
+checkState(k++ == 0);
+}
+this.dataType = dbl ? DT_DOUBLE : DT_INT;
     this.isSlider = sliderFlag;
     setId(id);
     if (db) {
@@ -186,6 +199,7 @@ class CtSpinner extends Gadget {
     public void writeValue(Object v) {
       SpinnerNumberModel m = (SpinnerNumberModel) getModel();
       if (!dblFlag) {
+        pr("....writing value:", v, "to spinner number model, id",getGadget().getId());
         m.setValue(v);
       } else {
         double vd = ((Double) v).doubleValue();
@@ -226,7 +240,7 @@ class CtSpinner extends Gadget {
       offset = dmin;
       this.setMaximum((int) (range * scale));
       this.setValue((int) ((dvalue - dmin) * scale));
-
+      pr("maximum for slider:", getMaximum());
       // note: sv works out to be exactly 1
       // but this seems to be ignored by the underlying BoundedRangeModel
       int sv = (int) (step * scale);
@@ -250,6 +264,8 @@ class CtSpinner extends Gadget {
     private double offset;
 
     public void writeValue(Object v) {
+      pr("slider", getGadget().getId(), "writing value:", v);
+      todo("the actual appearance doesn't seem to be updating");
       if (dblFlag) {
         double vd = ((Double) v).doubleValue();
         getModel().setValue((int) ((vd - offset) * scale));
