@@ -78,7 +78,7 @@ class CtComboBox extends Gadget implements ActionListener {
     CtComboBoxItem ci = new CtComboBoxItem(itemid);
     ci.writeValue(field);
     children().add(itemid);
-    C.list.add(ci);
+    C.add(ci);
     cbox.addItem(ci);
   }
 

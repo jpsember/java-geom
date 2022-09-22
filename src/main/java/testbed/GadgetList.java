@@ -229,14 +229,7 @@ class GadgetList implements IEditorScript, Comparator {
   }
 
   public void add(Gadget c) {
-
     int id = c.getId();
-
-    //pr("GadgetList.add "+id);
-    /*
-     * if (id == 9334) { pr("stack trace:\n"+stackTrace(0,12)); }
-     */
-
     if (exists(id)) {
       ASSERT(!exists(id), "Id already exists:" + id + "\n" + get(id).toString());
     }

@@ -11,9 +11,11 @@ public class C implements Globals {
 
   /**
    * Add a push button gadget
+   * 
    * @param id
-   * @param label 
-   * @param toolTip if not null, tool tip to display 
+   * @param label
+   * @param toolTip
+   *          if not null, tool tip to display
    */
   public static void sButton(int id, String label, String toolTip) {
     // b <id:int> <text:label> [<tooltip:label>] 
@@ -28,15 +30,18 @@ public class C implements Globals {
   }
 
   /**
-   * Add a checkbox gadget 
+   * Add a checkbox gadget
    * 
-   * @param id   id of gadget
-   * @param label  label of gadget
-   * @param toolTip if not null, tool tip to display 
-   * @param defaultValue   initial value of gadget
+   * @param id
+   *          id of gadget
+   * @param label
+   *          label of gadget
+   * @param toolTip
+   *          if not null, tool tip to display
+   * @param defaultValue
+   *          initial value of gadget
    */
-  public static void sCheckBox(int id, String label, String toolTip,
-      boolean defaultValue) {
+  public static void sCheckBox(int id, String label, String toolTip, boolean defaultValue) {
 
     // c <id:int> [<lbl:label>] [<tooltip:label>] <defvalue:bool> 
 
@@ -61,10 +66,17 @@ public class C implements Globals {
     sNewLine();
   }
 
+  public static void add(Gadget c) {
+    list.add(c);
+  }
+
   /**
    * Adjust a gadget's enabled state
-   * @param id id of gadget
-   * @param f true to enable it
+   * 
+   * @param id
+   *          id of gadget
+   * @param f
+   *          true to enable it
    */
   public static void enable(int id, boolean f) {
     list.setEnable(id, f);
@@ -72,8 +84,11 @@ public class C implements Globals {
 
   /**
    * Adjust a series of gadget enabled states
-   * @param idList array of gadget ids
-   * @param f true to enable them
+   * 
+   * @param idList
+   *          array of gadget ids
+   * @param f
+   *          true to enable them
    */
   public static void enable(int[] idList, boolean f) {
     list.setEnable(idList, f);
@@ -81,7 +96,9 @@ public class C implements Globals {
 
   /**
    * Get (integer) value of gadget
-   * @param id  id of gadget
+   * 
+   * @param id
+   *          id of gadget
    * @return value
    */
   public static int vi(int id) {
@@ -89,9 +106,12 @@ public class C implements Globals {
   }
 
   /**
-   * Set value of (integer-valued) gadget 
-   * @param id id of gadget
-   * @param v value to set
+   * Set value of (integer-valued) gadget
+   * 
+   * @param id
+   *          id of gadget
+   * @param v
+   *          value to set
    * @return new value
    */
   public static int seti(int id, int v) {
@@ -101,7 +121,9 @@ public class C implements Globals {
 
   /**
    * Get (boolean) value of gadget
-   * @param id id of gadget
+   * 
+   * @param id
+   *          id of gadget
    * @return value
    */
   public static boolean vb(int id) {
@@ -126,8 +148,11 @@ public class C implements Globals {
 
   /**
    * Set boolean value of gadget
-   * @param id  id of gadget
-   * @param boolvalue  boolean value
+   * 
+   * @param id
+   *          id of gadget
+   * @param boolvalue
+   *          boolean value
    * @return new value
    */
   public static boolean setb(int id, boolean boolvalue) {
@@ -137,7 +162,9 @@ public class C implements Globals {
 
   /**
    * Toggle boolean value of gadget
-   * @param id  id of gadget
+   * 
+   * @param id
+   *          id of gadget
    * @return new value
    */
   public static boolean toggle(int id) {
@@ -150,7 +177,9 @@ public class C implements Globals {
 
   /**
    * Get (double) value of gadget
-   * @param id of gadget
+   * 
+   * @param id
+   *          of gadget
    * @return value
    */
   public static double vd(int id) {
@@ -159,8 +188,11 @@ public class C implements Globals {
 
   /**
    * Set double value of gadget
-   * @param id id of gadget
-   * @param v  value to set
+   * 
+   * @param id
+   *          id of gadget
+   * @param v
+   *          value to set
    * @return new value
    */
   public static double setd(int id, double v) {
@@ -170,7 +202,9 @@ public class C implements Globals {
 
   /**
    * Get (string) value of gadget
-   * @param id id of gadget
+   * 
+   * @param id
+   *          id of gadget
    * @return string value
    */
   public static String vs(int id) {
@@ -178,10 +212,13 @@ public class C implements Globals {
   }
 
   /**
-   * Set value of (string-valued) gadget 
-   * @param id id of gadget
-   * @param s object to set value to; if null, sets to empty string; otherwise,
-   *  calls object's toString() method
+   * Set value of (string-valued) gadget
+   * 
+   * @param id
+   *          id of gadget
+   * @param s
+   *          object to set value to; if null, sets to empty string; otherwise,
+   *          calls object's toString() method
    * @return new value
    */
   public static String sets(int id, Object s) {
@@ -206,7 +243,9 @@ public class C implements Globals {
 
   /**
    * Determine if a gadget with a particular id exists
-   * @param id  id of gadget
+   * 
+   * @param id
+   *          id of gadget
    * @return true if it exists
    */
   public static boolean exists(int id) {
@@ -215,7 +254,9 @@ public class C implements Globals {
 
   /**
    * Get gadget
-   * @param id : id of gadget
+   * 
+   * @param id
+   *          : id of gadget
    * @return Gadget
    */
   static Gadget get(int id) {
@@ -224,40 +265,43 @@ public class C implements Globals {
 
   /**
    * Start constructing a new script
+   * 
    * @return StringBuilder containing script
    */
   static void openScript() {
     script = new StringBuilder();
-//    if (TestBed.parms.traceScript)
-//      script.append("*\n");
+    //    if (TestBed.parms.traceScript)
+    //      script.append("*\n");
   }
 
   /**
    * Close constructed script, return as string
+   * 
    * @return String
    */
   static String closeScript() {
     String s = script.toString();
     script = null;
-    
+
     //pr("closeScript: "+s);
     return s;
   }
 
   /**
-   * Hide the next gadget to be added.
-   * A hidden gadget can still be read/written to, and its values will
-   * be saved, but it just won't show up on the screen.
+   * Hide the next gadget to be added. A hidden gadget can still be read/written
+   * to, and its values will be saved, but it just won't show up on the screen.
    */
   public static void sHide() {
     script.append(" ? ");
   }
 
   /**
-   * Optionally hide the next gadget to be added.
-   * A hidden gadget can still be read/written to, and its values will
-   * be saved, but it just won't show up on the screen.
-   * @param visible if false, hides next gadget
+   * Optionally hide the next gadget to be added. A hidden gadget can still be
+   * read/written to, and its values will be saved, but it just won't show up on
+   * the screen.
+   * 
+   * @param visible
+   *          if false, hides next gadget
    * @return visibility state of gadget
    */
   public static boolean sHide(boolean visible) {
@@ -268,6 +312,7 @@ public class C implements Globals {
 
   /**
    * Add an integer-valued spinner
+   * 
    * @param id
    * @param label
    * @param toolTip
@@ -276,8 +321,8 @@ public class C implements Globals {
    * @param defaultValue
    * @param stepSize
    */
-  public static void sIntSpinner(int id, String label, String toolTip,
-      int minValue, int maxValue, int defaultValue, int stepSize) {
+  public static void sIntSpinner(int id, String label, String toolTip, int minValue, int maxValue,
+      int defaultValue, int stepSize) {
     // s <lbl:label> <id:int> [<tooltip:label>] <min:int> <max:int> <def:int> <step:int> 
     sText('s');
     sLbl(label);
@@ -292,6 +337,7 @@ public class C implements Globals {
 
   /**
    * Add an integer-valued slider
+   * 
    * @param id
    * @param label
    * @param toolTip
@@ -300,8 +346,8 @@ public class C implements Globals {
    * @param defaultValue
    * @param stepSize
    */
-  public static void sIntSlider(int id, String label, String toolTip,
-      int minValue, int maxValue, int defaultValue, int stepSize) {
+  public static void sIntSlider(int id, String label, String toolTip, int minValue, int maxValue,
+      int defaultValue, int stepSize) {
     // sl <lbl:label> <id:int> [<tooltip:label>] <min:int> <max:int> <def:int> <step:int> 
     sText('S');
     sLblnn(label);
@@ -316,6 +362,7 @@ public class C implements Globals {
 
   /**
    * Add a spinner to manipulate a double value
+   * 
    * @param id
    * @param label
    * @param toolTip
@@ -324,8 +371,8 @@ public class C implements Globals {
    * @param defaultValue
    * @param stepSize
    */
-  public static void sDoubleSpinner(int id, String label, String toolTip,
-      double minValue, double maxValue, double defaultValue, double stepSize) {
+  public static void sDoubleSpinner(int id, String label, String toolTip, double minValue, double maxValue,
+      double defaultValue, double stepSize) {
     sText("sd");
     sLblnn(label);
     sIValue(id);
@@ -339,6 +386,7 @@ public class C implements Globals {
 
   /**
    * Add static (immutable) text to panel
+   * 
    * @param s
    */
   public static void sStaticText(String s) {
@@ -359,16 +407,21 @@ public class C implements Globals {
   }
 
   /**
-   * Add a text area.  These are not (at present) editable by the user, but
-   * their contents can be changed by the program
-   * @param id id
-   * @param label if not null, label to display
+   * Add a text area. These are not (at present) editable by the user, but their
+   * contents can be changed by the program
+   * 
+   * @param id
+   *          id
+   * @param label
+   *          if not null, label to display
    * @param toolTip
-   * @param fixedWidth if true, uses a monotone-spaced font
-   * @param defaultValue initial value of text (if null, uses empty string)
+   * @param fixedWidth
+   *          if true, uses a monotone-spaced font
+   * @param defaultValue
+   *          initial value of text (if null, uses empty string)
    */
-  public static void sTextArea(int id, String label, String toolTip,
-      boolean fixedWidth, String defaultValue) {
+  public static void sTextArea(int id, String label, String toolTip, boolean fixedWidth,
+      String defaultValue) {
     // xf <id:int> [<lbl:label>] 0 [<tooltip:label>] 0 <defaultValue:label> 
     sText(fixedWidth ? "xf" : "x");
 
@@ -383,29 +436,36 @@ public class C implements Globals {
   }
 
   /**
-   * Add a gadget that is not displayed, but is capable of storing
-   * an integer
-   * @param id id
-   * @param defaultValue default value
+   * Add a gadget that is not displayed, but is capable of storing an integer
+   * 
+   * @param id
+   *          id
+   * @param defaultValue
+   *          default value
    */
   public static void sStoreIntField(int id, int defaultValue) {
     sTextField(id, null, null, 11, true, Integer.toString(defaultValue));
   }
 
   /**
-   * Add a text field.  Currently displayed in a button, which when pressed,
-   * brings up a modal dialog box for the user to change its value.
-   * This is necessary due to conflicts with menu accelerators and other 
-   * focus-related issues.
-   * @param id id
-   * @param label if not null, label to display
+   * Add a text field. Currently displayed in a button, which when pressed,
+   * brings up a modal dialog box for the user to change its value. This is
+   * necessary due to conflicts with menu accelerators and other focus-related
+   * issues.
+   * 
+   * @param id
+   *          id
+   * @param label
+   *          if not null, label to display
    * @param toolTip
-   * @param maxLength maximum length of text; any user edits will be truncated
-   *   to fit within this limit
-   * @param defaultValue initial value of text (if null, uses empty string)
+   * @param maxLength
+   *          maximum length of text; any user edits will be truncated to fit
+   *          within this limit
+   * @param defaultValue
+   *          initial value of text (if null, uses empty string)
    */
-  public static void sTextField(int id, String label, String toolTip,
-      int maxLength, boolean fixedWidth, String defaultValue) {
+  public static void sTextField(int id, String label, String toolTip, int maxLength, boolean fixedWidth,
+      String defaultValue) {
     // t  [<label:label>] <id:int> [<tooltip:label>] <maxlen:int> <value:label>
     // tf [<label:label>] <id:int> [<tooltip:label>] <maxlen:int> <value:label>
 
@@ -430,9 +490,11 @@ public class C implements Globals {
   }
 
   /**
-   * Open a nested panel within the current panel.
-   * Must be balanced by a call to sClose().
-   * @param title if not null, surrounds panel with title box
+   * Open a nested panel within the current panel. Must be balanced by a call to
+   * sClose().
+   * 
+   * @param title
+   *          if not null, surrounds panel with title box
    */
   public static void sOpen(String title) {
     // ( <title:label> <script> )
@@ -455,8 +517,8 @@ public class C implements Globals {
   }
 
   /**
-   * Open a nested panel within the current panel.
-   * Must be balanced by a call to sClose()
+   * Open a nested panel within the current panel. Must be balanced by a call to
+   * sClose()
    */
   public static void sOpen() {
     sOpen(null);
@@ -492,15 +554,18 @@ public class C implements Globals {
   }
 
   /**
-   * Add a combo box gadget.
-   * Must be balanced by a call to sCloseComboBox()
-   * @param id id of gadget
-   * @param label if not null, label to display 
-   * @param toolTip if not null, tooltip to display
-   * @param asRadio if true, displays choices as radio buttons instead
+   * Add a combo box gadget. Must be balanced by a call to sCloseComboBox()
+   * 
+   * @param id
+   *          id of gadget
+   * @param label
+   *          if not null, label to display
+   * @param toolTip
+   *          if not null, tooltip to display
+   * @param asRadio
+   *          if true, displays choices as radio buttons instead
    */
-  public static void sOpenComboBox(int id, String label, String toolTip,
-      boolean asRadio) {
+  public static void sOpenComboBox(int id, String label, String toolTip, boolean asRadio) {
     // cb <id:int> [<title:label>] <asradio:bool> [<tooltip:label>]
     //       ( {<id:int> <lbl:label>} )
     if (inComboBox)
@@ -518,8 +583,10 @@ public class C implements Globals {
 
   /**
    * Add a choice to a combobox
-   * @param id id of choice
-   * @param label 
+   * 
+   * @param id
+   *          id of choice
+   * @param label
    */
   public static void sChoice(int id, String label) {
     sIValue(id);
@@ -527,10 +594,11 @@ public class C implements Globals {
   }
 
   /**
-   * Open a tab set. 
-   * Must be balanced by a call to sCloseTabSet().  
-   * @param id id of set; reading the value of this gadget will return the
-   * identifier of the currently selected tab
+   * Open a tab set. Must be balanced by a call to sCloseTabSet().
+   * 
+   * @param id
+   *          id of set; reading the value of this gadget will return the
+   *          identifier of the currently selected tab
    */
   public static void sOpenTabSet(int id) {
     tabSetCount++;
@@ -541,21 +609,26 @@ public class C implements Globals {
   }
 
   /**
-   * Add a tab to the tab set (previously opened with sOpenTabSet()).
-   * Must be balanced by a call to sCloseTab().  The id of the tab will be
-   * its index within the set.
-   * @param title title of tab
+   * Add a tab to the tab set (previously opened with sOpenTabSet()). Must be
+   * balanced by a call to sCloseTab(). The id of the tab will be its index
+   * within the set.
+   * 
+   * @param title
+   *          title of tab
    */
   public static void sOpenTab(String title) {
     sOpenTab(-1, title);
   }
 
   /**
-   * Add a tab to the tabbed pane (previously opened with sOpenTabSet()).
-   * Must be balanced by a call to sCloseTab().
-   * @param id id of tab; if < TAB_ID_START, ignores this value and
-   *   uses the tab's index as the id
-   * @param title title of tab
+   * Add a tab to the tabbed pane (previously opened with sOpenTabSet()). Must
+   * be balanced by a call to sCloseTab().
+   * 
+   * @param id
+   *          id of tab; if < TAB_ID_START, ignores this value and uses the
+   *          tab's index as the id
+   * @param title
+   *          title of tab
    */
   public static void sOpenTab(int id, String title) {
     if (tabSetCount == 0)
@@ -596,8 +669,8 @@ public class C implements Globals {
   }
 
   /**
-   * Move to the next column within the current panel (previously
-   * opened with sOpen())
+   * Move to the next column within the current panel (previously opened with
+   * sOpen())
    */
   public static void sNewColumn() {
     C.script.append(" |");
@@ -610,10 +683,11 @@ public class C implements Globals {
   }
 
   /**
-   * Add a label to the script, enclosed within single quotes '....', and
-   * with appropriate escape characters
+   * Add a label to the script, enclosed within single quotes '....', and with
+   * appropriate escape characters
    * 
-   * @param label String, if null, uses empty string
+   * @param label
+   *          String, if null, uses empty string
    */
   private static void sLbl(CharSequence label) {
     if (label == null)
@@ -641,6 +715,7 @@ public class C implements Globals {
 
   /**
    * Append a string to the script
+   * 
    * @param obj
    */
   static void sAppend(Object obj) {
@@ -649,7 +724,9 @@ public class C implements Globals {
 
   /**
    * Add a script of controls to the main control panel
-   * @param script : control script
+   * 
+   * @param script
+   *          : control script
    */
   static void addControls(String script) {
     addControls(script, TBGlobals.CT_MAIN);
@@ -657,55 +734,64 @@ public class C implements Globals {
 
   /**
    * Add a script of controls to one of the panels
-   * @param script : control script
-   * @param panel : CT_xxx
+   * 
+   * @param script
+   *          : control script
+   * @param panel
+   *          : CT_xxx
    */
   static void addControls(String script, int panel) {
     ctrlPanels[panel].processScript(script);
   }
 
-
   /**
    * Get the next anonymous id
+   * 
    * @return int
    */
   static int getAnonId() {
     return anonIdBase++;
   }
 
- public static void parseGadgets(Tokenizer tk) {
+  public static void parseGadgets(Tokenizer tk) {
     if (tk.peek(IEditorScript.T_BROP)) {
       list.setValues(tk);
       todo("readGadgetGUIValues");
-//      TestBed.app.readGadgetGUIValues();
+      //      TestBed.app.readGadgetGUIValues();
     }
   }
 
   /**
    * Print gadgets to configuration file or to editor file header
-   * @param pw PrintWriter to print to
-   * @param configContext true if writing configuration file, false if writing
-   *   editor file header
+   * 
+   * @param pw
+   *          PrintWriter to print to
+   * @param configContext
+   *          true if writing configuration file, false if writing editor file
+   *          header
    */
   public static void printGadgets(PrintWriter pw, boolean configContext) {
     todo("write gadget values");
-//    TestBed.app.writeGadgetGUIValues();
+    //    TestBed.app.writeGadgetGUIValues();
     String s = list.getValues(configContext);
     pw.println(s);
   }
 
-
-
   /**
    * Add an item to the current menu
-   * @param id id of menu
-   * @param label label of menu
-   * @param keyEquiv if not null, keyboard equivalent of the form
-   * <pre>
+   * 
+   * @param id
+   *          id of menu
+   * @param label
+   *          label of menu
+   * @param keyEquiv
+   *          if not null, keyboard equivalent of the form
+   * 
+   *          <pre>
    *   ^c   for ctrl-c (command-c on Mac)
    *   ^C   for ctrl-shift c
    *   #ddd keycode for decimal value ddd (i.e., KeyEvent.VK_BACK_SPACE
-   * </pre>
+   *          </pre>
    */
   public static void sMenuItem(int id, String label, String keyEquiv) {
     // <id:int> [<keyequiv>] <label>
@@ -731,7 +817,7 @@ public class C implements Globals {
     sNewLine();
   }
 
-  static void init( ) {
+  static void init() {
     anonIdBase = TBGlobals.ID_ANON_START;
     ctrlPanels = new ControlPanel[TBGlobals.CT_TOTAL];
     for (int i = 0; i < TBGlobals.CT_TOTAL; i++)
@@ -746,8 +832,9 @@ public class C implements Globals {
   private static int anonIdBase;
   private static ControlPanel[] ctrlPanels;
   private static boolean inComboBox;
-  static GadgetList list;
+  private static GadgetList list;
   private static StringBuilder script;
   private static int tabPaneCount;
   private static int tabSetCount;
+
 }

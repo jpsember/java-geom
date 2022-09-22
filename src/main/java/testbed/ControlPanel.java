@@ -35,7 +35,7 @@ class ControlPanel extends JPanel implements Globals, IScript {
    *         to be a hidden control (or was skipped)
    */
   private boolean addControl(Gadget c, String toolTip) {
-    C.list.add(c);
+    C.add(c);
 
     boolean shown = true;
     if (!hideNextControl) {
