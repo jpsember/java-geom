@@ -1,10 +1,13 @@
 package testbed;
 
-import base.*;
 import java.util.*;
-import static js.base.Tools.*;
 
-class GadgetList implements IEditorScript {
+import base.TextScanner;
+
+import static js.base.Tools.*;
+import static testbed.IEditorScript.*;
+
+final class GadgetList {
 
   /**
    * Enable each gadget in a list
@@ -64,7 +67,7 @@ class GadgetList implements IEditorScript {
     else if (v instanceof Integer) {
       iVal = (Integer) v;
     } else {
-      iVal =  Integer.parseInt(v.toString() );
+      iVal = Integer.parseInt(v.toString());
     }
     return iVal;
   }
@@ -196,8 +199,8 @@ class GadgetList implements IEditorScript {
     return sb.toString();
   }
 
-  public DArray getList(boolean configContext) {
-    DArray ret = new DArray();
+  private List<Integer> getList(boolean configContext) {
+    List<Integer> ret = arrayList();
     for (Gadget g : mGadgetMap.values()) {
       int id = g.getId();
 
@@ -206,18 +209,10 @@ class GadgetList implements IEditorScript {
        * if (!configContext) { if (id >= TBGlobals.CONFIGSTART && id <
        * TBGlobals.CONFIGEND) continue; }
        */
-      ret.addInt(id);
+      ret.add(id);
     }
     return ret;
   }
-
-  //  public void test() {
-  //
-  //    System.out.println("Reading values for gadgets");
-  //
-  //    String s = getValues(1, 20000, null); //1, 20000, true);
-  //    System.out.println(Tools.insertLineFeeds(s, 75));
-  //  }
 
   /**
    * Get string describing gadget values
@@ -226,7 +221,7 @@ class GadgetList implements IEditorScript {
    *          true if configuration file, false if editor file
    * @return string containing values
    */
-  String getValues(boolean configContext) {
+  public String getValues(boolean configContext) {
     final boolean db = false;
 
     if (db)
@@ -235,7 +230,7 @@ class GadgetList implements IEditorScript {
     StringBuilder sb = new StringBuilder();
     sb.append('[');
 
-    DArray idList = getList(configContext);
+    List<Integer> idList = getList(configContext);
 
     Gadget g = null;
     Object v = null;
@@ -243,7 +238,7 @@ class GadgetList implements IEditorScript {
     int lastCR = 0;
 
     for (int i = 0; i < idList.size(); i++) {
-      int id = idList.getInt(i);
+      int id = idList.get(i);
       g = get(id);
 
       // If it's not a gadget we're interested in retaining the value of, skip.
@@ -263,10 +258,10 @@ class GadgetList implements IEditorScript {
       sb.append(' ');
       switch (g.dataType()) {
       case Gadget.DT_BOOL:
-        sb.append(Tools.f(((Boolean) v).booleanValue()));
+        sb.append(f(((Boolean) v)));
         break;
       case Gadget.DT_DOUBLE:
-        sb.append(Tools.f(((Double) v).doubleValue()));
+        sb.append(f((Double) v));
         break;
       case Gadget.DT_STRING:
         sb.append(TextScanner.convert((String) v, false, '"'));
@@ -285,6 +280,106 @@ class GadgetList implements IEditorScript {
     if (db)
       System.out.println(" returning\n" + sb.toString());
     return sb.toString();
+  }
+
+  private static String f(boolean b) {
+    return b ? " T" : " F";
+  }
+
+  /**
+   * Format a double into a string, without scientific notation
+   * 
+   * @param v
+   *          : value
+   * @param iDig
+   *          : number of integer digits to display
+   * @param fDig
+   *          : number of fractional digits to display
+   * @return String, with format siiii.fff where s = sign (' ' or '-'), . is
+   *         present only if fDig > 0 if overflow, returns s********* of same
+   *         size
+   */
+  private static String f(double v, int iDig, int fDig) {
+
+    StringBuilder sb = new StringBuilder();
+
+    boolean neg = false;
+    if (v < 0) {
+      neg = true;
+      v = -v;
+    }
+
+    int[] dig = new int[iDig + fDig];
+
+    boolean overflow = false;
+
+    // Determine which digits will be displayed.
+    // Round last digit and propagate leftward.
+    {
+      double n = Math.pow(10, iDig);
+      if (v >= n) {
+        overflow = true;
+      } else {
+        double v2 = v;
+        for (int i = 0; i < iDig + fDig; i++) {
+          n /= 10.0;
+          double d = Math.floor(v2 / n);
+          dig[i] = (int) d;
+          v2 -= d * n;
+        }
+        double d2 = Math.floor(v2 * 10 / n);
+        if (d2 >= 5) {
+          for (int k = dig.length - 1;; k--) {
+            if (k < 0) {
+              overflow = true;
+              break;
+            }
+            if (++dig[k] == 10) {
+              dig[k] = 0;
+            } else
+              break;
+          }
+        }
+      }
+    }
+
+    if (overflow) {
+      int nDig = iDig + fDig + 1;
+      if (fDig != 0)
+        nDig++;
+      for (int k = 0; k < nDig; k++)
+        sb.append("*");
+    } else {
+
+      sb.append(' ');
+      int signPos = 0;
+      boolean leadZero = false;
+      for (int i = 0; i < iDig + fDig; i++) {
+        int digit = dig[i]; //(int) d;
+        if (!leadZero) {
+          if (digit != 0 || i == iDig || (i == iDig - 1 && fDig == 0)) {
+            leadZero = true;
+            signPos = sb.length() - 1;
+          }
+        }
+        if (i == iDig) {
+          sb.append('.');
+        }
+
+        if (digit == 0 && !leadZero) {
+          sb.append(' ');
+        } else {
+          sb.append((char) ('0' + digit));
+        }
+      }
+      if (neg)
+        sb.setCharAt(signPos, '-');
+    }
+    return sb.toString();
+  }
+
+  private static String f(double f) {
+    return f(f, 5, 3);
   }
 
   /**
@@ -317,7 +412,7 @@ class GadgetList implements IEditorScript {
           v = tk.readBoolean();
           break;
         case Gadget.DT_DOUBLE:
-          v =  tk.readDouble() ;
+          v = tk.readDouble();
           break;
         case Gadget.DT_STRING:
           // skip unexpected booleans
@@ -329,7 +424,7 @@ class GadgetList implements IEditorScript {
             v = tk.readString();
           break;
         case Gadget.DT_INT:
-          v =  tk.readInt() ;
+          v = tk.readInt();
           if (id == Gadget.TEST_GADGET) {
             if (alert("special test")) {
               pr("restored value:", v);
