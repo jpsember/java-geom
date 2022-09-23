@@ -6,6 +6,7 @@ import java.io.*;
 public class Tokenizer extends TextScanner implements IEditorScript {
 
   private static DFA dfa;
+
   private static DFA dfa() {
     if (dfa == null) {
       dfa = DFA.readFromSet(TestBed.class, "veditor.dfa");
@@ -15,6 +16,7 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Return value of next integer, skipping non-integer tokens in between
+   * 
    * @return int
    */
   public int extractInt() {
@@ -26,8 +28,10 @@ public class Tokenizer extends TextScanner implements IEditorScript {
     }
     return readInt();
   }
+
   /**
    * Return value of next double, skipping non-numeric tokens in between
+   * 
    * @return int
    */
   public double extractDouble() {
@@ -37,18 +41,19 @@ public class Tokenizer extends TextScanner implements IEditorScript {
       }
       read();
     }
-    return  readDouble();
+    return readDouble();
   }
+
   public IPoint2 extractIPoint2() {
     return new IPoint2(extractInt(), extractInt());
   }
-  
-  
+
   /**
    * Extract FPoint2, skipping non-double tokens in between
+   * 
    * @return FPoint2
    */
-  public FPoint2 extractFPoint2() {   
+  public FPoint2 extractFPoint2() {
     return new FPoint2(extractDouble(), extractDouble());
   }
 
@@ -63,8 +68,11 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Constructor
-   * @param str : String to tokenize
-   * @param skipWS : true to skip whitespace tokens (T_WS)
+   * 
+   * @param str
+   *          : String to tokenize
+   * @param skipWS
+   *          : true to skip whitespace tokens (T_WS)
    */
   public Tokenizer(String str, boolean skipWS) {
     this(new StringReader(str), str, skipWS);
@@ -72,9 +80,13 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Constructor
-   * @param r Reader
-   * @param sourceDesc : description of reader
-   * @param skipWS : true to skip whitespace tokens (T_WS)
+   * 
+   * @param r
+   *          Reader
+   * @param sourceDesc
+   *          : description of reader
+   * @param skipWS
+   *          : true to skip whitespace tokens (T_WS)
    */
   public Tokenizer(Reader r, String sourceDesc, boolean skipWS) {
     super(r, sourceDesc, dfa(), skipWS ? T_WS : -1);
@@ -91,7 +103,9 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Read a list of integers
-   * @param len int
+   * 
+   * @param len
+   *          int
    * @return int[]
    */
   public int[] readInts(int len) {
@@ -104,7 +118,9 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Read list of FPoint2's
-   * @param len int
+   * 
+   * @param len
+   *          int
    * @return FPoint2[]
    */
   public FPoint2[] readFPoint2s(int len) {
@@ -117,7 +133,9 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Read a list of doubles
-   * @param len int
+   * 
+   * @param len
+   *          int
    * @return double[]
    */
   public double[] readDoubles(int len) {
@@ -130,7 +148,9 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Read next token if it matches a string
-   * @param compareTo : string to compare with
+   * 
+   * @param compareTo
+   *          : string to compare with
    * @return true if next existed and it was an exact match
    */
   public boolean readIf(String compareTo) {
@@ -142,9 +162,11 @@ public class Tokenizer extends TextScanner implements IEditorScript {
   }
 
   /**
-   * Read token and determine which of a set of strings it matches.
-   * Throws an exception if it doesn't match.
-   * @param values : array of strings it can match
+   * Read token and determine which of a set of strings it matches. Throws an
+   * exception if it doesn't match.
+   * 
+   * @param values
+   *          : array of strings it can match
    * @return index into array
    */
   public int readString(String[] values) {
@@ -159,8 +181,11 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Match string to an item in a set of strings.
-   * @param str : string
-   * @param values : array of strings it can match
+   * 
+   * @param str
+   *          : string
+   * @param values
+   *          : array of strings it can match
    * @return index into array, or -1 if it didn't match any
    */
   public static int matchString(String str, String[] values) {
@@ -189,6 +214,7 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Read next token as a string, remove any quotes
+   * 
    * @return String
    */
   public String readString() {
@@ -198,6 +224,7 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Read next token as integer value
+   * 
    * @return int
    */
   public int readInt() {
@@ -206,13 +233,14 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Read next token as double value
+   * 
    * @return double
    */
   public double readDouble() {
 
     double val = -1;
     try {
-//      this.readWS();
+      //      this.readWS();
       Token t = read();
       if (t.id(T_INT) || t.id(T_DBL)) {
         val = Double.parseDouble(t.text());
@@ -227,6 +255,7 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Read T_BOOL
+   * 
    * @return boolean
    */
   public boolean readBoolean() {
@@ -235,6 +264,7 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Read FPoint2
+   * 
    * @return FPoint2
    */
   public FPoint2 readFPoint2() {
@@ -259,6 +289,7 @@ public class Tokenizer extends TextScanner implements IEditorScript {
   //
   /**
    * Determine if the next token is a double
+   * 
    * @return true next is T_INT or T_DBL
    */
   public boolean nextIsDouble() {
@@ -276,7 +307,9 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Read next token, ensure that it matches a value
-   * @param str  string to match with
+   * 
+   * @param str
+   *          string to match with
    */
   public void readString(String str) {
     Token t = read();
@@ -298,7 +331,9 @@ public class Tokenizer extends TextScanner implements IEditorScript {
 
   /**
    * Read next token if it's an integer
-   * @param val : value to return if next token is not an integer
+   * 
+   * @param val
+   *          : value to return if next token is not an integer
    * @return value read
    */
   public int readIfInt(int val) {
@@ -308,20 +343,22 @@ public class Tokenizer extends TextScanner implements IEditorScript {
     return val;
   }
 
-//  /**
-//   * @deprecated
-//   * @param val
-//   * @return
-//   */
-//  public double readIfDouble(double val) {
-//    if (nextIsDouble()) {
-//      val = readDouble();
-//    }
-//    return val;
-//  }
+  //  /**
+  //   * @deprecated
+  //   * @param val
+  //   * @return
+  //   */
+  //  public double readIfDouble(double val) {
+  //    if (nextIsDouble()) {
+  //      val = readDouble();
+  //    }
+  //    return val;
+  //  }
   /**
    * Read next token if it's a double or an int
-   * @param val   value to return if it's a double or int
+   * 
+   * @param val
+   *          value to return if it's a double or int
    * @return value read, or val if next token wasn't a double
    */
   public double readIf(double val) {
@@ -331,44 +368,9 @@ public class Tokenizer extends TextScanner implements IEditorScript {
     return val;
   }
 
-  //  /**
-  //   * Read next token if it's a boolean (T or F)
-  //   * @return Boolean : value read, or null if next wasn't boolean
-  //   * @deprecated
-  //   */
-  //  public Boolean readIfBool() {
-  //    Boolean out = null;
-  //    if (peek(T_BOOL)) {
-  //      out = new Boolean(readBoolean());
-  //    }
-  //    return out;
-  //  }
-
-//  /**
-//   * Read next token if it's a boolean (T or F)
-//   * @param val : value to return if next token is not an integer
-//   * @return value read
-//   * @deprecated
-//   */
-//  public boolean readIfBool(boolean val) {
-//    if (peek(T_BOOL))
-//      val = readBoolean();
-//    //
-//    //    Boolean b = readIfBool();
-//    //    if (b != null) {
-//    //      val = b.booleanValue();
-//    //    }
-//    return val;
-//  }
-
   public boolean readIf(boolean defaultValue) {
     if (peek(T_BOOL))
       defaultValue = readBoolean();
-    //
-    //  Boolean b = readIfBool();
-    //  if (b != null) {
-    //    val = b.booleanValue();
-    //  }
     return defaultValue;
   }
 

@@ -1,7 +1,6 @@
 package testbed;
 
 import java.awt.*;
-import java.util.*;
 import base.*;
 
 import static js.base.Tools.*;
@@ -102,19 +101,7 @@ public class Editor implements Globals, IEditorScript {
 
   //  private static final boolean db = false;
 
-  /**
-   * Add a type of object to the editor, so user can manipulate objects of this
-   * type. Adds an appropriate item to the edit menu to allow creating the
-   * objects.
-   * 
-   * @param f
-   *          object type
-   */
-  public static void addObjectType(EdObjectFactory f) {
-    objTypesMap.put(f.getTag(), new Integer(objectFactories.size()));
-    objectFactories.add(f);
-  }
-
+ 
   //  /**
   //   * Add editor controls to script
   //   */
@@ -2056,9 +2043,6 @@ public class Editor implements Globals, IEditorScript {
   //
   //
   // --------------- undo/redo -----------------------------
-
-  private static DArray objectFactories;
-  private static Map objTypesMap;
 
   //  private static boolean displayedModified;
 

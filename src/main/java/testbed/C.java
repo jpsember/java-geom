@@ -67,7 +67,7 @@ public class C implements Globals {
   }
 
   public static void add(Gadget c) {
-    list.add(c);
+    mGadgetSet.add(c);
   }
 
   /**
@@ -79,7 +79,7 @@ public class C implements Globals {
    *          true to enable it
    */
   public static void enable(int id, boolean f) {
-    list.setEnable(id, f);
+    mGadgetSet.setEnable(id, f);
   }
 
   /**
@@ -91,7 +91,7 @@ public class C implements Globals {
    *          true to enable them
    */
   public static void enable(int[] idList, boolean f) {
-    list.setEnable(idList, f);
+    mGadgetSet.setEnable(idList, f);
   }
 
   /**
@@ -102,7 +102,7 @@ public class C implements Globals {
    * @return value
    */
   public static int vi(int id) {
-    return list.intValue(id);
+    return mGadgetSet.intValue(id);
   }
 
   /**
@@ -115,7 +115,7 @@ public class C implements Globals {
    * @return new value
    */
   public static int seti(int id, int v) {
-    list.setValue(id, v);
+    mGadgetSet.setValue(id, v);
     return v;
   }
 
@@ -127,7 +127,7 @@ public class C implements Globals {
    * @return value
    */
   public static boolean vb(int id) {
-    return list.booleanValue(id);
+    return mGadgetSet.booleanValue(id);
   }
 
   //  /**
@@ -156,7 +156,7 @@ public class C implements Globals {
    * @return new value
    */
   public static boolean setb(int id, boolean boolvalue) {
-    list.setValue(id, boolvalue);
+    mGadgetSet.setValue(id, boolvalue);
     return boolvalue;
   }
 
@@ -183,7 +183,7 @@ public class C implements Globals {
    * @return value
    */
   public static double vd(int id) {
-    return list.doubleValue(id);
+    return mGadgetSet.doubleValue(id);
   }
 
   /**
@@ -196,7 +196,7 @@ public class C implements Globals {
    * @return new value
    */
   public static double setd(int id, double v) {
-    list.setValue(id, v);
+    mGadgetSet.setValue(id, v);
     return v;
   }
 
@@ -208,7 +208,7 @@ public class C implements Globals {
    * @return string value
    */
   public static String vs(int id) {
-    return list.stringValue(id);
+    return mGadgetSet.stringValue(id);
   }
 
   /**
@@ -225,7 +225,7 @@ public class C implements Globals {
     String str = "";
     if (s != null)
       str = s.toString();
-    list.setValue(id, str);
+    mGadgetSet.setValue(id, str);
     return str;
   }
 
@@ -238,7 +238,7 @@ public class C implements Globals {
   //  }
 
   static Component getComponent(int id) {
-    return list.get(id).getComponent();
+    return mGadgetSet.get(id).getComponent();
   }
 
   /**
@@ -249,7 +249,7 @@ public class C implements Globals {
    * @return true if it exists
    */
   public static boolean exists(int id) {
-    return list.exists(id);
+    return mGadgetSet.exists(id);
   }
 
   /**
@@ -260,7 +260,7 @@ public class C implements Globals {
    * @return Gadget
    */
   static Gadget get(int id) {
-    return list.get(id);
+    return mGadgetSet.get(id);
   }
 
   /**
@@ -755,7 +755,7 @@ public class C implements Globals {
 
   public static void parseGadgets(Tokenizer tk) {
     if (tk.peek(IEditorScript.T_BROP)) {
-      list.setValues(tk);
+      mGadgetSet.setValues(tk);
       todo("readGadgetGUIValues");
       //      TestBed.app.readGadgetGUIValues();
     }
@@ -773,7 +773,7 @@ public class C implements Globals {
   public static void printGadgets(PrintWriter pw, boolean configContext) {
     todo("write gadget values");
     //    TestBed.app.writeGadgetGUIValues();
-    String s = list.getValues(configContext);
+    String s = mGadgetSet.getValues(configContext);
     pw.println(s);
   }
 
@@ -823,7 +823,7 @@ public class C implements Globals {
     for (int i = 0; i < TBGlobals.CT_TOTAL; i++)
       ctrlPanels[i] = new ControlPanel();
     inComboBox = false;
-    list = new GadgetList();
+    mGadgetSet = new GadgetList();
     script = null;
     tabPaneCount = 0;
     tabSetCount = 0;
@@ -832,7 +832,7 @@ public class C implements Globals {
   private static int anonIdBase;
   private static ControlPanel[] ctrlPanels;
   private static boolean inComboBox;
-  private static GadgetList list;
+  private static GadgetList mGadgetSet;
   private static StringBuilder script;
   private static int tabPaneCount;
   private static int tabSetCount;

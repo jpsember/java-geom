@@ -48,40 +48,4 @@ class CtCheckBox extends Gadget {
     return (AbstractButton) getComponent();
   }
 
-  //  private static class myCheckBoxMenuItem
-  //    extends JCheckBoxMenuItem {
-  //
-  //  public myCheckBoxMenuItem(Action action, boolean value) {
-  //    super(action);
-  //    setSelected(value);
-  //  }
-  //
-  ////  private int id;
-  //// public Component getComponent() {return this;}
-  //// public int getId() {return id;}
-  //// public void setId(int id) {this.id = id;}
-  //
-  //}
-  //
-  //private static class myCheckBox
-  //    extends JCheckBox {
-  //
-  ////  public void writeValue(Object v) {
-  ////    setSelected( ( (Boolean) v).booleanValue());
-  ////  }
-  ////
-  ////  public Object readValue() {
-  ////    return new Boolean(isSelected());
-  ////  }
-  ////
-  //  public myCheckBox( Action action, boolean value) {
-  //    super(action);
-  //    setSelected(value);
-  //  }
-  //
-  ////  private int id;
-  //// public Component getComponent() {return this;}
-  //// public int getId() {return id;}
-  //// public void setId(int id) {this.id = id;}
-  //}
 }

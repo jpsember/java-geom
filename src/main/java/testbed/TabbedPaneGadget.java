@@ -5,6 +5,8 @@ import java.util.*;
 import javax.swing.*;
 import base.*;
 
+import static js.base.Tools.*;
+
 class TabbedPaneGadget extends Gadget {
   static final boolean db = false;
 
@@ -26,7 +28,7 @@ class TabbedPaneGadget extends Gadget {
     //    val = ((userId & 0xffff) << 16) | si;
     if (db)
       Streams.out.println("readValue for selected pane=" + val);
-    return new Integer(val);
+    return val;
   }
 
   /**
@@ -46,11 +48,11 @@ class TabbedPaneGadget extends Gadget {
     Integer val2 = null;
 
     if (val >= TAB_ID_START) {
-      val2 = (Integer) idToIndexMap.get(new Integer(val));
+      val2 =  idToIndexMap.get(val);
       if (val2 == null)
         Tools.warn("no value " + val2 + " for " + this.getId());
     } else {
-      val2 = new Integer(val);
+      val2 = val;
     }
     if (val2 != null) {
       if (val2.intValue() < 0 || val2.intValue() >= tp.getTabCount()) {
@@ -103,7 +105,7 @@ class TabbedPaneGadget extends Gadget {
     }
 
     titles.add(title);
-    idToIndexMap.put(new Integer(pnlId), new Integer(ids.size()));
+    idToIndexMap.put( pnlId , ids.size() );
     ids.addInt(pnlId);
 
     getSet().add(title, component);
@@ -111,7 +113,7 @@ class TabbedPaneGadget extends Gadget {
 
   // ids of panels
   // maps user ids => pane index
-  private Map idToIndexMap = new HashMap();
+  private Map<Integer, Integer> idToIndexMap = hashMap();
 
   // titles of items
   private DArray titles = new DArray();

@@ -111,7 +111,7 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
     public GadgetAction(int id, String name, String toolTip, KeyStroke accel) {
 
       super(name);
-      putValue(GADGETID, new Integer(id));
+      putValue(GADGETID, id);
       setAccelerator(accel);
       if (toolTip != null) {
         setTooltipText(toolTip, true);

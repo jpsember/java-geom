@@ -1,31 +1,10 @@
 package testbed;
 
-import static base.Tools.*;
 import base.*;
 import java.util.*;
 import static js.base.Tools.*;
 
-class GadgetList implements IEditorScript, Comparator {
-
-  private static final boolean WARN = false;
-
-  // ----------- comparator interface
-  public int compare(Object object, Object object1) {
-    return id(object) - id(object1);
-  }
-
-  private static int id(Object obj) {
-    int id = -1;
-    if (obj instanceof Integer) {
-      id = ((Integer) obj).intValue();
-    } else
-      id = ((Gadget) obj).getId();
-    return id;
-  }
-
-  public boolean equals(Object object) {
-    return compare(this, object) == 0;
-  }
+class GadgetList implements IEditorScript {
 
   /**
    * Enable each gadget in a list
@@ -76,23 +55,18 @@ class GadgetList implements IEditorScript, Comparator {
   public int intValue(int id) {
     Gadget obj = get(id);
     if (obj == null) {
-      if (WARN)
-        Tools.warn("no such integer-valued gadget " + id);
       return 0;
     }
-    Integer iVal = null;
+    Integer iVal;
     Object v = obj.readValue();
-    if (v instanceof Integer) {
+    if (v == null)
+      iVal = 0;
+    else if (v instanceof Integer) {
       iVal = (Integer) v;
     } else {
-      iVal = new Integer(Integer.parseInt(v.toString()));
+      iVal =  Integer.parseInt(v.toString() );
     }
-    if (iVal == null) {
-      if (WARN)
-        Tools.warn("gadget " + obj + " has no value");
-      return 0;
-    }
-    return iVal.intValue();
+    return iVal;
   }
 
   /**
@@ -103,20 +77,13 @@ class GadgetList implements IEditorScript, Comparator {
    * @return value
    */
   public boolean booleanValue(int id) {
+    Boolean result = null;
     Gadget g = get(id);
-    if (g == null) {
-      if (WARN)
-        Tools.warn("no such boolean-valued gadget " + id);
-      return false;
-    }
-    Boolean b = (Boolean) g.readValue();
-    if (b == null) {
-      if (WARN)
-        Tools.warn("boolean gadget " + g + " has no value");
-      b = Boolean.FALSE;
-    }
-
-    return b.booleanValue();
+    if (g != null)
+      result = (Boolean) g.readValue();
+    if (result == null)
+      result = false;
+    return result;
   }
 
   /**
@@ -128,12 +95,10 @@ class GadgetList implements IEditorScript, Comparator {
    *          int
    */
   public void setValue(int id, int v) {
-    Object val = null;
+    Object val = v;
     Gadget g = get(id);
-    if (g.dataType() == Gadget.DT_STRING) {
+    if (g.dataType() == Gadget.DT_STRING)
       val = Integer.toString(v);
-    } else
-      val = new Integer(v);
     g.writeValue(val);
   }
 
@@ -148,11 +113,7 @@ class GadgetList implements IEditorScript, Comparator {
   public void setValue(int id, boolean v) {
     Gadget g = get(id);
     if (g != null)
-      g.writeValue(new Boolean(v));
-    else {
-      if (WARN)
-        Tools.warn("no gadget id=" + id + " found");
-    }
+      g.writeValue(v);
   }
 
   /**
@@ -166,7 +127,7 @@ class GadgetList implements IEditorScript, Comparator {
     final boolean db = false;
     if (db)
       System.out.println("doubleValue id=" + id + " readValue is " + get(id).readValue());
-    return ((Double) get(id).readValue()).doubleValue();
+    return ((Double) get(id).readValue());
   }
 
   /**
@@ -178,7 +139,7 @@ class GadgetList implements IEditorScript, Comparator {
    *          double
    */
   public void setValue(int id, double v) {
-    get(id).writeValue(new Double(v));
+    get(id).writeValue(v);
   }
 
   /**
@@ -205,14 +166,7 @@ class GadgetList implements IEditorScript, Comparator {
   }
 
   private Gadget find(int id) {
-    SortedSet s2 = set.tailSet(new Integer(id));
-    Gadget f = null;
-    if (!s2.isEmpty()) {
-      f = (Gadget) s2.first();
-      if (f.getId() != id)
-        f = null;
-    }
-    return f;
+    return mGadgetMap.get(id);
   }
 
   public boolean exists(int id) {
@@ -220,20 +174,12 @@ class GadgetList implements IEditorScript, Comparator {
   }
 
   public Gadget get(int id) {
-    Gadget f = find(id);
-
-    if (WARN && f == null) {
-      Tools.warn("can't find gadget: " + id + "\n" + Tools.st());
-    }
-    return f;
+    return find(id);
   }
 
   public void add(Gadget c) {
-    int id = c.getId();
-    if (exists(id)) {
-      ASSERT(!exists(id), "Id already exists:" + id + "\n" + get(id).toString());
-    }
-    set.add(c);
+    checkState(!exists(c.getId()));
+    mGadgetMap.put(c.getId(), c);
   }
 
   /**
@@ -244,9 +190,7 @@ class GadgetList implements IEditorScript, Comparator {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("GadgetList ");
-    ourIterator it = new ourIterator(set);
-    while (it.hasNext()) {
-      Gadget g = it.next();
+    for (Gadget g : mGadgetMap.values()) {
       sb.append(" " + g.getId() + ":" + g.toString() + "\n");
     }
     return sb.toString();
@@ -254,9 +198,7 @@ class GadgetList implements IEditorScript, Comparator {
 
   public DArray getList(boolean configContext) {
     DArray ret = new DArray();
-    Iterator it = set.iterator();
-    while (it.hasNext()) {
-      Gadget g = (Gadget) it.next();
+    for (Gadget g : mGadgetMap.values()) {
       int id = g.getId();
 
       // skip this; it messes up saving of window locations
@@ -372,10 +314,10 @@ class GadgetList implements IEditorScript, Comparator {
         //pr("restoring widget value for:", id, "type:", g.dataType);
         switch (g.dataType()) {
         case Gadget.DT_BOOL:
-          v = new Boolean(tk.readBoolean());
+          v = tk.readBoolean();
           break;
         case Gadget.DT_DOUBLE:
-          v = new Double(tk.readDouble());
+          v =  tk.readDouble() ;
           break;
         case Gadget.DT_STRING:
           // skip unexpected booleans
@@ -387,7 +329,7 @@ class GadgetList implements IEditorScript, Comparator {
             v = tk.readString();
           break;
         case Gadget.DT_INT:
-          v = new Integer(tk.readInt());
+          v =  tk.readInt() ;
           if (id == Gadget.TEST_GADGET) {
             if (alert("special test")) {
               pr("restored value:", v);
@@ -404,22 +346,6 @@ class GadgetList implements IEditorScript, Comparator {
     }
   }
 
-  static class ourIterator {
-    public ourIterator(SortedSet s) {
-      it = s.iterator();
-    }
-
-    public Gadget next() {
-      return (Gadget) (it.next());
-    }
-
-    public boolean hasNext() {
-      return it.hasNext();
-    }
-
-    private Iterator it;
-  }
-
-  private TreeSet set = new TreeSet(this);
+  private SortedMap<Integer, Gadget> mGadgetMap = treeMap();
 
 }

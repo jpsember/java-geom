@@ -226,7 +226,7 @@ public class DArray extends ArrayList implements Cloneable {
   }
 
   public void setDouble(int position, double val) {
-    set(position, new Double(val));
+    set(position, val);
   }
 
   public int addInt(int val) {

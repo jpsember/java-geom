@@ -65,7 +65,7 @@ class CtSpinner extends Gadget {
 
   public CtSpinner(int id, String label, double dmin, double dmax, double dvalue, double step,
       boolean sliderFlag, boolean withTicks, boolean dbl) {
-    super(id,dbl ? DT_DOUBLE : DT_INT );
+    super(id, dbl ? DT_DOUBLE : DT_INT);
 
     pr("constructing CtSpinner, id:", id, "label:", label);
     this.mIsSlider = sliderFlag;
@@ -195,7 +195,7 @@ class CtSpinner extends Gadget {
         m.setValue(v);
       } else {
         double vd = ((Double) v).doubleValue();
-        m.setValue(new Double(vd));
+        m.setValue(vd);
       }
 
     }
@@ -203,11 +203,10 @@ class CtSpinner extends Gadget {
     public Object readValue() {
       Number n = ((SpinnerNumberModel) getModel()).getNumber();
       if (dblFlag)
-        return new Double(n.doubleValue());
+        return n.doubleValue();
       else
-        return new Integer(n.intValue());
+        return n.intValue();
     }
-
   }
 
   private class mySlider extends JSlider implements GadgetComponent {
@@ -268,9 +267,9 @@ class CtSpinner extends Gadget {
 
     public Object readValue() {
       if (dblFlag) {
-        return new Double(getModel().getValue() / scale + offset);
+        return getModel().getValue() / scale + offset;
       } else {
-        return new Integer((int) (getModel().getValue() + offset));
+        return (int) (getModel().getValue() + offset);
       }
     }
 

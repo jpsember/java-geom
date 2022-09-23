@@ -230,7 +230,7 @@ public class DQueue implements Cloneable {
    * @param toFront
    */
   public void pushInt(int i, boolean toFront) {
-    push(new Integer(i), toFront);
+    push(i, toFront);
   }
 
   public double popDouble() {
@@ -238,7 +238,7 @@ public class DQueue implements Cloneable {
   }
 
   public void pushDouble(double d) {
-    push(new Double(d));
+    push(d);
   }
 
   public String popString() {

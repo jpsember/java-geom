@@ -99,7 +99,7 @@ class CtComboBox extends Gadget implements ActionListener {
    * @return Object
    */
   public Object readValue() {
-    Object ret = new Integer(cbox.getSelectedId());
+    Object ret =  cbox.getSelectedId() ;
     if (db)
       Streams.out.println("CtComboBox " + getId() + " readValue, returning " + ret);
     return ret;
