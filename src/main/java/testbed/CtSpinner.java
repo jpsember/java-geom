@@ -32,14 +32,9 @@ class CtSpinner extends Gadget {
   }
 
   public void writeValue(Object v) {
-
-    if (getId() == TEST_GADGET) {
-      pr("...writing value:", getId(), v);
-    }
     if (db) {
       pr("writing value", v, "to CtSpinner", this);
     }
-
     if (mIsSlider) {
       ((mySlider) mComponent).writeValue(v);
     } else {

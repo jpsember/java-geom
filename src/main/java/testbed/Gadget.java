@@ -17,8 +17,6 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
 
   public static final int DT_STRING = 0, DT_INT = 1, DT_DOUBLE = 2, DT_BOOL = 3;
 
-  public static final int TEST_GADGET = 1801;
-
   public Gadget(int id, int dataType) {
     mId = id;
     mDataType = dataType;

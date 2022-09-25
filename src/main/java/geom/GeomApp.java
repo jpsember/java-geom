@@ -16,7 +16,6 @@ import js.guiapp.RecentFiles;
 import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
-import js.json.JSMap;
 import testbed.C;
 
 import static geom.GeomTools.*;
@@ -121,21 +120,14 @@ public abstract class GeomApp extends GUIApp {
     discardMenuBar();
 
     // Now that gadgets have been built, restore their state
-    restoreWidgetsState(projectState().widgetsState());
-    
-    C.setGadgetsActive(true, "openProject");
+    C.readGadgetValuesFromMap(projectState().widgetStateMap());
 
-    // Propagate all values to gadgets
-    todo("propagate script/project state to gadgets");
-    todo("figure out source of state; project and/or script?");
-    todo("is this the best place to do this?  should there be a listener of some sort?");
+    C.setGadgetsActive(true, "openProject");
 
     // Make sure the UI is updated to represent this project's state,
     // and to make sure the keyboard shortcuts work (something to do with focus?)
     //
     performRepaint(REPAINT_ALL);
-
-    pr("opening project, test gadget value:", C.vi(1801));
   }
 
   public final void openAppropriateProject() {
@@ -162,7 +154,7 @@ public abstract class GeomApp extends GUIApp {
       return;
     // Store the app frame location, in case it has changed
     projectState().appFrame(appFrame().bounds());
-    projectState().widgetsState(compileWidgetsState());
+    projectState().widgetStateMap(C.constructGadgetValueMap(true));
     currentProject().flush();
   }
 
@@ -173,9 +165,8 @@ public abstract class GeomApp extends GUIApp {
       scriptManager().replaceCurrentScriptWith(currentProject().script());
 
       if (C.gadgetsActive()) {
-        todo("turn off gadgets, send values from script, turn back on");
+        todo("turn off gadgets, send values from script, turn back on; have project vs script class for gadgets");
         // C.setGadgetsActive(false);
-
         // Maybe only a subset of gadgets are written to scripts?
         // updateGadgetValues(scriptState().widgetsState());
         //  C.setGadgetsActive(true);
@@ -428,22 +419,5 @@ public abstract class GeomApp extends GUIApp {
   }
 
   private int mTaskTicker;
-
-  // ------------------------------------------------------------------
-  // Persisting widgets state
-  // ------------------------------------------------------------------
-
-  private String compileWidgetsState() {
-    checkState(C.gadgetsActive(), "attempt to compile gadgets while not active");
-    JSMap m = C.constructGadgetValueMap(true);
-    return m.toString();
-  }
-
-  private void restoreWidgetsState(String s) {
-    todo("better to store as JSMap, not string");
-    todo("have some try/catch with warnings later, after code stabilizes");
-    JSMap m = new JSMap(s);
-    C.readGadgetValuesFromMap(m);
-  }
 
 }

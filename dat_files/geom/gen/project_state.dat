@@ -4,5 +4,5 @@ fields {
   int current_script_index;
   float zoom_factor = 1.0;
   int add_box_corner_index = 2;
-  string widgets_state;
+  JSMap widget_state_map;
 }
