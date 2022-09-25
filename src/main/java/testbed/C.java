@@ -1,7 +1,9 @@
 package testbed;
 
 import java.awt.*;
-import java.io.*;
+
+import js.json.JSMap;
+
 import static js.base.Tools.*;
 
 public class C implements Globals {
@@ -788,11 +790,8 @@ public class C implements Globals {
    *          true if writing configuration file, false if writing editor file
    *          header
    */
-  public static void printGadgets(PrintWriter pw, boolean configContext) {
-    todo("write gadget values");
-    //    TestBed.app.writeGadgetGUIValues();
-    String s = mGadgetSet.getValues(configContext);
-    pw.println(s);
+  public static JSMap printGadgets(boolean configContext) {
+    return mGadgetSet.getValues(configContext);
   }
 
   /**

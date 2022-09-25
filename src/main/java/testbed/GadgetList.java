@@ -2,7 +2,7 @@ package testbed;
 
 import java.util.*;
 
-import base.TextScanner;
+import js.json.JSMap;
 
 import static js.base.Tools.*;
 import static testbed.IEditorScript.*;
@@ -215,27 +215,23 @@ final class GadgetList {
   }
 
   /**
-   * Get string describing gadget values
+   * Get JSMap of gadget values
    * 
    * @param configContext
    *          true if configuration file, false if editor file
-   * @return string containing values
    */
-  public String getValues(boolean configContext) {
+  public JSMap getValues(boolean configContext) {
+    todo("some of the gadgets are being stored as strings, which probably doesn't make sense");
     final boolean db = false;
 
     if (db)
-      System.out.println("getValues ");
+      pr("getValues");
 
-    StringBuilder sb = new StringBuilder();
-    sb.append('[');
+    JSMap m = map();
 
     List<Integer> idList = getList(configContext);
 
     Gadget g = null;
-    Object v = null;
-
-    int lastCR = 0;
 
     for (int i = 0; i < idList.size(); i++) {
       int id = idList.get(i);
@@ -246,142 +242,19 @@ final class GadgetList {
       //Streams.out.println("id="+id+" value="+g.readValue()+" ser="+g.serialized());
       if (!g.serialized())
         continue;
+      Object v = g.readValue();
       if (db)
-        System.out.println(" attempting to read value for id " + id + ", g=\n" + g);
-      v = g.readValue();
-      if (db)
-        System.out.println(" value " + id + " is " + v);
+        pr("value for", id, "is:", v);
       if (v == null)
         continue;
-
-      sb.append(g.getId());
-      sb.append(' ');
-      switch (g.dataType()) {
-      case Gadget.DT_BOOL:
-        sb.append(f(((Boolean) v)));
-        break;
-      case Gadget.DT_DOUBLE:
-        sb.append(f((Double) v));
-        break;
-      case Gadget.DT_STRING:
-        sb.append(TextScanner.convert((String) v, false, '"'));
-        break;
-      case Gadget.DT_INT:
-        sb.append(v);
-        break;
-      }
-      if (sb.length() - lastCR > 60) {
-        sb.append('\n');
-        lastCR = sb.length();
-      } else
-        sb.append(' ');
+      m.putUnsafe("" + id, v);
     }
-    sb.append(']');
     if (db)
-      System.out.println(" returning\n" + sb.toString());
-    return sb.toString();
+      pr("returning:", INDENT, m);
+    return m;
   }
 
-  private static String f(boolean b) {
-    return b ? " T" : " F";
-  }
-
-  /**
-   * Format a double into a string, without scientific notation
-   * 
-   * @param v
-   *          : value
-   * @param iDig
-   *          : number of integer digits to display
-   * @param fDig
-   *          : number of fractional digits to display
-   * @return String, with format siiii.fff where s = sign (' ' or '-'), . is
-   *         present only if fDig > 0 if overflow, returns s********* of same
-   *         size
-   */
-  private static String f(double v, int iDig, int fDig) {
-
-    StringBuilder sb = new StringBuilder();
-
-    boolean neg = false;
-    if (v < 0) {
-      neg = true;
-      v = -v;
-    }
-
-    int[] dig = new int[iDig + fDig];
-
-    boolean overflow = false;
-
-    // Determine which digits will be displayed.
-    // Round last digit and propagate leftward.
-    {
-      double n = Math.pow(10, iDig);
-      if (v >= n) {
-        overflow = true;
-      } else {
-        double v2 = v;
-        for (int i = 0; i < iDig + fDig; i++) {
-          n /= 10.0;
-          double d = Math.floor(v2 / n);
-          dig[i] = (int) d;
-          v2 -= d * n;
-        }
-        double d2 = Math.floor(v2 * 10 / n);
-        if (d2 >= 5) {
-          for (int k = dig.length - 1;; k--) {
-            if (k < 0) {
-              overflow = true;
-              break;
-            }
-            if (++dig[k] == 10) {
-              dig[k] = 0;
-            } else
-              break;
-          }
-        }
-      }
-    }
-
-    if (overflow) {
-      int nDig = iDig + fDig + 1;
-      if (fDig != 0)
-        nDig++;
-      for (int k = 0; k < nDig; k++)
-        sb.append("*");
-    } else {
-
-      sb.append(' ');
-      int signPos = 0;
-      boolean leadZero = false;
-      for (int i = 0; i < iDig + fDig; i++) {
-        int digit = dig[i]; //(int) d;
-        if (!leadZero) {
-          if (digit != 0 || i == iDig || (i == iDig - 1 && fDig == 0)) {
-            leadZero = true;
-            signPos = sb.length() - 1;
-          }
-        }
-        if (i == iDig) {
-          sb.append('.');
-        }
-
-        if (digit == 0 && !leadZero) {
-          sb.append(' ');
-        } else {
-          sb.append((char) ('0' + digit));
-        }
-      }
-      if (neg)
-        sb.setCharAt(signPos, '-');
-    }
-    return sb.toString();
-  }
-
-  private static String f(double f) {
-    return f(f, 5, 3);
-  }
-
+ 
   /**
    * Parse a sequence of gadget values. Assumes the values are surrounded by '['
    * and ']' tokens.

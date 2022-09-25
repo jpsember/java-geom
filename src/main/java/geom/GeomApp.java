@@ -4,8 +4,6 @@ import static js.base.Tools.*;
 
 import java.awt.Graphics2D;
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
 import geom.gen.Command;
@@ -18,6 +16,7 @@ import js.guiapp.RecentFiles;
 import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
+import js.json.JSMap;
 import testbed.C;
 import testbed.Tokenizer;
 
@@ -437,10 +436,8 @@ public abstract class GeomApp extends GUIApp {
 
   private String compileWidgetsState() {
     checkState(C.gadgetsActive(),"attempt to compile gadgets while not active");
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
-    C.printGadgets(pw, true);
-    return sw.toString();
+    JSMap m = C.printGadgets(  true);
+    return m.toString();
   }
 
   private void restoreWidgetsState(String s) {
