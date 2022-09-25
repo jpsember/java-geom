@@ -5,7 +5,6 @@ import java.util.*;
 import js.json.JSMap;
 
 import static js.base.Tools.*;
-import static testbed.IEditorScript.*;
 
 final class GadgetList {
 
@@ -222,6 +221,7 @@ final class GadgetList {
    */
   public JSMap getValues(boolean configContext) {
     todo("some of the gadgets are being stored as strings, which probably doesn't make sense");
+    todo("consider storing widgetState field as JSMap instead of string");
     final boolean db = false;
 
     if (db)
@@ -254,54 +254,19 @@ final class GadgetList {
     return m;
   }
 
- 
-  /**
-   * Parse a sequence of gadget values. Assumes the values are surrounded by '['
-   * and ']' tokens.
-   *
-   * @param tk
-   *          Tokenizer
-   */
-  public void setValues(Tokenizer tk) {
-    if (tk.readIf(T_BROP)) {
-      outer: while (!tk.readIf(T_BRCL)) {
-
-        // if unexpected boolean, skip
-        if (tk.readIf(T_BOOL))
-          continue outer;
-
-        int id = tk.readInt();
-
-        if (!exists(id)) {
-          tk.read();
-          continue;
-        }
-
-        Object v = null;
-        Gadget g = get(id);
-        //pr("restoring widget value for:", id, "type:", g.dataType);
-        switch (g.dataType()) {
-        case Gadget.DT_BOOL:
-          v = tk.readBoolean();
-          break;
-        case Gadget.DT_DOUBLE:
-          v = tk.readDouble();
-          break;
-        case Gadget.DT_STRING:
-          // skip unexpected booleans
-          if (tk.peek(T_BOOL))
-            continue outer;
-          if (tk.peek(T_INT)) {
-            v = Integer.toString(tk.readInt());
-          } else
-            v = tk.readString();
-          break;
-        case Gadget.DT_INT:
-          v = tk.readInt();
-          break;
-        }
-        g.writeValue(v);
+  public void setValues(JSMap m) {
+    final boolean db = false && alert("debug in effect");
+    for (Map.Entry<String, Object> entry : m.wrappedMap().entrySet()) {
+      int id = Integer.parseInt(entry.getKey());
+      if (db)
+        pr("setValue:", id, "->", entry.getValue());
+      if (!exists(id)) {
+        if (db)
+          pr("...doesn't exist");
+        continue;
       }
+      Gadget g = get(id);
+      g.writeValue(entry.getValue());
     }
   }
 

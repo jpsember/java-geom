@@ -773,12 +773,8 @@ public class C implements Globals {
     return anonIdBase++;
   }
 
-  public static void parseGadgets(Tokenizer tk) {
-    if (tk.peek(IEditorScript.T_BROP)) {
-      mGadgetSet.setValues(tk);
-      todo("readGadgetGUIValues");
-      //      TestBed.app.readGadgetGUIValues();
-    }
+  public static void readGadgetValuesFromMap(JSMap map) {
+    mGadgetSet.setValues(map);
   }
 
   /**
@@ -790,7 +786,7 @@ public class C implements Globals {
    *          true if writing configuration file, false if writing editor file
    *          header
    */
-  public static JSMap printGadgets(boolean configContext) {
+  public static JSMap constructGadgetValueMap(boolean configContext) {
     return mGadgetSet.getValues(configContext);
   }
 

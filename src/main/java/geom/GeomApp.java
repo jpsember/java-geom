@@ -18,7 +18,6 @@ import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
 import js.json.JSMap;
 import testbed.C;
-import testbed.Tokenizer;
 
 import static geom.GeomTools.*;
 
@@ -108,7 +107,6 @@ public abstract class GeomApp extends GUIApp {
 
     project.open(recentProjects().getMostRecentFile());
     mCurrentProject = project;
-    restoreWidgetsState(projectState().widgetsState());
     recentProjects().setCurrentFile(project.directory());
     AppDefaults.sharedInstance().edit().recentProjects(recentProjects().state());
     rebuildFrameContent();
@@ -122,8 +120,9 @@ public abstract class GeomApp extends GUIApp {
     updateTitle();
     discardMenuBar();
 
-    updateGadgetValues(projectState().widgetsState());
-
+    // Now that gadgets have been built, restore their state
+    restoreWidgetsState(projectState().widgetsState());
+    
     C.setGadgetsActive(true, "openProject");
 
     // Propagate all values to gadgets
@@ -435,18 +434,16 @@ public abstract class GeomApp extends GUIApp {
   // ------------------------------------------------------------------
 
   private String compileWidgetsState() {
-    checkState(C.gadgetsActive(),"attempt to compile gadgets while not active");
-    JSMap m = C.printGadgets(  true);
+    checkState(C.gadgetsActive(), "attempt to compile gadgets while not active");
+    JSMap m = C.constructGadgetValueMap(true);
     return m.toString();
   }
 
   private void restoreWidgetsState(String s) {
-    todo("catch exceptions here");
-    Tokenizer tk = new Tokenizer(s, true);
-    C.parseGadgets(tk);
+    todo("better to store as JSMap, not string");
+    todo("have some try/catch with warnings later, after code stabilizes");
+    JSMap m = new JSMap(s);
+    C.readGadgetValuesFromMap(m);
   }
 
-  private void updateGadgetValues(String s) {
-    todo("updateGadgetValues");
-  }
 }

@@ -239,12 +239,11 @@ class CtSpinner extends Gadget {
     private double offset;
 
     public void writeValue(Object v) {
-      todo("the actual appearance doesn't seem to be updating");
       if (dblFlag) {
         double vd = ((Double) v).doubleValue();
         getModel().setValue((int) ((vd - offset) * scale));
       } else {
-        getModel().setValue(((Integer) v).intValue());
+        getModel().setValue(((Number) v).intValue());
       }
     }
 

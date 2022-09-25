@@ -44,7 +44,7 @@ class TabbedPaneGadget extends Gadget {
 
     JTabbedPane tp = getSet();
 
-    int val = ((Integer) v).intValue();
+    int val = ((Number) v).intValue();
     Integer val2 = null;
 
     if (val >= TAB_ID_START) {

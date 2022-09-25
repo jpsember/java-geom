@@ -11,6 +11,7 @@ class TBFont {
 
   public static void prepare() {
     if (sFonts == null) {
+      todo("avoid use of Tokenizer for fonts, it's the only use of that class");
       loadTools();
       sFonts = new TBFont[ifonts.length];
       for (int i = 0; i < ifonts.length; i++) {
