@@ -10,6 +10,24 @@ public class C implements Globals {
   }
 
   /**
+   * Determine if Gadget events should be propagated to listeners (including the
+   * project or script record of gadget values). False while user interface is
+   * still being constructed
+   */
+  public static boolean gadgetsActive() {
+    return sGadgetsActive;
+  }
+
+  public static void setGadgetsActive(boolean state, String devMessage) {
+    if (sGadgetsActive == state)
+      return;
+    pr("setting gadgets_active to:", state, ";", devMessage);
+    sGadgetsActive = state;
+  }
+
+  private static boolean sGadgetsActive;
+
+  /**
    * Add a push button gadget
    * 
    * @param id

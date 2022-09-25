@@ -9,7 +9,7 @@ import java.awt.*;
 
 class CtSpinner extends Gadget {
 
-  private static final boolean db = true && alert("debug printing in effect");
+  private static final boolean db = false && alert("debug printing in effect");
 
   public int gcFill() {
     if (mIsSlider) {
@@ -34,7 +34,7 @@ class CtSpinner extends Gadget {
   public void writeValue(Object v) {
 
     if (getId() == TEST_GADGET) {
-      pr("...writing value:", v);
+      pr("...writing value:", getId(), v);
     }
     if (db) {
       pr("writing value", v, "to CtSpinner", this);
@@ -67,11 +67,9 @@ class CtSpinner extends Gadget {
       boolean sliderFlag, boolean withTicks, boolean dbl) {
     super(id, dbl ? DT_DOUBLE : DT_INT);
 
-    pr("constructing CtSpinner, id:", id, "label:", label);
     this.mIsSlider = sliderFlag;
-    if (db) {
-      Streams.out.println("constructing CtSpinner " + this);
-    }
+    if (db)
+      pr("constructing CtSpinner", this);
 
     JPanel panel = new JPanel();
     panel.setOpaque(true);
@@ -191,7 +189,6 @@ class CtSpinner extends Gadget {
     public void writeValue(Object v) {
       SpinnerNumberModel m = (SpinnerNumberModel) getModel();
       if (!dblFlag) {
-        pr("....writing value:", v, "to spinner number model, id", getGadget().getId());
         m.setValue(v);
       } else {
         double vd = ((Double) v).doubleValue();
@@ -231,23 +228,10 @@ class CtSpinner extends Gadget {
       offset = dmin;
       this.setMaximum((int) (range * scale));
       this.setValue((int) ((dvalue - dmin) * scale));
-      pr("maximum for slider:", getMaximum());
       // note: sv works out to be exactly 1
       // but this seems to be ignored by the underlying BoundedRangeModel
       int sv = (int) (step * scale);
       setExtent(sv);
-
-      //      if (true) {
-      //        Tools.warn("testing...");
-      //        BoundedRangeModel m = this.getModel();
-      //        m.addChangeListener(new ChangeListener() {
-      //
-      //          public void stateChanged(ChangeEvent arg0) {
-      //            Streams.out.println("stateChanged: "+arg0);
-      //            
-      //          }
-      //        });
-      //      }
     }
 
     private boolean dblFlag;
@@ -255,7 +239,6 @@ class CtSpinner extends Gadget {
     private double offset;
 
     public void writeValue(Object v) {
-      pr("slider", getGadget().getId(), "writing value:", v);
       todo("the actual appearance doesn't seem to be updating");
       if (dblFlag) {
         double vd = ((Double) v).doubleValue();

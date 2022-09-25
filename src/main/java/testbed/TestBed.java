@@ -152,10 +152,12 @@ public abstract class TestBed extends GeomApp {
    * current operation
    */
   public void processAction(TBAction a) {
+    if (!C.gadgetsActive())
+      return;
     try {
       // Don't propagate action if we aren't initialized and displaying a script
       todo("more succinct way to check if script defined?");
-      if (appStarted() && ScriptManager.singleton().currentScript().defined())
+      if (ScriptManager.singleton().currentScript().defined())
         oper().processAction(a);
     } catch (TBError e) {
       showError(e.toString());
@@ -169,92 +171,92 @@ public abstract class TestBed extends GeomApp {
     return (TestBed) GeomApp.singleton();
   }
 
-//  private String configFile;
-//
-//  private String getConfigFile() {
-//    if (configFile == null) {
-//      StringBuilder sb = new StringBuilder();
-//      sb.append(".");
-//      sb.append(name().toLowerCase());
-//      sb.append("_");
-//      sb.append("config.txt");
-//      for (int i = sb.length() - 1; i >= 0; i--)
-//        if (sb.charAt(i) == ' ')
-//          sb.deleteCharAt(i);
-//      configFile = sb.toString().toLowerCase();
-//    }
-//    return configFile;
-//  }
+  //  private String configFile;
+  //
+  //  private String getConfigFile() {
+  //    if (configFile == null) {
+  //      StringBuilder sb = new StringBuilder();
+  //      sb.append(".");
+  //      sb.append(name().toLowerCase());
+  //      sb.append("_");
+  //      sb.append("config.txt");
+  //      for (int i = sb.length() - 1; i >= 0; i--)
+  //        if (sb.charAt(i) == ' ')
+  //          sb.deleteCharAt(i);
+  //      configFile = sb.toString().toLowerCase();
+  //    }
+  //    return configFile;
+  //  }
 
-//  /**
-//   * Write configuration file. If program hasn't finished initializing, does
-//   * nothing.
-//   */
-//  public void writeConfigFile() {
-//    todo("writeConfigFile; begun:",programBegun);
-//    if (programBegun) {
-//      writeConfigFile2();
-//    }
-//  }
-//
-//  private void writeConfigFile2() {
-//        final boolean db = true;
-//    
-//        // write to a string, then see if writing to disk is actually necessary.
-//        StringWriter sw = new StringWriter();
-//        PrintWriter pw = new PrintWriter(sw);
-//        C.printGadgets(pw, true);
-//    
-//        // writeAppConfigArguments(pw);
-//    
-//        String str = sw.toString();
-//        if (!str.equals(oldConfigFile)) {
-//          synchronized (this) {
-//            oldConfigFile = str;
-//            if (db)
-//              Streams.out.println("writing new config file: " + str.hashCode());
-//            try {
-//              Writer w = Streams.writer(getConfigFile());
-//              w.write(str);
-//              w.close();
-//            } catch (IOException e) {
-//              showError(e.toString());
-//            }
-//          }
-//        }
-//  }
-//
-//  private String oldConfigFile = "";
-  
-//  /**
-//   * Process configuration file 
-//   */
-//  private void processConfigFile() {
-//    todo("replace this with projectState");
-//    final boolean db = false;
-//
-//    if (db) {
-//      System.out.println("processConfigFile");
-//    }
-//    try {
-//      todo("reading config file:",getConfigFile());
-//      String s = Streams.readTextFile(getConfigFile());
-//      //      oldConfigFile = s;
-//      if (db) {
-//        System.out.println(" string=" + s);
-//      }
-//      Tokenizer tk = new Tokenizer(s, true);
-//      readAppConfigArguments(tk);
-//    } catch (ScanException e) {
-//      if (db) {
-//        showError(e.toString());
-//      }
-//    } catch (IOException e) {
-//      if (db) {
-//        showError(e.toString());
-//      }
-//    }
-//  }
+  //  /**
+  //   * Write configuration file. If program hasn't finished initializing, does
+  //   * nothing.
+  //   */
+  //  public void writeConfigFile() {
+  //    todo("writeConfigFile; begun:",programBegun);
+  //    if (programBegun) {
+  //      writeConfigFile2();
+  //    }
+  //  }
+  //
+  //  private void writeConfigFile2() {
+  //        final boolean db = true;
+  //    
+  //        // write to a string, then see if writing to disk is actually necessary.
+  //        StringWriter sw = new StringWriter();
+  //        PrintWriter pw = new PrintWriter(sw);
+  //        C.printGadgets(pw, true);
+  //    
+  //        // writeAppConfigArguments(pw);
+  //    
+  //        String str = sw.toString();
+  //        if (!str.equals(oldConfigFile)) {
+  //          synchronized (this) {
+  //            oldConfigFile = str;
+  //            if (db)
+  //              Streams.out.println("writing new config file: " + str.hashCode());
+  //            try {
+  //              Writer w = Streams.writer(getConfigFile());
+  //              w.write(str);
+  //              w.close();
+  //            } catch (IOException e) {
+  //              showError(e.toString());
+  //            }
+  //          }
+  //        }
+  //  }
+  //
+  //  private String oldConfigFile = "";
+
+  //  /**
+  //   * Process configuration file 
+  //   */
+  //  private void processConfigFile() {
+  //    todo("replace this with projectState");
+  //    final boolean db = false;
+  //
+  //    if (db) {
+  //      System.out.println("processConfigFile");
+  //    }
+  //    try {
+  //      todo("reading config file:",getConfigFile());
+  //      String s = Streams.readTextFile(getConfigFile());
+  //      //      oldConfigFile = s;
+  //      if (db) {
+  //        System.out.println(" string=" + s);
+  //      }
+  //      Tokenizer tk = new Tokenizer(s, true);
+  //      readAppConfigArguments(tk);
+  //    } catch (ScanException e) {
+  //      if (db) {
+  //        showError(e.toString());
+  //      }
+  //    } catch (IOException e) {
+  //      if (db) {
+  //        showError(e.toString());
+  //      }
+  //    }
+  //  }
 
   //  /**
   //   * Write configuration arguments.
@@ -290,25 +292,25 @@ public abstract class TestBed extends GeomApp {
   //    C.printGadgets(w, true);
   //  }
 
-//  /**
-//   * Read configuration arguments
-//   * 
-//   * @param tk
-//   *          Tokenizer producing values
-//   */
-//  private void readAppConfigArguments(Tokenizer tk) {
-//
-//    C.parseGadgets(tk);
-//
-//    //    Rectangle r = new Rectangle(C.vi(TBGlobals.TBFRAME + 0), C
-//    //        .vi(TBGlobals.TBFRAME + 1), C.vi(TBGlobals.TBFRAME + 2), C
-//    //        .vi(TBGlobals.TBFRAME + 3));
-//    //
-//    //    if (r.width > 0)
-//    //      desiredApplicationBounds = r;
-//  }
-//
- 
+  //  /**
+  //   * Read configuration arguments
+  //   * 
+  //   * @param tk
+  //   *          Tokenizer producing values
+  //   */
+  //  private void readAppConfigArguments(Tokenizer tk) {
+  //
+  //    C.parseGadgets(tk);
+  //
+  //    //    Rectangle r = new Rectangle(C.vi(TBGlobals.TBFRAME + 0), C
+  //    //        .vi(TBGlobals.TBFRAME + 1), C.vi(TBGlobals.TBFRAME + 2), C
+  //    //        .vi(TBGlobals.TBFRAME + 3));
+  //    //
+  //    //    if (r.width > 0)
+  //    //      desiredApplicationBounds = r;
+  //  }
+  //
+
   private void addMenus0() {
 
     //    C.sOpenMenu(TBGlobals.MENU_TESTBED, parms.menuTitle);
@@ -391,7 +393,7 @@ public abstract class TestBed extends GeomApp {
     parentPanel.setLayout(new BorderLayout());
     parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
     parentPanel.add(infoPanel(), BorderLayout.SOUTH);
-    
+
     {
       operList = new DArray();
       C.init();
@@ -409,13 +411,8 @@ public abstract class TestBed extends GeomApp {
     }
 
     addMenus0();
-
-    //processConfigFile();
-
-    programBegun = true;
-
     initTestbed();
-  }
+    }
 
   // TODO: we need to call readGadgetGUIValues at startup at some point
 
@@ -505,7 +502,7 @@ public abstract class TestBed extends GeomApp {
 
   // true if beginProgram() has been called yet.  If not,
   // we consume any actions without reporting them to the program.
-  private boolean programBegun;
+  // private boolean programBegun;
 
   static int nOpers() {
     return operList.size();
@@ -572,50 +569,50 @@ public abstract class TestBed extends GeomApp {
   // singleton TestBed instance
   //  public static TestBed app;
 
-//  /**
-//   * Modify GUI appearance to match values in gadgets. If program not
-//   * initialized yet, does nothing.
-//   */
-//  void readGadgetGUIValues() {
-//    if (programBegun) {
-//      final boolean db = false;
-//
-//      Rectangle r = new Rectangle(C.vi(TBGlobals.TBFRAME + 0), C.vi(TBGlobals.TBFRAME + 1),
-//          C.vi(TBGlobals.TBFRAME + 2), C.vi(TBGlobals.TBFRAME + 3));
-//
-//      if (db)
-//        Streams.out.println(Tools.stackTrace() + " app rect=" + r);
-//
-//      todo("restore app frame loc and size");
-//      //      if (r.width > 0) {
-//      //        appFrame().setLocation(r.x, r.y);
-//      //        appFrame().setSize(r.width, r.height);
-//      //      } else {
-//      //        appFrame().setLocationRelativeTo(null);
-//      //      }
-//    }
-//  }
+  //  /**
+  //   * Modify GUI appearance to match values in gadgets. If program not
+  //   * initialized yet, does nothing.
+  //   */
+  //  void readGadgetGUIValues() {
+  //    if (programBegun) {
+  //      final boolean db = false;
+  //
+  //      Rectangle r = new Rectangle(C.vi(TBGlobals.TBFRAME + 0), C.vi(TBGlobals.TBFRAME + 1),
+  //          C.vi(TBGlobals.TBFRAME + 2), C.vi(TBGlobals.TBFRAME + 3));
+  //
+  //      if (db)
+  //        Streams.out.println(Tools.stackTrace() + " app rect=" + r);
+  //
+  //      todo("restore app frame loc and size");
+  //      //      if (r.width > 0) {
+  //      //        appFrame().setLocation(r.x, r.y);
+  //      //        appFrame().setSize(r.width, r.height);
+  //      //      } else {
+  //      //        appFrame().setLocationRelativeTo(null);
+  //      //      }
+  //    }
+  //  }
 
-  /**
-   * Read GUI appearance, write to gadget values. If program not initialized
-   * yet, does nothing.
-   */
-  void writeGadgetGUIValues() {
-    if (programBegun) {
-      todo("persist frame bounds somewhere");
-      //      // read frame bounds to gadgets, so they are serialized along with other
-      //      // persistent values
-      //
-      //      Rectangle r = appFrame().getBounds();
-      //
-      //      if (db)
-      //        System.out.println(Tools.stackTrace() + " writing TBFRAME " + r);
-      //      C.seti(TBGlobals.TBFRAME + 0, r.x);
-      //      C.seti(TBGlobals.TBFRAME + 1, r.y);
-      //      C.seti(TBGlobals.TBFRAME + 2, r.width);
-      //      C.seti(TBGlobals.TBFRAME + 3, r.height);
-    }
-  }
+  //  /**
+  //   * Read GUI appearance, write to gadget values. If program not initialized
+  //   * yet, does nothing.
+  //   */
+  //  void writeGadgetGUIValues() {
+  //    if (programBegun) {
+  //      todo("persist frame bounds somewhere");
+  //      //      // read frame bounds to gadgets, so they are serialized along with other
+  //      //      // persistent values
+  //      //
+  //      //      Rectangle r = appFrame().getBounds();
+  //      //
+  //      //      if (db)
+  //      //        System.out.println(Tools.stackTrace() + " writing TBFRAME " + r);
+  //      //      C.seti(TBGlobals.TBFRAME + 0, r.x);
+  //      //      C.seti(TBGlobals.TBFRAME + 1, r.y);
+  //      //      C.seti(TBGlobals.TBFRAME + 2, r.width);
+  //      //      C.seti(TBGlobals.TBFRAME + 3, r.height);
+  //    }
+  //  }
 
   @Override
   public float zoomFactor() {

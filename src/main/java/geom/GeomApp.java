@@ -88,6 +88,9 @@ public abstract class GeomApp extends GUIApp {
     if (currentProject().isDefault())
       return;
     flushProject();
+
+    C.setGadgetsActive(false, "closing project");
+
     mCurrentProject = Project.DEFAULT_INSTANCE;
     removeUIElements();
     recentProjects().setCurrentFile(null);
@@ -120,12 +123,21 @@ public abstract class GeomApp extends GUIApp {
     updateTitle();
     discardMenuBar();
 
+    updateGadgetValues(projectState().widgetsState());
+
+    C.setGadgetsActive(true, "openProject");
+
+    // Propagate all values to gadgets
+    todo("propagate script/project state to gadgets");
+    todo("figure out source of state; project and/or script?");
+    todo("is this the best place to do this?  should there be a listener of some sort?");
+
     // Make sure the UI is updated to represent this project's state,
     // and to make sure the keyboard shortcuts work (something to do with focus?)
     //
     performRepaint(REPAINT_ALL);
-    
-    pr("opening project, test gadget value:",C.vi(1801));
+
+    pr("opening project, test gadget value:", C.vi(1801));
   }
 
   public final void openAppropriateProject() {
@@ -161,6 +173,17 @@ public abstract class GeomApp extends GUIApp {
     if (currentProject().scriptIndex() != index) {
       currentProject().setScriptIndex(index);
       scriptManager().replaceCurrentScriptWith(currentProject().script());
+
+      if (C.gadgetsActive()) {
+        todo("turn off gadgets, send values from script, turn back on");
+        // C.setGadgetsActive(false);
+
+        // Maybe only a subset of gadgets are written to scripts?
+        // updateGadgetValues(scriptState().widgetsState());
+        //  C.setGadgetsActive(true);
+      } else {
+        pr("*** gadgets weren't active, unexpected");
+      }
     }
   }
 
@@ -413,6 +436,7 @@ public abstract class GeomApp extends GUIApp {
   // ------------------------------------------------------------------
 
   private String compileWidgetsState() {
+    checkState(C.gadgetsActive(),"attempt to compile gadgets while not active");
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     C.printGadgets(pw, true);
@@ -421,8 +445,11 @@ public abstract class GeomApp extends GUIApp {
 
   private void restoreWidgetsState(String s) {
     todo("catch exceptions here");
-      Tokenizer tk = new Tokenizer(s, true);
-      C.parseGadgets(tk);
+    Tokenizer tk = new Tokenizer(s, true);
+    C.parseGadgets(tk);
   }
-  
+
+  private void updateGadgetValues(String s) {
+    todo("updateGadgetValues");
+  }
 }

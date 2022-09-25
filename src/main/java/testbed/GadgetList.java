@@ -425,17 +425,8 @@ final class GadgetList {
           break;
         case Gadget.DT_INT:
           v = tk.readInt();
-          if (id == Gadget.TEST_GADGET) {
-            if (alert("special test")) {
-              pr("restored value:", v);
-              v = 98;
-              pr("replacing with:", v);
-            }
-          }
           break;
         }
-        //        Streams.out.println("attempting to write value="+Tools.d(v)+" to gadget "+g);
-        //pr("writing value:", v, "to gadget:", g.getId());
         g.writeValue(v);
       }
     }
