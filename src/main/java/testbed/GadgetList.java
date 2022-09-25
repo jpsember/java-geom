@@ -221,7 +221,6 @@ final class GadgetList {
    */
   public JSMap getValues(boolean configContext) {
     todo("some of the gadgets are being stored as strings, which probably doesn't make sense");
-    todo("consider storing widgetState field as JSMap instead of string");
     final boolean db = false;
 
     if (db)

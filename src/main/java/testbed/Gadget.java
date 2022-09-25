@@ -15,7 +15,7 @@ import java.util.List;
  */
 abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener {
 
-  public static final int DT_STRING = 0, DT_INT = 1, DT_DOUBLE = 2, DT_BOOL = 3;
+  public static final int DT_STRING = 0, DT_INT = 1, DT_DOUBLE = 2, DT_BOOL = 3, DT_IRECT = 4;
 
   public Gadget(int id, int dataType) {
     mId = id;

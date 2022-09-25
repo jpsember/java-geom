@@ -9,6 +9,7 @@ import static js.base.Tools.*;
 public class C implements Globals {
 
   private C() {
+    loadTools();
   }
 
   /**
@@ -20,10 +21,7 @@ public class C implements Globals {
     return sGadgetsActive;
   }
 
-  public static void setGadgetsActive(boolean state, String devMessage) {
-    if (sGadgetsActive == state)
-      return;
-    pr("setting gadgets_active to:", state, ";", devMessage);
+  public static void setGadgetsActive(boolean state) {
     sGadgetsActive = state;
   }
 
@@ -837,6 +835,11 @@ public class C implements Globals {
       ctrlPanels[i] = new ControlPanel();
     inComboBox = false;
     mGadgetSet = new GadgetList();
+    
+
+    // Add gadget for persisting frame bounds
+    C.add(new AppFrameGadget(TBGlobals.APP_FRAME));
+
     script = null;
     tabPaneCount = 0;
     tabSetCount = 0;

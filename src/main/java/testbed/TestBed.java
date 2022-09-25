@@ -171,161 +171,7 @@ public abstract class TestBed extends GeomApp {
     return (TestBed) GeomApp.singleton();
   }
 
-  //  private String configFile;
-  //
-  //  private String getConfigFile() {
-  //    if (configFile == null) {
-  //      StringBuilder sb = new StringBuilder();
-  //      sb.append(".");
-  //      sb.append(name().toLowerCase());
-  //      sb.append("_");
-  //      sb.append("config.txt");
-  //      for (int i = sb.length() - 1; i >= 0; i--)
-  //        if (sb.charAt(i) == ' ')
-  //          sb.deleteCharAt(i);
-  //      configFile = sb.toString().toLowerCase();
-  //    }
-  //    return configFile;
-  //  }
-
-  //  /**
-  //   * Write configuration file. If program hasn't finished initializing, does
-  //   * nothing.
-  //   */
-  //  public void writeConfigFile() {
-  //    todo("writeConfigFile; begun:",programBegun);
-  //    if (programBegun) {
-  //      writeConfigFile2();
-  //    }
-  //  }
-  //
-  //  private void writeConfigFile2() {
-  //        final boolean db = true;
-  //    
-  //        // write to a string, then see if writing to disk is actually necessary.
-  //        StringWriter sw = new StringWriter();
-  //        PrintWriter pw = new PrintWriter(sw);
-  //        C.printGadgets(pw, true);
-  //    
-  //        // writeAppConfigArguments(pw);
-  //    
-  //        String str = sw.toString();
-  //        if (!str.equals(oldConfigFile)) {
-  //          synchronized (this) {
-  //            oldConfigFile = str;
-  //            if (db)
-  //              Streams.out.println("writing new config file: " + str.hashCode());
-  //            try {
-  //              Writer w = Streams.writer(getConfigFile());
-  //              w.write(str);
-  //              w.close();
-  //            } catch (IOException e) {
-  //              showError(e.toString());
-  //            }
-  //          }
-  //        }
-  //  }
-  //
-  //  private String oldConfigFile = "";
-
-  //  /**
-  //   * Process configuration file 
-  //   */
-  //  private void processConfigFile() {
-  //    todo("replace this with projectState");
-  //    final boolean db = false;
-  //
-  //    if (db) {
-  //      System.out.println("processConfigFile");
-  //    }
-  //    try {
-  //      todo("reading config file:",getConfigFile());
-  //      String s = Streams.readTextFile(getConfigFile());
-  //      //      oldConfigFile = s;
-  //      if (db) {
-  //        System.out.println(" string=" + s);
-  //      }
-  //      Tokenizer tk = new Tokenizer(s, true);
-  //      readAppConfigArguments(tk);
-  //    } catch (ScanException e) {
-  //      if (db) {
-  //        showError(e.toString());
-  //      }
-  //    } catch (IOException e) {
-  //      if (db) {
-  //        showError(e.toString());
-  //      }
-  //    }
-  //  }
-
-  //  /**
-  //   * Write configuration arguments.
-  //   * @param w  writer
-  //   */
-  //  private void writeAppConfigArguments(PrintWriter w) {
-  //
-  ////    // read frame bounds to gadgets, so they are serialized along with other
-  ////    // persistent values
-  ////
-  ////    Rectangle r = appFrame().getBounds();
-  ////
-  ////    if (DBF)
-  ////      System.out.println(Tools.stackTrace() + " writing TBFRAME " + r + "\n"
-  ////          + Tools.st());
-  ////    C.seti(TBGlobals.TBFRAME + 0, r.x);
-  ////    C.seti(TBGlobals.TBFRAME + 1, r.y);
-  ////    C.seti(TBGlobals.TBFRAME + 2, r.width);
-  ////    C.seti(TBGlobals.TBFRAME + 3, r.height);
-  ////
-  ////    if (spCtrls != null) {
-  ////      int loc = spCtrls.getDividerLocation();
-  ////
-  ////      C.seti(TBGlobals.TBCTRLSLIDER, loc);
-  ////      if (DBF) {
-  ////        System.out.println("storing div loc " + loc + " in TBCTRLSLIDER:"
-  ////            + TBGlobals.TBCTRLSLIDER + "\n" + Tools.stackTrace(0, 3));
-  ////      }
-  ////    }
-  ////    if (spConsole != null) {
-  ////      C.seti(TBGlobals.TBCONSOLESLIDER, spConsole.getDividerLocation());
-  ////    }
-  //    C.printGadgets(w, true);
-  //  }
-
-  //  /**
-  //   * Read configuration arguments
-  //   * 
-  //   * @param tk
-  //   *          Tokenizer producing values
-  //   */
-  //  private void readAppConfigArguments(Tokenizer tk) {
-  //
-  //    C.parseGadgets(tk);
-  //
-  //    //    Rectangle r = new Rectangle(C.vi(TBGlobals.TBFRAME + 0), C
-  //    //        .vi(TBGlobals.TBFRAME + 1), C.vi(TBGlobals.TBFRAME + 2), C
-  //    //        .vi(TBGlobals.TBFRAME + 3));
-  //    //
-  //    //    if (r.width > 0)
-  //    //      desiredApplicationBounds = r;
-  //  }
-  //
-
   private void addMenus0() {
-
-    //    C.sOpenMenu(TBGlobals.MENU_TESTBED, parms.menuTitle);
-    //
-    //    C.sMenuItem(TBGlobals.ABOUT, "About Testbed", null);
-    //    C.sMenuSep();
-    //
-    //    C.sMenuSep();
-    //    if (parms.algTrace) {
-    //      C.sMenuItem(TBGlobals.TRACEBWD, "Trace bwd", "!^#" + KeyEvent.VK_LEFT);
-    //      C.sMenuItem(TBGlobals.TRACEFWD, "Trace fwd", "!^#" + KeyEvent.VK_RIGHT);
-    //
-    //    }
-    //    C.sMenuItem(TBGlobals.QUIT, "Quit", "!^q");
-    //    C.sCloseMenu();
   }
 
   /**
@@ -362,11 +208,12 @@ public abstract class TestBed extends GeomApp {
     }
     C.sCloseTabSet();
 
-    // add controls for serializing TestBed variables
-    C.sStoreIntField(TBGlobals.TBFRAME + 0, 30);
-    C.sStoreIntField(TBGlobals.TBFRAME + 1, 30);
-    C.sStoreIntField(TBGlobals.TBFRAME + 2, 800);
-    C.sStoreIntField(TBGlobals.TBFRAME + 3, 600);
+    todo("persist app frame as gadget");
+//    // add controls for serializing TestBed variables
+//    C.sStoreIntField(TBGlobals.APP_FRAME + 0, 30);
+//    C.sStoreIntField(TBGlobals.APP_FRAME + 1, 30);
+//    C.sStoreIntField(TBGlobals.APP_FRAME + 2, 800);
+//    C.sStoreIntField(TBGlobals.APP_FRAME + 3, 600);
     C.sStoreIntField(TBGlobals.TBCTRLSLIDER, -1);
     C.sStoreIntField(TBGlobals.TBCONSOLESLIDER, -1);
   }
@@ -398,7 +245,7 @@ public abstract class TestBed extends GeomApp {
       operList = new DArray();
       C.init();
     }
-
+    
     parentPanel.add(C.getControlPanel(TBGlobals.CT_MAIN), BorderLayout.LINE_END);
     {
       C.openScript();

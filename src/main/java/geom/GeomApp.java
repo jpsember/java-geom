@@ -86,7 +86,7 @@ public abstract class GeomApp extends GUIApp {
       return;
     flushProject();
 
-    C.setGadgetsActive(false, "closing project");
+    C.setGadgetsActive(false);
 
     mCurrentProject = Project.DEFAULT_INSTANCE;
     removeUIElements();
@@ -115,14 +115,13 @@ public abstract class GeomApp extends GUIApp {
     scriptManager().replaceCurrentScriptWith(currentProject().script());
 
     // TODO: restore panel visibilities, etc according to project
-    appFrame().setBounds(projectState().appFrame());
     updateTitle();
     discardMenuBar();
 
     // Now that gadgets have been built, restore their state
     C.readGadgetValuesFromMap(projectState().widgetStateMap());
 
-    C.setGadgetsActive(true, "openProject");
+    C.setGadgetsActive(true);
 
     // Make sure the UI is updated to represent this project's state,
     // and to make sure the keyboard shortcuts work (something to do with focus?)
@@ -152,8 +151,6 @@ public abstract class GeomApp extends GUIApp {
   public final void flushProject() {
     if (!currentProject().defined())
       return;
-    // Store the app frame location, in case it has changed
-    projectState().appFrame(appFrame().bounds());
     projectState().widgetStateMap(C.constructGadgetValueMap(true));
     currentProject().flush();
   }
@@ -165,7 +162,8 @@ public abstract class GeomApp extends GUIApp {
       scriptManager().replaceCurrentScriptWith(currentProject().script());
 
       if (C.gadgetsActive()) {
-        todo("turn off gadgets, send values from script, turn back on; have project vs script class for gadgets");
+        todo(
+            "turn off gadgets, send values from script, turn back on; have project vs script class for gadgets");
         // C.setGadgetsActive(false);
         // Maybe only a subset of gadgets are written to scripts?
         // updateGadgetValues(scriptState().widgetsState());

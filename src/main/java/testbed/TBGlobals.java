@@ -18,11 +18,12 @@ interface TBGlobals {
   // ids from 8900..8999 are not read/written to individual file headers,
       // but are written to configuration files
       CONFIGSTART = 8900,
+      
+      APP_FRAME = 8904,
       //
       // start of ids for serializing TestBed variables
-      TBFRAME = 8903, // x, y, width, height
-      TBCTRLSLIDER = TBFRAME + 4,
-      TBCONSOLESLIDER = TBFRAME + 5,
+      TBCTRLSLIDER = 8907,
+      TBCONSOLESLIDER = 8908,
 
       //
       CONFIGEND = 9000,
