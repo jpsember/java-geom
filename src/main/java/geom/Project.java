@@ -87,19 +87,18 @@ public final class Project extends BaseObject {
         if (verbose())
           log("looking for template state in:", Files.infoMap(projectForDefaultStateOrNull));
         if (stateFile.exists()) {
-*/                            %%% // gitdiff marker
           if (false) {
             projectState = Files.parseAbstractDataOpt(ProjectState.DEFAULT_INSTANCE, stateFile).toBuilder()//
                 .currentScriptIndex(0);
-          }else {
-          try {
-             projectState = Files.parseAbstractDataOpt(ProjectState.DEFAULT_INSTANCE, stateFile).toBuilder()//
-                .currentScriptIndex(0);
-          } catch (Throwable t) {
-            pr("*** Problem parsing project state");
-            pr("*** File:", INDENT, Files.infoMap(stateFile));
-            pr("content:", INDENT, Files.readString(stateFile));
-          }
+          } else {
+            try {
+              projectState = Files.parseAbstractDataOpt(ProjectState.DEFAULT_INSTANCE, stateFile).toBuilder()//
+                  .currentScriptIndex(0);
+            } catch (Throwable t) {
+              pr("*** Problem parsing project state");
+              pr("*** File:", INDENT, Files.infoMap(stateFile));
+              pr("content:", INDENT, Files.readString(stateFile));
+            }
           }
         }
       }
