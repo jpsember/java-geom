@@ -89,6 +89,13 @@ public class C implements Globals {
   }
 
   /**
+   * Add a hidden gadget
+   */
+  public static Gadget addHidden(int id, Object defaultValue) {
+    return mGadgetSet.addHidden(id, defaultValue);
+  }
+
+  /**
    * Adjust a gadget's enabled state
    * 
    * @param id
@@ -204,14 +211,12 @@ public class C implements Globals {
     return mGadgetSet.doubleValue(id);
   }
 
+  public static float vf(int id) {
+    return ((Number) mGadgetSet.get(id).readValue()).floatValue();
+  }
+
   /**
    * Set double value of gadget
-   * 
-   * @param id
-   *          id of gadget
-   * @param v
-   *          value to set
-   * @return new value
    */
   public static double setd(int id, double v) {
     mGadgetSet.setValue(id, v);
@@ -219,41 +224,19 @@ public class C implements Globals {
   }
 
   /**
+   * Set float value of gadget
+   */
+  public static double set(int id, float v) {
+    mGadgetSet.setValue(id, v);
+    return v;
+  }
+
+  /**
    * Get (string) value of gadget
-   * 
-   * @param id
-   *          id of gadget
-   * @return string value
    */
   public static String vs(int id) {
     return mGadgetSet.stringValue(id);
   }
-
-  /**
-   * Set value of (string-valued) gadget
-   * 
-   * @param id
-   *          id of gadget
-   * @param s
-   *          object to set value to; if null, sets to empty string; otherwise,
-   *          calls object's toString() method
-   * @return new value
-   */
-  public static String sets(int id, Object s) {
-    String str = "";
-    if (s != null)
-      str = s.toString();
-    mGadgetSet.setValue(id, str);
-    return str;
-  }
-
-  //  /**
-  //   * Add a menu 
-  //   * @param script : script describing menu
-  //   */
-  //    static void addMenu(String script) {
-  //    menuPanel.processScript(script);
-  //  }
 
   static Component getComponent(int id) {
     return mGadgetSet.get(id).getComponent();
@@ -451,18 +434,6 @@ public class C implements Globals {
     if (defaultValue == null)
       defaultValue = "";
     sLbl(defaultValue);
-  }
-
-  /**
-   * Add a gadget that is not displayed, but is capable of storing an integer
-   * 
-   * @param id
-   *          id
-   * @param defaultValue
-   *          default value
-   */
-  public static void sStoreIntField(int id, int defaultValue) {
-    sTextField(id, null, null, 11, true, Integer.toString(defaultValue));
   }
 
   /**
@@ -835,10 +806,11 @@ public class C implements Globals {
       ctrlPanels[i] = new ControlPanel();
     inComboBox = false;
     mGadgetSet = new GadgetList();
-    
 
     // Add gadget for persisting frame bounds
     C.add(new AppFrameGadget(TBGlobals.APP_FRAME));
+    // Add gadget for persisting zoom factor
+    C.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
 
     script = null;
     tabPaneCount = 0;

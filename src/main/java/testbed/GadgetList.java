@@ -184,6 +184,13 @@ final class GadgetList {
     mGadgetMap.put(c.getId(), c);
   }
 
+  public Gadget addHidden(int id, Object defaultValue) {
+    checkState(!exists(id));
+    Gadget g = new HiddenGadget(id, defaultValue);
+    add(g);
+    return g;
+  }
+
   /**
    * Get string describing object
    * 
@@ -271,4 +278,24 @@ final class GadgetList {
 
   private SortedMap<Integer, Gadget> mGadgetMap = treeMap();
 
+  private static class HiddenGadget extends Gadget {
+
+    public HiddenGadget(int id, Object defaultValue) {
+      super(id, -1);
+      mValue = defaultValue;
+    }
+
+    @Override
+    public Object readValue() {
+      return mValue;
+    }
+
+    @Override
+    public void writeValue(Object v) {
+      checkArgument(v != null);
+      mValue = v;
+    }
+
+    private Object mValue;
+  }
 }

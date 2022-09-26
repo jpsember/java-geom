@@ -20,10 +20,7 @@ interface TBGlobals {
       CONFIGSTART = 8900,
       
       APP_FRAME = 8904,
-      //
-      // start of ids for serializing TestBed variables
-      TBCTRLSLIDER = 8907,
-      TBCONSOLESLIDER = 8908,
+EDITOR_ZOOM = 8903,
 
       //
       CONFIGEND = 9000,

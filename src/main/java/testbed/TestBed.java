@@ -208,22 +208,7 @@ public abstract class TestBed extends GeomApp {
     }
     C.sCloseTabSet();
 
-    todo("persist app frame as gadget");
-//    // add controls for serializing TestBed variables
-//    C.sStoreIntField(TBGlobals.APP_FRAME + 0, 30);
-//    C.sStoreIntField(TBGlobals.APP_FRAME + 1, 30);
-//    C.sStoreIntField(TBGlobals.APP_FRAME + 2, 800);
-//    C.sStoreIntField(TBGlobals.APP_FRAME + 3, 600);
-    C.sStoreIntField(TBGlobals.TBCTRLSLIDER, -1);
-    C.sStoreIntField(TBGlobals.TBCONSOLESLIDER, -1);
   }
-
-  //  /**
-  //   * Cause a repaint of the view panel in the next 1/10 second
-  //   */
-  //  public static void updateView() {
-  //    V.repaint();
-  //  }
 
   /**
    * Perform any initialization operations. User should override this method if
@@ -245,7 +230,7 @@ public abstract class TestBed extends GeomApp {
       operList = new DArray();
       C.init();
     }
-    
+
     parentPanel.add(C.getControlPanel(TBGlobals.CT_MAIN), BorderLayout.LINE_END);
     {
       C.openScript();
@@ -259,7 +244,7 @@ public abstract class TestBed extends GeomApp {
 
     addMenus0();
     initTestbed();
-    }
+  }
 
   // TODO: we need to call readGadgetGUIValues at startup at some point
 
@@ -405,73 +390,16 @@ public abstract class TestBed extends GeomApp {
 
   // --------- These static members must be initialized by doInit() ----
   private static List<TestBedOperation> operList;
-  //  private static WorkFile workFile;
-  //private static String filePath;
-  //  // desired bounds for application window
-  //  private static Rectangle desiredApplicationBounds;
-
-  //  // cache for old configuration file contents, to determine if new one
-  //  // needs to be written when program exits
-  //  private static String oldConfigFile = "";
-  // singleton TestBed instance
-  //  public static TestBed app;
-
-  //  /**
-  //   * Modify GUI appearance to match values in gadgets. If program not
-  //   * initialized yet, does nothing.
-  //   */
-  //  void readGadgetGUIValues() {
-  //    if (programBegun) {
-  //      final boolean db = false;
-  //
-  //      Rectangle r = new Rectangle(C.vi(TBGlobals.TBFRAME + 0), C.vi(TBGlobals.TBFRAME + 1),
-  //          C.vi(TBGlobals.TBFRAME + 2), C.vi(TBGlobals.TBFRAME + 3));
-  //
-  //      if (db)
-  //        Streams.out.println(Tools.stackTrace() + " app rect=" + r);
-  //
-  //      todo("restore app frame loc and size");
-  //      //      if (r.width > 0) {
-  //      //        appFrame().setLocation(r.x, r.y);
-  //      //        appFrame().setSize(r.width, r.height);
-  //      //      } else {
-  //      //        appFrame().setLocationRelativeTo(null);
-  //      //      }
-  //    }
-  //  }
-
-  //  /**
-  //   * Read GUI appearance, write to gadget values. If program not initialized
-  //   * yet, does nothing.
-  //   */
-  //  void writeGadgetGUIValues() {
-  //    if (programBegun) {
-  //      todo("persist frame bounds somewhere");
-  //      //      // read frame bounds to gadgets, so they are serialized along with other
-  //      //      // persistent values
-  //      //
-  //      //      Rectangle r = appFrame().getBounds();
-  //      //
-  //      //      if (db)
-  //      //        System.out.println(Tools.stackTrace() + " writing TBFRAME " + r);
-  //      //      C.seti(TBGlobals.TBFRAME + 0, r.x);
-  //      //      C.seti(TBGlobals.TBFRAME + 1, r.y);
-  //      //      C.seti(TBGlobals.TBFRAME + 2, r.width);
-  //      //      C.seti(TBGlobals.TBFRAME + 3, r.height);
-  //    }
-  //  }
 
   @Override
   public float zoomFactor() {
-    return mZoomFactor;
+    return C.vf(TBGlobals.EDITOR_ZOOM);
   }
 
   @Override
   public void setZoomFactor(float zoom) {
-    mZoomFactor = zoom;
+    C.set(TBGlobals.EDITOR_ZOOM, zoom);
   }
-
-  private float mZoomFactor = 1f;
 
   @Override
   public void paintStart(Graphics2D graphics) {
