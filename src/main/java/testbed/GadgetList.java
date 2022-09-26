@@ -51,12 +51,18 @@ final class GadgetList {
    * Get value of integer-valued gadget
    */
   public int intValue(int id) {
-    Gadget obj = get(id);
-    if (obj == null) {
-      return 0;
-    }
-    Number num = (Number) obj.readValue();
-    return num.intValue();
+    return numValue(id).intValue();
+  }
+
+  public Number numValue(int id) {
+    return (Number) get(id).readValue();
+  }
+
+  /**
+   * Get value of double-valued gadget
+   */
+  public double doubleValue(int id) {
+    return numValue(id).doubleValue();
   }
 
   /**
@@ -78,46 +84,16 @@ final class GadgetList {
 
   /**
    * Set value of integer-valued gadget
-   * 
-   * @param id
-   *          int
-   * @param v
-   *          int
    */
   public void setValue(int id, int v) {
-    Object val = v;
-    Gadget g = get(id);
-    if (g.dataType() == Gadget.DT_STRING)
-      val = Integer.toString(v);
-    g.writeValue(val);
+    get(id).writeValue(v);
   }
 
   /**
    * Set value of boolean-valued gadget
-   * 
-   * @param id
-   *          int
-   * @param v
-   *          boolean
    */
   public void setValue(int id, boolean v) {
-    Gadget g = get(id);
-    if (g != null)
-      g.writeValue(v);
-  }
-
-  /**
-   * Get value of double-valued gadget
-   * 
-   * @param id
-   *          : id of gadget
-   * @return value
-   */
-  public double doubleValue(int id) {
-    final boolean db = false;
-    if (db)
-      System.out.println("doubleValue id=" + id + " readValue is " + get(id).readValue());
-    return ((Double) get(id).readValue());
+    get(id).writeValue(v);
   }
 
   /**

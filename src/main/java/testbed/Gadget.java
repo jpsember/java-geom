@@ -15,23 +15,18 @@ import java.util.List;
  */
 abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener {
 
-  public static final int DT_STRING = 0, DT_INT = 1, DT_DOUBLE = 2, DT_BOOL = 3, DT_IRECT = 4;
+  public static final int DT_STRING = 0, DT_INT = 1, DT_DOUBLE = 2, DT_BOOL = 3;
 
   public Gadget(int id, int dataType) {
     mId = id;
-    mDataType = dataType;
+    todo("can we get rid of the gadget datatype?  Mostly unused");
   }
 
   public final int getId() {
     return mId;
   }
 
-  public final int dataType() {
-    return mDataType;
-  }
-
   public final void stateChanged(ChangeEvent changeEvent) {
-    loadTools();
     TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
   }
 
@@ -132,8 +127,6 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
   }
 
   private final int mId;
-  // type of data (DT_xxx)
-  private final int mDataType;
   private Component mComponent;
   // list of child controls
   private List<Integer> mChildIds = arrayList();

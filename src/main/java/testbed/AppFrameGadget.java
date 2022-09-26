@@ -8,9 +8,9 @@ import js.json.JSList;
 public class AppFrameGadget extends Gadget {
 
   public AppFrameGadget(int id) {
-    super(id, DT_IRECT);
-    todo("can we get rid of the gadget datatype?  Mostly unused");
-  }
+    super(id, -1);
+    loadTools();
+   }
 
   @Override
   public JSList readValue() {
