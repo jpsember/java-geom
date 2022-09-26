@@ -234,6 +234,7 @@ public class C implements Globals {
    * 
    * @return StringBuilder containing script
    */
+  @Deprecated
   static void openScript() {
     script = new StringBuilder();
   }
@@ -243,6 +244,7 @@ public class C implements Globals {
    * 
    * @return String
    */
+  @Deprecated
   static String closeScript() {
     String s = script.toString();
     script = null;

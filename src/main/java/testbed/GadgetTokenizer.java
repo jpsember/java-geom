@@ -57,42 +57,44 @@ import java.io.*;
   }
 
   /**
-   * Determine the alignment status for a label.  If the first
-   * character of a label (after the opening quote) is <,|,>, the
-   * alignment is set to LEFT,CENTER,RIGHT.
-   * @param lbl : String containing label
-   * @param def : default alignment to return, if first char is other
+   * Determine the alignment status for a label. If the first character of a
+   * label (after the opening quote) is <,|,>, the alignment is set to
+   * LEFT,CENTER,RIGHT.
+   * 
+   * @param lbl
+   *          : String containing label
+   * @param def
+   *          : default alignment to return, if first char is other
    * @return alignment
    */
   private static int labelAlignment(char c, int def) {
     switch (c) {
-      case '|':
-        def = SwingConstants.CENTER;
-        break;
-      case '<':
-        def = SwingConstants.LEFT;
-        break;
-      case '>':
-        def = SwingConstants.RIGHT;
-        break;
+    case '|':
+      def = SwingConstants.CENTER;
+      break;
+    case '<':
+      def = SwingConstants.LEFT;
+      break;
+    case '>':
+      def = SwingConstants.RIGHT;
+      break;
     }
     return def;
   }
 
- 
-
   /**
    * Read next token as a label, and determine its alignment
+   * 
    * @return String
    */
   public String readLabel(Token t) {
     String lbl = t.text();
     // convert label to unicode
-    String lbl2 = TextScanner.convert(lbl,true,lbl.charAt(0));
+    String lbl2 = TextScanner.convert(lbl, true, lbl.charAt(0));
 
     int a = -1;
     if (lbl2.length() > 0)
-      a = labelAlignment(lbl2.charAt(0),-1);
+      a = labelAlignment(lbl2.charAt(0), -1);
 
     if (a >= 0) {
       lblAlignment = a;
@@ -108,10 +110,9 @@ import java.io.*;
     return def;
   }
 
-
   // private static DFA scriptDFA;
   private static DFA scriptDFA() {
-    return DFA.readFromSet(TestBed.class,"gadget.dfa");
+    return DFA.readFromSet(TestBed.class, "gadget.dfa");
   }
 
   // alignment to give next label
