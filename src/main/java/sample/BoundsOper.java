@@ -24,17 +24,19 @@ public class BoundsOper implements TestBedOperation, Globals {
 
   public void addControls() {
 
-    C.sOpenTab("Bounds");
-    C.sStaticText("Calculate minimum bounding box of objects");
+    ControlPanel c = C.controlPanel();
+    
+    c.sOpenTab("Bounds");
+    c.sStaticText("Calculate minimum bounding box of objects");
 
     {
-      C.sOpen();
-      C.sIntSlider(SEED, "Seed", "Random number generator seed", 0, 100, 0, 1);
-      C.sNewColumn();
-      C.sIntSpinner(COUNT, "Count", "Number to generate", 0, 100, 12, 1);
-      C.sClose();
+      c.sOpen();
+      c.sIntSlider(SEED, "Seed", "Random number generator seed", 0, 100, 0, 1);
+      c.sNewColumn();
+      c.sIntSpinner(COUNT, "Count", "Number to generate", 0, 100, 12, 1);
+      c.sClose();
     }
-    C.sCloseTab();
+    c.sCloseTab();
   }
 
   public void processAction(TBAction a) {

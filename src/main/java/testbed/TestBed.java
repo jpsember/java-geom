@@ -187,22 +187,21 @@ public abstract class TestBed extends GeomApp {
    * Add 'global' controls: available to all operations Default implementation
    * does nothing.
    */
-  public void addControls() {
+  public void addControls(ControlPanel c) {
   }
 
-  private void mainControlScript0() {
-    C.sCheckBox(TBGlobals.CTRLSVISIBLE, null, null, true);
+  private void mainControlScript0( ControlPanel c ) {
+   c.sCheckBox(TBGlobals.CTRLSVISIBLE, null, null, true);
 
-    C.sOpenTabSet(TBGlobals.AUXTABSET);
+    c.sOpenTabSet(TBGlobals.AUXTABSET);
     {
-      C.sOpenTab(TBGlobals.AUXTAB_TRACE, "Trace");
-      C.sCheckBox(TBGlobals.TRACEENABLED, "Enabled", "if true, enables algorithm tracing", true);
-      C.sCheckBox(TBGlobals.TRACEPLOT, "Messages", "plots trace text", true);
-      C.sIntSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
-      C.sCloseTab();
+      c.sOpenTab(TBGlobals.AUXTAB_TRACE, "Trace");
+      c.sCheckBox(TBGlobals.TRACEENABLED, "Enabled", "if true, enables algorithm tracing", true);
+      c.sCheckBox(TBGlobals.TRACEPLOT, "Messages", "plots trace text", true);
+      c.sIntSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
+      c.sCloseTab();
     }
-    C.sCloseTabSet();
-
+    c.sCloseTabSet();
   }
 
   /**
@@ -227,15 +226,25 @@ public abstract class TestBed extends GeomApp {
     }
 
     parentPanel.add(C.getControlPanel(TBGlobals.CT_MAIN), BorderLayout.LINE_END);
-    {
-      C.openScript();
-      mainControlScript0();
+    
+    //if (true) {
+      ControlPanel c = C.controlPanel();
+      c.prepareForGadgets();
+      mainControlScript0(c);
       addOperations();
-      addControls();
-      addOperCtrls();
-      String scr = C.closeScript();
-      C.addControls(scr);
-    }
+      addControls(c);
+      addOperCtrls(c);
+      C.finishedGadgets();
+//    } else
+//    {
+//      C.openScript();
+//      mainControlScript0();
+//      addOperations();
+//      addControls();
+//      addOperCtrls();
+//      String scr = C.closeScript();
+//      C.addControls(scr);
+//    }
 
     addMenus0();
     initTestbed();
@@ -341,15 +350,18 @@ public abstract class TestBed extends GeomApp {
   //
   //  private static FileStats fileStats;
 
-  private static void addOperCtrls() {
+  private static void addOperCtrls( ControlPanel c) {
     if (nOpers() > 0) {
-      C.sOpenTabSet(TBGlobals.OPER);
-      for (int i = 0; i < nOpers(); i++)
+      c.sOpenTabSet (TBGlobals.OPER);
+      for (int i = 0; i < nOpers(); i++) {
+       //c.prepareForGadgets();
         oper(i).addControls();
-      C.sCloseTabSet();
+       // c.finishedGadgets();
+      }
+      c.sCloseTabSet();
     } else {
-      C.sOpen();
-      C.sClose();
+      c.sOpen();
+      c.sClose();
     }
   }
 

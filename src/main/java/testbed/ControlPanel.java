@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Control panel class
  */
-class ControlPanel extends JPanel implements Globals, IScript {
+public class ControlPanel extends JPanel implements Globals, IScript {
 
   /**
    * Constructor
@@ -91,19 +91,8 @@ class ControlPanel extends JPanel implements Globals, IScript {
     addControl(box, toolTip);
   }
 
-  /**
-   * Process a script to add controls
-   * 
-   * @param script
-   *          script to process
-   */
-  void processScript(String script) {
-
-    //pr("ControlPanel: processScript["+script+"]");
-
-    boolean db = false;
-
-    // create an outermost panel for the script, and add it to 
+ public void prepareForGadgets() {
+    // create an outermost panel, and add it to 
     // this control panel, in the first row
     panel = new StackPanel(null);
     {
@@ -111,15 +100,31 @@ class ControlPanel extends JPanel implements Globals, IScript {
       gc.fill = GC.HORIZONTAL;
       add(panel.getComponent(), gc);
     }
-
-    if (db) {
-      System.out.println("processScript:\n[" + script + "]");
-    }
-    tk = new GadgetTokenizer(script);
-    hideNextControl = false;
-
     panelStack = arrayList();
+    pr("....preparing for gadgets",ST);
+    hideNextControl = false;
+  }
 
+ public void hideNextControl(boolean f) {
+    if (f )
+      hideNextControl = true;
+  }
+  
+ public void finishedGadgets() {
+   pr("...finished gadgets");
+    checkState(panelStack.isEmpty(), "panel stack isn't empty");
+    panelStack = null;
+  }
+
+  /**
+   * Process a script to add controls
+   * 
+   * @param script
+   *          script to process
+   */
+  void processScript(String script) {
+    prepareForGadgets();
+    tk = new GadgetTokenizer(script);
     processScript();
     tk.read(Token.T_EOF);
     tk = null;
@@ -132,6 +137,143 @@ class ControlPanel extends JPanel implements Globals, IScript {
     return tabId;
   }
 
+  public void sCheckBox( int id, String label, String toolTip, boolean defaultValue) {
+    hideNextControl(nullOrEmpty(label));
+//
+//    sText("c");
+//    sIValue(id);
+//    sLblnn(label);
+//    sLblnn(toolTip);
+//    sBool(defaultValue);
+//    sNewLine();
+//  }) {
+//    int id = tk.readInt();
+//    String label = tk.readIfLabel();
+//
+//    String toolTip = tk.readIfLabel();
+//    boolean defValue = tk.readIfBool(false);
+    addControl(new CtCheckBox(id, label, defaultValue, false, parseToolTip(toolTip), null), null);
+  }
+  
+  
+  
+  public   void sIntSlider(int id, String label, String toolTip, int minValue, int maxValue,
+      int defaultValue, int stepSize) {
+    
+    
+    
+    // s [<lbl:label>] <id:int> [<tooltip:label>] <min:int> <max:int> <def:int> <step:int> 
+   // boolean slider = (t.id(T_SLIDER_INT) || t.id(T_SLIDER_DBL));
+   // boolean dbl = (t.id(T_SLIDER_DBL) || t.id(T_SPIN_DBL));
+
+   // String lbl = tk.readIfLabel();
+   // int id = tk.readInt();
+   // String toolTip = tk.readIfLabel();
+//    double min = tk.readDouble();
+//    double max = tk.readDouble();
+//    double val = tk.readDouble();
+//    double step = tk.readDouble();
+
+     addSpinner(id, label, minValue, maxValue, defaultValue, stepSize, true, false, false, toolTip  );
+    
+    
+    
+    
+  }
+  public   void sIntSpinner(int id, String label, String toolTip, int minValue, int maxValue,
+      int defaultValue, int stepSize) {
+     addSpinner(id, label, minValue, maxValue, defaultValue, stepSize, false, false, false, toolTip  );
+  }
+  public void sOpen() {sOpen(null);
+  }
+  public void sOpen(String title) {
+  StackPanel prevScope = panel;
+  push(panelStack, panel);
+  panel = new StackPanel(title);
+  prevScope.addItem(panel.getComponent());
+ 
+  }
+  
+  public void sNewColumn() {
+    panel.startNewColumn();
+  }
+  
+  public void sClose() {
+    popScope();
+  }
+  
+  public void sStaticText(String text) {
+    
+  int colWidth = 0; //tk.readIfInt(0);
+  addControl(new CtLabel(colWidth, text).setId(C.getAnonId()), null);
+  }
+  
+  
+  
+  
+  
+  
+  private TabbedPaneGadget tb;
+  
+  public   void sOpenTabSet(int panelId) {
+    
+   // int panelId = readIdn();
+
+    todo("we need a stack of 'current' tabbed pane gadgets");
+    tb = new TabbedPaneGadget(true);
+    tb.setId(panelId);
+   
+//    
+//    
+//    tabSetCount++;
+//    // (h  [<tabsetid:int>] { [<tabid:int>] <tablabel:label> ( <gadgets:script> ) } )
+//    sText("(h");
+//    if (id >= 0)
+//      sIValue(id);
+  }
+  public void sCloseTabSet() {
+    panel.addItem(tb.getComponent());
+    addControl(tb, null);
+    tb = null;  
+  }
+  
+  public void sOpenTab(  String title) {
+    sOpenTab(0,title);
+  }
+  public void sOpenTab(int tabId, String title) {
+//    if (id >= TAB_ID_START)
+//      C.sIValue(id);
+    if (title == null)
+      title = "<name?>";
+    
+    
+    
+
+  //  for (int tabNumber = 0; !tk.readIf(T_PARCL); tabNumber++) {
+     // int tabId = tk.readIfInt(tabNumber);
+
+     // String tabLabel = tk.readLabel();
+      pushScope(null);
+      tb.addTab(title, tabId, panel.getComponent());
+//
+//      tk.read(T_PAROP);
+//      processScript();
+//      tk.read(T_PARCL);
+//      popScope();
+//    }
+//    
+//    
+//    C.sLbl(title);
+//    C.sText('(');
+//    sNewLine();
+//
+//    tabPaneCount++;
+//    
+  }
+  
+  public void sCloseTab() {
+    popScope(); }
+  
   private void processScript() {
     while (true) {
 
@@ -322,4 +464,5 @@ class ControlPanel extends JPanel implements Globals, IScript {
   // hide next control?
   private boolean hideNextControl;
   private GadgetTokenizer tk;
+
 }

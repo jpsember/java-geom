@@ -32,10 +32,10 @@ public class SampleMain extends TestBed {
   }
 
   @Override
-  public void addControls() {
-    C.sOpen();
-    C.sStaticText("This is where app-wide controls get added");
-    C.sClose();
+  public void addControls(ControlPanel c) {
+    c.sOpen();
+    c.sStaticText("This is where app-wide controls get added");
+    c.sClose();
   }
 
 }

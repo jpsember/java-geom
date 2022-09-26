@@ -58,6 +58,8 @@ public class C implements Globals {
    */
   public static void sCheckBox(int id, String label, String toolTip, boolean defaultValue) {
 
+    
+    
     // c <id:int> [<lbl:label>] [<tooltip:label>] <defvalue:bool> 
 
     if (label == null)
@@ -680,6 +682,7 @@ public class C implements Globals {
    * @param script
    *          : control script
    */
+  @Deprecated
   static void addControls(String script) {
     addControls(script, TBGlobals.CT_MAIN);
   }
@@ -692,8 +695,21 @@ public class C implements Globals {
    * @param panel
    *          : CT_xxx
    */
+  @Deprecated
   static void addControls(String script, int panel) {
     ctrlPanels[panel].processScript(script);
+  }
+
+ public static ControlPanel controlPanel() {
+    return ctrlPanels[TBGlobals.CT_MAIN];
+  }
+  
+ public  static void prepareForGadgets() {
+    controlPanel().prepareForGadgets();
+  }
+
+ public static void finishedGadgets() {
+    controlPanel().finishedGadgets();
   }
 
   /**
