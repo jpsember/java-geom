@@ -2,6 +2,7 @@ package base;
 
 import java.io.*;
 import java.util.List;
+import static js.base.Tools.*;
 
 public class TextScanner {
 
@@ -338,7 +339,8 @@ public class TextScanner {
   }
 
   public void pushTrace(boolean t) {
-    traceFlags.pushBoolean(tracing);
+    push(
+    traceFlags,tracing);
     setTrace(t);
   }
 
@@ -347,14 +349,14 @@ public class TextScanner {
   }
 
   public void popTrace() {
-    setTrace(traceFlags.popBoolean());
+    setTrace(pop(traceFlags ));
   }
 
   public void setTrace(boolean t) {
     tracing = t;
   }
 
-  private DArray traceFlags = new DArray();
+  private List<Boolean> traceFlags =arrayList();
 
   /**
    * Read a whitespace-delimited token from a reader.

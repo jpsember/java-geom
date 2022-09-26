@@ -1,6 +1,6 @@
 package testbed;
 
-import java.awt.*;
+import java.awt.Component;
 import java.util.*;
 import javax.swing.*;
 import base.*;
@@ -23,9 +23,7 @@ class TabbedPaneGadget extends Gadget {
     int si = tp.getSelectedIndex();
 
     // get id of this pane
-    int userId = ids.getInt(si);
-    val = userId;
-    //    val = ((userId & 0xffff) << 16) | si;
+    val = ids.get(si);
     if (db)
       Streams.out.println("readValue for selected pane=" + val);
     return val;
@@ -105,7 +103,7 @@ class TabbedPaneGadget extends Gadget {
 
     titles.add(title);
     idToIndexMap.put(pnlId, ids.size());
-    ids.addInt(pnlId);
+    ids.add(pnlId);
 
     getSet().add(title, component);
   }
@@ -115,7 +113,7 @@ class TabbedPaneGadget extends Gadget {
   private Map<Integer, Integer> idToIndexMap = hashMap();
 
   // titles of items
-  private DArray titles = new DArray();
+  private List<String> titles = arrayList();
   // ids of items
-  private DArray ids = new DArray();
+  private List<Integer> ids = arrayList();
 }

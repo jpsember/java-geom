@@ -2,8 +2,10 @@ package testbed;
 
 import base.*;
 import javax.swing.*;
-import java.awt.*;
 import static js.base.Tools.*;
+
+import java.awt.Component;
+import java.util.List;
 
 /**
  * Label gadget
@@ -29,13 +31,13 @@ class CtLabel extends Gadget {
     if (colWidth == 0) {
       c = new JLabel(label, SwingConstants.CENTER);
     } else {
-      DArray a = new DArray();
+      List<String> a = arrayList();
       TextScanner.splitString(label, colWidth, a);
       JPanel p = new JPanel();
       p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
 
       for (int i = 0; i < a.size(); i++) {
-        JLabel lbl = new JLabel(a.getString(i));
+        JLabel lbl = new JLabel(a.get(i));
         lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
         p.add(lbl);
       }

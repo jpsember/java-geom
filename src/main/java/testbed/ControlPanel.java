@@ -128,7 +128,7 @@ class ControlPanel extends JPanel implements Globals, IScript {
     tk = new GadgetTokenizer(script);
     hideNextControl = false;
 
-    panelStack = new DArray();
+    panelStack = arrayList();
 
     processScript();
     tk.read(Token.T_EOF);

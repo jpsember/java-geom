@@ -226,7 +226,7 @@ public abstract class TestBed extends GeomApp {
     parentPanel.add(infoPanel(), BorderLayout.SOUTH);
 
     {
-      operList = new DArray();
+      operList =arrayList();
       C.init();
     }
 
@@ -380,7 +380,7 @@ public abstract class TestBed extends GeomApp {
   }
 
   public static TestBedOperation oper(int n) {
-    return (TestBedOperation) operList.get(n);
+    return  operList.get(n);
   }
 
   public static boolean plotTraceMessages() {

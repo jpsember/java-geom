@@ -2,6 +2,7 @@ package base;
 
 import java.io.*;
 import java.util.*;
+import static js.base.Tools.*;
 
 /**
  * Deterministic Finite State Automaton
@@ -341,22 +342,6 @@ public class DFA {
 //      n = defaultTokenName(type);
 //    return n;
 //  }
-  /**
-   * @param type
-   * @return
-   */
-  private static String defaultTokenName(int type) {
-    String n = null;
-    switch (type) {
-    case Token.T_EOF:
-      n = "T_EOF";
-      break;
-    default:
-      n = "T_UNKNOWN:" + type;
-      break;
-    }
-    return n;
-  }
 
   private DFAState getState(int n) {
     return (DFAState) states.get(n);
@@ -367,7 +352,7 @@ public class DFA {
   }
 
   // dynamic array of states
-  private DArray states = new DArray();
+  private List<DFAState> states =arrayList();
 
   // start state of the DFA
   private int startState = -1;
