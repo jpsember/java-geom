@@ -1,32 +1,30 @@
 package base;
 
 public class Token {
-  public static final int T_EOF = -1,
-      T_ASCII = 0 // to 127
-      // range of legal ASCII values for terminal symbols in
-      // regular expressions:
-      , T_ASCII_END = 127, T_USER_OLD = 128, T_USER = 256,
-      T_USER_END = (1 << 15) - 1;
+  public static final int T_EOF = -1, T_ASCII = 0 // to 127
+  // range of legal ASCII values for terminal symbols in
+  // regular expressions:
+      , T_ASCII_END = 127, T_USER_OLD = 128, T_USER = 256, T_USER_END = (1 << 15) - 1;
 
   public static Token eofToken() {
     return eofToken;
   }
 
-  /**
-   * Get a string describing token, suitable for debugging.
-   * @return String
-   */
-  public String debug() {
-    StringBuilder sb = new StringBuilder("Token ");
-    sb.append("id=" + id);
-    Tools.tab(sb, 13);
-    sb.append(DFA.tokenName(dfa, id()));
-    //    sb.append(dfa == null ? DFA.defaultTokenName(id()) : dfa.tokenName(id()));
-    Tools.tab(sb, 35);
-    sb.append("text=");
-    sb.append(TextScanner.debug(text()));
-    return sb.toString();
-  }
+  //  /**
+  //   * Get a string describing token, suitable for debugging.
+  //   * @return String
+  //   */
+  //  public String debug() {
+  //    StringBuilder sb = new StringBuilder("Token ");
+  //    sb.append("id=" + id);
+  //    Tools.tab(sb, 13);
+  //    sb.append(DFA.tokenName(dfa, id()));
+  //    //    sb.append(dfa == null ? DFA.defaultTokenName(id()) : dfa.tokenName(id()));
+  //    Tools.tab(sb, 35);
+  //    sb.append("text=");
+  //    sb.append(TextScanner.debug(text()));
+  //    return sb.toString();
+  //  }
 
   public void exception(String descr) {
     StringBuilder sb = new StringBuilder("*** ");
@@ -74,13 +72,13 @@ public class Token {
   public Token(int id) {
     this(id, null);
   }
+
   public Token(int id, String text) {
     this.id = id;
     this.text = text;
   }
 
-  public Token(String source, String context, int line, int column,
-      String text, int id, DFA dfa) {
+  public Token(String source, String context, int line, int column, String text, int id, DFA dfa) {
     this.source = source;
     //    System.out.println("Token, setting context to "+context);
     this.context = context;
@@ -92,8 +90,7 @@ public class Token {
   }
 
   public Token(Token src) {
-    this(src.source, src.context, src.line, src.column, src.text, src.id,
-        src.dfa);
+    this(src.source, src.context, src.line, src.column, src.text, src.id, src.dfa);
     //    this.node = src.node;
   }
 
@@ -118,21 +115,22 @@ public class Token {
       throw new IllegalStateException();
     this.node = node;
   }
+
   public int node() {
     return this.node;
   }
 
-  public String idStr() {
-    return DFA.tokenName(dfa, id);
-    //    
-    //    String s = null;
-    //    if (dfa != null) {
-    //      s = DFA.tokenName(dfa, id); //dfa.tokenName(id);
-    //    } else {
-    //      s = "" + id;
-    //    }
-    //    return s;
-  }
+  //  public String idStr() {
+  //    return DFA.tokenName(dfa, id);
+  //    //    
+  //    //    String s = null;
+  //    //    if (dfa != null) {
+  //    //      s = DFA.tokenName(dfa, id); //dfa.tokenName(id);
+  //    //    } else {
+  //    //      s = "" + id;
+  //    //    }
+  //    //    return s;
+  //  }
 
   public boolean eof() {
     return id == T_EOF;
@@ -175,22 +173,8 @@ public class Token {
     return sb.toString();
   }
 
-  /**
-   * Get string describing object
-   * @return String
-   */
-  public String toString(boolean full) {
-    if (full) {
-      return display() + debug(); //"Id="+Tools.f(id)+" Text=<"+text+">\n";
-    } else {
-      String ret = text;
-      //ret = "<"+node+">"+ret;
-      return ret;
-    }
-  }
-
   public String toString() {
-    return toString(false);
+    return text;
   }
 
   public void setContext(String c) {

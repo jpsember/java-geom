@@ -1,6 +1,7 @@
 package base;
 
 import java.io.*;
+import java.util.List;
 
 public class ApplicationFileAccess implements IFileAccess {
   public boolean isApplet() {
@@ -12,7 +13,7 @@ public class ApplicationFileAccess implements IFileAccess {
 //    return new ApplicationFileChooser();
   }
 
-  public DArray getFileList(String dir, String extension) {
+  public List<File> getFileList(String dir, String extension) {
     throw new UnsupportedOperationException();
   }
 

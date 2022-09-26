@@ -296,13 +296,12 @@ class ControlPanel extends JPanel implements Globals, IScript {
       StringBuilder sb = new StringBuilder();
       sb.append("<html><center>");
 
-      DArray a = new DArray();
+      List<String> a = arrayList();
       TextScanner.splitString(s, 50, a);
       for (int i = 0; i < a.size(); i++) {
         if (i > 0)
           sb.append("<br>");
-        String s2 = a.getString(i);
-        sb.append(s2);
+        sb.append(a.get(i));
       }
       sb.append("</center></html>");
       s = sb.toString();

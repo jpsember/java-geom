@@ -1,6 +1,7 @@
 package base;
 
 import java.io.*;
+import java.util.List;
 
 public class TextScanner {
 
@@ -49,11 +50,11 @@ public class TextScanner {
     }
     return sysOutWriter;
   }
-
-  public String tokenName(Token t) {
-    return DFA.tokenName(dfa, t.id());
-    //(dfa == null) ? DFA.defaultTokenName(t.id()) : dfa.tokenName(t.id());
-  }
+//
+//  public String tokenName(Token t) {
+//    return DFA.tokenName(dfa, t.id());
+//    //(dfa == null) ? DFA.defaultTokenName(t.id()) : dfa.tokenName(t.id());
+//  }
 
   public static String convert(String orig) {
     return convert(orig, false, (char) 0);
@@ -674,9 +675,9 @@ public class TextScanner {
         }
         break;
       }
-      if (tracing) {
-        trace("Read: " + Tools.f(t.idStr(), 10) + " " + t.text());
-      }
+//      if (tracing) {
+//        trace("Read: " + Tools.f(t.idStr(), 10) + " " + t.text());
+//      }
       if (echo) {
         echo(t);
       }
@@ -803,35 +804,7 @@ public class TextScanner {
     return sb.toString();
   }
 
-  /**
-   * Extract tokens from a source.
-   * @param src : Reader to extract from
-   * @param srcDescription : description of source (e.g. filename)
-   * @param dfa : DFA to use, or null
-   * @param tokenIds : if not null, token ids stored here
-   * @param tokenNames : if not null, token names stored here
-   * @param skipType : if >= 0, token id to skip
-   * @return DArray of Tokens
-   */
-  public static DArray scanSource(Reader src, String srcDescription, DFA dfa,
-      DArray tokenIds, DArray tokenNames, int skipType) {
-    DArray tokens = new DArray();
-    TextScanner scan = new TextScanner(src, srcDescription, dfa, skipType);
-    while (true) {
-      Token t = scan.read();
-      if (t.eof()) {
-        break;
-      }
-      tokens.add(t);
-      if (tokenIds != null) {
-        tokenIds.addInt(t.id());
-      }
-      if (tokenNames != null) {
-        tokenNames.add(scan.tokenName(t));
-      }
-    }
-    return tokens;
-  }
+  
 
   // Character-based functions
 
@@ -1266,7 +1239,7 @@ public class TextScanner {
    * @param lst : substrings are stored here
    * @return int : length of longest substring
    */
-  public static int splitString(String str, int lineWidth, DArray lst) {
+  public static int splitString(String str, int lineWidth, List<String> lst) {
 
     int stringStart = 0;
     int lastSpace = -1;

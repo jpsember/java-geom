@@ -1,5 +1,6 @@
 package base;
 import java.io.*;
+import java.util.List;
 
 /**
  * This interface allows paths to be given as input and
@@ -26,9 +27,8 @@ public interface IFileAccess {
    * Get a list of files within a directory that have a particular extension
    * @param dir : directory
    * @param extension 
-   * @return DArray of files
    */
-  public DArray getFileList(String dir, String extension);
+  public List<File> getFileList(String dir, String extension);
   
   /**
    * Get a FileChooser

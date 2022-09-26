@@ -249,11 +249,6 @@ public class DFA {
     for (int i = 0; i < tokenNameCount; i++) {
       String n = in.readUTF();
       symbols[i] = n;
-      tokenNameMap.add(n, new Integer(i + Token.T_USER));
-      if (false) {
-        Tools.warn("dumping debug");
-        Streams.out.println("added " + n + ": " + (i + Token.T_USER));
-      }
     }
 
     storeTerminalFlags();
@@ -302,62 +297,50 @@ public class DFA {
     return new DFAState();
   }
 
-  /**
-   * Get the id of a token
-   * @param s : name of token
-   * @return id of token, or -1 if not found
-   */
-  public int tokenId(String s) {
-    int out = -1;
-    Integer ival = (Integer) tokenNameMap.getValue(s);
-    if (ival != null)
-      out = ival.intValue();
-    return out;
-  }
 
-  /**
-   * Get the name of a token from a DFA
-   * @param dfa : DFA, or null to get name of default token
-   * @param type : id of token
-   * @return name of token, or T_UNKNOWN if it is of unknown type
-   */
-  public static String tokenName(DFA dfa, int type) {
-    String n = null;
-    if (dfa != null)
-      n = dfa.tokenName(type);
-    else
-      n = defaultTokenName(type);
-    return n;
-  }
+//  /**
+//   * Get the name of a token from a DFA
+//   * @param dfa : DFA, or null to get name of default token
+//   * @param type : id of token
+//   * @return name of token, or T_UNKNOWN if it is of unknown type
+//   */
+//  public static String tokenName(DFA dfa, int type) {
+//    String n = null;
+//    if (dfa != null)
+//      n = dfa.tokenName(type);
+//    else
+//      n = defaultTokenName(type);
+//    return n;
+//  }
 
-  /**
-   * Get the name of a token from the DFA
-   * @param type : id of token
-   * @return name of token, or T_UNKNOWN if it is of unknown type
-   */
-  private String tokenName(int type) {
-
-    final boolean db = false;
-
-    String n = null;
-
-    int t = type - Token.T_USER;
-
-    if (db)
-      Streams.out.println("tokenName type=" + type + " t=" + t
-          + " tokenNameMap.size=" + tokenNameMap.size());
-
-    if (t >= 0 && t < tokenNameMap.size()) {
-      Object obj = tokenNameMap.getKey(t); //)getValue(t);
-      if (db)
-        Streams.out.println("got value from map=" + Tools.tv(obj));
-
-      n = obj.toString();
-      //      n = (String) tokenNameMap.getValue(t);
-    } else
-      n = defaultTokenName(type);
-    return n;
-  }
+//  /**
+//   * Get the name of a token from the DFA
+//   * @param type : id of token
+//   * @return name of token, or T_UNKNOWN if it is of unknown type
+//   */
+//  private String tokenName(int type) {
+//
+//    final boolean db = false;
+//
+//    String n = null;
+//
+//    int t = type - Token.T_USER;
+//
+//    if (db)
+//      Streams.out.println("tokenName type=" + type + " t=" + t
+//          + " tokenNameMap.size=" + tokenNameMap.size());
+//
+//    if (t >= 0 && t < tokenNameMap.size()) {
+//      Object obj = tokenNameMap.getKey(t); //)getValue(t);
+//      if (db)
+//        Streams.out.println("got value from map=" + Tools.tv(obj));
+//
+//      n = obj.toString();
+//      //      n = (String) tokenNameMap.getValue(t);
+//    } else
+//      n = defaultTokenName(type);
+//    return n;
+//  }
   /**
    * @param type
    * @return
@@ -389,7 +372,6 @@ public class DFA {
   // start state of the DFA
   private int startState = -1;
 
-  private ArrayMap tokenNameMap = new ArrayMap();
   private int nSymbols;
 
   private static Map defaultDFAMap;

@@ -1,6 +1,7 @@
 package base;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * Utility class for streams.
@@ -20,29 +21,32 @@ public class Streams {
   }
 
   /**
-   * Get a buffered InputStream for reading from a file.  If running in
-   * an applet context, uses file in AppletFileList.
-   * If no path specified, and running in applet context, reads
-   *  from Console Workspace #1, if it exists; if not, throws exception
-   * @param path : path of file, or null to read from System.in.
-   * @param alwaysInJAR : if true, assumes file is always in the JAR file,
-   *   even if it's not running as an applet
+   * Get a buffered InputStream for reading from a file. If running in an applet
+   * context, uses file in AppletFileList. If no path specified, and running in
+   * applet context, reads from Console Workspace #1, if it exists; if not,
+   * throws exception
+   * 
+   * @param path
+   *          : path of file, or null to read from System.in.
+   * @param alwaysInJAR
+   *          : if true, assumes file is always in the JAR file, even if it's
+   *          not running as an applet
    * @return OutputStream
    * @throws IOException
    */
-  public static InputStream inputStream(String path, boolean alwaysInJAR)
-      throws IOException {
+  public static InputStream inputStream(String path, boolean alwaysInJAR) throws IOException {
 
     return getFileAccess().getInputStream(path, alwaysInJAR);
   }
 
   /**
-   * Get a buffered InputStream for reading from a file.  If running in
-   * an applet context, uses file in AppletFileList.
-   * If no path specified, and running in applet context, reads
-   * from Console's stdin text area, or from Console main text area
-   * if no stdin exists.
-   * @param path : path of file, or null to read from System.in.
+   * Get a buffered InputStream for reading from a file. If running in an applet
+   * context, uses file in AppletFileList. If no path specified, and running in
+   * applet context, reads from Console's stdin text area, or from Console main
+   * text area if no stdin exists.
+   * 
+   * @param path
+   *          : path of file, or null to read from System.in.
    * @return OutputStream
    * @throws IOException
    */
@@ -51,30 +55,27 @@ public class Streams {
   }
 
   /**
-   * Get a buffered Reader for a file.
-   * If running in an applet context, gets reader for file in
-   * the AppletFileList.
-   * If no path specified, and running in applet context, reads
-   * from Console's stdin text area, or from Console main text area
-   * if no stdin exists.
+   * Get a buffered Reader for a file. If running in an applet context, gets
+   * reader for file in the AppletFileList. If no path specified, and running in
+   * applet context, reads from Console's stdin text area, or from Console main
+   * text area if no stdin exists.
    *
-   * @param path String : path of file, or null to read from System.in
+   * @param path
+   *          String : path of file, or null to read from System.in
    * @return Reader
    */
-  public static Reader reader(String path, boolean alwaysInJAR)
-      throws IOException {
+  public static Reader reader(String path, boolean alwaysInJAR) throws IOException {
     return new InputStreamReader(inputStream(path, alwaysInJAR));
   }
 
   /**
-   * Get a buffered Reader for a file.
-   * If running in an applet context, gets reader for file in
-   * the AppletFileList.
-   * If no path specified, and running in applet context, reads
-   * from Console's stdin text area, or from Console main text area
-   * if no stdin exists.
+   * Get a buffered Reader for a file. If running in an applet context, gets
+   * reader for file in the AppletFileList. If no path specified, and running in
+   * applet context, reads from Console's stdin text area, or from Console main
+   * text area if no stdin exists.
    *
-   * @param path String : path of file, or null to read from System.in
+   * @param path
+   *          String : path of file, or null to read from System.in
    * @return Reader
    */
   public static Reader reader(String path) throws IOException {
@@ -82,14 +83,13 @@ public class Streams {
   }
 
   /**
-   * Get a buffered Reader for a file.
-   * If running in an applet context, gets reader for file in
-   * the AppletFileList.
-   * If no path specified, and running in applet context, reads
-   * from Console's stdin text area, or from Console main text area
-   * if no stdin exists.
+   * Get a buffered Reader for a file. If running in an applet context, gets
+   * reader for file in the AppletFileList. If no path specified, and running in
+   * applet context, reads from Console's stdin text area, or from Console main
+   * text area if no stdin exists.
    *
-   * @param path File : file to read, or null to read from System.in
+   * @param path
+   *          File : file to read, or null to read from System.in
    * @return Reader
    */
   public static Reader reader(File path) throws IOException {
@@ -100,9 +100,11 @@ public class Streams {
   }
 
   /**
-   * Get a buffered OutputStream for writing to a file.  If running in
-   * an applet context, gets writer for file in AppletFileList.
-   * @param path : path of file
+   * Get a buffered OutputStream for writing to a file. If running in an applet
+   * context, gets writer for file in AppletFileList.
+   * 
+   * @param path
+   *          : path of file
    * @return OutputStream
    * @throws IOException
    */
@@ -111,10 +113,12 @@ public class Streams {
   }
 
   /**
-   * Get a buffered Writer for writing to a file.
-   * If running in an applet context, gets writer for file in AppletFileList.
-   * @param path : path of file, or null to construct a
-   *   non-closing writer for System.out
+   * Get a buffered Writer for writing to a file. If running in an applet
+   * context, gets writer for file in AppletFileList.
+   * 
+   * @param path
+   *          : path of file, or null to construct a non-closing writer for
+   *          System.out
    * @return Writer
    * @throws IOException
    */
@@ -130,20 +134,23 @@ public class Streams {
   }
 
   /**
-   * Get an input stream to a data file, which may be stored in the class
-   * folder or one of its subfolders.  This is how to access files in a jar.
-   * @param path String : name of file
+   * Get an input stream to a data file, which may be stored in the class folder
+   * or one of its subfolders. This is how to access files in a jar.
+   * 
+   * @param path
+   *          String : name of file
    * @return BufferedInputStream
    */
-  public static BufferedInputStream openResource(String path)
-      throws IOException {
+  public static BufferedInputStream openResource(String path) throws IOException {
     return openResource(mainClass, path);
   }
 
   /**
-   * Set the class that defines where resources are located.  If left undefined,
+   * Set the class that defines where resources are located. If left undefined,
    * will attempt to load data files from the current directory.
-   * @param main Object to load resources from, or null
+   * 
+   * @param main
+   *          Object to load resources from, or null
    */
   public static void loadResources(Object main) {
     if (mainClass == null) {
@@ -154,14 +161,15 @@ public class Streams {
   private static Class mainClass;
 
   /**
-   * Get an input stream to a data file, which is stored in the
-   * class folder (or one of its subfolders)
-   * @param path String : path to file
+   * Get an input stream to a data file, which is stored in the class folder (or
+   * one of its subfolders)
+   * 
+   * @param path
+   *          String : path to file
    * @return BufferedInputStream
    * @throws IOException
    */
-  public static BufferedInputStream openResource(Class c, String path)
-      throws IOException {
+  public static BufferedInputStream openResource(Class c, String path) throws IOException {
 
     BufferedInputStream out = null;
     if (c == null) {
@@ -177,21 +185,25 @@ public class Streams {
   }
 
   /**
-   * Get a reader. which is stored in the
-   * class folder (or one of its subfolders)
-   * @param owner : owner of file (for locating it)
-   * @param path String : path to file
+   * Get a reader. which is stored in the class folder (or one of its
+   * subfolders)
+   * 
+   * @param owner
+   *          : owner of file (for locating it)
+   * @param path
+   *          String : path to file
    * @return Reader
    * @throws IOException
    */
-  public static Reader readResource(Class owner, String path)
-      throws IOException {
+  public static Reader readResource(Class owner, String path) throws IOException {
     return new InputStreamReader(openResource(owner, path));
   }
 
   /**
    * Read a string from a reader, then close the reader
-   * @param r reader
+   * 
+   * @param r
+   *          reader
    * @return string read
    * @throws IOException
    */
@@ -218,7 +230,7 @@ public class Streams {
     out.println(Tools.stackTrace(0, 20, e));
   }
 
-  public static DArray getFileList(String dir, String extension) {
+  public static List<File> getFileList(String dir, String extension) {
     return getFileAccess().getFileList(dir, extension);
   }
 
@@ -232,6 +244,7 @@ public class Streams {
 
   /**
    * Get a FileChooser appropriate to the applet/application context.
+   * 
    * @return FileChooser
    */
   public static IFileChooser fileChooser() {
@@ -263,17 +276,18 @@ public class Streams {
 
   /**
    * Write text file if it has changed.
-   * @param filename  name of file, relative to root directory
-   * @param content  new contents of file
-   * @throws IOException 
+   * 
+   * @param filename
+   *          name of file, relative to root directory
+   * @param content
+   *          new contents of file
+   * @throws IOException
    */
-  public static boolean writeIfChanged(String filename, String content)
-      throws IOException {
+  public static boolean writeIfChanged(String filename, String content) throws IOException {
     final boolean db = false;
 
     if (db)
-      Streams.out.println("Streams.writeIfChanged filename:" + filename
-          + " content:" + Tools.d(content));
+      Streams.out.println("Streams.writeIfChanged filename:" + filename + " content:" + Tools.d(content));
 
     boolean changed = false;
 
@@ -302,11 +316,12 @@ public class Streams {
   }
 
   /**
-   * Define the home directory for the server.
-   * We use this as the base for files that may not be visible to the client,
-   * for example, backup files, example photos, calendar scripts.
+   * Define the home directory for the server. We use this as the base for files
+   * that may not be visible to the client, for example, backup files, example
+   * photos, calendar scripts.
    * 
-   * @param dir : home directory; if null, reads it from user.home system property
+   * @param dir
+   *          : home directory; if null, reads it from user.home system property
    */
   public static void setHomeDirectory(File dir) {
     homeDir = dir;
@@ -329,9 +344,11 @@ public class Streams {
   /**
    * Define the root directory (ROOT) for the servlet. All data files are stored
    * within the tree of directories rooted at this directory. Creates a
-   * directory ROOT/_temp_ for storing temporary files.
-   * For instance, we store the password .png files in this directory.
-   * @param rootDir : root directory
+   * directory ROOT/_temp_ for storing temporary files. For instance, we store
+   * the password .png files in this directory.
+   * 
+   * @param rootDir
+   *          : root directory
    */
   public static void setRootDirectory(File rootDir) {
     rootDirectory = rootDir;
@@ -339,15 +356,19 @@ public class Streams {
 
   /**
    * Create a directory on the client, optionally delete files of a certain age.
-   * @param path   path of directory, relative to rootDirectory()
-   * @param staleDelay   if >= 0, certain files within the temporary
-   *          directory older than staleDelay milliseconds will be deleted
-   * @param tempExt : only files within directory that end with this string
-   *          will be candidates for deletion
-   * @throws ServletException if problem creating or preparing directory
+   * 
+   * @param path
+   *          path of directory, relative to rootDirectory()
+   * @param staleDelay
+   *          if >= 0, certain files within the temporary directory older than
+   *          staleDelay milliseconds will be deleted
+   * @param tempExt
+   *          : only files within directory that end with this string will be
+   *          candidates for deletion
+   * @throws ServletException
+   *           if problem creating or preparing directory
    */
-  public static File createDirectory(String path, long staleDelay,
-      String tempExt) throws IOException {
+  public static File createDirectory(String path, long staleDelay, String tempExt) throws IOException {
     if (false) {
       staleDelay = 1000L * 120;
       Tools.warn("setting short staleDelay");
@@ -371,8 +392,7 @@ public class Streams {
       File[] lst = newDir.listFiles();
 
       if (db)
-        Streams.out
-            .println("examining files in " + newDir + " for flushing...");
+        Streams.out.println("examining files in " + newDir + " for flushing...");
 
       for (int i = 0; i < lst.length; i++) {
         File f = lst[i];
@@ -390,19 +410,20 @@ public class Streams {
     return newDir;
   }
 
-  public static void copyFile(File source, File dest, boolean overwriteExisting)
-      throws IOException {
+  public static void copyFile(File source, File dest, boolean overwriteExisting) throws IOException {
     InputStream in = new BufferedInputStream(new FileInputStream(source));
     copyFile(in, dest, overwriteExisting);
   }
 
   /**
    * Copy a file.
-   * @param inp InputStream containing file
-   * @param dest : file to write
+   * 
+   * @param inp
+   *          InputStream containing file
+   * @param dest
+   *          : file to write
    */
-  public static void copyFile(InputStream inp, File dest,
-      boolean overwriteExisting) throws IOException {
+  public static void copyFile(InputStream inp, File dest, boolean overwriteExisting) throws IOException {
 
     if (!overwriteExisting && dest.exists()) {
       throw new IOException("Cannot overwrite " + dest.getAbsolutePath());
@@ -421,8 +442,7 @@ public class Streams {
     out.close();
   }
 
-  public static void write(byte[] bytes, File dest, boolean overwriteExisting)
-      throws IOException {
+  public static void write(byte[] bytes, File dest, boolean overwriteExisting) throws IOException {
     copyFile(new ByteArrayInputStream(bytes), dest, overwriteExisting);
   }
 
@@ -444,7 +464,9 @@ public class Streams {
 
   /**
    * Read a file into a string
-   * @param path String
+   * 
+   * @param path
+   *          String
    * @return String
    */
   public static String readTextFile(String path) throws IOException {
@@ -453,7 +475,9 @@ public class Streams {
 
   /**
    * Read a file into a string
-   * @param file : File to read, or null to read from System.in
+   * 
+   * @param file
+   *          : File to read, or null to read from System.in
    * @return String
    */
   public static String readTextFile(File file) throws IOException {
@@ -463,8 +487,7 @@ public class Streams {
     return readTextFile(str, false);
   }
 
-  public static String readTextFile(String path, boolean withinJAR)
-      throws IOException {
+  public static String readTextFile(String path, boolean withinJAR) throws IOException {
     StringBuilder sb = new StringBuilder();
     Reader r = reader(path, withinJAR);
     while (true) {
@@ -479,12 +502,10 @@ public class Streams {
     return sb.toString();
   }
 
-  public static void writeTextFile(File file, String content)
-      throws IOException {
+  public static void writeTextFile(File file, String content) throws IOException {
     final boolean db = false; //Tools.dbWarn();
     if (db)
-      Streams.out.println("writeTextFile file=" + file + "\n  content="
-          + Tools.d(content));
+      Streams.out.println("writeTextFile file=" + file + "\n  content=" + Tools.d(content));
 
     BufferedWriter w = new BufferedWriter(new FileWriter(file));
     w.write(content);
@@ -493,7 +514,9 @@ public class Streams {
 
   /**
    * Read string from reader, then close it
-   * @param s reader
+   * 
+   * @param s
+   *          reader
    * @return string read
    * @throws IOException
    */
@@ -511,22 +534,24 @@ public class Streams {
 
   /**
    * Move a file to a temporary directory under a different name
-   * @param original : file to be moved
-   * @param backupDirectory : backup directory; if null, creates one
-   *   named "_tmp_" in original file's directory; if no backup directory
-   *   exists, creates one
-   * @param maxBackups : if > 0, deletes older copies of backup file
+   * 
+   * @param original
+   *          : file to be moved
+   * @param backupDirectory
+   *          : backup directory; if null, creates one named "_tmp_" in original
+   *          file's directory; if no backup directory exists, creates one
+   * @param maxBackups
+   *          : if > 0, deletes older copies of backup file
    * @return moved file
-   * @throws IOException 
+   * @throws IOException
    */
-  public static File moveFileToTemp(File original, File backupDirectory,
-      int maxBackups) throws IOException {
+  public static File moveFileToTemp(File original, File backupDirectory, int maxBackups) throws IOException {
 
     final boolean db = false;
 
     if (db)
-      Streams.out.println("Streams.moveFileToTemp original=" + original
-          + " backupDir=" + backupDirectory + " maxBackups=" + maxBackups);
+      Streams.out.println("Streams.moveFileToTemp original=" + original + " backupDir=" + backupDirectory
+          + " maxBackups=" + maxBackups);
 
     if (backupDirectory == null) {
       backupDirectory = new File(original.getParent(), "_tmp_");
@@ -562,8 +587,7 @@ public class Streams {
       if (db)
         Streams.out.println(" it does...");
 
-      if (oldestBackup == null
-          || oldestBackup.lastModified() > backupFile.lastModified()) {
+      if (oldestBackup == null || oldestBackup.lastModified() > backupFile.lastModified()) {
         oldestBackup = backupFile;
         if (db)
           Streams.out.println("  setting as oldest backup");
@@ -603,8 +627,8 @@ public class Streams {
   }
 
   /**
-   * Non-closing OutputStream for use with OutputStreams that are derived
-   * from System.out
+   * Non-closing OutputStream for use with OutputStreams that are derived from
+   * System.out
    * 
    */
   private static class NCOutputStreamWriter extends OutputStreamWriter {
@@ -629,9 +653,8 @@ public class Streams {
   }
 
   /**
-   * Initialize Streams.out.  This is done when the class is loaded,
-   * but can be done explicitly later on if necessary (provided to
-   * avoid tomcat problems)
+   * Initialize Streams.out. This is done when the class is loaded, but can be
+   * done explicitly later on if necessary (provided to avoid tomcat problems)
    */
   public static void initPrintStream() {
     if (out != null)
@@ -650,7 +673,8 @@ public class Streams {
 
   /**
    * Read command from console; for testing purposes
-   * @return command 
+   * 
+   * @return command
    */
   public static String getCommand() {
     try {
