@@ -1,16 +1,10 @@
 package testbed;
 
-import static js.base.Tools.*;
 import geom.GeomApp;
 import js.geometry.IRect;
 import js.json.JSList;
 
 public class AppFrameGadget extends Gadget {
-
-  public AppFrameGadget(int id) {
-    super(id);
-    loadTools();
-  }
 
   @Override
   public JSList readValue() {

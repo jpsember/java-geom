@@ -60,11 +60,11 @@ class ControlPanel extends JPanel implements Globals, IScript {
       boolean sliderFlag, boolean withTicks, boolean dbl, String toolTip) {
     if (!(value >= min && value <= max))
       throw new IllegalArgumentException("Spinner/slider initial value not in range");
-    addControl(new CtSpinner(id, label, min, max, value, step, sliderFlag, withTicks, dbl), toolTip);
+    addControl(new CtSpinner(label, min, max, value, step, sliderFlag, withTicks, dbl).setId(id), toolTip);
   }
 
   private void addTextField(int id, String label, String value, int maxStrLen, boolean fw, String toolTip) {
-    addControl(new CtTextFieldNew(id, label, value, maxStrLen, fw), toolTip);
+    addControl(new CtTextFieldNew(label, value, maxStrLen, fw).setId(id), toolTip);
   }
 
   private void addComboBox() {
@@ -81,7 +81,8 @@ class ControlPanel extends JPanel implements Globals, IScript {
     String toolTip = tk.readIfLabel();
     tk.read(T_PAROP);
 
-    CtComboBox box = new CtComboBox(cid, label, toolTip, asRadio);
+    CtComboBox box = new CtComboBox(label, toolTip, asRadio);
+    box.setId(cid);
 
     if (db)
       Streams.out.println(" reading ComboFields(");
@@ -155,7 +156,7 @@ class ControlPanel extends JPanel implements Globals, IScript {
         int id = tk.readInt();
         String label = tk.readLabel();
         String toolTip = tk.readIfLabel();
-        addControl(new CtButton(id, Gadget.createAction(id, label, toolTip, null)), null);
+        addControl(new CtButton(Gadget.createAction(id, label, toolTip, null)).setId(id), null);
       }
         break;
 
@@ -179,7 +180,8 @@ class ControlPanel extends JPanel implements Globals, IScript {
         }
         int panelId = readIdn();
 
-        TabbedPaneGadget tb = new TabbedPaneGadget(true, panelId);
+        TabbedPaneGadget tb = new TabbedPaneGadget(true);
+        tb.setId(panelId);
         panel.addItem(tb.getComponent());
 
         for (int tabNumber = 0; !tk.readIf(T_PARCL); tabNumber++) {
@@ -240,7 +242,7 @@ class ControlPanel extends JPanel implements Globals, IScript {
 
       case T_LABEL: {
         int colWidth = tk.readIfInt(0);
-        addControl(new CtLabel(C.getAnonId(), colWidth, tk.readLabel()), null);
+        addControl(new CtLabel(colWidth, tk.readLabel()).setId(C.getAnonId()), null);
       }
         break;
 
@@ -253,14 +255,14 @@ class ControlPanel extends JPanel implements Globals, IScript {
         String toolTip = tk.readIfLabel();
         int i1 = tk.readInt();
         String defVal = tk.readLabel();
-        addControl(new CtTextArea(id, label, SwingConstants.CENTER, defVal, i0, i1, t.id(T_TEXTAREA_FW)),
+        addControl(
+            new CtTextArea(label, SwingConstants.CENTER, defVal, i0, i1, t.id(T_TEXTAREA_FW)).setId(id),
             toolTip);
       }
         break;
 
       case T_HIDDEN:
         hideNextControl = true;
-        //  hiddenFlag.set(true);
         break;
 
       case T_TEXTFLD_STR_FW:

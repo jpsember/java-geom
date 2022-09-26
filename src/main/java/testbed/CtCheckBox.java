@@ -23,8 +23,7 @@ class CtCheckBox extends Gadget {
    *          KeyStroke
    */
   public CtCheckBox(int id, String label, boolean value, boolean inMenu, String toolTip, KeyStroke accel) {
-    super(id);
-
+    setId(id);
     Action a = Gadget.createAction(id, label, toolTip, accel);
 
     if (inMenu) {

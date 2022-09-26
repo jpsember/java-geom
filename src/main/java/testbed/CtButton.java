@@ -17,8 +17,7 @@ class CtButton extends Gadget {
     return false;
   }
 
-  public CtButton(int id, Action a) {
-    super(id);
+  public CtButton(Action a) {
     b = new JButton(a);
     setComponent(b);
   }

@@ -58,11 +58,9 @@ class CtSpinner extends Gadget {
     mComponent.setEnabled(state);
   }
 
-  public CtSpinner(int id, String label, double dmin, double dmax, double dvalue, double step,
+  public CtSpinner(  String label, double dmin, double dmax, double dvalue, double step,
       boolean sliderFlag, boolean withTicks, boolean dbl) {
-    super(id);
-
-    this.mIsSlider = sliderFlag;
+    mIsSlider = sliderFlag;
     if (db)
       pr("constructing CtSpinner", this);
 

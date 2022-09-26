@@ -23,8 +23,7 @@ class CtLabel extends Gadget {
    * @param label
    *          String
    */
-  public CtLabel(int id, int colWidth, String label) {
-    super(id);
+  public CtLabel(int colWidth, String label) {
     JComponent c = null;
 
     if (colWidth == 0) {

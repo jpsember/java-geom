@@ -150,7 +150,7 @@ final class GadgetList {
 
   public Gadget addHidden(int id, Object defaultValue) {
     checkState(!exists(id));
-    Gadget g = new HiddenGadget(id, defaultValue);
+    Gadget g = new HiddenGadget(defaultValue).setId(id);
     add(g);
     return g;
   }
@@ -244,8 +244,7 @@ final class GadgetList {
 
   private static class HiddenGadget extends Gadget {
 
-    public HiddenGadget(int id, Object defaultValue) {
-      super(id);
+    public HiddenGadget(Object defaultValue) {
       mValue = defaultValue;
     }
 

@@ -808,7 +808,7 @@ public class C implements Globals {
     mGadgetSet = new GadgetList();
 
     // Add gadget for persisting frame bounds
-    C.add(new AppFrameGadget(TBGlobals.APP_FRAME));
+    C.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
     // Add gadget for persisting zoom factor
     C.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
     C.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);

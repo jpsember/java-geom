@@ -15,11 +15,15 @@ import java.util.List;
  */
 abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener {
 
-  public Gadget(int id) {
+  public Gadget setId(int id) {
+    checkState(mId == 0, "already has an id");
     mId = id;
+    return this;
   }
 
   public final int getId() {
+    if (mId == 0)
+      throw badState("gadget has no id");
     return mId;
   }
 
@@ -123,7 +127,7 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
 
   }
 
-  private final int mId;
+  private int mId;
   private Component mComponent;
   // list of child controls
   private List<Integer> mChildIds = arrayList();

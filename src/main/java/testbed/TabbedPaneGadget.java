@@ -73,8 +73,7 @@ class TabbedPaneGadget extends Gadget {
    *          if not null, existing component that will contain this stack's
    *          elements; it is assumed to use GridBagLayout
    */
-  public TabbedPaneGadget(boolean vertical, int id) {
-    super(id);
+  public TabbedPaneGadget(boolean vertical) {
     JTabbedPane tabPane = new JTabbedPane(vertical ? JTabbedPane.TOP : JTabbedPane.LEFT);
     tabPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
     tabPane.addChangeListener(this);

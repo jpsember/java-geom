@@ -42,10 +42,8 @@ class CtTextArea extends Gadget {
    * @param fixedWidth
    *          boolean true to use fixed-width font
    */
-  public CtTextArea(int id, String title, int titleAlignment, String value, int rows, int columns,
+  public CtTextArea(  String title, int titleAlignment, String value, int rows, int columns,
       boolean fixedWidth) {
-    super(id);
-
     JTextArea cj = new JTextArea(value);
 
     cj.setEditable(false);
