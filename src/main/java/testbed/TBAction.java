@@ -1,36 +1,37 @@
 package testbed;
 
-import base.*;
+import js.geometry.FPoint;
+
 import java.awt.event.*;
 import static js.base.Tools.*;
 
 public class TBAction {
 
   public static final int NONE = 0, //DOWN1 = 1, UP1 = 2, DOWN2 = 3, UP2 = 4, DRAG = 5,
-//      // begin an operation (application use only)
-//      ENTER = 6,
-//      // ending an operation (application use only)
-//      EXIT = 7,
-//      // enable/disable item as required
-//      ITEMENABLE = 8,
+      //      // begin an operation (application use only)
+      //      ENTER = 6,
+      //      // ending an operation (application use only)
+      //      EXIT = 7,
+      //      // enable/disable item as required
+      //      ITEMENABLE = 8,
       // CtButton has been pressed,
       // or valued control has changed
       CTRLVALUE = 9,
       // command issued by user in console
-//      COMMAND = 10,
-//      // mouse moving over window, but not pressed
-//      HOVER = 11,
-//      // update of application title required
-//      UPDATETITLE = 12,
+      //      COMMAND = 10,
+      //      // mouse moving over window, but not pressed
+      //      HOVER = 11,
+      //      // update of application title required
+      //      UPDATETITLE = 12,
 
       _UNUSED_ = 999;
 
   // code for action
   public int code;
   // position of mouse, in logic space (or null if not mouse related)
-  public FPoint2 loc;
+  public FPoint loc;
   // position of mouse, int view space (or null if not mouse related)
-  public FPoint2 vLoc;
+  public FPoint vLoc;
   // mouse event triggering action, or null (if not mouse related)
   public MouseEvent mouse;
   // id of menu (if MENUITEM)
@@ -93,8 +94,8 @@ public class TBAction {
 
     if (evt != null) {
       this.mouse = evt;
-      vLoc = new FPoint2(evt.getX(), evt.getY());
-      loc = new FPoint2();
+      vLoc = new FPoint (evt.getX(), evt.getY());
+      loc = FPoint.DEFAULT_INSTANCE;
       todo("viewToLogic no longer supported");
       //      V.viewToLogic(vLoc, loc);
     }
@@ -145,10 +146,10 @@ public class TBAction {
 
     sb.append(' ');
     switch (code) {
-//    case ITEMENABLE:
-//      sb.append("[" + menuId + ":" + ctrlId);
-//      sb.append("]");
-//      break;
+    //    case ITEMENABLE:
+    //      sb.append("[" + menuId + ":" + ctrlId);
+    //      sb.append("]");
+    //      break;
     case CTRLVALUE:
       sb.append(ctrlId);
       break;

@@ -1,7 +1,7 @@
 package testbed;
 
 import java.awt.*;
-import base.*;
+import js.geometry.MyMath;
 
 public class MyColor {
 

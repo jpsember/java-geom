@@ -7,6 +7,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
+import js.geometry.MyMath;
+
 public final class Tools {
 
   public static PrintWriter getPrintWriter(File f) {
@@ -268,7 +270,7 @@ public final class Tools {
     if (obj != null) {
       hc = obj.hashCode();
     }
-    return "[" + Tools.f(MyMath.mod(hc, 10000), 4, true) + "]";
+    return "[" + Tools.f(MyMath.myMod(hc, 10000), 4, true) + "]";
   }
 
   public static String d(Throwable t) {
@@ -1156,9 +1158,6 @@ public final class Tools {
 
   private static Random rnd;
 
-  public static String fa2(double ang) {
-    return fa(MyMath.normalizeAnglePositive(ang));
-  }
 
   public static void showDialog(String msg) {
     new MyDialog(msg);

@@ -3,6 +3,7 @@ package testbed;
 import base.*;
 import js.geometry.FPoint;
 import js.geometry.IRect;
+import js.geometry.MyMath;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -82,7 +83,7 @@ public class V implements Globals {
   /**
    * Draw a string
    */
-  public static void draw(String str, FPoint2 loc, int flags) {
+  public static void draw(String str, FPoint loc, int flags) {
     draw(str, loc.x, loc.y, flags);
   }
 
@@ -228,7 +229,7 @@ public class V implements Globals {
     }
 
     if (flags != 0) {
-      FRect textRect = new FRect();
+      Rectangle textRect = new Rectangle();
       textRect.setFrame(textX - pad, textY - pad, textW + pad * 2, textH + pad * 2);
       if ((flags & TX_BGND) != 0) {
         pushColor(Color.white);
@@ -261,16 +262,6 @@ public class V implements Globals {
   public static void drawCircle(FPoint origin, double radius) {
     g.draw(
         new Arc2D.Double(origin.x - radius, origin.y - radius, 2 * radius, 2 * radius, 0, 360, Arc2D.CHORD));
-  }
-
-  /**
-   * Draw a rectangle
-   * 
-   * @param r
-   *          rectangle
-   */
-  public static void drawRect(FRect r) {
-    g.draw(r);
   }
 
   public static void drawRect(IRect r) {
@@ -408,7 +399,7 @@ public class V implements Globals {
    * @param p1
    *          second endpoint
    */
-  public static void drawLine(FPoint2 p0, FPoint2 p1) {
+  public static void drawLine(FPoint p0, FPoint p1) {
     if (false) {
       long start = System.currentTimeMillis();
       drawLine(p0.x, p0.y, p1.x, p1.y);
@@ -442,7 +433,7 @@ public class V implements Globals {
    * @param pixelSize
    *          width of square
    */
-  public static void drawPixel(FPoint2 pt, double pixelSize) {
+  public static void drawPixel(FPoint pt, double pixelSize) {
     drawPixel(pt.x, pt.y, pixelSize);
   }
 

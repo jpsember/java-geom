@@ -1,6 +1,9 @@
 package base;
 
 import java.util.*;
+
+import js.geometry.MyMath;
+
 import java.lang.reflect.*;
 
 public class DArray extends ArrayList implements Cloneable {
@@ -8,7 +11,8 @@ public class DArray extends ArrayList implements Cloneable {
   /**
    * Build a DArray that contains one object
    *
-   * @param o1  Object
+   * @param o1
+   *          Object
    * @return DArray
    */
   public static DArray build(Object o1) {
@@ -35,7 +39,9 @@ public class DArray extends ArrayList implements Cloneable {
 
   /**
    * Get an iterator to examine items in forward or reverse order
-   * @param reverseOrder : true to iterate from last to first
+   * 
+   * @param reverseOrder
+   *          : true to iterate from last to first
    * @return Iterator
    */
   public Iterator iterator(boolean reverseOrder) {
@@ -43,6 +49,7 @@ public class DArray extends ArrayList implements Cloneable {
       return iterator();
     return new Iterator() {
       private int index = size() - 1;
+
       public boolean hasNext() {
         return index >= 0;
       }
@@ -74,10 +81,10 @@ public class DArray extends ArrayList implements Cloneable {
   /**
    * Swap two elements of the array
    *
-   * @param i :
-   *          first element
-   * @param j :
-   *          second element
+   * @param i
+   *          : first element
+   * @param j
+   *          : second element
    */
   public void swap(int i, int j) {
 
@@ -104,13 +111,13 @@ public class DArray extends ArrayList implements Cloneable {
   public boolean popBoolean() {
     return ((Boolean) pop()).booleanValue();
   }
-//
-//  public FPoint2 getFPoint2(int i) {
-//    return (FPoint2) get(i);
-//  }
-//  public FPoint2 getFPoint2Mod(int i) {
-//    return (FPoint2) getMod(i);
-//  }
+  //
+  //  public FPoint2 getFPoint2(int i) {
+  //    return (FPoint2) get(i);
+  //  }
+  //  public FPoint2 getFPoint2Mod(int i) {
+  //    return (FPoint2) getMod(i);
+  //  }
 
   public String getString(int i) {
     return (String) get(i);
@@ -160,8 +167,8 @@ public class DArray extends ArrayList implements Cloneable {
   /**
    * Find position of a particular integer value
    *
-   * @param val :
-   *          integer to find
+   * @param val
+   *          : integer to find
    * @return location, or -1 if not found
    */
   public int indexOf(int val) {
@@ -183,26 +190,32 @@ public class DArray extends ArrayList implements Cloneable {
 
   /**
    * Get element from array, using modulus of index
-   * @param index location of element; this value is taken mod size()
-   * @return element 
+   * 
+   * @param index
+   *          location of element; this value is taken mod size()
+   * @return element
    */
   public Object getMod(int index) {
-    return get(MyMath.mod(index, size()));
+    return get(MyMath.myMod(index, size()));
   }
+
   /**
    * Replace array element, using modulus of index
-   * @param index location of element; this value is taken mod size()
-   * @param element element to store
+   * 
+   * @param index
+   *          location of element; this value is taken mod size()
+   * @param element
+   *          element to store
    */
   public void setMod(int index, Object element) {
-    set(MyMath.mod(index, size()), element);
+    set(MyMath.myMod(index, size()), element);
   }
 
   /**
    * Determine if an item exists at a particular location
    *
-   * @param index :
-   *          index of item
+   * @param index
+   *          : index of item
    * @return true if it's a valid index and there's a non-null item stored there
    */
   public boolean exists(int index) {
@@ -233,8 +246,7 @@ public class DArray extends ArrayList implements Cloneable {
 
   public static final Comparator COMPARE_DOUBLES = new Comparator() {
     public int compare(Object arg0, Object arg1) {
-      return MyMath.sign(((Double) arg0).doubleValue()
-          - ((Double) arg1).doubleValue());
+      return (int) Math.signum(((Double) arg0) - ((Double) arg1));
     }
   };
 
@@ -389,6 +401,7 @@ public class DArray extends ArrayList implements Cloneable {
     sb.append("] ");
     return sb.toString();
   }
+
   public static String toString(double[] a, int start, int len) {
     StringBuilder sb = new StringBuilder(" [");
     // sb.append(" #="+a.length+" [");
@@ -471,8 +484,9 @@ public class DArray extends ArrayList implements Cloneable {
   }
 
   /**
-   * Store item in array; grow array if necessary so it contains at least 
-   * that many items
+   * Store item in array; grow array if necessary so it contains at least that
+   * many items
+   * 
    * @param position
    * @param item
    * @return item
@@ -521,6 +535,7 @@ public class DArray extends ArrayList implements Cloneable {
     }
     return a;
   }
+
   public double[] toDoubleArray() {
     double[] a = new double[size()];
     for (int i = 0; i < size(); i++) {
@@ -528,6 +543,7 @@ public class DArray extends ArrayList implements Cloneable {
     }
     return a;
   }
+
   public byte[] toByteArray() {
     byte[] a = new byte[size()];
     for (int i = 0; i < size(); i++) {
@@ -543,7 +559,6 @@ public class DArray extends ArrayList implements Cloneable {
     return out;
   }
 
- 
   public int getIntMod(int i) {
     return ((Integer) getMod(i)).intValue();
   }
