@@ -2,8 +2,11 @@ package testbed;
 
 import base.*;
 import javax.swing.*;
-import java.awt.*;
 import static js.base.Tools.*;
+
+import java.awt.Component;
+import java.awt.GridBagLayout;
+import java.util.List;
 
 /**
  * Control panel class
@@ -203,7 +206,7 @@ class ControlPanel extends JPanel implements Globals, IScript {
       case T_PAROP: {
         String title = tk.readIfLabel();
         StackPanel prevScope = panel;
-        panelStack.push(panel);
+        push(panelStack, panel);
         panel = new StackPanel(title);
         prevScope.addItem(panel.getComponent());
         processScript();
@@ -314,18 +317,17 @@ class ControlPanel extends JPanel implements Globals, IScript {
    */
   private StackPanel popScope() {
     StackPanel ret = panel;
-    panel = (StackPanel) panelStack.pop();
+    panel = pop(panelStack);
     return ret;
   }
 
   private StackPanel pushScope(String title) {
-    panelStack.push(panel);
+    push(panelStack, panel);
     panel = new StackPanel(title);
     return panel;
   }
 
-  // stack of StackPanels
-  private DArray panelStack;
+  private List<StackPanel> panelStack;
   // current panel
   private StackPanel panel;
   // hide next control?

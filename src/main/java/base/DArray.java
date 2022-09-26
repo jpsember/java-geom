@@ -6,6 +6,7 @@ import js.geometry.MyMath;
 
 import java.lang.reflect.*;
 
+@Deprecated
 public class DArray extends ArrayList implements Cloneable {
 
   /**
