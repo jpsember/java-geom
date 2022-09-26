@@ -1,6 +1,7 @@
 package testbed;
 
-import base.*;
+import geom.GeomTools;
+
 import javax.swing.*;
 import static js.base.Tools.*;
 
@@ -104,16 +105,12 @@ public class ControlPanel extends JPanel implements Globals, IScript {
   }
 
   public ControlPanel choice(int id, String label) {
-    comboBox().addItem(id, label);
+    currentComboBox().addItem(id, label);
     return this;
   }
 
-  private CtComboBox comboBox() {
-    return (CtComboBox) last(mStack);
-  }
-
   public ControlPanel closeComboBox() {
-    comboBox();
+    currentComboBox();
     pop(mStack);
     return this;
   }
@@ -158,7 +155,7 @@ public class ControlPanel extends JPanel implements Globals, IScript {
   }
 
   public ControlPanel closeTabSet() {
-    TabbedPaneGadget g = tabbedPane();
+    TabbedPaneGadget g = currentTabbedPane();
     mStackPanel.addItem(g.getComponent());
     addControl(g, null);
     pop(mStack);
@@ -172,7 +169,7 @@ public class ControlPanel extends JPanel implements Globals, IScript {
   public ControlPanel openTab(int tabId, String title) {
     if (title == null)
       title = "<name?>";
-    TabbedPaneGadget tabbedPaneGadget = tabbedPane();
+    TabbedPaneGadget tabbedPaneGadget = currentTabbedPane();
     push(mStack, mStackPanel);
     mStackPanel = new StackPanel(title);
     tabbedPaneGadget.addTab(title, tabId, mStackPanel.component());
@@ -196,8 +193,8 @@ public class ControlPanel extends JPanel implements Globals, IScript {
       StringBuilder sb = new StringBuilder();
       sb.append("<html><center>");
 
-      List<String> a = arrayList();
-      TextScanner.splitString(s, 50, a);
+      List<String> a = split(s, ' ');
+      GeomTools.splitString(s, 50, a);
       for (int i = 0; i < a.size(); i++) {
         if (i > 0)
           sb.append("<br>");
@@ -220,8 +217,12 @@ public class ControlPanel extends JPanel implements Globals, IScript {
     return ret;
   }
 
-  private TabbedPaneGadget tabbedPane() {
+  private TabbedPaneGadget currentTabbedPane() {
     return (TabbedPaneGadget) last(mStack);
+  }
+
+  private CtComboBox currentComboBox() {
+    return (CtComboBox) last(mStack);
   }
 
   private boolean addControl(Gadget c, String toolTip) {
@@ -238,7 +239,7 @@ public class ControlPanel extends JPanel implements Globals, IScript {
     if (toolTip != null) {
       JComponent j = (JComponent) c.getComponent();
       if (j == null) {
-        Tools.warn("JComponent is null for tooltip, c=" + c);
+        alert("JComponent is null for tooltip, c=", c);
       } else
         j.setToolTipText(parseToolTip(toolTip));
     }

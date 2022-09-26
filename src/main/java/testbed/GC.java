@@ -2,7 +2,6 @@ package testbed;
 
 import java.awt.*;
 import javax.swing.*;
-import base.*;
 
 class GC extends GridBagConstraints {
   private static GC gc = new GC();
@@ -32,10 +31,6 @@ class GC extends GridBagConstraints {
 
   private static class MyGluePanel extends JPanel {
     public MyGluePanel() {
-      if (false) {
-        setBackground(MyColor.cDARKGREEN);
-        Tools.warn("using debug color");
-      }
       this.setPreferredSize(new Dimension(1, 1));
       this.setMinimumSize(new Dimension(1, 1));
     }

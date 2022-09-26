@@ -1,6 +1,5 @@
 package testbed;
 
-import base.Tools;
 import js.base.BasePrinter;
 import js.geometry.IPoint;
 import js.geometry.IRect;
@@ -67,8 +66,6 @@ public final class AlgorithmException extends RuntimeException {
     }
     BasePrinter prBuffer = new BasePrinter();
     prBuffer.pr(stringables.toArray());
-    if (error())
-      prBuffer.cr().append(Tools.stackTrace(1, 5, this));
     mMessage = prBuffer.toString();
   }
 

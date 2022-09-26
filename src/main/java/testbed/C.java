@@ -1,7 +1,5 @@
 package testbed;
 
-import java.awt.*;
-
 import js.json.JSMap;
 
 import static js.base.Tools.*;
@@ -64,10 +62,6 @@ public class C implements Globals {
 
   /**
    * Get (integer) value of gadget
-   * 
-   * @param id
-   *          id of gadget
-   * @return value
    */
   public static int vi(int id) {
     return mGadgetSet.numValue(id).intValue();
@@ -99,24 +93,14 @@ public class C implements Globals {
   /**
    * Toggle boolean value of gadget
    * 
-   * @param id
-   *          id of gadget
    * @return new value
    */
   public static boolean toggle(int id) {
     return setb(id, !vb(id));
   }
 
-  static ControlPanel getControlPanel(int pnlId) {
-    return ctrlPanels[pnlId];
-  }
-
   /**
    * Get (double) value of gadget
-   * 
-   * @param id
-   *          of gadget
-   * @return value
    */
   public static double vd(int id) {
     return mGadgetSet.numValue(id).doubleValue();
@@ -149,10 +133,6 @@ public class C implements Globals {
     return mGadgetSet.stringValue(id);
   }
 
-  static Component getComponent(int id) {
-    return mGadgetSet.get(id).getComponent();
-  }
-
   /**
    * Determine if a gadget with a particular id exists
    * 
@@ -171,20 +151,12 @@ public class C implements Globals {
    *          : id of gadget
    * @return Gadget
    */
-  static Gadget get(int id) {
+  public static Gadget get(int id) {
     return mGadgetSet.get(id);
   }
 
   public static ControlPanel controlPanel() {
-    return ctrlPanels[TBGlobals.CT_MAIN];
-  }
-
-  public static void prepareForGadgets() {
-    controlPanel().prepareForGadgets();
-  }
-
-  public static void finishedGadgets() {
-    controlPanel().finishedGadgets();
+    return mMainControlPanel;
   }
 
   /**
@@ -193,7 +165,7 @@ public class C implements Globals {
    * @return int
    */
   static int getAnonId() {
-    return anonIdBase++;
+    return sAnonIdBase++;
   }
 
   public static void readGadgetValuesFromMap(JSMap map) {
@@ -208,10 +180,8 @@ public class C implements Globals {
   }
 
   static void init() {
-    anonIdBase = TBGlobals.ID_ANON_START;
-    ctrlPanels = new ControlPanel[TBGlobals.CT_TOTAL];
-    for (int i = 0; i < TBGlobals.CT_TOTAL; i++)
-      ctrlPanels[i] = new ControlPanel();
+    sAnonIdBase = TBGlobals.ID_ANON_START;
+    mMainControlPanel = new ControlPanel();
     mGadgetSet = new GadgetList();
 
     // Add gadget for persisting frame bounds
@@ -221,8 +191,8 @@ public class C implements Globals {
     C.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
   }
 
-  private static int anonIdBase;
-  private static ControlPanel[] ctrlPanels;
+  private static int sAnonIdBase;
+  private static ControlPanel mMainControlPanel;
   private static GadgetList mGadgetSet;
 
 }

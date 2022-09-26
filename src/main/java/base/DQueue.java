@@ -2,6 +2,7 @@ package base;
 
 import java.util.*;
 
+@Deprecated
 public class DQueue implements Cloneable {
   /**
    * Get string describing object

@@ -1,6 +1,5 @@
 package testbed;
 
-import base.*;
 import js.geometry.FPoint;
 import js.geometry.IRect;
 import js.geometry.MyMath;
@@ -547,7 +546,7 @@ public class V implements Globals {
 
   static void cleanUpRender() {
     if (!sPlotStateStack.isEmpty()) {
-      Tools.warn("plot stack not empty");
+     alert("plot stack not empty");
       sPlotStateStack.clear();
     }
   }

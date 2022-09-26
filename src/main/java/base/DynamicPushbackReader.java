@@ -5,6 +5,7 @@ import java.io.*;
 /**
  * A PushbackReader that has a dynamic pushback buffer.
  */
+@Deprecated
 class DynamicPushbackReader extends PushbackReader {
   public DynamicPushbackReader(Reader r) {
     super(r);

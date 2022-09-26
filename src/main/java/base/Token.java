@@ -1,5 +1,6 @@
 package base;
 
+@Deprecated
 public class Token {
   public static final int T_EOF = -1, T_ASCII = 0 // to 127
   // range of legal ASCII values for terminal symbols in

@@ -1,9 +1,13 @@
 package testbed;
 
-import java.awt.*;
+import java.awt.Toolkit;
 import java.awt.event.*;
-import javax.swing.*;
-import base.*;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.KeyStroke;
+
+import static js.base.Tools.*;
 
 class MyAction extends AbstractAction {
 
@@ -21,25 +25,7 @@ class MyAction extends AbstractAction {
       listener.actionPerformed(actionEvent);
   }
 
-  /**
-   * Get string describing object
-   * 
-   * @return String
-   */
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("MyAction: " + getValue(NAME));
-    Object[] k = super.getKeys();
-    for (int i = 0; i < k.length; i++) {
-      String s = (String) k[i];
-      if (s.equals(NAME)) {
-        continue;
-      }
-      sb.append("\n " + Tools.f(s, 20) + ": " + super.getValue(s));
-    }
-    return sb.toString();
-  }
-
+  
   /**
    * Set key accelerator
    * 
@@ -149,7 +135,7 @@ class MyAction extends AbstractAction {
         break outer;
       }
     }
-    Tools.ASSERT(accelKeyCode != 0 && i == s.length(), "parse accelerator problem: " + s);
+    checkState(accelKeyCode != 0 && i == s.length(), "parse accelerator problem:", s);
 
     KeyStroke k = null;
     if (accelKeyCode != 0) {

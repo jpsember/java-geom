@@ -1,6 +1,7 @@
 package testbed;
 
-import base.*;
+import geom.GeomTools;
+
 import javax.swing.*;
 import static js.base.Tools.*;
 
@@ -32,7 +33,7 @@ class CtLabel extends Gadget {
       c = new JLabel(label, SwingConstants.CENTER);
     } else {
       List<String> a = arrayList();
-      TextScanner.splitString(label, colWidth, a);
+      GeomTools.splitString(label, colWidth, a);
       JPanel p = new JPanel();
       p.setLayout(new BoxLayout(p, BoxLayout.PAGE_AXIS));
 

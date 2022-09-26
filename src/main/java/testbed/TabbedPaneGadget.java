@@ -3,7 +3,6 @@ package testbed;
 import java.awt.Component;
 import java.util.*;
 import javax.swing.*;
-import base.*;
 
 import static js.base.Tools.*;
 
@@ -43,13 +42,13 @@ class TabbedPaneGadget extends Gadget {
     if (val >= TAB_ID_START) {
       val2 = idToIndexMap.get(val);
       if (val2 == null)
-        Tools.warn("no value " + val2 + " for " + this.getId());
+       alert("no value" , val2 , "for" , this.getId());
     } else {
       val2 = val;
     }
     if (val2 != null) {
       if (val2.intValue() < 0 || val2.intValue() >= tp.getTabCount()) {
-        Tools.warn("no such tab: " + val2 + " for " + this.getId());
+        alert("no such tab:", val2, "for", getId());
       } else
         tp.setSelectedIndex(val2.intValue());
     }

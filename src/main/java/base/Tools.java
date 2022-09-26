@@ -9,6 +9,7 @@ import javax.swing.border.*;
 
 import js.geometry.MyMath;
 
+@Deprecated
 public final class Tools {
 
   public static PrintWriter getPrintWriter(File f) {
@@ -268,6 +269,7 @@ public final class Tools {
         + ">";
   }
 
+  @Deprecated
   public static String d(Map m) {
     StringBuilder sb = new StringBuilder();
     sb.append(dashTitle(80, "Map (size=" + m.size() + ")", true));
@@ -825,7 +827,9 @@ public final class Tools {
    * @param b1
    * @param b2
    * @return null if equal, else string showing differences
+   *
    */
+  @Deprecated
   public static String compare(byte[] b1, byte[] b2) {
     StringWriter sw = new StringWriter(5000);
     PrintWriter pw = new PrintWriter(sw);
@@ -960,7 +964,8 @@ public final class Tools {
    * 
    * @return String
    */
-  public static String hexDump(byte[] buffer, int offset, int length,
+  @Deprecated
+   public static String hexDump(byte[] buffer, int offset, int length,
       boolean multiline, boolean withHex, boolean withASCII, boolean hideZeros) {
 
     StringWriter sw = new StringWriter(5000);
@@ -1046,10 +1051,12 @@ public final class Tools {
   }
 
   
+  @Deprecated
   public static String fh(int n) {
     return "$" + TextScanner.toHex(n, 8);
   }
 
+  @Deprecated
   public static String fh4(int n) {
     return "$" + TextScanner.toHex(n, 4);
   }

@@ -167,9 +167,6 @@ public abstract class TestBed extends GeomApp {
     return (TestBed) GeomApp.singleton();
   }
 
-  private void addMenus0() {
-  }
-
   /**
    * Add operations available to the user. Default implementation does nothing.
    * Typical user code (taken from the ConvexHull example):
@@ -190,8 +187,8 @@ public abstract class TestBed extends GeomApp {
   public void addControls(ControlPanel c) {
   }
 
-  private void mainControlScript0( ControlPanel c ) {
-   c.checkBox(TBGlobals.CTRLSVISIBLE, null, null, true);
+  private void addMainControls(ControlPanel c) {
+    c.checkBox(TBGlobals.CTRLSVISIBLE, null, null, true);
 
     c.openTabSet(TBGlobals.AUXTABSET);
     {
@@ -204,13 +201,6 @@ public abstract class TestBed extends GeomApp {
     c.closeTabSet();
   }
 
-  /**
-   * Perform any initialization operations. User should override this method if
-   * desired. Default implementation does nothing.
-   */
-  public void initTestbed() {
-  }
-
   @Override
   public void populateFrame(JPanel parentPanel) {
     constructEditorPanel();
@@ -221,53 +211,18 @@ public abstract class TestBed extends GeomApp {
     parentPanel.add(infoPanel(), BorderLayout.SOUTH);
 
     {
-      operList =arrayList();
+      sOperList = arrayList();
       C.init();
     }
 
-    parentPanel.add(C.getControlPanel(TBGlobals.CT_MAIN), BorderLayout.LINE_END);
-    
-    //if (true) {
-      ControlPanel c = C.controlPanel();
-      c.prepareForGadgets();
-      mainControlScript0(c);
-      addOperations();
-      addControls(c);
-      addOperCtrls(c);
-      C.finishedGadgets();
-//    } else
-//    {
-//      C.openScript();
-//      mainControlScript0();
-//      addOperations();
-//      addControls();
-//      addOperCtrls();
-//      String scr = C.closeScript();
-//      C.addControls(scr);
-//    }
-
-    addMenus0();
-    initTestbed();
-  }
-
-  // TODO: we need to call readGadgetGUIValues at startup at some point
-
-  //  /**
-  //   * Show the application.
-  //   * 
-  //   * Overridden to retain last window dimensions in configuration file.
-  //   */
-  //  protected void showApp() {
-  //    appFrame.pack();
-  //    readGadgetGUIValues();
-  //    appFrame.setVisible(true);
-  //  }
-
-  /**
-   * Process a paintComponent() for the view. Default implementation does
-   * nothing
-   */
-  public void paintView() {
+    ControlPanel c = C.controlPanel();
+    c.prepareForGadgets();
+    addMainControls(c);
+    addOperations();
+    addControls(c);
+    addOperCtrls(c);
+    c.finishedGadgets();
+    parentPanel.add(c, BorderLayout.LINE_END);
   }
 
   /**
@@ -277,87 +232,14 @@ public abstract class TestBed extends GeomApp {
    *          : the message to display
    */
   public static void showError(String msg) {
-    JOptionPane.showMessageDialog(null /* appFrame().frame() */, msg, "Error", JOptionPane.ERROR_MESSAGE);
+    JOptionPane.showMessageDialog(null, msg, "Error", JOptionPane.ERROR_MESSAGE);
   }
 
-  //  protected void exitProgram() {
-  //    final boolean db = false;
-  //    if (db) {
-  //      Streams.out.println("TestBed: exitProgram");
-  //    }
-  //    if (db) {
-  //      Streams.out.println("writeconfig");
-  //    }
-  //
-  //    writeConfigFile();
-  //    if (console()) {
-  //      if (db) {
-  //        Streams.out.println("unset console");
-  //      }
-  //      C.unsetConsole();
-  //    }
-  //
-  //    if (workFile != null) {
-  //      workFile.dispose();
-  //      workFile = null;
-  //    }
-  //    if (db) {
-  //      Streams.out.println("calling super");
-  //    }
-  //
-  //    super.exitProgram();
-  //  }
-
-  //  static JComponent topLevelContainer() {
-  //    return Application.getAppContentPane();
-  //  }
-
-  /**
-   * Strings for serializing hidden integers, doubles, booleans
-   */
-  public static final String serInt = " ? i '' -10000 10000 0 ", serDbl = " ? d '' -10000 10000 0 ",
-      serBool = " ? c '' ";
-
-  //  /**
-  //   * Set path of file last read/saved; for generating EPS, IPE files
-  //   * @param f
-  //   */
-  //  public static void setFilePath(String f) {
-  //    fileStats.setPath(f);
-  //  //  filePath = f;
-  //  }
-
-  //  static String getSpecialSavePath(String orig, String ext) {
-  //    String f = orig;
-  //    if (f == null || f.length() == 0)
-  //      f = fileStats.getPath();
-  //    if (f != null)
-  //      f = Path.changeExtension(f, ext);
-  //    return f;
-  //  }
-
-  // true if beginProgram() has been called yet.  If not,
-  // we consume any actions without reporting them to the program.
-  // private boolean programBegun;
-
-  static int nOpers() {
-    return operList.size();
-  }
-
-  //  public static void setFileStats(FileStats s) {
-  //    fileStats = s;
-  //  }
-  //
-  //  private static FileStats fileStats;
-
-  private static void addOperCtrls( ControlPanel c) {
-    if (nOpers() > 0) {
-      c.openTabSet (TBGlobals.OPER);
-      for (int i = 0; i < nOpers(); i++) {
-       //c.prepareForGadgets();
-        oper(i).addControls();
-       // c.finishedGadgets();
-      }
+  private static void addOperCtrls(ControlPanel c) {
+    if (sOperList.size() > 0) {
+      c.openTabSet(TBGlobals.OPER);
+      for (TestBedOperation oper : sOperList)
+        oper.addControls();
       c.closeTabSet();
     } else {
       c.open();
@@ -366,17 +248,7 @@ public abstract class TestBed extends GeomApp {
   }
 
   public static void addOper(TestBedOperation oper) {
-    /**
-     * if (operList.isEmpty()) { operList.add(new TestBedOperation() { public
-     * void addControls() { C.sOpenTab("Edit"); C.sCloseTab(); }
-     * 
-     * public void runAlgorithm() { }
-     * 
-     * public void paintView() { }
-     * 
-     * public void processAction(TBAction a) { } }); }
-     */
-    operList.add(oper);
+    sOperList.add(oper);
   }
 
   public static int operNum() {
@@ -388,15 +260,12 @@ public abstract class TestBed extends GeomApp {
   }
 
   public static TestBedOperation oper(int n) {
-    return  operList.get(n);
+    return sOperList.get(n);
   }
 
   public static boolean plotTraceMessages() {
     return C.vb(TBGlobals.TRACEPLOT);
   }
-
-  // --------- These static members must be initialized by doInit() ----
-  private static List<TestBedOperation> operList;
 
   @Override
   public float zoomFactor() {
@@ -428,5 +297,7 @@ public abstract class TestBed extends GeomApp {
     addItem("alg_step_fwd", "Step forward", AlgorithmStepper.buildStepOper(1));
     addItem("alg_step_reset", "Reset step", AlgorithmStepper.buildResetOper());
   }
+
+  private static List<TestBedOperation> sOperList;
 
 }

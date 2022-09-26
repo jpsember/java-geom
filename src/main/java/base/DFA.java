@@ -10,6 +10,7 @@ import static js.base.Tools.*;
 /**
  * Deterministic Finite State Automaton
  */
+@Deprecated
 public class DFA {
 
   /**

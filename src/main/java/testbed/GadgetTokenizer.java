@@ -7,6 +7,7 @@ import java.io.*;
 /**
  * Tokenizer for TestBed menus & gadgets.
  */
+@Deprecated
   class GadgetTokenizer
     extends TextScanner implements IScript {
 

@@ -1,6 +1,5 @@
 package testbed;
 
-import base.*;
 import javax.swing.*;
 
 import static js.base.Tools.*;
@@ -10,19 +9,6 @@ import java.awt.*;
 class CtSpinner extends Gadget {
 
   private static final boolean db = false && alert("debug printing in effect");
-
-  /**
-   * Get string describing object
-   * 
-   * @return String
-   */
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("CtSpinner");
-    sb.append(" id=" + getId());
-    sb.append(" slider=" + Tools.f(mIsSlider));
-    return sb.toString();
-  }
 
   public void writeValue(Object v) {
     if (db) {

@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.List;
 import static js.base.Tools.*;
 
+@Deprecated
 public class TextScanner {
 
   public static int parseInt(String s) {
@@ -1225,6 +1226,7 @@ public class TextScanner {
    * @param lst : substrings are stored here
    * @return int : length of longest substring
    */
+  @Deprecated
   public static int splitString(String str, int lineWidth, List<String> lst) {
 
     int stringStart = 0;

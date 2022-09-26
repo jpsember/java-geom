@@ -1,6 +1,5 @@
 package testbed;
 
-import base.*;
 import static js.base.Tools.*;
 
 import java.awt.Font;
@@ -25,7 +24,7 @@ class TBFont {
   }
 
   public static TBFont get(int index) {
-    Tools.ASSERT(sFonts != null, "TBFont.prepare() not called");
+   checkState(sFonts != null, "TBFont.prepare() not called");
     return sFonts[index];
   }
 

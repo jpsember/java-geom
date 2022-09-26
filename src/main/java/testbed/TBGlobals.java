@@ -6,9 +6,6 @@ package testbed;
  */
 public interface TBGlobals {
 
-  // control panel indexes
-  static final int CT_MAIN = 0, CT_TOTAL = 1;
-
   /**
    * Reserved gadget ids
    */
