@@ -25,7 +25,7 @@ public class BoundsOper implements TestBedOperation, Globals {
   public void addControls() {
 
     ControlPanel c = C.controlPanel();
-    
+
     c.sOpenTab("Bounds");
     c.sStaticText("Calculate minimum bounding box of objects");
 
@@ -38,11 +38,18 @@ public class BoundsOper implements TestBedOperation, Globals {
     }
     todo("convert Button, other widgets");
     c.sButton(9999, "Hello", "Sample button");
+    c.sDoubleSlider(9988, "DoubleSlid", "Double slider", 5.2, 10.2, 7.5, 0.1);
+    c.sDoubleSpinner(9989, "DblSpin", "Double spinner", 5.2, 10.2, 7.5, 0.1);
+    c.sTextField(9970, "field", "hint", 12, true, "hello");
+    c.sTextArea(9971, "area", "text area", true, "hello");
     c.sCloseTab();
   }
 
   public void processAction(TBAction a) {
-    pr("action:",a);
+    pr("action:", a);
+    if (a.ctrlId == 9988 || a.ctrlId == 9989)
+      pr("value:", C.vd(a.ctrlId));
+
     if (a.code == TBAction.CTRLVALUE) {
       generate();
     }

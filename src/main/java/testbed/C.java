@@ -27,62 +27,6 @@ public class C implements Globals {
 
   private static boolean sGadgetsActive;
 
-  /**
-   * Add a push button gadget
-   * 
-   * @param id
-   * @param label
-   * @param toolTip
-   *          if not null, tool tip to display
-   */
-  public static void sButton(int id, String label, String toolTip) {
-    // b <id:int> <text:label> [<tooltip:label>] 
-    sText("b");
-    sIValue(id);
-    sLbl(label);
-    sLblnn(toolTip);
-    sNewLine();
-  }
-
-  /**
-   * Add a checkbox gadget
-   * 
-   * @param id
-   *          id of gadget
-   * @param label
-   *          label of gadget
-   * @param toolTip
-   *          if not null, tool tip to display
-   * @param defaultValue
-   *          initial value of gadget
-   */
-  public static void sCheckBox(int id, String label, String toolTip, boolean defaultValue) {
-
-    
-    
-    // c <id:int> [<lbl:label>] [<tooltip:label>] <defvalue:bool> 
-
-    if (label == null)
-      sHide();
-
-    sText("c");
-    sIValue(id);
-    sLblnn(label);
-    sLblnn(toolTip);
-    sBool(defaultValue);
-    sNewLine();
-  }
-
-  static void sConsole(int idConsole, int rows, boolean commandLine) {
-    // C <id:int> <rows:int> <cols:int> <commandline:bool>
-    sText('C');
-    sIValue(idConsole);
-    sIValue(rows);
-    sIValue(80);
-    sBool(commandLine);
-    sNewLine();
-  }
-
   public static void add(Gadget c) {
     mGadgetSet.add(c);
   }
@@ -277,80 +221,6 @@ public class C implements Globals {
   }
 
   /**
-   * Add an integer-valued spinner
-   * 
-   * @param id
-   * @param label
-   * @param toolTip
-   * @param minValue
-   * @param maxValue
-   * @param defaultValue
-   * @param stepSize
-   */
-  public static void sIntSpinner(int id, String label, String toolTip, int minValue, int maxValue,
-      int defaultValue, int stepSize) {
-    // s <lbl:label> <id:int> [<tooltip:label>] <min:int> <max:int> <def:int> <step:int> 
-    sText('s');
-    sLbl(label);
-    sIValue(id);
-    sLblnn(toolTip);
-    sIValue(minValue);
-    sIValue(maxValue);
-    sIValue(defaultValue);
-    sIValue(stepSize);
-    sNewLine();
-  }
-
-  /**
-   * Add an integer-valued slider
-   * 
-   * @param id
-   * @param label
-   * @param toolTip
-   * @param minValue
-   * @param maxValue
-   * @param defaultValue
-   * @param stepSize
-   */
-  public static void sIntSlider(int id, String label, String toolTip, int minValue, int maxValue,
-      int defaultValue, int stepSize) {
-    // sl <lbl:label> <id:int> [<tooltip:label>] <min:int> <max:int> <def:int> <step:int> 
-    sText('S');
-    sLblnn(label);
-    sIValue(id);
-    sLblnn(toolTip);
-    sIValue(minValue);
-    sIValue(maxValue);
-    sIValue(defaultValue);
-    sIValue(stepSize);
-    sNewLine();
-  }
-
-  /**
-   * Add a spinner to manipulate a double value
-   * 
-   * @param id
-   * @param label
-   * @param toolTip
-   * @param minValue
-   * @param maxValue
-   * @param defaultValue
-   * @param stepSize
-   */
-  public static void sDoubleSpinner(int id, String label, String toolTip, double minValue, double maxValue,
-      double defaultValue, double stepSize) {
-    sText("sd");
-    sLblnn(label);
-    sIValue(id);
-    sLblnn(toolTip);
-    sDValue(minValue);
-    sDValue(maxValue);
-    sDValue(defaultValue);
-    sDValue(stepSize);
-    sNewLine();
-  }
-
-  /**
    * Add static (immutable) text to panel
    * 
    * @param s
@@ -370,69 +240,6 @@ public class C implements Globals {
   static void sDValue(double dValue) {
     script.append(' ');
     script.append(dValue);
-  }
-
-  /**
-   * Add a text area. These are not (at present) editable by the user, but their
-   * contents can be changed by the program
-   * 
-   * @param id
-   *          id
-   * @param label
-   *          if not null, label to display
-   * @param toolTip
-   * @param fixedWidth
-   *          if true, uses a monotone-spaced font
-   * @param defaultValue
-   *          initial value of text (if null, uses empty string)
-   */
-  public static void sTextArea(int id, String label, String toolTip, boolean fixedWidth,
-      String defaultValue) {
-    // xf <id:int> [<lbl:label>] 0 [<tooltip:label>] 0 <defaultValue:label> 
-    sText(fixedWidth ? "xf" : "x");
-
-    sIValue(id);
-    sLblnn(label);
-    sIValue(0);
-    sLblnn(toolTip);
-    sIValue(0);
-    if (defaultValue == null)
-      defaultValue = "";
-    sLbl(defaultValue);
-  }
-
-  /**
-   * Add a text field. Currently displayed in a button, which when pressed,
-   * brings up a modal dialog box for the user to change its value. This is
-   * necessary due to conflicts with menu accelerators and other focus-related
-   * issues.
-   * 
-   * @param id
-   *          id
-   * @param label
-   *          if not null, label to display
-   * @param toolTip
-   * @param maxLength
-   *          maximum length of text; any user edits will be truncated to fit
-   *          within this limit
-   * @param defaultValue
-   *          initial value of text (if null, uses empty string)
-   */
-  public static void sTextField(int id, String label, String toolTip, int maxLength, boolean fixedWidth,
-      String defaultValue) {
-    // t  [<label:label>] <id:int> [<tooltip:label>] <maxlen:int> <value:label>
-    // tf [<label:label>] <id:int> [<tooltip:label>] <maxlen:int> <value:label>
-
-    sHide(label != null);
-    sText(fixedWidth ? " tf" : " t");
-    sLblnn(label);
-    sIValue(id);
-    sLblnn(toolTip);
-    sIValue(maxLength);
-    if (defaultValue == null)
-      defaultValue = "";
-    sLbl(defaultValue);
-    sNewLine();
   }
 
   static void sNewLine() {
@@ -622,15 +429,6 @@ public class C implements Globals {
     sNewLine();
   }
 
-  /**
-   * Move to the next column within the current panel (previously opened with
-   * sOpen())
-   */
-  public static void sNewColumn() {
-    C.script.append(" |");
-    sNewLine();
-  }
-
   private static void sLblnn(CharSequence label) {
     if (label != null)
       sLbl(label);
@@ -700,15 +498,15 @@ public class C implements Globals {
     ctrlPanels[panel].processScript(script);
   }
 
- public static ControlPanel controlPanel() {
+  public static ControlPanel controlPanel() {
     return ctrlPanels[TBGlobals.CT_MAIN];
   }
-  
- public  static void prepareForGadgets() {
+
+  public static void prepareForGadgets() {
     controlPanel().prepareForGadgets();
   }
 
- public static void finishedGadgets() {
+  public static void finishedGadgets() {
     controlPanel().finishedGadgets();
   }
 
@@ -730,46 +528,6 @@ public class C implements Globals {
    */
   public static JSMap constructGadgetValueMap() {
     return mGadgetSet.getValues();
-  }
-
-  /**
-   * Add an item to the current menu
-   * 
-   * @param id
-   *          id of menu
-   * @param label
-   *          label of menu
-   * @param keyEquiv
-   *          if not null, keyboard equivalent of the form
-   * 
-   *          <pre>
-   *   ^c   for ctrl-c (command-c on Mac)
-   *   ^C   for ctrl-shift c
-   *   #ddd keycode for decimal value ddd (i.e., KeyEvent.VK_BACK_SPACE
-   *          </pre>
-   */
-  public static void sMenuItem(int id, String label, String keyEquiv) {
-    // <id:int> [<keyequiv>] <label>
-    sIValue(id);
-    if (keyEquiv != null) {
-      script.append(' ');
-      if (!keyEquiv.startsWith("!"))
-        script.append('!');
-      script.append(keyEquiv);
-    }
-    sLbl(label);
-    sNewLine();
-  }
-
-  /**
-   * Add a separator item to the current menu
-   */
-  public static void sMenuSep() {
-    // =
-    sNewLine();
-    script.append(" =");
-    sNewLine();
-    sNewLine();
   }
 
   static void init() {

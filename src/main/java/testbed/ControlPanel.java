@@ -155,26 +155,31 @@ public class ControlPanel extends JPanel implements Globals, IScript {
 
   public void sIntSlider(int id, String label, String toolTip, int minValue, int maxValue, int defaultValue,
       int stepSize) {
-
-    // s [<lbl:label>] <id:int> [<tooltip:label>] <min:int> <max:int> <def:int> <step:int> 
-    // boolean slider = (t.id(T_SLIDER_INT) || t.id(T_SLIDER_DBL));
-    // boolean dbl = (t.id(T_SLIDER_DBL) || t.id(T_SPIN_DBL));
-
-    // String lbl = tk.readIfLabel();
-    // int id = tk.readInt();
-    // String toolTip = tk.readIfLabel();
-    //    double min = tk.readDouble();
-    //    double max = tk.readDouble();
-    //    double val = tk.readDouble();
-    //    double step = tk.readDouble();
-
     addSpinner(id, label, minValue, maxValue, defaultValue, stepSize, true, false, false, toolTip);
+  }
 
+  public void sDoubleSlider(int id, String label, String toolTip, double minValue, double maxValue,
+      double defaultValue, double stepSize) {
+    addSpinner(id, label, minValue, maxValue, defaultValue, stepSize, true, false, true, toolTip);
   }
 
   public void sIntSpinner(int id, String label, String toolTip, int minValue, int maxValue, int defaultValue,
       int stepSize) {
     addSpinner(id, label, minValue, maxValue, defaultValue, stepSize, false, false, false, toolTip);
+  }
+
+  public void sDoubleSpinner(int id, String label, String toolTip, double minValue, double maxValue,
+      double defaultValue, double stepSize) {
+    addSpinner(id, label, minValue, maxValue, defaultValue, stepSize, false, false, true, toolTip);
+  }
+
+  public void sTextArea(int id, String label, String toolTip, boolean fixedWidth, String defaultValue) {
+    addControl(new CtTextFieldNew(label, defaultValue, 0, fixedWidth).setId(id), toolTip);
+  }
+
+  public void sTextField(int id, String label, String toolTip, int maxLength, boolean fixedWidth,
+      String defaultValue) {
+    addControl(new CtTextFieldNew(label, defaultValue, maxLength, fixedWidth).setId(id), toolTip);
   }
 
   public void sOpen() {
