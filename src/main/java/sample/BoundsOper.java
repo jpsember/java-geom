@@ -36,7 +36,6 @@ public class BoundsOper implements TestBedOperation, Globals {
       c.sIntSpinner(COUNT, "Count", "Number to generate", 0, 100, 12, 1);
       c.sClose();
     }
-    todo("convert Button, other widgets");
     c.sButton(9999, "Hello", "Sample button");
     c.sDoubleSlider(9988, "DoubleSlid", "Double slider", 5.2, 10.2, 7.5, 0.1);
     c.sDoubleSpinner(9989, "DblSpin", "Double spinner", 5.2, 10.2, 7.5, 0.1);

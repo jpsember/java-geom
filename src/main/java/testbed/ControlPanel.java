@@ -66,31 +66,6 @@ public class ControlPanel extends JPanel implements Globals, IScript {
     addControl(new CtSpinner(label, min, max, value, step, sliderFlag, withTicks, dbl).setId(id), toolTip);
   }
 
-  private void addTextField(int id, String label, String value, int maxStrLen, boolean fw, String toolTip) {
-    addControl(new CtTextFieldNew(label, value, maxStrLen, fw).setId(id), toolTip);
-  }
-
-  private void addComboBox() {
-    // cb <id:int> [<title:label>] <asradio:bool> [<tooltip:label>]
-    //       ( {<id:int> <lbl:label>} )
-
-    int cid = tk.readInt();
-    String label = tk.readIfLabel();
-    boolean asRadio = tk.readBoolean();
-    String toolTip = tk.readIfLabel();
-    tk.read(T_PAROP);
-
-    CtComboBox box = new CtComboBox(label, toolTip, asRadio);
-    box.setId(cid);
-
-    while (!tk.readIf(T_PARCL)) {
-      int id = tk.readInt();
-      String fldLabel = tk.readLabel();
-      box.addItem(id, fldLabel);
-    }
-    addControl(box, toolTip);
-  }
-
   public void prepareForGadgets() {
     // create an outermost panel, and add it to 
     // this control panel, in the first row
@@ -114,42 +89,8 @@ public class ControlPanel extends JPanel implements Globals, IScript {
     mStack = null;
   }
 
-  /**
-   * Process a script to add controls
-   * 
-   * @param script
-   *          script to process
-   */
-  void processScript(String script) {
-    prepareForGadgets();
-    tk = new GadgetTokenizer(script);
-    processScript();
-    tk.read(Token.T_EOF);
-    tk = null;
-  }
-
-  private int readIdn() {
-    int tabId = tk.readIfInt(-1);
-    if (tabId < 0)
-      tabId = C.getAnonId();
-    return tabId;
-  }
-
   public void sCheckBox(int id, String label, String toolTip, boolean defaultValue) {
     hideNextControl(nullOrEmpty(label));
-    //
-    //    sText("c");
-    //    sIValue(id);
-    //    sLblnn(label);
-    //    sLblnn(toolTip);
-    //    sBool(defaultValue);
-    //    sNewLine();
-    //  }) {
-    //    int id = tk.readInt();
-    //    String label = tk.readIfLabel();
-    //
-    //    String toolTip = tk.readIfLabel();
-    //    boolean defValue = tk.readIfBool(false);
     addControl(new CtCheckBox(id, label, defaultValue, false, parseToolTip(toolTip), null), null);
   }
 
@@ -182,27 +123,23 @@ public class ControlPanel extends JPanel implements Globals, IScript {
     addControl(new CtTextFieldNew(label, defaultValue, maxLength, fixedWidth).setId(id), toolTip);
   }
 
-  
-  
-  
   /**
    * Add a combo box gadget. Must be balanced by a call to sCloseComboBox()
    */
-  public   void sOpenComboBox(int id, String label, String toolTip, boolean asRadio) {
+  public void sOpenComboBox(int id, String label, String toolTip, boolean asRadio) {
 
     // cb <id:int> [<title:label>] <asradio:bool> [<tooltip:label>]
     //       ( {<id:int> <lbl:label>} )
 
-   // int cid = tk.readInt();
-//    String label = tk.readIfLabel();
-//    boolean asRadio = tk.readBoolean();
-//    String toolTip = tk.readIfLabel();
-//    tk.read(T_PAROP);
-    checkState(mComboBox == null,"ComboBox is already open");
+    // int cid = tk.readInt();
+    //    String label = tk.readIfLabel();
+    //    boolean asRadio = tk.readBoolean();
+    //    String toolTip = tk.readIfLabel();
+    //    tk.read(T_PAROP);
     CtComboBox box = new CtComboBox(label, toolTip, asRadio);
     box.setId(id);
-    mComboBox = box;
-addControl(box, toolTip);
+    push(mStack, box);
+    addControl(box, toolTip);
   }
 
   /**
@@ -212,37 +149,22 @@ addControl(box, toolTip);
    *          id of choice
    * @param label
    */
-  public   void sChoice(int id, String label) {
-      mComboBox.addItem(id, label);
+  public void sChoice(int id, String label) {
+    comboBox().addItem(id, label);
   }
-  
+
+  private CtComboBox comboBox() {
+    return (CtComboBox) last(mStack);
+  }
+
   /**
    * Close combo box (previously opened with sOpenComboBox())
    */
-  public   void sCloseComboBox() {
-    checkState(mComboBox != null,"no ComboBox open");
-   mComboBox = null;
+  public void sCloseComboBox() {
+    comboBox();
+    pop(mStack);
   }
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   public void sOpen() {
     sOpen(null);
   }
@@ -267,8 +189,7 @@ addControl(box, toolTip);
   }
 
   public void sStaticText(String text) {
-    int colWidth = 0; //tk.readIfInt(0);
-    addControl(new CtLabel(colWidth, text).setId(C.getAnonId()), null);
+    addControl(new CtLabel(0, text).setId(C.getAnonId()), null);
   }
 
   public void sOpenTabSet(int panelId) {
@@ -320,148 +241,6 @@ addControl(box, toolTip);
     popScope();
   }
 
-  private void processScript() {
-    while (true) {
-
-      if (tk.eof() || tk.peek(T_PARCL))
-        break;
-
-      tk.trace("");
-      Token t = tk.read();
-
-      switch (t.id()) {
-      default:
-        t.exception("unexpected token");
-
-      case T_BUTTON: {
-        int id = tk.readInt();
-        String label = tk.readLabel();
-        String toolTip = tk.readIfLabel();
-        addControl(new CtButton(Gadget.createAction(id, label, toolTip, null)).setId(id), null);
-      }
-        break;
-
-      case T_CHECKBOX: {
-        int id = tk.readInt();
-        String label = tk.readIfLabel();
-
-        String toolTip = tk.readIfLabel();
-        boolean defValue = tk.readIfBool(false);
-        addControl(new CtCheckBox(id, label, defValue, false, parseToolTip(toolTip), null), null);
-      }
-        break;
-
-      case T_COMBOBOX:
-        addComboBox();
-        break;
-
-      case T_PNL_HTAB: {
-        if (tk.trace()) {
-          System.out.println(" processing tab set");
-        }
-        int panelId = readIdn();
-
-        TabbedPaneGadget tb = new TabbedPaneGadget(true);
-        tb.setId(panelId);
-        mStackPanel.addItem(tb.getComponent());
-
-        for (int tabNumber = 0; !tk.readIf(T_PARCL); tabNumber++) {
-          int tabId = tk.readIfInt(tabNumber);
-
-          String tabLabel = tk.readLabel();
-          pushScope(null);
-          tb.addTab(tabLabel, tabId, mStackPanel.component());
-
-          tk.read(T_PAROP);
-          processScript();
-          tk.read(T_PARCL);
-          popScope();
-        }
-        addControl(tb, null);
-      }
-        break;
-
-      case T_PAROP: {
-        String title = tk.readIfLabel();
-        StackPanel prevScope = mStackPanel;
-        push(mStack, mStackPanel);
-        mStackPanel = new StackPanel(title);
-        prevScope.addItem(mStackPanel.component());
-        processScript();
-        tk.read(T_PARCL);
-        popScope();
-      }
-        break;
-
-      case T_NEWCOL:
-        mStackPanel.startNewColumn();
-        break;
-
-      case T_SLIDER_INT:
-      case T_SLIDER_DBL:
-      case T_SPIN_INT:
-      case T_SPIN_DBL: {
-        // s [<lbl:label>] <id:int> [<tooltip:label>] <min:int> <max:int> <def:int> <step:int> 
-        boolean slider = (t.id(T_SLIDER_INT) || t.id(T_SLIDER_DBL));
-        boolean dbl = (t.id(T_SLIDER_DBL) || t.id(T_SPIN_DBL));
-
-        String lbl = tk.readIfLabel();
-        int id = tk.readInt();
-        String toolTip = tk.readIfLabel();
-        double min = tk.readDouble();
-        double max = tk.readDouble();
-        double val = tk.readDouble();
-        double step = tk.readDouble();
-
-        addSpinner(id, lbl, min, max, val, step, slider, false, dbl, toolTip);
-      }
-        break;
-
-      case T_TRACE:
-        tk.setTrace(!tk.trace());
-        break;
-
-      case T_LABEL: {
-        int colWidth = tk.readIfInt(0);
-        addControl(new CtLabel(colWidth, tk.readLabel()).setId(C.getAnonId()), null);
-      }
-        break;
-
-      case T_TEXTAREA:
-      case T_TEXTAREA_FW: {
-        // xf <id:int> [<lbl:label>] 0 [<tooltip:label>] 0 <defaultValue:label> 
-        int id = tk.readInt();
-        String label = tk.readIfLabel();
-        int i0 = tk.readInt();
-        String toolTip = tk.readIfLabel();
-        int i1 = tk.readInt();
-        String defVal = tk.readLabel();
-        addControl(
-            new CtTextArea(label, SwingConstants.CENTER, defVal, i0, i1, t.id(T_TEXTAREA_FW)).setId(id),
-            toolTip);
-      }
-        break;
-
-      case T_HIDDEN:
-        hideNextControl = true;
-        break;
-
-      case T_TEXTFLD_STR_FW:
-      case T_TEXTFLD_STR: {
-        // t  [<label:label>] <id:int> [<tooltip:label>] <maxlen:int> <value:label>
-        String label = tk.readIfLabel();
-        int id = tk.readInt();
-        String toolTip = tk.readIfLabel();
-        int maxlen = tk.readInt();
-        String value = tk.readLabel();
-        addTextField(id, label, value, maxlen, t.id(T_TEXTFLD_STR_FW), toolTip);
-      }
-        break;
-
-      }
-    }
-  }
-
   /**
    * Convert a tooltip string to a multi-line tooltip using embedded HTML tags.
    * 
@@ -498,19 +277,12 @@ addControl(box, toolTip);
     return ret;
   }
 
-  private StackPanel pushScope(String title) {
-    push(mStack, mStackPanel);
-    mStackPanel = new StackPanel(title);
-    return mStackPanel;
-  }
-
   private List<Object> mStack;
   // current panel
   private StackPanel mStackPanel;
   private TabbedPaneGadget mTabbedPaneGadget;
+  // private CtComboBox mComboBox;
   // hide next control?
   private boolean hideNextControl;
-  private GadgetTokenizer tk;
-  private CtComboBox mComboBox;
 
 }

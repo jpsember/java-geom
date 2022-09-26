@@ -220,17 +220,6 @@ public class C implements Globals {
     return visible;
   }
 
-  /**
-   * Add static (immutable) text to panel
-   * 
-   * @param s
-   */
-  public static void sStaticText(String s) {
-    sText('l');
-    sIValue(45);
-    sLbl(s);
-    sNewLine();
-  }
 
   static void sIValue(int iValue) {
     script.append(' ');
@@ -250,20 +239,6 @@ public class C implements Globals {
     script.append(v ? " T" : " F");
   }
 
-  /**
-   * Open a nested panel within the current panel. Must be balanced by a call to
-   * sClose().
-   * 
-   * @param title
-   *          if not null, surrounds panel with title box
-   */
-  public static void sOpen(String title) {
-    // ( <title:label> <script> )
-    sNewLine();
-    sText('(');
-    sLblnn(title);
-    sNewLine();
-  }
 
   static char sLastChar() {
     char c = ' ';
@@ -277,177 +252,7 @@ public class C implements Globals {
     return c;
   }
 
-  /**
-   * Open a nested panel within the current panel. Must be balanced by a call to
-   * sClose()
-   */
-  public static void sOpen() {
-    sOpen(null);
-  }
 
-  private static void sText(char c) {
-    script.append(' ');
-    script.append(c);
-  }
-
-  private static void sText(String s) {
-    script.append(' ');
-    script.append(s);
-  }
-
- 
-
-  /**
-   * Close panel (previously opened with sOpen())
-   */
-  public static void sClose() {
-    sText(')');
-    sNewLine();
-  }
-
-  /**
-   * Open a tab set. Must be balanced by a call to sCloseTabSet().
-   * 
-   * @param id
-   *          id of set; reading the value of this gadget will return the
-   *          identifier of the currently selected tab
-   */
-  public static void sOpenTabSet(int id) {
-    tabSetCount++;
-    // (h  [<tabsetid:int>] { [<tabid:int>] <tablabel:label> ( <gadgets:script> ) } )
-    sText("(h");
-    if (id >= 0)
-      sIValue(id);
-  }
-
-  /**
-   * Add a tab to the tab set (previously opened with sOpenTabSet()). Must be
-   * balanced by a call to sCloseTab(). The id of the tab will be its index
-   * within the set.
-   * 
-   * @param title
-   *          title of tab
-   */
-  public static void sOpenTab(String title) {
-    sOpenTab(-1, title);
-  }
-
-  /**
-   * Add a tab to the tabbed pane (previously opened with sOpenTabSet()). Must
-   * be balanced by a call to sCloseTab().
-   * 
-   * @param id
-   *          id of tab; if < TAB_ID_START, ignores this value and uses the
-   *          tab's index as the id
-   * @param title
-   *          title of tab
-   */
-  public static void sOpenTab(int id, String title) {
-    if (tabSetCount == 0)
-      throw new IllegalStateException("tab set parity problem");
-    sNewLine();
-    if (id >= TAB_ID_START)
-      C.sIValue(id);
-    if (title == null)
-      title = "<name?>";
-    C.sLbl(title);
-    C.sText('(');
-    sNewLine();
-
-    tabPaneCount++;
-  }
-
-  /**
-   * Close tab (previously opened with sOpenTab())
-   */
-  public static void sCloseTab() {
-    if (tabSetCount == 0 || tabPaneCount == 0)
-      throw new IllegalStateException("tab set parity problem");
-    sText(')');
-    sNewLine();
-    tabPaneCount--;
-  }
-
-  /**
-   * Close tab set (previously opened with sOpenTabSet())
-   */
-  public static void sCloseTabSet() {
-    if (tabSetCount == 0)
-      throw new IllegalStateException("tab set parity problem");
-    tabSetCount--;
-
-    sText(')');
-    sNewLine();
-  }
-
-  private static void sLblnn(CharSequence label) {
-    if (label != null)
-      sLbl(label);
-  }
-
-  /**
-   * Add a label to the script, enclosed within single quotes '....', and with
-   * appropriate escape characters
-   * 
-   * @param label
-   *          String, if null, uses empty string
-   */
-  private static void sLbl(CharSequence label) {
-    if (label == null)
-      throw new IllegalArgumentException();
-
-    script.append(" '");
-    if (label != null) {
-      for (int i = 0; i < label.length(); i++) {
-        char c = label.charAt(i);
-        switch (c) {
-        default:
-          script.append(c);
-          break;
-        case '\n':
-          script.append("\\n");
-          break;
-        case '\'':
-          script.append("\\'");
-          break;
-        }
-      }
-    }
-    script.append("'");
-  }
-
-  /**
-   * Append a string to the script
-   * 
-   * @param obj
-   */
-  static void sAppend(Object obj) {
-    script.append(obj.toString());
-  }
-
-  /**
-   * Add a script of controls to the main control panel
-   * 
-   * @param script
-   *          : control script
-   */
-  @Deprecated
-  static void addControls(String script) {
-    addControls(script, TBGlobals.CT_MAIN);
-  }
-
-  /**
-   * Add a script of controls to one of the panels
-   * 
-   * @param script
-   *          : control script
-   * @param panel
-   *          : CT_xxx
-   */
-  @Deprecated
-  static void addControls(String script, int panel) {
-    ctrlPanels[panel].processScript(script);
-  }
 
   public static ControlPanel controlPanel() {
     return ctrlPanels[TBGlobals.CT_MAIN];
@@ -495,15 +300,11 @@ public class C implements Globals {
     C.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
 
     script = null;
-    tabPaneCount = 0;
-    tabSetCount = 0;
   }
 
   private static int anonIdBase;
   private static ControlPanel[] ctrlPanels;
   private static GadgetList mGadgetSet;
   private static StringBuilder script;
-  private static int tabPaneCount;
-  private static int tabSetCount;
 
 }
