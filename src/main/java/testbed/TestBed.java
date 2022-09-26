@@ -196,7 +196,6 @@ public abstract class TestBed extends GeomApp {
 
   private void mainControlScript0() {
     C.sCheckBox(TBGlobals.CTRLSVISIBLE, null, null, true);
-    C.sCheckBox(TBGlobals.CONSOLEVISIBLE, null, null, true);
 
     C.sOpenTabSet(TBGlobals.AUXTABSET);
     {

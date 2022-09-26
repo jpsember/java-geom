@@ -150,7 +150,7 @@ public abstract class GeomApp extends GUIApp {
   public final void flushProject() {
     if (!currentProject().defined())
       return;
-    projectState().widgetStateMap(C.constructGadgetValueMap(true));
+    projectState().widgetStateMap(C.constructGadgetValueMap());
     currentProject().flush();
   }
 
@@ -159,17 +159,6 @@ public abstract class GeomApp extends GUIApp {
     if (currentProject().scriptIndex() != index) {
       currentProject().setScriptIndex(index);
       scriptManager().replaceCurrentScriptWith(currentProject().script());
-
-      if (C.gadgetsActive()) {
-        todo(
-            "turn off gadgets, send values from script, turn back on; have project vs script class for gadgets");
-        // C.setGadgetsActive(false);
-        // Maybe only a subset of gadgets are written to scripts?
-        // updateGadgetValues(scriptState().widgetsState());
-        //  C.setGadgetsActive(true);
-      } else {
-        pr("*** gadgets weren't active, unexpected");
-      }
     }
   }
 

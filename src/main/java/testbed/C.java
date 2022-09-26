@@ -38,12 +38,9 @@ public class C implements Globals {
   public static void sButton(int id, String label, String toolTip) {
     // b <id:int> <text:label> [<tooltip:label>] 
     sText("b");
-    //    if (toolTip != null)
-    //      sLbl(toolTip);
     sIValue(id);
     sLbl(label);
     sLblnn(toolTip);
-
     sNewLine();
   }
 
@@ -127,17 +124,11 @@ public class C implements Globals {
    * @return value
    */
   public static int vi(int id) {
-    return mGadgetSet.intValue(id);
+    return mGadgetSet.numValue(id).intValue();
   }
 
   /**
    * Set value of (integer-valued) gadget
-   * 
-   * @param id
-   *          id of gadget
-   * @param v
-   *          value to set
-   * @return new value
    */
   public static int seti(int id, int v) {
     mGadgetSet.setValue(id, v);
@@ -145,40 +136,14 @@ public class C implements Globals {
   }
 
   /**
-   * Get (boolean) value of gadget
-   * 
-   * @param id
-   *          id of gadget
-   * @return value
+   * Get boolean value of gadget
    */
   public static boolean vb(int id) {
     return mGadgetSet.booleanValue(id);
   }
 
-  //  /**
-  //   * Get value of boolean-valued gadget
-  //   * (assumed to be in main control panel)
-  //   * @param id : id of gadget
-  //   * @param mustBeEnabled : if true, returns false if gadget is disabled
-  //   * @return value
-  //   * @deprecated
-  //   */
-  //  public static boolean vb(int id, boolean mustBeEnabled) {
-  //    boolean val = false;
-  //    if (!mustBeEnabled || list.enabled(id)) {
-  //      val = list.booleanValue(id);
-  //    }
-  //    return val;
-  //  }
-
   /**
    * Set boolean value of gadget
-   * 
-   * @param id
-   *          id of gadget
-   * @param boolvalue
-   *          boolean value
-   * @return new value
    */
   public static boolean setb(int id, boolean boolvalue) {
     mGadgetSet.setValue(id, boolvalue);
@@ -208,7 +173,7 @@ public class C implements Globals {
    * @return value
    */
   public static double vd(int id) {
-    return mGadgetSet.doubleValue(id);
+    return mGadgetSet.numValue(id).doubleValue();
   }
 
   public static float vf(int id) {
@@ -271,8 +236,6 @@ public class C implements Globals {
    */
   static void openScript() {
     script = new StringBuilder();
-    //    if (TestBed.parms.traceScript)
-    //      script.append("*\n");
   }
 
   /**
@@ -283,8 +246,6 @@ public class C implements Globals {
   static String closeScript() {
     String s = script.toString();
     script = null;
-
-    //pr("closeScript: "+s);
     return s;
   }
 
@@ -392,7 +353,7 @@ public class C implements Globals {
    */
   public static void sStaticText(String s) {
     sText('l');
-    sIValue(45); //TestBed.parms.staticTextWidth);
+    sIValue(45);
     sLbl(s);
     sNewLine();
   }
@@ -747,16 +708,10 @@ public class C implements Globals {
   }
 
   /**
-   * Print gadgets to configuration file or to editor file header
-   * 
-   * @param pw
-   *          PrintWriter to print to
-   * @param configContext
-   *          true if writing configuration file, false if writing editor file
-   *          header
+   * Get JSMap representing widget values
    */
-  public static JSMap constructGadgetValueMap(boolean configContext) {
-    return mGadgetSet.getValues(configContext);
+  public static JSMap constructGadgetValueMap() {
+    return mGadgetSet.getValues();
   }
 
   /**

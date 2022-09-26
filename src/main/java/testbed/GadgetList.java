@@ -50,6 +50,7 @@ final class GadgetList {
   /**
    * Get value of integer-valued gadget
    */
+  @Deprecated
   public int intValue(int id) {
     return numValue(id).intValue();
   }
@@ -61,6 +62,7 @@ final class GadgetList {
   /**
    * Get value of double-valued gadget
    */
+  @Deprecated
   public double doubleValue(int id) {
     return numValue(id).doubleValue();
   }
@@ -156,87 +158,29 @@ final class GadgetList {
   }
 
   /**
-   * Get string describing object
-   * 
-   * @return String
-   */
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("GadgetList ");
-    for (Gadget g : mGadgetMap.values()) {
-      sb.append(" " + g.getId() + ":" + g.toString() + "\n");
-    }
-    return sb.toString();
-  }
-
-  private List<Integer> getList(boolean configContext) {
-    List<Integer> ret = arrayList();
-    for (Gadget g : mGadgetMap.values()) {
-      int id = g.getId();
-
-      // skip this; it messes up saving of window locations
-      /*
-       * if (!configContext) { if (id >= TBGlobals.CONFIGSTART && id <
-       * TBGlobals.CONFIGEND) continue; }
-       */
-      ret.add(id);
-    }
-    return ret;
-  }
-
-  /**
    * Get JSMap of gadget values
-   * 
-   * @param configContext
-   *          true if configuration file, false if editor file
    */
-  public JSMap getValues(boolean configContext) {
-    todo("some of the gadgets are being stored as strings, which probably doesn't make sense");
-    final boolean db = false;
-
-    if (db)
-      pr("getValues");
-
+  public JSMap getValues() {
     JSMap m = map();
-
-    List<Integer> idList = getList(configContext);
-
-    Gadget g = null;
-
-    for (int i = 0; i < idList.size(); i++) {
-      int id = idList.get(i);
-      g = get(id);
-
+    for (Map.Entry<Integer, Gadget> ent : mGadgetMap.entrySet()) {
+      Gadget g = ent.getValue();
       // If it's not a gadget we're interested in retaining the value of, skip.
-
-      //Streams.out.println("id="+id+" value="+g.readValue()+" ser="+g.serialized());
       if (!g.serialized())
         continue;
       Object v = g.readValue();
-      if (db)
-        pr("value for", id, "is:", v);
       if (v == null)
         continue;
-      m.putUnsafe("" + id, v);
+      m.putUnsafe("" + ent.getKey(), v);
     }
-    if (db)
-      pr("returning:", INDENT, m);
     return m;
   }
 
   public void setValues(JSMap m) {
-    final boolean db = false && alert("debug in effect");
     for (Map.Entry<String, Object> entry : m.wrappedMap().entrySet()) {
       int id = Integer.parseInt(entry.getKey());
-      if (db)
-        pr("setValue:", id, "->", entry.getValue());
-      if (!exists(id)) {
-        if (db)
-          pr("...doesn't exist");
+      if (!exists(id))
         continue;
-      }
-      Gadget g = get(id);
-      g.writeValue(entry.getValue());
+      get(id).writeValue(entry.getValue());
     }
   }
 
