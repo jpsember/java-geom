@@ -1,9 +1,12 @@
 package testbed;
 
-import java.awt.*;
 import base.*;
 import static js.base.Tools.*;
-import static testbed.IEditorScript.*;
+
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.GraphicsEnvironment;
+import java.util.List;
 
 class TBFont {
 
@@ -11,12 +14,9 @@ class TBFont {
 
   public static void prepare() {
     if (sFonts == null) {
-      todo("avoid use of Tokenizer for fonts, it's the only use of that class");
-      loadTools();
       sFonts = new TBFont[ifonts.length];
-      for (int i = 0; i < ifonts.length; i++) {
+      for (int i = 0; i < ifonts.length; i++)
         sFonts[i] = parse(ifonts[i]);
-      }
     }
   }
 
@@ -44,11 +44,11 @@ class TBFont {
     TBFont f = null;
     int s = Font.PLAIN;
     int sf = 0;
-    Tokenizer tk = new Tokenizer(str, true);
 
-    String name = tk.read(T_WORD).text();
-    String style = tk.read(T_WORD).text();
-    int size = tk.readInt();
+    List<String> words = split(str, ' ');
+    String name = words.get(0);
+    String style = words.get(1);
+    int size = Integer.parseInt(words.get(2));
 
     for (int i = 0; i < style.length(); i++) {
       switch (style.charAt(i)) {

@@ -3,6 +3,7 @@ package testbed;
 import base.*;
 import java.io.*;
 
+@Deprecated
 public class Tokenizer extends TextScanner implements IEditorScript {
 
   private static DFA dfa;
