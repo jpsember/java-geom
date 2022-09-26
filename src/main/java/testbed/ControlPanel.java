@@ -196,8 +196,11 @@ public class ControlPanel extends JPanel implements Globals, IScript {
     popScope();
   }
 
-  public void sStaticText(String text) {
+  public void sButton(int id, String label, String toolTip) {
+    addControl(new CtButton(Gadget.createAction(id, label, toolTip, null)).setId(id), null);
+  }
 
+  public void sStaticText(String text) {
     int colWidth = 0; //tk.readIfInt(0);
     addControl(new CtLabel(colWidth, text).setId(C.getAnonId()), null);
   }

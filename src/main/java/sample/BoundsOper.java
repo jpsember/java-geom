@@ -37,10 +37,12 @@ public class BoundsOper implements TestBedOperation, Globals {
       c.sClose();
     }
     todo("convert Button, other widgets");
+    c.sButton(9999, "Hello", "Sample button");
     c.sCloseTab();
   }
 
   public void processAction(TBAction a) {
+    pr("action:",a);
     if (a.code == TBAction.CTRLVALUE) {
       generate();
     }
