@@ -245,7 +245,7 @@ final class GadgetList {
   private static class HiddenGadget extends Gadget {
 
     public HiddenGadget(int id, Object defaultValue) {
-      super(id, -1);
+      super(id);
       mValue = defaultValue;
     }
 

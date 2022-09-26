@@ -60,7 +60,7 @@ class CtSpinner extends Gadget {
 
   public CtSpinner(int id, String label, double dmin, double dmax, double dvalue, double step,
       boolean sliderFlag, boolean withTicks, boolean dbl) {
-    super(id, dbl ? DT_DOUBLE : DT_INT);
+    super(id);
 
     this.mIsSlider = sliderFlag;
     if (db)

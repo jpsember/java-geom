@@ -812,7 +812,7 @@ public class C implements Globals {
     // Add gadget for persisting zoom factor
     C.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
     C.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
-    
+
     script = null;
     tabPaneCount = 0;
     tabSetCount = 0;

@@ -29,7 +29,7 @@ class CtComboBox extends Gadget implements ActionListener {
    *          : if true, appears as a radio button group
    */
   public CtComboBox(int id, String label, String toolTip, boolean asRadio) {
-    super(id, DT_INT);
+    super(id);
 
     if (db) {
       System.out.println("CtComboBox constructor, id=" + id + " label=" + label + " asRadio=" + asRadio);
@@ -99,7 +99,7 @@ class CtComboBox extends Gadget implements ActionListener {
    * @return Object
    */
   public Object readValue() {
-    Object ret =  cbox.getSelectedId() ;
+    Object ret = cbox.getSelectedId();
     if (db)
       Streams.out.println("CtComboBox " + getId() + " readValue, returning " + ret);
     return ret;
@@ -139,7 +139,7 @@ class CtComboBox extends Gadget implements ActionListener {
     }
 
     public CtComboBoxItem(int id) {
-      super(id, DT_STRING);
+      super(id);
     }
 
     private AbstractButton button;

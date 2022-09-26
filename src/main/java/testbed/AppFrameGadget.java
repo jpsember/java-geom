@@ -8,9 +8,9 @@ import js.json.JSList;
 public class AppFrameGadget extends Gadget {
 
   public AppFrameGadget(int id) {
-    super(id, -1);
+    super(id);
     loadTools();
-   }
+  }
 
   @Override
   public JSList readValue() {

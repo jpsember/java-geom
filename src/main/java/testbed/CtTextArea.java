@@ -23,18 +23,28 @@ class CtTextArea extends Gadget {
 
   /**
    * Constructor
-   * @param id : id of gadget
-   * @param title : String; if not empty, string to display in a border around the gadget
-   * @param titleAlignment int how title is to be justified
-   * @param value String initial contents of text area
-   * @param rows int number of rows, or 0 to use available space
-   * @param columns int number of columns, or 0 to use available space
-   * @param withScroll boolean true if it should be embedded in a scroll pane
-   * @param fixedWidth boolean true to use fixed-width font
+   * 
+   * @param id
+   *          id of gadget
+   * @param title
+   *          String; if not empty, string to display in a border around the
+   *          gadget
+   * @param titleAlignment
+   *          int how title is to be justified
+   * @param value
+   *          String initial contents of text area
+   * @param rows
+   *          int number of rows, or 0 to use available space
+   * @param columns
+   *          int number of columns, or 0 to use available space
+   * @param withScroll
+   *          boolean true if it should be embedded in a scroll pane
+   * @param fixedWidth
+   *          boolean true to use fixed-width font
    */
-  public CtTextArea(int id, String title, int titleAlignment, String value,
-      int rows, int columns, boolean fixedWidth) {
-    super(id,DT_STRING);
+  public CtTextArea(int id, String title, int titleAlignment, String value, int rows, int columns,
+      boolean fixedWidth) {
+    super(id);
 
     JTextArea cj = new JTextArea(value);
 
@@ -61,8 +71,7 @@ class CtTextArea extends Gadget {
 
     JComponent c = null;
     {
-      JScrollPane scrollPane = new JScrollPane(cj,
-          ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+      JScrollPane scrollPane = new JScrollPane(cj, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
           ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
       c = scrollPane;
       //      if (title.length() != 0) {

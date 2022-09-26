@@ -48,7 +48,7 @@ class TabbedPaneGadget extends Gadget {
     Integer val2 = null;
 
     if (val >= TAB_ID_START) {
-      val2 =  idToIndexMap.get(val);
+      val2 = idToIndexMap.get(val);
       if (val2 == null)
         Tools.warn("no value " + val2 + " for " + this.getId());
     } else {
@@ -74,7 +74,7 @@ class TabbedPaneGadget extends Gadget {
    *          elements; it is assumed to use GridBagLayout
    */
   public TabbedPaneGadget(boolean vertical, int id) {
-    super(id, DT_INT);
+    super(id);
     JTabbedPane tabPane = new JTabbedPane(vertical ? JTabbedPane.TOP : JTabbedPane.LEFT);
     tabPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
     tabPane.addChangeListener(this);
@@ -105,7 +105,7 @@ class TabbedPaneGadget extends Gadget {
     }
 
     titles.add(title);
-    idToIndexMap.put( pnlId , ids.size() );
+    idToIndexMap.put(pnlId, ids.size());
     ids.addInt(pnlId);
 
     getSet().add(title, component);

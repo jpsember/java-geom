@@ -23,7 +23,7 @@ class CtCheckBox extends Gadget {
    *          KeyStroke
    */
   public CtCheckBox(int id, String label, boolean value, boolean inMenu, String toolTip, KeyStroke accel) {
-    super(id, DT_BOOL);
+    super(id);
 
     Action a = Gadget.createAction(id, label, toolTip, accel);
 
@@ -41,7 +41,7 @@ class CtCheckBox extends Gadget {
   }
 
   public Boolean readValue() {
-    return  button().isSelected() ;
+    return button().isSelected();
   }
 
   private AbstractButton button() {

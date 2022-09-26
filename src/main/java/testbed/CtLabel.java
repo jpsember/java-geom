@@ -24,7 +24,7 @@ class CtLabel extends Gadget {
    *          String
    */
   public CtLabel(int id, int colWidth, String label) {
-    super(id, DT_STRING); // datatype isn't used though
+    super(id);
     JComponent c = null;
 
     if (colWidth == 0) {
