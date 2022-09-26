@@ -11,13 +11,6 @@ class CtSpinner extends Gadget {
 
   private static final boolean db = false && alert("debug printing in effect");
 
-  public int gcFill() {
-    if (mIsSlider) {
-      return GridBagConstraints.HORIZONTAL;
-    }
-    return super.gcFill();
-  }
-
   /**
    * Get string describing object
    * 
@@ -58,8 +51,8 @@ class CtSpinner extends Gadget {
     mComponent.setEnabled(state);
   }
 
-  public CtSpinner(  String label, double dmin, double dmax, double dvalue, double step,
-      boolean sliderFlag, boolean withTicks, boolean dbl) {
+  public CtSpinner(String label, double dmin, double dmax, double dvalue, double step, boolean sliderFlag,
+      boolean withTicks, boolean dbl) {
     mIsSlider = sliderFlag;
     if (db)
       pr("constructing CtSpinner", this);

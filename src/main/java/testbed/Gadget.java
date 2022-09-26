@@ -15,7 +15,7 @@ import java.util.List;
  */
 abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener {
 
-  public Gadget setId(int id) {
+  public final Gadget setId(int id) {
     checkState(mId == 0, "already has an id");
     mId = id;
     return this;
@@ -40,6 +40,8 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
   }
 
   public final List<Integer> children() {
+    if (mChildIds == null)
+      mChildIds = arrayList();
     return mChildIds;
   }
 
@@ -67,9 +69,8 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
   }
 
   /**
-   * Get GridBagConstraints fill parameter for this gadget
-   * 
-   * @return int
+   * Get GridBagConstraints fill parameter for this gadget. Default returns
+   * HORIZONTAL
    */
   public int gcFill() {
     return GridBagConstraints.HORIZONTAL;
@@ -77,9 +78,7 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
 
   /**
    * Determine if this gadget has a value that needs to be serialized. The
-   * default implementation returns true if gadget has a value defined.
-   *
-   * @return boolean
+   * default implementation returns true if gadget has a value defined
    */
   public boolean serialized() {
     Object v = readValue();
@@ -130,6 +129,6 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
   private int mId;
   private Component mComponent;
   // list of child controls
-  private List<Integer> mChildIds = arrayList();
+  private List<Integer> mChildIds;
 
 }

@@ -2,16 +2,11 @@ package testbed;
 
 import javax.swing.JButton;
 import javax.swing.Action;
-import java.awt.GridBagConstraints;
 
 /**
  * Button gadget
  */
 class CtButton extends Gadget {
-
-  public int gcFill() {
-    return GridBagConstraints.HORIZONTAL;
-  }
 
   public boolean serialized() {
     return false;

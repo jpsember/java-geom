@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.GridBagConstraints;
 
 class CtTextArea extends Gadget {
+
   public boolean serialized() {
     return false;
   }
@@ -42,7 +43,7 @@ class CtTextArea extends Gadget {
    * @param fixedWidth
    *          boolean true to use fixed-width font
    */
-  public CtTextArea(  String title, int titleAlignment, String value, int rows, int columns,
+  public CtTextArea(String title, int titleAlignment, String value, int rows, int columns,
       boolean fixedWidth) {
     JTextArea cj = new JTextArea(value);
 
