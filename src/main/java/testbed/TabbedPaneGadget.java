@@ -24,8 +24,6 @@ class TabbedPaneGadget extends Gadget {
 
     // get id of this pane
     val = ids.get(si);
-    if (db)
-      Streams.out.println("readValue for selected pane=" + val);
     return val;
   }
 
@@ -37,9 +35,6 @@ class TabbedPaneGadget extends Gadget {
    *          assumes it's an index
    */
   public void writeValue(Object v) {
-    if (db)
-      Streams.out.println("StackPanel writeValue " + v);
-
     JTabbedPane tp = getSet();
 
     int val = ((Number) v).intValue();
@@ -93,9 +88,6 @@ class TabbedPaneGadget extends Gadget {
    * @param component
    */
   public void addTab(String title, int pnlId, Component component) {
-    if (db)
-      Streams.out.println("addTab, title=" + title + ", pnlId=" + pnlId);
-
     // Determine id of pane.  If it is < 1000, assume it's just an index
     if (pnlId < TAB_ID_START) {
       pnlId = ids.size();

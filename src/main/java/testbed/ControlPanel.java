@@ -74,10 +74,6 @@ class ControlPanel extends JPanel implements Globals, IScript {
     // cb <id:int> [<title:label>] <asradio:bool> [<tooltip:label>]
     //       ( {<id:int> <lbl:label>} )
 
-    final boolean db = false;
-    if (db)
-      Streams.out.println("ControlPanel.addComboBox");
-
     int cid = tk.readInt();
     String label = tk.readIfLabel();
     boolean asRadio = tk.readBoolean();
@@ -87,15 +83,9 @@ class ControlPanel extends JPanel implements Globals, IScript {
     CtComboBox box = new CtComboBox(label, toolTip, asRadio);
     box.setId(cid);
 
-    if (db)
-      Streams.out.println(" reading ComboFields(");
-
     while (!tk.readIf(T_PARCL)) {
       int id = tk.readInt();
       String fldLabel = tk.readLabel();
-      if (db)
-        Streams.out.println(" adding id=" + id + " label=" + fldLabel);
-
       box.addItem(id, fldLabel);
     }
     addControl(box, toolTip);

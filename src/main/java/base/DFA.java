@@ -2,6 +2,9 @@ package base;
 
 import java.io.*;
 import java.util.*;
+
+import js.file.Files;
+
 import static js.base.Tools.*;
 
 /**
@@ -9,10 +12,11 @@ import static js.base.Tools.*;
  */
 public class DFA {
 
-  
   /**
    * Construct a DFA.
-   * @param s : InputStream, a binary xxx.dfa file
+   * 
+   * @param s
+   *          : InputStream, a binary xxx.dfa file
    */
   public DFA(InputStream s) {
     try {
@@ -23,15 +27,17 @@ public class DFA {
   }
 
   /**
-   * Read DFA from file.
-   * Throws IOExceptions as ScanExceptions.
-   * @param owner : owner of file, for resource loader; can be null
-   * @param path : name of file, if owner defined; else, filesystem path
+   * Read DFA from file. Throws IOExceptions as ScanExceptions.
+   * 
+   * @param owner
+   *          : owner of file, for resource loader; can be null
+   * @param path
+   *          : name of file, if owner defined; else, filesystem path
    */
   public DFA(Class owner, String path) {
 
     try {
-      InputStream s = Streams.openResource(owner, path);
+      InputStream s = Files.openResource(owner,  path); //Streams.openResource(owner, path);
       read(s);
       s.close();
     } catch (IOException e) {
@@ -42,23 +48,41 @@ public class DFA {
 
   /**
    * Read a DFA, if it is not already read, using default DFA map
-   * @param owner : owner of DFA, for using class loader to locate it
-   * @param path : path of DFA
+   * 
+   * @param owner
+   *          : owner of DFA, for using class loader to locate it
+   * @param path
+   *          : path of DFA
    * @return DFA
    */
   public static DFA readFromSet(Object owner, String path) {
     return readFromSet(null, owner, path);
   }
 
+  private static Class classParam(Object p) {
+    Class c = null;
+    if (p != null) {
+      if (p instanceof Class)
+        c = (Class) p;
+      else
+        c = p.getClass();
+    }
+    return c;
+  }
+
   /**
    * Read a DFA, if it is not already read
-   * @param map : map to store DFA's within
-   * @param owner : owner of DFA, for using class loader to locate it
-   * @param path : path of DFA
+   * 
+   * @param map
+   *          : map to store DFA's within
+   * @param owner
+   *          : owner of DFA, for using class loader to locate it
+   * @param path
+   *          : path of DFA
    * @return DFA
    */
   public static DFA readFromSet(Map map, Object owner, String path) {
-    Class c = Streams.classParam(owner);
+    Class c = classParam(owner);
 
     String key = path;
     if (c != null) {
@@ -81,22 +105,18 @@ public class DFA {
   }
 
   /**
-   * Attempt to recognize a token from a string.  If recognized,
-   * the current state of the DFA is left at the appropriate final
-   * state; if not, the state will be -1.
-   * Does not affect position of reader.
+   * Attempt to recognize a token from a string. If recognized, the current
+   * state of the DFA is left at the appropriate final state; if not, the state
+   * will be -1. Does not affect position of reader.
    *
-   * @param r : reader
-   * @param t : token containing context; id and text fields will be modified
-   *   if a token is recognized; otherwise, returns T_UNKNOWN or T_EOF with
-   *   empty text
+   * @param r
+   *          : reader
+   * @param t
+   *          : token containing context; id and text fields will be modified if
+   *          a token is recognized; otherwise, returns T_UNKNOWN or T_EOF with
+   *          empty text
    */
   public void recognize(PushbackReader r, Token t) {
-
-    final boolean db = false;
-    if (db)
-      Streams.out.println("DFA recognize:");
-
     StringBuilder sb = new StringBuilder();
 
     try {
@@ -112,9 +132,6 @@ public class DFA {
       while (true) {
         // read character from the reader; exit if eof
         int ch = r.read();
-        if (db)
-          Streams.out.println(" char read= " + ch + " (" + (char) ch + ")");
-
         if (ch < 0) {
           break;
         }
@@ -141,10 +158,6 @@ public class DFA {
           maxLengthFound = sb.length();
           bestFinalCode = token;
           bestFinalState = newState;
-
-          if (db)
-            Streams.out.println(" found new final state: " + token);
-
         }
       }
       state = bestFinalState;
@@ -164,18 +177,19 @@ public class DFA {
         t.setText(sb.substring(0, 1));
         t.setId(sb.charAt(0));
       }
-      if (db)
-        Streams.out.println(" read token: " + t);
     } catch (IOException e) {
       throw new ScanException(e.toString());
     }
   }
 
   /**
-   * Determine what state, if any, is reached by transitioning from a
-   * state on a symbol
-   * @param stateI : initial state
-   * @param symbol : symbol to transition on
+   * Determine what state, if any, is reached by transitioning from a state on a
+   * symbol
+   * 
+   * @param stateI
+   *          : initial state
+   * @param symbol
+   *          : symbol to transition on
    * @return new state, or -1 if no transition exists on this symbol
    */
   private int getTransitionState(int stateI, char symbol) {
@@ -199,6 +213,7 @@ public class DFA {
 
   /**
    * Determine the start state
+   * 
    * @return int
    */
   private int startState() {
@@ -207,7 +222,9 @@ public class DFA {
 
   /**
    * Determine if a state is a final state
-   * @param state int
+   * 
+   * @param state
+   *          int
    * @return boolean
    */
   private boolean isFinalState(int state) {
@@ -215,8 +232,8 @@ public class DFA {
   }
 
   /**
-   * Find all the states that contain a transition to a terminal code,
-   * and store that code with the state.
+   * Find all the states that contain a transition to a terminal code, and store
+   * that code with the state.
    */
   private void storeTerminalFlags() {
     for (int i = 0; i < nStates(); i++) {
@@ -226,7 +243,9 @@ public class DFA {
 
   /**
    * Read DFA from a source
-   * @param s InputStream
+   * 
+   * @param s
+   *          InputStream
    * @throws IOException
    */
   private void read(InputStream s) throws IOException {
@@ -254,20 +273,25 @@ public class DFA {
 
     storeTerminalFlags();
   }
+
   private String[] symbols;
 
   public int nSymbols2() {
     return nSymbols;
   }
+
   public String symbol2(int id) {
     int index = id - Token.T_USER;
     if (index < 0 || id >= nSymbols)
       throw new IllegalArgumentException();
     return symbols[index];
   }
+
   /**
    * Set start state
-   * @param s int
+   * 
+   * @param s
+   *          int
    */
   private void setStartState(int s) {
     verifyValidState(s);
@@ -281,7 +305,9 @@ public class DFA {
 
   /**
    * Add a state if it doesn't already exist
-   * @param s int
+   * 
+   * @param s
+   *          int
    */
   private void addState(int s) {
     verifyValidState(s);
@@ -298,50 +324,49 @@ public class DFA {
     return new DFAState();
   }
 
+  //  /**
+  //   * Get the name of a token from a DFA
+  //   * @param dfa : DFA, or null to get name of default token
+  //   * @param type : id of token
+  //   * @return name of token, or T_UNKNOWN if it is of unknown type
+  //   */
+  //  public static String tokenName(DFA dfa, int type) {
+  //    String n = null;
+  //    if (dfa != null)
+  //      n = dfa.tokenName(type);
+  //    else
+  //      n = defaultTokenName(type);
+  //    return n;
+  //  }
 
-//  /**
-//   * Get the name of a token from a DFA
-//   * @param dfa : DFA, or null to get name of default token
-//   * @param type : id of token
-//   * @return name of token, or T_UNKNOWN if it is of unknown type
-//   */
-//  public static String tokenName(DFA dfa, int type) {
-//    String n = null;
-//    if (dfa != null)
-//      n = dfa.tokenName(type);
-//    else
-//      n = defaultTokenName(type);
-//    return n;
-//  }
-
-//  /**
-//   * Get the name of a token from the DFA
-//   * @param type : id of token
-//   * @return name of token, or T_UNKNOWN if it is of unknown type
-//   */
-//  private String tokenName(int type) {
-//
-//    final boolean db = false;
-//
-//    String n = null;
-//
-//    int t = type - Token.T_USER;
-//
-//    if (db)
-//      Streams.out.println("tokenName type=" + type + " t=" + t
-//          + " tokenNameMap.size=" + tokenNameMap.size());
-//
-//    if (t >= 0 && t < tokenNameMap.size()) {
-//      Object obj = tokenNameMap.getKey(t); //)getValue(t);
-//      if (db)
-//        Streams.out.println("got value from map=" + Tools.tv(obj));
-//
-//      n = obj.toString();
-//      //      n = (String) tokenNameMap.getValue(t);
-//    } else
-//      n = defaultTokenName(type);
-//    return n;
-//  }
+  //  /**
+  //   * Get the name of a token from the DFA
+  //   * @param type : id of token
+  //   * @return name of token, or T_UNKNOWN if it is of unknown type
+  //   */
+  //  private String tokenName(int type) {
+  //
+  //    final boolean db = false;
+  //
+  //    String n = null;
+  //
+  //    int t = type - Token.T_USER;
+  //
+  //    if (db)
+  //      Streams.out.println("tokenName type=" + type + " t=" + t
+  //          + " tokenNameMap.size=" + tokenNameMap.size());
+  //
+  //    if (t >= 0 && t < tokenNameMap.size()) {
+  //      Object obj = tokenNameMap.getKey(t); //)getValue(t);
+  //      if (db)
+  //        Streams.out.println("got value from map=" + Tools.tv(obj));
+  //
+  //      n = obj.toString();
+  //      //      n = (String) tokenNameMap.getValue(t);
+  //    } else
+  //      n = defaultTokenName(type);
+  //    return n;
+  //  }
 
   private DFAState getState(int n) {
     return (DFAState) states.get(n);
@@ -352,7 +377,7 @@ public class DFA {
   }
 
   // dynamic array of states
-  private List<DFAState> states =arrayList();
+  private List<DFAState> states = arrayList();
 
   // start state of the DFA
   private int startState = -1;
@@ -366,23 +391,23 @@ public class DFA {
 
   private static class DFAState {
 
-    public static final int MAX_TERMINAL_CODE = Token.T_USER_END,
-        F_TERMINALCODE = MAX_TERMINAL_CODE, F_FINAL = 1 << 15;
+    public static final int MAX_TERMINAL_CODE = Token.T_USER_END, F_TERMINALCODE = MAX_TERMINAL_CODE,
+        F_FINAL = 1 << 15;
 
     /**
      * Make state a final state.
      */
-//    public void setFinalFlag() {
-//      setFlag(F_FINAL);
-//    }
+    //    public void setFinalFlag() {
+    //      setFlag(F_FINAL);
+    //    }
 
-//    public void setFinalFlag(int code) {
-//      int curr = finalCode();
-//      if (curr < 0 || curr > code) {
-//        setTerminalCode(code);
-//        setFinalFlag();
-//      }
-//    }
+    //    public void setFinalFlag(int code) {
+    //      int curr = finalCode();
+    //      if (curr < 0 || curr > code) {
+    //        setTerminalCode(code);
+    //        setFinalFlag();
+    //      }
+    //    }
 
     public void setTerminalCode(int n) {
       if (n > MAX_TERMINAL_CODE) {
@@ -392,12 +417,12 @@ public class DFA {
       flags = (char) ((flags & ~F_TERMINALCODE) | n);
     }
 
-//    /*	Determine the final state code associated with this state
-//     < code, or -1 if none
-//     */
-//    public int finalCode() {
-//      return (flags & F_TERMINALCODE) - 1;
-//    }
+    //    /*	Determine the final state code associated with this state
+    //     < code, or -1 if none
+    //     */
+    //    public int finalCode() {
+    //      return (flags & F_TERMINALCODE) - 1;
+    //    }
 
     public void setTerminalCode() {
       setTerminalCode(1 + findTokenID());
@@ -412,9 +437,9 @@ public class DFA {
       return flag(F_FINAL);
     }
 
-//    public void setFlag(int f) {
-//      flags |= f;
-//    }
+    //    public void setFlag(int f) {
+    //      flags |= f;
+    //    }
 
     public boolean flag(int f) {
       return (flags & f) != 0;
@@ -422,7 +447,9 @@ public class DFA {
 
     /**
      * Find insertion position of transition
-     * @param symbol : symbol for transition
+     * 
+     * @param symbol
+     *          : symbol for transition
      * @return position where symbol is to be inserted / replace existing one
      */
     private int findSymbol(int symbol) {
@@ -461,6 +488,7 @@ public class DFA {
 
     /**
      * Get state to move to on a symbol
+     * 
      * @param symbol
      * @return destination state, or -1 if no transition exists
      */
@@ -480,7 +508,8 @@ public class DFA {
       return (index < nTrans()) && transSymbol(index) == symbol;
     }
 
-    /*	Read state from file
+    /*
+     * Read state from file
      */
     void read(DataInputStream r, int version) throws IOException {
       //    reset();
@@ -493,14 +522,15 @@ public class DFA {
 
     }
 
-//    /*	Read state from file
-//     */
-//    public void read(DataInputStream r) throws IOException {
-//      read(r, DFA.VERSION);
-//    }
+    //    /*	Read state from file
+    //     */
+    //    public void read(DataInputStream r) throws IOException {
+    //      read(r, DFA.VERSION);
+    //    }
 
     /**
      * Determine which token id, if any, is associated with this state
+     * 
      * @return id of token, or -1
      */
     private int findTokenID() {

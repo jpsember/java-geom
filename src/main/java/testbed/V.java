@@ -400,15 +400,6 @@ public class V implements Globals {
    *          second endpoint
    */
   public static void drawLine(FPoint p0, FPoint p1) {
-    if (false) {
-      long start = System.currentTimeMillis();
-      drawLine(p0.x, p0.y, p1.x, p1.y);
-      long end = System.currentTimeMillis();
-      if (end - start > 1) {
-        Streams.out.println("drawling line " + p0 + ".." + p1 + " took " + (end - start) + " ms!");
-      }
-      return;
-    }
     drawLine(p0.x, p0.y, p1.x, p1.y);
   }
 

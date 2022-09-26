@@ -1,6 +1,5 @@
 package testbed;
 
-import base.*;
 import geom.GeomApp;
 import geom.ScriptManager;
 import js.guiapp.MenuBarWrapper;
@@ -161,9 +160,6 @@ public abstract class TestBed extends GeomApp {
         oper().processAction(a);
     } catch (TBError e) {
       showError(e.toString());
-      if (false) {
-        Streams.out.println(Tools.stackTrace(0, 8, e));
-      }
     }
   }
 

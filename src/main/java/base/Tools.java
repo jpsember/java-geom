@@ -172,30 +172,7 @@ public final class Tools {
   }
 
   private static void warn(String type, String s, int skipCount) {
-    String st = Tools.stackTrace(1 + skipCount, 1);
-    StringBuilder sb = new StringBuilder();
-    sb.append("*** ");
-    if (type == null) {
-      type = "WARNING";
-    }
-    sb.append(type);
-    if (s != null && s.length() > 0) {
-      sb.append(": ");
-      sb.append(s);
-    }
-    sb.append(" (");
-    sb.append(st);
-    sb.append(")");
-    String keyString = sb.toString();
-
-    {
-      Object wr = warningStrings.get(keyString);
-      if (wr == null) {
-        warningStrings.put(keyString, Boolean.TRUE);
-        Streams.out.println(keyString);
-      }
-    }
-    //    return true;
+    
   }
 
   public static void warn(String s) {
@@ -656,18 +633,7 @@ public final class Tools {
     return sb;
   }
 
-  public static void main(String[] args) {
-    String s = "Two powerful undersea earthquakes in the "
-        + "Pacific triggered a widespread tsunami "
-        + "warning on Thursday but the alert was later "
-        + "cancelled and there appeared to be little damage.\n\n"
-        + "With memories of last week's deadly series of quakes"
-        + " and tsunamis in the region, however, residents of several "
-        + "islands fled to higher ground and local authorities closed "
-        + "schools and issued alerts to stay off beaches.";
-    String f = insertLineFeeds(s, 12);
-    Streams.out.println("[\n" + f + "]");
-  }
+  
   /**
    * Insert linefeeds in a string so no line exceeds a particular width
    * 
@@ -679,13 +645,9 @@ public final class Tools {
    */
   public static String insertLineFeeds(String s, int width) {
 
-    final boolean db = false;
     StringBuilder dest = new StringBuilder();
 
     if (true) {
-      if (db)
-        Streams.out.println("insertLineFeeds: " + s + ", width=" + width);
-
       for (int i = 0; i < s.length(); i++) {
 
         // skip leading white space
@@ -1083,14 +1045,7 @@ public final class Tools {
     return stackTrace(1, 5);
   }
 
-  public static void printWarnings() {
-    Iterator it = warningStrings.keySet().iterator();
-    while (it.hasNext())
-      Streams.out.println(it.next());
-  }
-
-  private static HashMap warningStrings = new HashMap();
-
+  
   public static String fh(int n) {
     return "$" + TextScanner.toHex(n, 8);
   }
@@ -1099,21 +1054,7 @@ public final class Tools {
     return "$" + TextScanner.toHex(n, 4);
   }
 
-  /**
-   * Sleep for a number of milliseconds by calling Thread.sleep().
-   * Ignore any InterruptedException that is thrown.
-   * 
-   * @param ms : delay in milliseconds
-   */
-  public static void sleep(int ms) {
-    try {
-      Thread.sleep(ms);
-    } catch (InterruptedException e) {
-      Streams.report(e);
-    }
-
-  }
-
+ 
   public static String toString(Map map) {
 
     StringBuilder sb = new StringBuilder();
@@ -1162,9 +1103,6 @@ public final class Tools {
   public static void showDialog(String msg) {
     new MyDialog(msg);
   }
-public static void pr(Object obj) {
-  Streams.out.println(obj);
-}
 
   private static class MyDialog extends JDialog implements ActionListener {
     private JPanel msg;

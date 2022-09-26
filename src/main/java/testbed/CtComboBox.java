@@ -1,6 +1,5 @@
 package testbed;
 
-import base.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -13,8 +12,6 @@ import static js.base.Tools.*;
  * Appears as either a JComboBox or a set of JRadioButtons.
  */
 class CtComboBox extends Gadget implements ActionListener {
-
-  private static boolean db = false;
 
   /**
    * Constructor
@@ -29,10 +26,6 @@ class CtComboBox extends Gadget implements ActionListener {
    *          : if true, appears as a radio button group
    */
   public CtComboBox(String label, String toolTip, boolean asRadio) {
-    if (db) {
-      System.out.println("CtComboBox constructor label=" + label + " asRadio=" + asRadio);
-    }
-
     if (asRadio) {
       myRadioSet mbox = new myRadioSet(this, toolTip);
       cbox = mbox;
@@ -70,9 +63,6 @@ class CtComboBox extends Gadget implements ActionListener {
    * @param field
    */
   public void addItem(int itemid, String field) {
-    if (db) {
-      System.out.println("CtComboBox addField id=" + itemid + " label=" + field);
-    }
     CtComboBoxItem ci = new CtComboBoxItem();
     ci.setId(itemid);
     ci.writeValue(field);
@@ -86,8 +76,6 @@ class CtComboBox extends Gadget implements ActionListener {
   // ------------------------------------------------------
   public void actionPerformed(ActionEvent e) {
     int selId = cbox.getSelectedId();
-    if (db)
-      Streams.out.println("CtComboBox actionPerformed: selected=" + selId);
     TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, selId));
   }
 
@@ -99,8 +87,6 @@ class CtComboBox extends Gadget implements ActionListener {
    */
   public Object readValue() {
     Object ret = cbox.getSelectedId();
-    if (db)
-      Streams.out.println("CtComboBox " + getId() + " readValue, returning " + ret);
     return ret;
   }
 
@@ -112,8 +98,6 @@ class CtComboBox extends Gadget implements ActionListener {
    */
   public void writeValue(Object v) {
     int itemId = ((Integer) v).intValue();
-    if (db)
-      Streams.out.println("CtComboBox " + getId() + " writeValue " + v + ", setting selected id " + itemId);
     cbox.setSelectedId(itemId);
   }
 
@@ -215,9 +199,6 @@ class CtComboBox extends Gadget implements ActionListener {
     }
 
     public void setSelectedId(int id) {
-      if (db)
-        Streams.out.println("setSelectedId=" + id + ", idToIndex=" + idToIndex(id));
-
       c.setSelectedIndex(idToIndex(id));
     }
   }
@@ -263,8 +244,6 @@ class CtComboBox extends Gadget implements ActionListener {
     }
 
     void processSelection(int id) {
-      if (db)
-        Streams.out.println("myRadioSet.processSelection=" + id);
       if (selectedId != id)
         setSelectedId(id);
       //      if (listener != null)
@@ -277,14 +256,9 @@ class CtComboBox extends Gadget implements ActionListener {
     }
 
     public void setSelectedId(int id) {
-      if (db)
-        Streams.out.println("myRadioSet.setSelectedId=" + id);
-
       CtComboBoxItem item = (CtComboBoxItem) C.get(id);
 
       if (item != null && item.button != null) {
-        if (db)
-          Streams.out.println(" calling setb with " + item.getId());
         item.button.setSelected(true);
       }
       this.selectedId = id;

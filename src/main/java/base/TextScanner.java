@@ -710,7 +710,6 @@ public class TextScanner {
     if (desc == null) {
       desc = "(unknown)";
     }
-    Streams.out.println("Reading: " + desc);
   }
 
   private void echo(Token t) {
@@ -736,10 +735,6 @@ public class TextScanner {
         if (crPos < 0) {
           break;
         }
-        String s = echoBuffer.substring(0, crPos);
-        Streams.out.print(Tools.f(1 + ri.echoLineNumber++, 4));
-        Streams.out.print(": ");
-        Streams.out.println(s);
         echoBuffer.delete(0, crPos + 1);
       }
     }
@@ -748,9 +743,6 @@ public class TextScanner {
   }
 
   public void trace(String s) {
-    if (tracing) {
-      Streams.out.println(s);
-    }
   }
 
   /**
@@ -1120,15 +1112,7 @@ public class TextScanner {
     }
     return val;
   }
-  public static void main(String[] args) {
-    int[] v = { 0xf0000000, 0x80000000, 0x7fffffff, 0x0000ffff, };
-    for (int i = 0; i < v.length; i++) {
-
-      Streams.out.println("toHex " + toHex(null, v[i], 8) + " = "
-          + toHex(null, v[i]));
-
-    }
-  }
+  
   public static StringBuilder toHex(StringBuilder sb, int val) {
 
     int nDig = 8;
@@ -1343,7 +1327,6 @@ public class TextScanner {
       }
     }
 
-    public int echoLineNumber;
     public boolean closed;
 
     /**

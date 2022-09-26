@@ -102,15 +102,10 @@ public class DQueue implements Cloneable {
    * @return # items
    */
   public int size() {
-    final boolean db = false;
-
     int k = tail - head;
     if (tail < head) {
       k += a.size();
     }
-    if (db)
-      Streams.out
-          .println("length, tail=" + tail + ", head=" + head + ", a.length=" + a.size() + ", returning " + k);
     return k;
   }
 
