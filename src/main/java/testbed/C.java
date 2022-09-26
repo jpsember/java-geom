@@ -295,16 +295,7 @@ public class C implements Globals {
     script.append(s);
   }
 
-  /**
-   * Close combo box (previously opened with sOpenComboBox())
-   */
-  public static void sCloseComboBox() {
-    if (!inComboBox)
-      throw new IllegalStateException("not in combo box");
-    sText(')');
-    inComboBox = false;
-    sNewLine();
-  }
+ 
 
   /**
    * Close panel (previously opened with sOpen())
@@ -312,46 +303,6 @@ public class C implements Globals {
   public static void sClose() {
     sText(')');
     sNewLine();
-  }
-
-  /**
-   * Add a combo box gadget. Must be balanced by a call to sCloseComboBox()
-   * 
-   * @param id
-   *          id of gadget
-   * @param label
-   *          if not null, label to display
-   * @param toolTip
-   *          if not null, tooltip to display
-   * @param asRadio
-   *          if true, displays choices as radio buttons instead
-   */
-  public static void sOpenComboBox(int id, String label, String toolTip, boolean asRadio) {
-    // cb <id:int> [<title:label>] <asradio:bool> [<tooltip:label>]
-    //       ( {<id:int> <lbl:label>} )
-    if (inComboBox)
-      throw new IllegalStateException("cannot nest combo boxes");
-
-    inComboBox = true;
-
-    sText("cb");
-    sIValue(id);
-    sLblnn(label);
-    sBool(asRadio);
-    sLblnn(toolTip);
-    sText('(');
-  }
-
-  /**
-   * Add a choice to a combobox
-   * 
-   * @param id
-   *          id of choice
-   * @param label
-   */
-  public static void sChoice(int id, String label) {
-    sIValue(id);
-    sLbl(label);
   }
 
   /**
@@ -535,7 +486,6 @@ public class C implements Globals {
     ctrlPanels = new ControlPanel[TBGlobals.CT_TOTAL];
     for (int i = 0; i < TBGlobals.CT_TOTAL; i++)
       ctrlPanels[i] = new ControlPanel();
-    inComboBox = false;
     mGadgetSet = new GadgetList();
 
     // Add gadget for persisting frame bounds
@@ -551,7 +501,6 @@ public class C implements Globals {
 
   private static int anonIdBase;
   private static ControlPanel[] ctrlPanels;
-  private static boolean inComboBox;
   private static GadgetList mGadgetSet;
   private static StringBuilder script;
   private static int tabPaneCount;

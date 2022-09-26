@@ -182,6 +182,67 @@ public class ControlPanel extends JPanel implements Globals, IScript {
     addControl(new CtTextFieldNew(label, defaultValue, maxLength, fixedWidth).setId(id), toolTip);
   }
 
+  
+  
+  
+  /**
+   * Add a combo box gadget. Must be balanced by a call to sCloseComboBox()
+   */
+  public   void sOpenComboBox(int id, String label, String toolTip, boolean asRadio) {
+
+    // cb <id:int> [<title:label>] <asradio:bool> [<tooltip:label>]
+    //       ( {<id:int> <lbl:label>} )
+
+   // int cid = tk.readInt();
+//    String label = tk.readIfLabel();
+//    boolean asRadio = tk.readBoolean();
+//    String toolTip = tk.readIfLabel();
+//    tk.read(T_PAROP);
+    checkState(mComboBox == null,"ComboBox is already open");
+    CtComboBox box = new CtComboBox(label, toolTip, asRadio);
+    box.setId(id);
+    mComboBox = box;
+addControl(box, toolTip);
+  }
+
+  /**
+   * Add a choice to a combobox
+   * 
+   * @param id
+   *          id of choice
+   * @param label
+   */
+  public   void sChoice(int id, String label) {
+      mComboBox.addItem(id, label);
+  }
+  
+  /**
+   * Close combo box (previously opened with sOpenComboBox())
+   */
+  public   void sCloseComboBox() {
+    checkState(mComboBox != null,"no ComboBox open");
+   mComboBox = null;
+  }
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   public void sOpen() {
     sOpen(null);
   }
@@ -450,5 +511,6 @@ public class ControlPanel extends JPanel implements Globals, IScript {
   // hide next control?
   private boolean hideNextControl;
   private GadgetTokenizer tk;
+  private CtComboBox mComboBox;
 
 }

@@ -42,6 +42,15 @@ public class BoundsOper implements TestBedOperation, Globals {
     c.sDoubleSpinner(9989, "DblSpin", "Double spinner", 5.2, 10.2, 7.5, 0.1);
     c.sTextField(9970, "field", "hint", 12, true, "hello");
     c.sTextArea(9971, "area", "text area", true, "hello");
+
+    if (false) { // haven't added full support for these yet
+      c.sOpenComboBox(7800, "Combo Box", "This is a combo box", true);
+      c.sChoice(7805, "choice A");
+      c.sChoice(7806, "choice B");
+      c.sChoice(7807, "choice C");
+      c.sCloseComboBox();
+    }
+
     c.sCloseTab();
   }
 
