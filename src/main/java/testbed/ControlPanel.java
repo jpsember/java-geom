@@ -79,9 +79,14 @@ public class ControlPanel extends JPanel implements Globals, IScript {
     hideNextControl = false;
   }
 
-  public void hideNextControl(boolean f) {
+  public ControlPanel hideNextControl() {
+    return hideNextControl(true);
+  }
+
+  public ControlPanel hideNextControl(boolean f) {
     if (f)
       hideNextControl = true;
+    return this;
   }
 
   public void finishedGadgets() {
@@ -89,44 +94,52 @@ public class ControlPanel extends JPanel implements Globals, IScript {
     mStack = null;
   }
 
-  public void sCheckBox(int id, String label, String toolTip, boolean defaultValue) {
+  public ControlPanel sCheckBox(int id, String label, String toolTip, boolean defaultValue) {
     hideNextControl(nullOrEmpty(label));
     addControl(new CtCheckBox(id, label, defaultValue, false, parseToolTip(toolTip), null), null);
+    return this;
   }
 
-  public void sIntSlider(int id, String label, String toolTip, int minValue, int maxValue, int defaultValue,
-      int stepSize) {
+  public ControlPanel sIntSlider(int id, String label, String toolTip, int minValue, int maxValue,
+      int defaultValue, int stepSize) {
     addSpinner(id, label, minValue, maxValue, defaultValue, stepSize, true, false, false, toolTip);
+    return this;
   }
 
-  public void sDoubleSlider(int id, String label, String toolTip, double minValue, double maxValue,
+  public ControlPanel sDoubleSlider(int id, String label, String toolTip, double minValue, double maxValue,
       double defaultValue, double stepSize) {
     addSpinner(id, label, minValue, maxValue, defaultValue, stepSize, true, false, true, toolTip);
+    return this;
   }
 
-  public void sIntSpinner(int id, String label, String toolTip, int minValue, int maxValue, int defaultValue,
-      int stepSize) {
+  public ControlPanel sIntSpinner(int id, String label, String toolTip, int minValue, int maxValue,
+      int defaultValue, int stepSize) {
     addSpinner(id, label, minValue, maxValue, defaultValue, stepSize, false, false, false, toolTip);
+    return this;
   }
 
-  public void sDoubleSpinner(int id, String label, String toolTip, double minValue, double maxValue,
+  public ControlPanel sDoubleSpinner(int id, String label, String toolTip, double minValue, double maxValue,
       double defaultValue, double stepSize) {
     addSpinner(id, label, minValue, maxValue, defaultValue, stepSize, false, false, true, toolTip);
+    return this;
   }
 
-  public void sTextArea(int id, String label, String toolTip, boolean fixedWidth, String defaultValue) {
+  public ControlPanel sTextArea(int id, String label, String toolTip, boolean fixedWidth,
+      String defaultValue) {
     addControl(new CtTextFieldNew(label, defaultValue, 0, fixedWidth).setId(id), toolTip);
+    return this;
   }
 
-  public void sTextField(int id, String label, String toolTip, int maxLength, boolean fixedWidth,
+  public ControlPanel sTextField(int id, String label, String toolTip, int maxLength, boolean fixedWidth,
       String defaultValue) {
     addControl(new CtTextFieldNew(label, defaultValue, maxLength, fixedWidth).setId(id), toolTip);
+    return this;
   }
 
   /**
    * Add a combo box gadget. Must be balanced by a call to sCloseComboBox()
    */
-  public void sOpenComboBox(int id, String label, String toolTip, boolean asRadio) {
+  public ControlPanel sOpenComboBox(int id, String label, String toolTip, boolean asRadio) {
 
     // cb <id:int> [<title:label>] <asradio:bool> [<tooltip:label>]
     //       ( {<id:int> <lbl:label>} )
@@ -140,6 +153,7 @@ public class ControlPanel extends JPanel implements Globals, IScript {
     box.setId(id);
     push(mStack, box);
     addControl(box, toolTip);
+    return this;
   }
 
   /**
@@ -149,8 +163,9 @@ public class ControlPanel extends JPanel implements Globals, IScript {
    *          id of choice
    * @param label
    */
-  public void sChoice(int id, String label) {
+  public ControlPanel sChoice(int id, String label) {
     comboBox().addItem(id, label);
+    return this;
   }
 
   private CtComboBox comboBox() {
@@ -160,86 +175,74 @@ public class ControlPanel extends JPanel implements Globals, IScript {
   /**
    * Close combo box (previously opened with sOpenComboBox())
    */
-  public void sCloseComboBox() {
+  public ControlPanel sCloseComboBox() {
     comboBox();
     pop(mStack);
+    return this;
   }
 
-  public void sOpen() {
-    sOpen(null);
+  public ControlPanel sOpen() {
+    return sOpen(null);
   }
 
-  public void sOpen(String title) {
+  public ControlPanel sOpen(String title) {
     StackPanel prevScope = mStackPanel;
     push(mStack, mStackPanel);
     mStackPanel = new StackPanel(title);
     prevScope.addItem(mStackPanel.component());
+    return this;
   }
 
-  public void sNewColumn() {
+  public ControlPanel sNewColumn() {
     mStackPanel.startNewColumn();
+    return this;
   }
 
-  public void sClose() {
+  public ControlPanel sClose() {
     popScope();
+    return this;
   }
 
-  public void sButton(int id, String label, String toolTip) {
+  public ControlPanel sButton(int id, String label, String toolTip) {
     addControl(new CtButton(Gadget.createAction(id, label, toolTip, null)).setId(id), null);
+    return this;
   }
 
-  public void sStaticText(String text) {
+  public ControlPanel sStaticText(String text) {
     addControl(new CtLabel(0, text).setId(C.getAnonId()), null);
+    return this;
   }
 
-  public void sOpenTabSet(int panelId) {
-    push(mStack, mTabbedPaneGadget);
-    mTabbedPaneGadget = new TabbedPaneGadget(true);
-    mTabbedPaneGadget.setId(panelId);
+  public ControlPanel sOpenTabSet(int panelId) {
+    TabbedPaneGadget g = new TabbedPaneGadget(true);
+    g.setId(panelId);
+    push(mStack, g);
+    return this;
   }
 
-  public void sCloseTabSet() {
-    mStackPanel.addItem(mTabbedPaneGadget.getComponent());
-    addControl(mTabbedPaneGadget, null);
-    mTabbedPaneGadget = (TabbedPaneGadget) pop(mStack);
+  public ControlPanel sCloseTabSet() {
+    TabbedPaneGadget g = tabbedPane();
+    mStackPanel.addItem(g.getComponent());
+    addControl(g, null);
+    pop(mStack);
+    return this;}
+
+  public ControlPanel sOpenTab(String title) {
+    return sOpenTab(0, title);
   }
 
-  public void sOpenTab(String title) {
-    sOpenTab(0, title);
-  }
-
-  public void sOpenTab(int tabId, String title) {
-    //    if (id >= TAB_ID_START)
-    //      C.sIValue(id);
+  public ControlPanel sOpenTab(int tabId, String title) {
     if (title == null)
       title = "<name?>";
-
-    //  for (int tabNumber = 0; !tk.readIf(T_PARCL); tabNumber++) {
-    // int tabId = tk.readIfInt(tabNumber);
-
-    // String tabLabel = tk.readLabel();
+    TabbedPaneGadget tabbedPaneGadget = tabbedPane();
     push(mStack, mStackPanel);
     mStackPanel = new StackPanel(title);
-    mTabbedPaneGadget.addTab(title, tabId, mStackPanel.component());
-    //
-    //      tk.read(T_PAROP);
-    //      processScript();
-    //      tk.read(T_PARCL);
-    //      popScope();
-    //    }
-    //    
-    //    
-    //    C.sLbl(title);
-    //    C.sText('(');
-    //    sNewLine();
-    //
-    //    tabPaneCount++;
-    //    
-  }
+    tabbedPaneGadget.addTab(title, tabId, mStackPanel.component());
+    return this;}
 
-  public void sCloseTab() {
+  public ControlPanel sCloseTab() {
     popScope();
-  }
+    return this; }
 
   /**
    * Convert a tooltip string to a multi-line tooltip using embedded HTML tags.
@@ -277,11 +280,13 @@ public class ControlPanel extends JPanel implements Globals, IScript {
     return ret;
   }
 
+  private TabbedPaneGadget tabbedPane() {
+    return (TabbedPaneGadget) last(mStack);
+  }
+
   private List<Object> mStack;
   // current panel
   private StackPanel mStackPanel;
-  private TabbedPaneGadget mTabbedPaneGadget;
-  // private CtComboBox mComboBox;
   // hide next control?
   private boolean hideNextControl;
 

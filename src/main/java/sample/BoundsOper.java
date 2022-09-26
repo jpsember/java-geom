@@ -36,18 +36,18 @@ public class BoundsOper implements TestBedOperation, Globals {
       c.sIntSpinner(COUNT, "Count", "Number to generate", 0, 100, 12, 1);
       c.sClose();
     }
-    c.sButton(9999, "Hello", "Sample button");
-    c.sDoubleSlider(9988, "DoubleSlid", "Double slider", 5.2, 10.2, 7.5, 0.1);
-    c.sDoubleSpinner(9989, "DblSpin", "Double spinner", 5.2, 10.2, 7.5, 0.1);
-    c.sTextField(9970, "field", "hint", 12, true, "hello");
-    c.sTextArea(9971, "area", "text area", true, "hello");
+    c.sButton(9999, "Hello", "Sample button") //
+        .sDoubleSlider(9988, "DoubleSlid", "Double slider", 5.2, 10.2, 7.5, 0.1) //
+        .sDoubleSpinner(9989, "DblSpin", "Double spinner", 5.2, 10.2, 7.5, 0.1) //
+        .sTextField(9970, "field", "hint", 12, true, "hello") //
+        .sTextArea(9971, "area", "text area", true, "hello");
 
     if (false) { // haven't added full support for these yet
-      c.sOpenComboBox(7800, "Combo Box", "This is a combo box", true);
-      c.sChoice(7805, "choice A");
-      c.sChoice(7806, "choice B");
-      c.sChoice(7807, "choice C");
-      c.sCloseComboBox();
+      c.sOpenComboBox(7800, "Combo Box", "This is a combo box", true) //
+       .sChoice(7805, "choice A") //
+       .sChoice(7806, "choice B") //
+      .sChoice(7807, "choice C") //
+       .sCloseComboBox();
     }
 
     c.sCloseTab();
