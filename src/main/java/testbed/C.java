@@ -175,85 +175,6 @@ public class C implements Globals {
     return mGadgetSet.get(id);
   }
 
-  /**
-   * Start constructing a new script
-   * 
-   * @return StringBuilder containing script
-   */
-  @Deprecated
-  static void openScript() {
-    script = new StringBuilder();
-  }
-
-  /**
-   * Close constructed script, return as string
-   * 
-   * @return String
-   */
-  @Deprecated
-  static String closeScript() {
-    String s = script.toString();
-    script = null;
-    return s;
-  }
-
-  /**
-   * Hide the next gadget to be added. A hidden gadget can still be read/written
-   * to, and its values will be saved, but it just won't show up on the screen.
-   */
-  public static void sHide() {
-    script.append(" ? ");
-  }
-
-  /**
-   * Optionally hide the next gadget to be added. A hidden gadget can still be
-   * read/written to, and its values will be saved, but it just won't show up on
-   * the screen.
-   * 
-   * @param visible
-   *          if false, hides next gadget
-   * @return visibility state of gadget
-   */
-  public static boolean sHide(boolean visible) {
-    if (!visible)
-      sHide();
-    return visible;
-  }
-
-
-  static void sIValue(int iValue) {
-    script.append(' ');
-    script.append(iValue);
-  }
-
-  static void sDValue(double dValue) {
-    script.append(' ');
-    script.append(dValue);
-  }
-
-  static void sNewLine() {
-    script.append('\n');
-  }
-
-  static void sBool(boolean v) {
-    script.append(v ? " T" : " F");
-  }
-
-
-  static char sLastChar() {
-    char c = ' ';
-    int j = C.script.length();
-    while (j > 0) {
-      j--;
-      c = C.script.charAt(j);
-      if (c > ' ')
-        break;
-    }
-    return c;
-  }
-
-
-
   public static ControlPanel controlPanel() {
     return ctrlPanels[TBGlobals.CT_MAIN];
   }
@@ -298,13 +219,10 @@ public class C implements Globals {
     // Add gadget for persisting zoom factor
     C.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
     C.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
-
-    script = null;
   }
 
   private static int anonIdBase;
   private static ControlPanel[] ctrlPanels;
   private static GadgetList mGadgetSet;
-  private static StringBuilder script;
 
 }

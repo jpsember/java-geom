@@ -26,31 +26,31 @@ public class BoundsOper implements TestBedOperation, Globals {
 
     ControlPanel c = C.controlPanel();
 
-    c.sOpenTab("Bounds");
-    c.sStaticText("Calculate minimum bounding box of objects");
+    c.openTab("Bounds");
+    c.staticText("Calculate minimum bounding box of objects");
 
     {
-      c.sOpen();
-      c.sIntSlider(SEED, "Seed", "Random number generator seed", 0, 100, 0, 1);
-      c.sNewColumn();
-      c.sIntSpinner(COUNT, "Count", "Number to generate", 0, 100, 12, 1);
-      c.sClose();
+      c.open();
+      c.intSlider(SEED, "Seed", "Random number generator seed", 0, 100, 0, 1);
+      c.newColumn();
+      c.intSpinner(COUNT, "Count", "Number to generate", 0, 100, 12, 1);
+      c.close();
     }
-    c.sButton(9999, "Hello", "Sample button") //
-        .sDoubleSlider(9988, "DoubleSlid", "Double slider", 5.2, 10.2, 7.5, 0.1) //
-        .sDoubleSpinner(9989, "DblSpin", "Double spinner", 5.2, 10.2, 7.5, 0.1) //
-        .sTextField(9970, "field", "hint", 12, true, "hello") //
-        .sTextArea(9971, "area", "text area", true, "hello");
+    c.button(9999, "Hello", "Sample button") //
+        .doubleSlider(9988, "DoubleSlid", "Double slider", 5.2, 10.2, 7.5, 0.1) //
+        .doubleSpinner(9989, "DblSpin", "Double spinner", 5.2, 10.2, 7.5, 0.1) //
+        .textField(9970, "field", "hint", 12, true, "hello") //
+        .textArea(9971, "area", "text area", true, "hello");
 
     if (false) { // haven't added full support for these yet
-      c.sOpenComboBox(7800, "Combo Box", "This is a combo box", true) //
-       .sChoice(7805, "choice A") //
-       .sChoice(7806, "choice B") //
-      .sChoice(7807, "choice C") //
-       .sCloseComboBox();
+      c.openComboBox(7800, "Combo Box", "This is a combo box", true) //
+       .choice(7805, "choice A") //
+       .choice(7806, "choice B") //
+      .choice(7807, "choice C") //
+       .closeComboBox();
     }
 
-    c.sCloseTab();
+    c.closeTab();
   }
 
   public void processAction(TBAction a) {

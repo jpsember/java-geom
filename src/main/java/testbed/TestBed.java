@@ -191,17 +191,17 @@ public abstract class TestBed extends GeomApp {
   }
 
   private void mainControlScript0( ControlPanel c ) {
-   c.sCheckBox(TBGlobals.CTRLSVISIBLE, null, null, true);
+   c.checkBox(TBGlobals.CTRLSVISIBLE, null, null, true);
 
-    c.sOpenTabSet(TBGlobals.AUXTABSET);
+    c.openTabSet(TBGlobals.AUXTABSET);
     {
-      c.sOpenTab(TBGlobals.AUXTAB_TRACE, "Trace");
-      c.sCheckBox(TBGlobals.TRACEENABLED, "Enabled", "if true, enables algorithm tracing", true);
-      c.sCheckBox(TBGlobals.TRACEPLOT, "Messages", "plots trace text", true);
-      c.sIntSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
-      c.sCloseTab();
+      c.openTab(TBGlobals.AUXTAB_TRACE, "Trace");
+      c.checkBox(TBGlobals.TRACEENABLED, "Enabled", "if true, enables algorithm tracing", true);
+      c.checkBox(TBGlobals.TRACEPLOT, "Messages", "plots trace text", true);
+      c.intSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
+      c.closeTab();
     }
-    c.sCloseTabSet();
+    c.closeTabSet();
   }
 
   /**
@@ -352,16 +352,16 @@ public abstract class TestBed extends GeomApp {
 
   private static void addOperCtrls( ControlPanel c) {
     if (nOpers() > 0) {
-      c.sOpenTabSet (TBGlobals.OPER);
+      c.openTabSet (TBGlobals.OPER);
       for (int i = 0; i < nOpers(); i++) {
        //c.prepareForGadgets();
         oper(i).addControls();
        // c.finishedGadgets();
       }
-      c.sCloseTabSet();
+      c.closeTabSet();
     } else {
-      c.sOpen();
-      c.sClose();
+      c.open();
+      c.close();
     }
   }
 
