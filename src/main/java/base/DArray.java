@@ -72,22 +72,6 @@ public class DArray extends ArrayList implements Cloneable {
   }
 
   /**
-   * Dump contents of an array of FPoint2's to a string
-   *
-   * @param allDigits true to display all digits of the points
-   * @return string of space-separated points
-   */
-  public String dumpFPoint2(boolean allDigits) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < size(); i++) {
-      sb.append(' ');
-      sb.append(getFPoint2(i).toString(allDigits, false));
-      sb.append('\n');
-    }
-    return sb.toString();
-  }
-
-  /**
    * Swap two elements of the array
    *
    * @param i :
@@ -120,13 +104,13 @@ public class DArray extends ArrayList implements Cloneable {
   public boolean popBoolean() {
     return ((Boolean) pop()).booleanValue();
   }
-
-  public FPoint2 getFPoint2(int i) {
-    return (FPoint2) get(i);
-  }
-  public FPoint2 getFPoint2Mod(int i) {
-    return (FPoint2) getMod(i);
-  }
+//
+//  public FPoint2 getFPoint2(int i) {
+//    return (FPoint2) get(i);
+//  }
+//  public FPoint2 getFPoint2Mod(int i) {
+//    return (FPoint2) getMod(i);
+//  }
 
   public String getString(int i) {
     return (String) get(i);
@@ -559,27 +543,7 @@ public class DArray extends ArrayList implements Cloneable {
     return out;
   }
 
-  /**
-    * Construct a random permutation of the first n integers
-    *
-    * @param length
-    * @param r
-    * @deprecated use MyMath method of same name
-    */
-  public static int[] permutation(int length, Random r) {
-    int[] a = new int[length];
-    for (int i = 0; i < length; i++) {
-      a[i] = i;
-    }
-    for (int i = 0; i < length; i++) {
-      int j = r.nextInt(length);
-      int temp = a[i];
-      a[i] = a[j];
-      a[j] = temp;
-    }
-    return a;
-  }
-
+ 
   public int getIntMod(int i) {
     return ((Integer) getMod(i)).intValue();
   }

@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * Various utility math functions
  */
+@Deprecated
 public class MyMath {
   /**
    * Square a value
@@ -122,17 +123,6 @@ public class MyMath {
   //  public static int sideOfLine(Point a, Point b, Point pt) {
   //    return sideOfLine(a.x, a.y, b.x, b.y, pt.x, pt.y);
   //  }
-  /**
-   * Determine which side of a line a point is on
-   * @param a : first point on line
-   * @param b : second point on line
-   * @param pt : point to test
-   * @return 0 if pt is on the line containing the ray from a to b,
-   *  1 if it's to the left of this ray, -1 if it's to the right
-   */
-  public static int sideOfLine(IPoint2 a, IPoint2 b, IPoint2 pt) {
-    return sideOfLine(a.x, a.y, b.x, b.y, pt.x, pt.y);
-  }
 
   /**
    * Determine which side of a line a point is on; floating point version
@@ -297,39 +287,7 @@ public class MyMath {
     return Math.atan2(pt.y, pt.x);
   }
 
-  /**
-  * Calculate the circumcenter of three points.
-  * @param a first point
-  * @param b second point
-  * @param c third point
-  * @return tuple <radius, center>
-  */
-  public static DArray calcCircumCenter(FPoint2 a, FPoint2 b, FPoint2 c) {
-
-    double rad = 0;
-    FPoint2 dest = new FPoint2();
-
-    if (Math.abs(b.x - a.x) > Math.abs(b.y - a.y)) {
-      dest.y = (((c.x * c.x - a.x * a.x) + (c.y * c.y - a.y * a.y))
-          * (b.x - a.x) + (a.x - c.x)
-          * ((b.y * b.y - a.y * a.y) + (b.x * b.x - a.x * a.x)))
-          / (2 * (c.y - a.y) * (b.x - a.x) + 2 * (c.x - a.x) * (a.y - b.y));
-      dest.x = ((b.y * b.y - a.y * a.y) + (b.x * b.x - a.x * a.x) + 2
-          * (a.y - b.y) * dest.y)
-          / (2 * (b.x - a.x));
-    } else {
-      dest.x = (((c.y * c.y - a.y * a.y) + (c.x * c.x - a.x * a.x))
-          * (b.y - a.y) + (a.y - c.y)
-          * ((b.x * b.x - a.x * a.x) + (b.y * b.y - a.y * a.y)))
-          / (2 * (c.x - a.x) * (b.y - a.y) + 2 * (c.y - a.y) * (a.x - b.x));
-      dest.y = ((b.x * b.x - a.x * a.x) + (b.y * b.y - a.y * a.y) + 2
-          * (a.x - b.x) * dest.x)
-          / (2 * (b.y - a.y));
-    }
-    rad = FPoint2.distance(a, dest);
-
-    return DArray.build(new Double(rad), dest);
-  }
+  
 
   /**
    * Calculate point on boundary of circle

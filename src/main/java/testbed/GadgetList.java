@@ -46,27 +46,12 @@ final class GadgetList {
     Gadget c = get(id);
     c.getComponent().setEnabled(state);
   }
-
-  /**
-   * Get value of integer-valued gadget
-   */
-  @Deprecated
-  public int intValue(int id) {
-    return numValue(id).intValue();
-  }
-
+ 
   public Number numValue(int id) {
     return (Number) get(id).readValue();
   }
 
-  /**
-   * Get value of double-valued gadget
-   */
-  @Deprecated
-  public double doubleValue(int id) {
-    return numValue(id).doubleValue();
-  }
-
+ 
   /**
    * Get value of boolean-valued gadget
    * 

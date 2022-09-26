@@ -1,5 +1,6 @@
 package base;
 
+
 public interface IVector extends IMatrix {
   
   

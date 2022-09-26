@@ -8,21 +8,7 @@ import java.util.*;
  */
 public class DFA {
 
-  //  /**
-  //   * Constructor
-  //   * @param path : path to read DFA from
-  //   * @deprecated
-  //   */
-  //  public DFA(String path) {
-  //    try {
-  //      InputStream s = new FileInputStream(path);
-  //      read(s);
-  //      s.close();
-  //    } catch (IOException e) {
-  //      throw new RuntimeException(e);
-  //    }
-  //  }
-
+  
   /**
    * Construct a DFA.
    * @param s : InputStream, a binary xxx.dfa file

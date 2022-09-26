@@ -1,6 +1,7 @@
 package testbed;
 
 import base.*;
+import js.geometry.FPoint;
 import js.geometry.IRect;
 
 import java.awt.BasicStroke;
@@ -39,21 +40,21 @@ public class V implements Globals {
   /**
    * Mark a location with a small 'x'
    */
-  public static void mark(FPoint2 pt) {
+  public static void mark(FPoint pt) {
     mark(pt, MARK_X);
   }
 
   /**
    * Mark a location
    */
-  public static void mark(FPoint2 pt, int markType) {
+  public static void mark(FPoint pt, int markType) {
     mark(pt, markType, 1.0);
   }
 
   /**
    * Mark a location
    */
-  public static void mark(FPoint2 pt, int markType, double scale) {
+  public static void mark(FPoint pt, int markType, double scale) {
     double pad = getScale() * scale * .4;
     switch (markType) {
     case MARK_X:
@@ -250,14 +251,6 @@ public class V implements Globals {
   }
 
   /**
-   * Pop stroke from stack
-   */
-  @Deprecated
-  public static void popStroke() {
-    die("no longer supported");
-  }
-
-  /**
    * Draw a circle
    * 
    * @param origin
@@ -265,7 +258,7 @@ public class V implements Globals {
    * @param radius
    *          radius of circle
    */
-  public static void drawCircle(FPoint2 origin, double radius) {
+  public static void drawCircle(FPoint origin, double radius) {
     g.draw(
         new Arc2D.Double(origin.x - radius, origin.y - radius, 2 * radius, 2 * radius, 0, 360, Arc2D.CHORD));
   }
@@ -292,7 +285,7 @@ public class V implements Globals {
    * @param radius
    *          radius of circle
    */
-  public static void fillCircle(FPoint2 origin, double radius) {
+  public static void fillCircle(FPoint origin, double radius) {
     g.fill(
         new Arc2D.Double(origin.x - radius, origin.y - radius, 2 * radius, 2 * radius, 0, 360, Arc2D.CHORD));
   }
@@ -370,14 +363,6 @@ public class V implements Globals {
     for (Object obj : sPlotStateStack) {
       pr(obj, TAB(20), obj.getClass());
     }
-  }
-
-  /**
-   * Pop color from stack
-   */
-  @Deprecated
-  public static void popColor() {
-    throw notSupported();
   }
 
   /**
@@ -511,27 +496,27 @@ public class V implements Globals {
   private static final Object ST_FONT_INDEX = "FONT_INDEX";
   private static final Object ST_FONT = "FONT ";
 
-  /**
-   * Draw a filled rectangle
-   * 
-   * @param pos
-   *          location
-   * @param size
-   *          size
-   */
-  public static void fillRect(FPoint2 pos, FPoint2 size) {
-    fillRect(pos.x, pos.y, size.x, size.y);
-  }
+  //  /**
+  //   * Draw a filled rectangle
+  //   * 
+  //   * @param pos
+  //   *          location
+  //   * @param size
+  //   *          size
+  //   */
+  //  public static void fillRect(FPoint2 pos, FPoint2 size) {
+  //    fillRect(pos.x, pos.y, size.x, size.y);
+  //  }
 
-  /**
-   * Draw a filled rectangle
-   * 
-   * @param r
-   *          rectangle
-   */
-  public static void fillRect(FRect r) {
-    fillRect(r.x, r.y, r.width, r.height);
-  }
+  //  /**
+  //   * Draw a filled rectangle
+  //   * 
+  //   * @param r
+  //   *          rectangle
+  //   */
+  //  public static void fillRect(FRect r) {
+  //    fillRect(r.x, r.y, r.width, r.height);
+  //  }
 
   /**
    * Draw a filled rectangle

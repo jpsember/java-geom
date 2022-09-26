@@ -63,33 +63,7 @@ public class MyColor {
   public static Color cLIGHTGRAY = get(LIGHTGRAY);
   public static Color cPURPLE = get(PURPLE);
   public static Color cDARKGRAY = Color.DARK_GRAY;
-  /**
-   * Initialize colors.
-   * If already initialized, does nothing.
-   * @deprecated
-   */
-  public static void init() {
-    //    if (colors == null) {
-    //      colors = new Color[SLOTS * COLOR_LEVELS];
-    //
-    //      add(WHITE, 1, 1, 1);
-    //      add(LIGHTGRAY, 0.75, 0.75, 0.75);
-    //      add(GRAY, 0.50, 0.50, 0.50);
-    //      add(DARKGRAY, 0.25, 0.25, 0.25);
-    //      add(BLACK, 0, 0, 0);
-    //      add(RED,Color.RED);
-    //      add(PINK, Color.PINK);//1, 0.68, 0.68);
-    //      add(ORANGE,Color.ORANGE);
-    //      add(YELLOW, Color.YELLOW);
-    //      add(GREEN, Color.GREEN);
-    //      add(MAGENTA, Color.MAGENTA);
-    //      add(CYAN, Color.CYAN);
-    //      add(BLUE, Color.BLUE);
-    //      add(BROWN, .45,.25,.05); //0.60, 0.40, 0.20);
-    //      add(PURPLE, .516,.125,.94);
-    //      add(DARKGREEN, 0.06, 0.38, 0.06);
-    //    }
-  }
+   
 
   /**
    * Construct a Color object from rgb values, after clamping them

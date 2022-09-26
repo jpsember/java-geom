@@ -5,6 +5,7 @@ import java.util.*;
 public class DQueue implements Cloneable {
   /**
    * Get string describing object
+   * 
    * @return String
    */
   public String toString() {
@@ -21,13 +22,13 @@ public class DQueue implements Cloneable {
   }
 
   public Object peek(boolean atFront) {
-    return peek(0,atFront);
+    return peek(0, atFront);
   }
-  
+
   public int peekInt(int n, boolean atFront) {
-    return ((Integer)peek(n,atFront)).intValue();
+    return ((Integer) peek(n, atFront)).intValue();
   }
-  
+
   public Object peek(int n, boolean atFront) {
     if (n >= size())
       throw new IllegalArgumentException();
@@ -37,14 +38,13 @@ public class DQueue implements Cloneable {
   }
 
   public Object peek() {
-    return peek(0,true);
-//    return peekAt(0);
+    return peek(0, true);
+    //    return peekAt(0);
   }
 
   /**
-   * Clone object.
-   * For good summary of what's entailed in Java cloning,
-   * see Core Java, Vol. 1, p. 262.
+   * Clone object. For good summary of what's entailed in Java cloning, see Core
+   * Java, Vol. 1, p. 262.
    *
    * @return Object
    */
@@ -62,6 +62,7 @@ public class DQueue implements Cloneable {
 
   /**
    * Push an item to the rear of the queue
+   * 
    * @param obj
    */
   public void push(Object obj) {
@@ -70,8 +71,10 @@ public class DQueue implements Cloneable {
 
   /**
    * Push an item onto the queue
+   * 
    * @param obj
-   * @param toFront if true, pushes to head of queue vs rear
+   * @param toFront
+   *          if true, pushes to head of queue vs rear
    */
   public void push(Object obj, boolean toFront) {
     if (spaceRemaining() <= 1) {
@@ -95,6 +98,7 @@ public class DQueue implements Cloneable {
 
   /**
    * Get number of items in queue
+   * 
    * @return # items
    */
   public int size() {
@@ -105,33 +109,16 @@ public class DQueue implements Cloneable {
       k += a.size();
     }
     if (db)
-      Streams.out.println("length, tail=" + tail + ", head=" + head
-          + ", a.length=" + a.size() + ", returning " + k);
+      Streams.out
+          .println("length, tail=" + tail + ", head=" + head + ", a.length=" + a.size() + ", returning " + k);
     return k;
   }
 
   /**
-   * @deprecated use size()
-   * @return
-   */
-  public int length() {
-    return size();
-  }
-  //    final boolean db = false;
-  //
-  //    int k = tail - head;
-  //    if (tail < head) {
-  //      k += a.size();
-  //    }
-  //    if (db)
-  //      Streams.out.println("length, tail=" + tail + ", head=" + head
-  //          + ", a.length=" + a.size() + ", returning " + k);
-  //    return k;
-  //  }
-
-  /**
    * Pop an item from the queue
-   * @param fromFront true to pop from front, vs tail
+   * 
+   * @param fromFront
+   *          true to pop from front, vs tail
    * @return
    */
   public Object pop(boolean fromFront) {
@@ -153,6 +140,7 @@ public class DQueue implements Cloneable {
 
   /**
    * Pop an item from the front of the queue
+   * 
    * @return
    */
   public Object pop() {
@@ -207,30 +195,17 @@ public class DQueue implements Cloneable {
   public int popInt() {
     return popInt(true);
   }
+
   public int popInt(boolean fromFront) {
     return ((Integer) pop(fromFront)).intValue();
   }
-  /**
-   * @deprecated
-   * @param i
-   */
-  public void pushInt(int i) {
-    pushInt(i, false);
-  }
+
   public void push(int i) {
     push(i, false);
   }
+
   public void push(int i, boolean toFront) {
     push(new Integer(i), toFront);
-  }
-
-  /**
-   * @deprecated
-   * @param i
-   * @param toFront
-   */
-  public void pushInt(int i, boolean toFront) {
-    push(i, toFront);
   }
 
   public double popDouble() {
@@ -245,9 +220,9 @@ public class DQueue implements Cloneable {
     return (String) pop();
   }
 
-  public FPoint2 popFPoint2() {
-    return (FPoint2) pop();
-  }
+//  public FPoint2 popFPoint2() {
+//    return (FPoint2) pop();
+//  }
 
   public boolean isEmpty() {
     return length() == 0;
@@ -269,16 +244,13 @@ public class DQueue implements Cloneable {
     this(16);
   }
 
-  public DQueue(int initialCapacity) {
-    a = construct(1 + initialCapacity);
+  @Deprecated
+  public int length() {
+    return size();
   }
 
-  /**
-   * @deprecated
-   * @return
-   */
-  public Object last() {
-    return peekAt(size() - 1);
+  public DQueue(int initialCapacity) {
+    a = construct(1 + initialCapacity);
   }
 
   public void addAll(Collection c) {
@@ -286,6 +258,7 @@ public class DQueue implements Cloneable {
       push(it.next());
     }
   }
+
   private ArrayList a;
 
   private int head, tail;

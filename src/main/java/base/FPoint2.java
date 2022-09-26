@@ -2,6 +2,7 @@ package base;
 
 import java.util.*;
 
+@Deprecated
 public class FPoint2 extends java.awt.geom.Point2D.Double implements IVector {
   public static FPoint2 add(FPoint2 a, FPoint2 b, FPoint2 d) {
     if (d == null)

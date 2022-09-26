@@ -1530,17 +1530,7 @@ public class TextScanner {
     return sb;
 
   }
-
-  //  /**
-  //   * @deprecated : use addSp
-  //   * @param sb
-  //   */
-  //  public static void ensureWhitespace(StringBuilder sb) {
-  //    int k = sb.length();
-  //    if (k == 0 || sb.charAt(k - 1) != ' ')
-  //      sb.append(' ');
-  //  }
-
+ 
   public double readDouble() {
     String s = readWord(true);
     return parseDouble(s);

@@ -3,6 +3,7 @@ package base;
 import java.awt.*;
 import java.awt.geom.*;
 
+@Deprecated
 public class FRect extends Rectangle.Double {
 
   public FRect(Rectangle2D r) {

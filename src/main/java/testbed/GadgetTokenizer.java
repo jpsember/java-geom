@@ -79,18 +79,7 @@ import java.io.*;
     return def;
   }
 
-
-  /**
-   * Read alignment code for last label read, then reset it to
-   * CENTER
-   * @return int : alignment code read (or CENTER if none existed)
-   * @deprecated
-   */
-  public int labelAlignment() {
-    int lbl = lblAlignment;
-    lblAlignment = SwingConstants.CENTER;
-    return lbl;
-  }
+ 
 
   /**
    * Read next token as a label, and determine its alignment
