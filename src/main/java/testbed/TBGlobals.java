@@ -4,7 +4,7 @@ package testbed;
  * Interface to store global variables for the TestBed framework
  *
  */
-interface TBGlobals {
+public interface TBGlobals {
 
   static final int
   // control panel indexes
@@ -17,7 +17,8 @@ interface TBGlobals {
   static final int
   // ids from 8900..8999 are not read/written to individual file headers,
       // but are written to configuration files
-      CONFIGSTART = 8900,
+      CONFIGSTART = 8900, //
+      CURRENT_SCRIPT_INDEX = 8901,
       
       APP_FRAME = 8904,
 EDITOR_ZOOM = 8903,

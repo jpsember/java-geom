@@ -1,6 +1,5 @@
 fields {
   int version = 1;
-  int current_script_index;
   int add_box_corner_index = 2;
   JSMap widget_state_map;
 }

@@ -33,6 +33,8 @@ import js.data.DataUtil;
 import js.file.Files;
 import js.geometry.MyMath;
 import js.json.*;
+import testbed.C;
+import testbed.TBGlobals;
 import js.graphics.ScriptUtil;
 import js.graphics.gen.ScriptFileEntry;
 
@@ -88,12 +90,10 @@ public final class Project extends BaseObject {
           log("looking for template state in:", Files.infoMap(projectForDefaultStateOrNull));
         if (stateFile.exists()) {
           if (false) {
-            projectState = Files.parseAbstractDataOpt(ProjectState.DEFAULT_INSTANCE, stateFile).toBuilder()//
-                .currentScriptIndex(0);
+            projectState = Files.parseAbstractDataOpt(ProjectState.DEFAULT_INSTANCE, stateFile).toBuilder();
           } else {
             try {
-              projectState = Files.parseAbstractDataOpt(ProjectState.DEFAULT_INSTANCE, stateFile).toBuilder()//
-                  .currentScriptIndex(0);
+              projectState = Files.parseAbstractDataOpt(ProjectState.DEFAULT_INSTANCE, stateFile).toBuilder();
             } catch (Throwable t) {
               pr("*** Problem parsing project state");
               pr("*** File:", INDENT, Files.infoMap(stateFile));
@@ -122,13 +122,13 @@ public final class Project extends BaseObject {
 
     // Make sure script index is legal
     //
-    int scriptIndex = state().currentScriptIndex();
+    int scriptIndex = scriptIndex();
     if (scriptCount() == 0)
       scriptIndex = 0;
     else
       scriptIndex = MyMath.clamp(scriptIndex, 0, scriptCount() - 1);
-    log("correcting state script index from", state().currentScriptIndex(), "to", scriptIndex);
-    state().currentScriptIndex(scriptIndex);
+    log("correcting state script index from", scriptIndex(), "to", scriptIndex);
+    setScriptIndex(scriptIndex);
   }
 
   public boolean definedAndNonEmpty() {
@@ -193,7 +193,7 @@ public final class Project extends BaseObject {
   // ------------------------------------------------------------------
 
   public int scriptIndex() {
-    int index = state().currentScriptIndex();
+    int index = C.vi(TBGlobals.CURRENT_SCRIPT_INDEX);
     int count = scriptCount();
     if (index >= count) {
       pr("scriptIndex", index, "exceeds count", count, "!!!!");
@@ -208,14 +208,14 @@ public final class Project extends BaseObject {
   }
 
   public void setScriptIndex(int index) {
-    state().currentScriptIndex(index);
+    C.set(TBGlobals.CURRENT_SCRIPT_INDEX, index);
   }
 
   /**
    * Get the current script
    */
   public ScriptWrapper script() {
-    int index = state().currentScriptIndex();
+    int index = C.vi(TBGlobals.CURRENT_SCRIPT_INDEX);
     int count = scriptCount();
     if (index < 0 || index >= count)
       return ScriptWrapper.DEFAULT_INSTANCE;

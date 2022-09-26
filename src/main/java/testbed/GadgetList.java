@@ -49,26 +49,14 @@ final class GadgetList {
 
   /**
    * Get value of integer-valued gadget
-   * 
-   * @param id
-   *          : id of gadget
-   * @return value
    */
   public int intValue(int id) {
     Gadget obj = get(id);
     if (obj == null) {
       return 0;
     }
-    Integer iVal;
-    Object v = obj.readValue();
-    if (v == null)
-      iVal = 0;
-    else if (v instanceof Integer) {
-      iVal = (Integer) v;
-    } else {
-      iVal = Integer.parseInt(v.toString());
-    }
-    return iVal;
+    Number num = (Number) obj.readValue();
+    return num.intValue();
   }
 
   /**
