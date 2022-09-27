@@ -49,7 +49,7 @@ class TabbedPaneGadget extends Gadget implements ChangeListener {
     int val = ((Number) v).intValue();
     Integer val2 = null;
 
-    if (val >= TAB_ID_START) {
+    if (val >= Globals.TAB_ID_START) {
       val2 = idToIndexMap.get(val);
       if (val2 == null)
         alert("no value", val2, "for", this.getId());
@@ -98,7 +98,7 @@ class TabbedPaneGadget extends Gadget implements ChangeListener {
    */
   public void addTab(String title, int pnlId, Component component) {
     // Determine id of pane.  If it is < 1000, assume it's just an index
-    if (pnlId < TAB_ID_START) {
+    if (pnlId < Globals.TAB_ID_START) {
       pnlId = ids.size();
     }
 

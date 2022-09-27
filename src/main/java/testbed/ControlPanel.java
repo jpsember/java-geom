@@ -139,7 +139,7 @@ public class ControlPanel extends JPanel implements Globals  {
   }
 
   public ControlPanel button(int id, String label, String toolTip) {
-    addControl(new CtButton(Gadget.createAction(id, label, toolTip, null)).setId(id), null);
+    addControl(new CtButton(new GadgetAction(id, label, toolTip, null)).setId(id), null);
     return this;
   }
 

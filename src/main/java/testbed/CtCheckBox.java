@@ -24,7 +24,7 @@ class CtCheckBox extends Gadget {
    */
   public CtCheckBox(int id, String label, boolean value, boolean inMenu, String toolTip, KeyStroke accel) {
     setId(id);
-    Action a = Gadget.createAction(id, label, toolTip, accel);
+    Action a = new GadgetAction(id, label, toolTip, accel);
 
     if (inMenu) {
       setComponent(new JCheckBoxMenuItem());
