@@ -44,7 +44,7 @@ class CtSpinner extends Gadget implements ChangeListener {
     return result;
   }
 
-  public void setEnabled(GadgetList gl, boolean state) {
+  public void setEnabled(GadgetCollection gl, boolean state) {
     mComponent.setEnabled(state);
   }
 

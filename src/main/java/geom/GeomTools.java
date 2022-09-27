@@ -2,7 +2,7 @@ package geom;
 
 import java.util.List;
 
-import testbed.GadgetList;
+import testbed.GadgetCollection;
 
 public final class GeomTools {
 
@@ -10,7 +10,7 @@ public final class GeomTools {
     return GeomApp.singleton();
   }
 
-  public static GadgetList gadg() {
+  public static GadgetCollection gadg() {
     return editor().gadgets();
   }
   

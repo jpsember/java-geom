@@ -31,12 +31,12 @@ import static js.base.Tools.*;
 import js.widget.SwingWidgetManager;
 import js.widget.Widget;
 import js.widget.WidgetManager;
-import testbed.ControlPanel;
+import testbed.GadgetPanel;
 import testbed.TBGlobals;
 
 import static geom.GeomTools.*;
 
-public class InfoPanel extends ControlPanel {
+public class InfoPanel extends GadgetPanel {
 
   private static final boolean GADGETS = false && alert("using gadgets, not widgets");
 

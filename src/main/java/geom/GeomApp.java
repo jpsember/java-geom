@@ -17,7 +17,7 @@ import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
 import testbed.AppFrameGadget;
-import testbed.GadgetList;
+import testbed.GadgetCollection;
 import testbed.TBGlobals;
 
 import static geom.GeomTools.*;
@@ -120,7 +120,7 @@ public abstract class GeomApp extends GUIApp {
     discardMenuBar();
 
     // Now that gadgets have been built, restore their state
-    GadgetList g = gadg();
+    GadgetCollection g = gadg();
     g.writeGadgetValues(projectState().widgetStateMap());
     g.setActive(true);
 
@@ -413,8 +413,8 @@ public abstract class GeomApp extends GUIApp {
   // ------------------------------------------------------------------
 
   public void initGadgets() {
-    mGadgetSet = new GadgetList();
-    GadgetList g = gadgets();
+    mGadgetSet = new GadgetCollection();
+    GadgetCollection g = gadgets();
 
     // Add gadget for persisting frame bounds
     g.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
@@ -423,9 +423,9 @@ public abstract class GeomApp extends GUIApp {
     g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
   }
 
-  public GadgetList gadgets() {
+  public GadgetCollection gadgets() {
     return mGadgetSet;
   }
 
-  private GadgetList mGadgetSet;
+  private GadgetCollection mGadgetSet;
 }

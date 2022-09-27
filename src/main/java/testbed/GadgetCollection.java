@@ -9,7 +9,7 @@ import static js.base.Tools.*;
 /**
  * A collection of Gadgets
  */
-public final class GadgetList {
+public final class GadgetCollection {
 
   /**
    * Determine if Gadget events should be propagated to listeners (including the

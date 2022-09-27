@@ -26,7 +26,7 @@ public class BoundsOper implements TestBedOperation, Globals {
 
   public void addControls() {
 
-    ControlPanel c = testBed().controlPanel();
+    GadgetPanel c = testBed().controlPanel();
 
     c.openTab("Bounds");
     c.staticText("Calculate minimum bounding box of objects");
@@ -56,7 +56,7 @@ public class BoundsOper implements TestBedOperation, Globals {
   }
 
   public void processAction(UserEvent event) {
-    GadgetList g = gadg ();
+    GadgetCollection g = gadg ();
     pr("action:", event);
     
     if (event.widgetId() == 9988 || event.widgetId() == 9989)
@@ -113,7 +113,7 @@ public class BoundsOper implements TestBedOperation, Globals {
   }
 
   private void generate() {
-    GadgetList g = gadg ();
+    GadgetCollection g = gadg ();
      int seed = g.vi(SEED);
     Random r = new Random(seed + 1);
     int c = g.vi(COUNT);

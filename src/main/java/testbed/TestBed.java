@@ -31,11 +31,6 @@ public abstract class TestBed extends GeomApp {
     }
   }
 
-  @Deprecated
-  public static TestBed singleton() {
-    return (TestBed) GeomApp.singleton();
-  }
-
   /**
    * Add operations available to the user. Default implementation does nothing.
    * Typical user code (taken from the ConvexHull example):
@@ -53,10 +48,10 @@ public abstract class TestBed extends GeomApp {
    * Add 'global' controls: available to all operations Default implementation
    * does nothing.
    */
-  public void addControls(ControlPanel c) {
+  public void addControls(GadgetPanel c) {
   }
 
-  private void addMainControls(ControlPanel c) {
+  private void addMainControls(GadgetPanel c) {
     c.checkBox(TBGlobals.CTRLSVISIBLE, null, null, true);
 
     c.openTabSet(TBGlobals.AUXTABSET);
@@ -83,7 +78,7 @@ public abstract class TestBed extends GeomApp {
     parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
     parentPanel.add(infoPanel(), BorderLayout.SOUTH);
 
-    ControlPanel c = controlPanel();
+    GadgetPanel c = controlPanel();
     c.composeStart();
     addMainControls(c);
     addOperations();
@@ -103,7 +98,7 @@ public abstract class TestBed extends GeomApp {
     JOptionPane.showMessageDialog(null, msg, "Error", JOptionPane.ERROR_MESSAGE);
   }
 
-  private static void addOperCtrls(ControlPanel c) {
+  private static void addOperCtrls(GadgetPanel c) {
     if (sOperList.size() > 0) {
       c.openTabSet(TBGlobals.OPER);
       //todo("pass in GadgetList to addControls() method");
@@ -186,12 +181,12 @@ public abstract class TestBed extends GeomApp {
   //    g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
   //  }
 
-  public ControlPanel controlPanel() {
+  public GadgetPanel controlPanel() {
     if (mMainControlPanel == null)
-      mMainControlPanel = new ControlPanel();
+      mMainControlPanel = new GadgetPanel();
     return mMainControlPanel;
   }
 
-  private ControlPanel mMainControlPanel;
+  private GadgetPanel mMainControlPanel;
 
 }

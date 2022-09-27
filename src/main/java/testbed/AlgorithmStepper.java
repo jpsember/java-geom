@@ -41,7 +41,7 @@ public class AlgorithmStepper implements Globals {
    */
   public boolean runAlgorithm(TestBedOperation alg) {
     loadTools();
-    GadgetList g = gadg();
+    GadgetCollection g = gadg();
     mLastException = null;
     mRunning = g.exists(TBGlobals.TRACEENABLED) && g.vb(TBGlobals.TRACEENABLED);
     mDisabled = 0;
