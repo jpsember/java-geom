@@ -5,7 +5,6 @@ import static js.base.Tools.*;
 import java.awt.Component;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
 
 import js.guiapp.UserEvent;
 
@@ -16,7 +15,7 @@ import static testbed.TestBedTools.*;
 /**
  * Base class for control gadgets
  */
-abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener {
+abstract class Gadget implements Globals { 
 
   public final Gadget setId(int id) {
     checkState(mId == 0, "already has an id");
@@ -28,10 +27,6 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
     if (mId == 0)
       throw badState("gadget has no id");
     return mId;
-  }
-
-  public final void stateChanged(ChangeEvent changeEvent) {
-    testBed().processAction(UserEvent.widgetEvent(getId()));
   }
 
   // ------------------------------------------------------

@@ -3,11 +3,21 @@ package testbed;
 import java.awt.Component;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import js.guiapp.UserEvent;
 
 import static js.base.Tools.*;
+import static testbed.TestBedTools.*;
 
-class TabbedPaneGadget extends Gadget {
-  static final boolean db = false;
+class TabbedPaneGadget extends Gadget implements ChangeListener {
+
+  // ChangeListener implementation
+  @Override
+  public final void stateChanged(ChangeEvent changeEvent) {
+    testBed().processAction(UserEvent.widgetEvent(getId()));
+  }
 
   /**
    * Read value. Returns the current pane's identifier.
@@ -42,7 +52,7 @@ class TabbedPaneGadget extends Gadget {
     if (val >= TAB_ID_START) {
       val2 = idToIndexMap.get(val);
       if (val2 == null)
-       alert("no value" , val2 , "for" , this.getId());
+        alert("no value", val2, "for", this.getId());
     } else {
       val2 = val;
     }

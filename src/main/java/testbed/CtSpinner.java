@@ -1,14 +1,25 @@
 package testbed;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import js.guiapp.UserEvent;
 
 import static js.base.Tools.*;
+import static testbed.TestBedTools.*;
 
 import java.awt.*;
 
-class CtSpinner extends Gadget {
+class CtSpinner extends Gadget implements ChangeListener {
 
   private static final boolean db = false && alert("debug printing in effect");
+
+  // ChangeListener implementation
+  @Override
+  public final void stateChanged(ChangeEvent changeEvent) {
+    testBed().processAction(UserEvent.widgetEvent(getId()));
+  }
 
   public void writeValue(Object v) {
     if (db) {
