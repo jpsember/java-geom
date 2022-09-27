@@ -4,6 +4,7 @@ import geom.GeomTools;
 
 import javax.swing.*;
 import static js.base.Tools.*;
+import static testbed.TestBedTools.*;
 
 import java.awt.Component;
 import java.awt.GridBagLayout;
@@ -143,7 +144,7 @@ public class ControlPanel extends JPanel implements Globals, IScript {
   }
 
   public ControlPanel staticText(String text) {
-    addControl(new CtLabel(0, text).setId(C.getAnonId()), null);
+    addControl(new CtLabel(0, text).setId(gadgets().getAnonId()), null);
     return this;
   }
 
@@ -226,7 +227,7 @@ public class ControlPanel extends JPanel implements Globals, IScript {
   }
 
   private boolean addControl(Gadget c, String toolTip) {
-    C.add(c);
+    gadgets().add(c);
 
     boolean shown = true;
     if (!mHideNextGadget) {

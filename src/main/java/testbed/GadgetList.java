@@ -6,7 +6,7 @@ import js.json.JSMap;
 
 import static js.base.Tools.*;
 
-final class GadgetList {
+public final class GadgetList {
 
   /**
    * Enable each gadget in a list
@@ -145,6 +145,7 @@ final class GadgetList {
   /**
    * Get JSMap of gadget values
    */
+  @Deprecated //merge into caller
   public JSMap getValues() {
     JSMap m = map();
     for (Map.Entry<Integer, Gadget> ent : mGadgetMap.entrySet()) {
@@ -160,6 +161,7 @@ final class GadgetList {
     return m;
   }
 
+  @Deprecated //merge setValues()
   public void setValues(JSMap m) {
     for (Map.Entry<String, Object> entry : m.wrappedMap().entrySet()) {
       int id = Integer.parseInt(entry.getKey());
@@ -169,8 +171,173 @@ final class GadgetList {
     }
   }
 
-  private SortedMap<Integer, Gadget> mGadgetMap = treeMap();
+  
+  
+  
+  
+  
 
+  /**
+   * Adjust a gadget's enabled state
+   * 
+   * @param id
+   *          id of gadget
+   * @param f
+   *          true to enable it
+   */
+  @Deprecated // Use setEnable()
+  public   void enable(int id, boolean f) {
+     setEnable(id, f);
+  }
+
+  /**
+   * Adjust a series of gadget enabled states
+   * 
+   * @param idList
+   *          array of gadget ids
+   * @param f
+   *          true to enable them
+   */
+  @Deprecated // Use enable()
+  public  void enable(int[] idList, boolean f) {
+     setEnable(idList, f);
+  }
+
+  /**
+   * Get (integer) value of gadget
+   */
+  public  int vi(int id) {
+    return  numValue(id).intValue();
+  }
+
+  /**
+   * Set value of (integer-valued) gadget
+   */
+  public   int seti(int id, int v) {
+     setValue(id, v);
+    return v;
+  }
+
+  /**
+   * Get boolean value of gadget
+   */
+  public   boolean vb(int id) {
+    return  booleanValue(id);
+  }
+
+  /**
+   * Set boolean value of gadget
+   */
+  public   boolean setb(int id, boolean boolvalue) {
+    setValue(id, boolvalue);
+    return boolvalue;
+  }
+
+  /**
+   * Toggle boolean value of gadget
+   * 
+   * @return new value
+   */
+  public   boolean toggle(int id) {
+    return setb(id, !vb(id));
+  }
+
+  /**
+   * Get (double) value of gadget
+   */
+  public   double vd(int id) {
+    return numValue(id).doubleValue();
+  }
+
+  public   float vf(int id) {
+    return ((Number)  get(id).readValue()).floatValue();
+  }
+
+  /**
+   * Set double value of gadget
+   */
+  public   double setd(int id, double v) {
+    setValue(id, v);
+    return v;
+  }
+
+  /**
+   * Set float value of gadget
+   */
+  public   double set(int id, float v) {
+     setValue(id, v);
+    return v;
+  }
+
+  /**
+   * Get (string) value of gadget
+   */
+  public   String vs(int id) {
+    return  stringValue(id);
+  }
+
+//
+//  public static ControlPanel DEPRECATEDcontrolPanel() {
+//    return mMainControlPanel;
+//  }
+
+  /**
+   * Get the next anonymous id
+   * 
+   * @return int
+   */
+ public int getAnonId() {
+    return sAnonIdBase++;
+  }
+
+  public   void readGadgetValuesFromMap(JSMap map) {
+     setValues(map);
+  }
+
+  /**
+   * Get JSMap representing widget values
+   */
+  public   JSMap constructGadgetValueMap() {
+    return  getValues();
+  }
+
+//  static void initDEPRECATED() {
+//    sAnonIdBase = TBGlobals.ID_ANON_START;
+//    mMainControlPanel = new ControlPanel();
+//    mGadgetSet = new GadgetList();
+//
+//    // Add gadget for persisting frame bounds
+//    C.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
+//    // Add gadget for persisting zoom factor
+//    C.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
+//    C.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
+//  }
+//  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  private SortedMap<Integer, Gadget> mGadgetMap = treeMap();
+  private   int sAnonIdBase = TBGlobals.ID_ANON_START;
+  
   private static class HiddenGadget extends Gadget {
 
     public HiddenGadget(Object defaultValue) {

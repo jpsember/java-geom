@@ -13,11 +13,15 @@ public class AlgStepOper extends UserOperation {
 
   @Override
   public void start() {
+    GadgetList C = TestBed.singleton().gadgets();
+    
     C.seti(TBGlobals.TRACESTEP, mNextStep);
   }
 
   @Override
   public boolean shouldBeEnabled() {
+    todo("clunky to have to access gadgets like this");
+    GadgetList C = TestBed.singleton().gadgets();
     int current = C.vi(TBGlobals.TRACESTEP);
     int target = 0;
     if (mDir != 0)

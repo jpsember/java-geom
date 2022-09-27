@@ -3,6 +3,7 @@ package testbed;
 import js.geometry.IRect;
 import js.graphics.AbstractScriptElement;
 import js.guiapp.UserOperation;
+import static testbed.TestBedTools.*;
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -39,14 +40,15 @@ public class AlgorithmStepper implements Globals {
    */
   public boolean runAlgorithm(TestBedOperation alg) {
     loadTools();
+    GadgetList g = gadgets();
     mLastException = null;
-    mRunning = C.exists(TBGlobals.TRACEENABLED) && C.vb(TBGlobals.TRACEENABLED);
+    mRunning = g.exists(TBGlobals.TRACEENABLED) && g.vb(TBGlobals.TRACEENABLED);
     mDisabled = 0;
     mStep = 0;
     mStepDecision = null;
     mStepToStopAt = 0;
     if (mRunning)
-      mStepToStopAt = C.vi(TBGlobals.TRACESTEP);
+      mStepToStopAt = g.vi(TBGlobals.TRACESTEP);
     if (mStepToStopAt == 0)
       mRunning = false;
 
@@ -105,7 +107,7 @@ public class AlgorithmStepper implements Globals {
     }
     V.pop(2);
 
-    if (TestBed.plotTraceMessages()) {
+    if (testBed().plotTraceMessages()) {
       String msg = tr.getMessage();
       if (!msg.isEmpty()) {
         V.pushColor(MyColor.get(MyColor.RED, .32));

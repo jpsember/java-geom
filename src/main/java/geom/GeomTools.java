@@ -2,12 +2,19 @@ package geom;
 
 import java.util.List;
 
+import testbed.GadgetList;
+import testbed.TestBed;
+
 public final class GeomTools {
 
   public static GeomApp editor() {
     return GeomApp.singleton();
   }
 
+  public static GadgetList gadg() {
+    return TestBed.singleton().gadgets();
+  }
+  
   public static ScriptManager scriptManager() {
     return ScriptManager.singleton();
   }

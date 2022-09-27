@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import static js.base.Tools.*;
+import static testbed.TestBedTools.*;
 
 /**
  * ComboBox gadget.
@@ -67,7 +68,7 @@ class CtComboBox extends Gadget implements ActionListener {
     ci.setId(itemid);
     ci.writeValue(field);
     children().add(itemid);
-    C.add(ci);
+    gadgets().add(ci);
     cbox.addItem(ci);
   }
 
@@ -256,7 +257,7 @@ class CtComboBox extends Gadget implements ActionListener {
     }
 
     public void setSelectedId(int id) {
-      CtComboBoxItem item = (CtComboBoxItem) C.get(id);
+      CtComboBoxItem item = (CtComboBoxItem) gadgets().get(id);
 
       if (item != null && item.button != null) {
         item.button.setSelected(true);

@@ -16,9 +16,11 @@ import js.guiapp.RecentFiles;
 import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
-import testbed.C;
+import testbed.GadgetList;
+import testbed.TestBed;
 
 import static geom.GeomTools.*;
+import static testbed.TestBedTools.*;
 
 /**
  * A GUIApp that supports editing of geometric objects
@@ -86,7 +88,7 @@ public abstract class GeomApp extends GUIApp {
       return;
     flushProject();
 
-    C.setGadgetsActive(false);
+   testBed().setGadgetsActive(false);
 
     mCurrentProject = Project.DEFAULT_INSTANCE;
     removeUIElements();
@@ -118,9 +120,12 @@ public abstract class GeomApp extends GUIApp {
     discardMenuBar();
 
     // Now that gadgets have been built, restore their state
+    GadgetList C = TestBed.singleton().gadgets();
     C.readGadgetValuesFromMap(projectState().widgetStateMap());
 
-    C.setGadgetsActive(true);
+    
+    TestBed.singleton(). 
+     setGadgetsActive(true);
 
     // Make sure the UI is updated to represent this project's state,
     // and to make sure the keyboard shortcuts work (something to do with focus?)
@@ -150,7 +155,8 @@ public abstract class GeomApp extends GUIApp {
   public final void flushProject() {
     if (!currentProject().defined())
       return;
-    projectState().widgetStateMap(C.constructGadgetValueMap());
+   die("reenable this");
+    // projectState().widgetStateMap(gadgets().constructGadgetValueMap());
     currentProject().flush();
   }
 

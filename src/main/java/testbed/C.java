@@ -4,6 +4,7 @@ import js.json.JSMap;
 
 import static js.base.Tools.*;
 
+@Deprecated
 public class C implements Globals {
 
   private C() {
@@ -23,8 +24,7 @@ public class C implements Globals {
     sGadgetsActive = state;
   }
 
-  private static boolean sGadgetsActive;
-
+ 
   public static void add(Gadget c) {
     mGadgetSet.add(c);
   }
@@ -155,7 +155,8 @@ public class C implements Globals {
     return mGadgetSet.get(id);
   }
 
-  public static ControlPanel controlPanel() {
+  
+  public static ControlPanel DEPRECATEDcontrolPanel() {
     return mMainControlPanel;
   }
 
@@ -179,7 +180,7 @@ public class C implements Globals {
     return mGadgetSet.getValues();
   }
 
-  static void init() {
+  static void initDEPRECATED() {
     sAnonIdBase = TBGlobals.ID_ANON_START;
     mMainControlPanel = new ControlPanel();
     mGadgetSet = new GadgetList();
@@ -194,5 +195,6 @@ public class C implements Globals {
   private static int sAnonIdBase;
   private static ControlPanel mMainControlPanel;
   private static GadgetList mGadgetSet;
+  private static boolean sGadgetsActive;
 
 }

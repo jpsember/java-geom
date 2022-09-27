@@ -2,6 +2,7 @@ package sample;
 
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
+import static testbed.TestBedTools.gadgets;
 
 import java.util.List;
 import java.util.Random;
@@ -24,7 +25,7 @@ public class BoundsOper implements TestBedOperation, Globals {
 
   public void addControls() {
 
-    ControlPanel c = C.controlPanel();
+    ControlPanel c = TestBed.singleton().controlPanel();
 
     c.openTab("Bounds");
     c.staticText("Calculate minimum bounding box of objects");
@@ -54,9 +55,10 @@ public class BoundsOper implements TestBedOperation, Globals {
   }
 
   public void processAction(TBAction a) {
+    GadgetList g = gadgets();
     pr("action:", a);
     if (a.ctrlId == 9988 || a.ctrlId == 9989)
-      pr("value:", C.vd(a.ctrlId));
+      pr("value:", g.vd(a.ctrlId));
 
     if (a.code == TBAction.CTRLVALUE) {
       generate();
@@ -108,9 +110,10 @@ public class BoundsOper implements TestBedOperation, Globals {
   }
 
   private void generate() {
-    int seed = C.vi(SEED);
+    GadgetList g = gadgets();
+     int seed = g.vi(SEED);
     Random r = new Random(seed + 1);
-    int c = C.vi(COUNT);
+    int c = g.vi(COUNT);
     List<EditorElement> elemList = arrayList();
 
     final int PADDING = 3;

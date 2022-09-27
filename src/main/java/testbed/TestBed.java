@@ -12,140 +12,6 @@ import static js.base.Tools.*;
 
 public abstract class TestBed extends GeomApp {
 
-  // ------------------------------------------------------------------
-  // Construction
-  // ------------------------------------------------------------------
-
-  //  private static void resetFocus() {
-  //    todo("requestFocus?  Or just avoid text input?");
-  //    //    boolean f = TestBed.getAppContainer().requestFocusInWindow();
-  //    //    Streams.out.println("req foc in TestBed app cont=" + f);
-  //    //    C.menuPanel().requestFocusInWindow();
-  //  }
-
-  // I think this method is unnecessary now that we have Commands and UserOperations...?
-
-  //  /**
-  //   * Process an application action; if it is processed, its code may be modified
-  //   * or cleared to 0
-  //   *
-  //   * @param a
-  //   *          : TBAction to view and/or modify
-  //   */
-  //  private void processAction0(TBAction a) {
-  //
-  //    //     Streams.out.println("processAction "+a);
-  //
-  //    if (!programBegun) {
-  //      a.code = TBAction.NONE;
-  //      return;
-  //    }
-  //
-  //    if (a.code != 0 && a.code != TBAction.HOVER) {
-  //      resetFocus();
-  //
-  //      if (false) {
-  //        System.out.println("TestBed action() " + a);
-  //        if (a.ctrlId != 0)
-  //          Streams.out.println("CtrlId= " + a.ctrlId);
-  //      }
-  //    }
-  //
-  //    boolean clearAction = false;
-  //    boolean clearButUpdate = false;
-  //
-  //    switch (a.code) {
-  //
-  //    case TBAction.UPDATETITLE:
-  //      todo("set/update title");
-  //      //      setExtendedTitle(a.strArg);
-  //      //      updateTitle();
-  //      break;
-  //
-  //    case TBAction.CTRLVALUE:
-  //      switch (a.ctrlId) {
-  //      case TBGlobals.GRIDSIZE:
-  //        V.updateGridSize(C.vi(TBGlobals.GRIDSIZE));
-  //        break;
-  //
-  //      case TBGlobals.GLOBALSCALE:
-  //        clearButUpdate = true;
-  //        break;
-  //
-  //      //      case TBGlobals.QUIT:
-  //      //        exitProgram();
-  //      //        break;
-  //      //      case TBGlobals.FILLCOLOR: {
-  //      //        Color fillColor = new Color(C.vi(TBGlobals.sFILLCOLOR));
-  //      //        Color cl = JColorChooser.showDialog(appFrame, "Select background color", fillColor);
-  //      //        if (cl != null) {
-  //      //          C.seti(TBGlobals.sFILLCOLOR, cl.getRGB() & 0xffffff);
-  //      //        }
-  //      //      }
-  //      //        break;
-  //
-  //      case TBGlobals.TRACEBWD:
-  //      case TBGlobals.TRACEBTNBWD:
-  //        C.seti(TBGlobals.TRACESTEP, C.vi(TBGlobals.TRACESTEP) - 1);
-  //        break;
-  //      case TBGlobals.TRACEFWD:
-  //      case TBGlobals.TRACEBTNFWD:
-  //        C.seti(TBGlobals.TRACESTEP, C.vi(TBGlobals.TRACESTEP) + 1);
-  //        break;
-  //      case TBGlobals.BTN_TOGGLECTRLS:
-  //      case TBGlobals.BTN_TOGGLECONSOLE: {
-  //        JSplitPane sp = (a.ctrlId == TBGlobals.BTN_TOGGLECTRLS) ? spCtrls : spConsole;
-  //        int x = sp.getDividerLocation(), x1 = sp.getMaximumDividerLocation();
-  //        if (x > x1 || x < 20) {
-  //          sp.resetToPreferredSizes();
-  //        } else {
-  //          sp.setDividerLocation(1.0);
-  //        }
-  //      }
-  //        break;
-  //
-  //      case TBGlobals.BTN_TOGGLEWORKSPACE:
-  //        workFile.setVisible(!workFile.isVisible());
-  //        break;
-  //
-  //      }
-  //      break;
-  //
-  //    case TBAction.ITEMENABLE: {
-  //      // call application to determine if this item should
-  //      // be enabled.
-  //      boolean s = processMenuEnable(a.menuId, a.ctrlId);
-  //      // change menu item's state if necessary.
-  //      C.get(a.ctrlId).getComponent().setEnabled(s);
-  //    }
-  //      break;
-  //    }
-  //
-  //    if (clearButUpdate) {
-  //      clearAction = true;
-  //      updateView();
-  //    }
-  //    if (clearAction) {
-  //      a.code = TBAction.NONE;
-  //    }
-  //
-  //    if (a.code != TBAction.NONE && !operList.isEmpty()) {
-  //      oper().processAction(a);
-  //    }
-  //
-  //    // call application-specific handler
-  //    processAction(a);
-  //
-  //    // update the view in case state has changed as a result
-  //    // of the main controls
-  //    if (a.code != 0)
-  //      updateView();
-  //
-  //    //    // reset the focus?
-  //    //    Tools.warn("always resetting focus");
-  //    //    resetFocus();
-  //  }
-
   /**
    * Process actions for main controls. Default implementation passes action to
    * current operation
@@ -210,12 +76,10 @@ public abstract class TestBed extends GeomApp {
     parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
     parentPanel.add(infoPanel(), BorderLayout.SOUTH);
 
-    {
-      sOperList = arrayList();
-      C.init();
-    }
+    sOperList = arrayList();
+    initGadgets();
 
-    ControlPanel c = C.controlPanel();
+    ControlPanel c = controlPanel();
     c.prepareForGadgets();
     addMainControls(c);
     addOperations();
@@ -238,6 +102,7 @@ public abstract class TestBed extends GeomApp {
   private static void addOperCtrls(ControlPanel c) {
     if (sOperList.size() > 0) {
       c.openTabSet(TBGlobals.OPER);
+      todo("pass in GadgetList to addControls() method");
       for (TestBedOperation oper : sOperList)
         oper.addControls();
       c.closeTabSet();
@@ -263,18 +128,18 @@ public abstract class TestBed extends GeomApp {
     return sOperList.get(n);
   }
 
-  public static boolean plotTraceMessages() {
-    return C.vb(TBGlobals.TRACEPLOT);
+  public boolean plotTraceMessages() {
+    return gadgets().vb(TBGlobals.TRACEPLOT);
   }
 
   @Override
   public float zoomFactor() {
-    return C.vf(TBGlobals.EDITOR_ZOOM);
+    return gadgets().vf(TBGlobals.EDITOR_ZOOM);
   }
 
   @Override
   public void setZoomFactor(float zoom) {
-    C.set(TBGlobals.EDITOR_ZOOM, zoom);
+    gadgets().set(TBGlobals.EDITOR_ZOOM, zoom);
   }
 
   @Override
@@ -299,5 +164,47 @@ public abstract class TestBed extends GeomApp {
   }
 
   private static List<TestBedOperation> sOperList;
+
+  // ------------------------------------------------------------------
+  // Gadgets
+  // ------------------------------------------------------------------
+
+  private void initGadgets() {
+    mMainControlPanel = new ControlPanel();
+    mGadgetSet = new GadgetList();
+
+    GadgetList g = gadgets();
+
+    // Add gadget for persisting frame bounds
+    g.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
+    // Add gadget for persisting zoom factor
+    g.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
+    g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
+  }
+
+  public GadgetList gadgets() {
+    return mGadgetSet;
+  }
+
+  public ControlPanel controlPanel() {
+    return mMainControlPanel;
+  }
+
+  /**
+   * Determine if Gadget events should be propagated to listeners (including the
+   * project or script record of gadget values). False while user interface is
+   * still being constructed
+   */
+  public boolean gadgetsActive() {
+    return sGadgetsActive;
+  }
+
+  public void setGadgetsActive(boolean state) {
+    sGadgetsActive = state;
+  }
+
+  private ControlPanel mMainControlPanel;
+  private GadgetList mGadgetSet;
+  private boolean sGadgetsActive;
 
 }
