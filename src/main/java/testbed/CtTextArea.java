@@ -2,23 +2,21 @@ package testbed;
 
 import javax.swing.JTextArea;
 import javax.swing.*;
-import java.awt.GridBagConstraints;
 
 class CtTextArea extends Gadget {
 
+  @Override
   public boolean serialized() {
     return false;
   }
 
-  public int gcFill() {
-    return GridBagConstraints.BOTH;
-  }
-
-  public void writeValue(Object v) {
+  @Override
+   public void writeValue(Object v) {
     textArea.setText((String) v);
   }
 
-  public Object readValue() {
+  @Override
+   public Object readValue() {
     return textArea.getText();
   }
 

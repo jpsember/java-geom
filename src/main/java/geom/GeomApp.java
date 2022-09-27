@@ -414,7 +414,6 @@ public abstract class GeomApp extends GUIApp {
 
   public void initGadgets() {
     mGadgetSet = new GadgetList();
-
     GadgetList g = gadgets();
 
     // Add gadget for persisting frame bounds
@@ -428,7 +427,5 @@ public abstract class GeomApp extends GUIApp {
     return mGadgetSet;
   }
 
-
   private GadgetList mGadgetSet;
-  
 }

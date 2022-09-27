@@ -59,11 +59,6 @@ public class InfoPanel extends ControlPanel {
 
       textField(TBGlobals.SCRIPT_NAME, "File", "Current script name", 80, false, "script name");
       textField(TBGlobals.MESSAGE, null, null, 80, false, "message");
-
-      //      addMainControls(c);
-      //      addOperations();
-      //      addControls(c);
-      //      addOperCtrls(c);
       finishedGadgets();
 
     } else {

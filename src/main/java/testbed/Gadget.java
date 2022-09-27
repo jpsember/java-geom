@@ -3,7 +3,6 @@ package testbed;
 import static js.base.Tools.*;
 
 import java.awt.Component;
-import java.awt.GridBagConstraints;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -70,14 +69,6 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
 
   public void setComponent(Component c) {
     mComponent = c;
-  }
-
-  /**
-   * Get GridBagConstraints fill parameter for this gadget. Default returns
-   * HORIZONTAL
-   */
-  public int gcFill() {
-    return GridBagConstraints.HORIZONTAL;
   }
 
   /**

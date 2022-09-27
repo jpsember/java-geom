@@ -20,16 +20,9 @@ public final class GadgetList {
   public void setActive(boolean state) {
     mActive = state;
   }
-  
-  
-  
+
   /**
    * Enable each gadget in a list
-   * 
-   * @param idList
-   *          : list of ids to enable
-   * @param state
-   *          : enable state to set to
    */
   public void setEnable(int[] idList, boolean state) {
     for (int i = 0; i < idList.length; i++) {
@@ -39,10 +32,6 @@ public final class GadgetList {
 
   /**
    * Read enable state of gadget
-   * 
-   * @param id
-   *          : gadget id
-   * @return true if gadget is enabled
    */
   public boolean enabled(int id) {
     Gadget c = get(id);
@@ -230,11 +219,6 @@ public final class GadgetList {
     return stringValue(id);
   }
 
-  //
-  //  public static ControlPanel DEPRECATEDcontrolPanel() {
-  //    return mMainControlPanel;
-  //  }
-
   /**
    * Get the next anonymous id
    * 
@@ -271,40 +255,7 @@ public final class GadgetList {
     return m;
   }
 
-  //  static void initDEPRECATED() {
-  //    sAnonIdBase = TBGlobals.ID_ANON_START;
-  //    mMainControlPanel = new ControlPanel();
-  //    mGadgetSet = new GadgetList();
-  //
-  //    // Add gadget for persisting frame bounds
-  //    C.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
-  //    // Add gadget for persisting zoom factor
-  //    C.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
-  //    C.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
-  //  }
-  //  
-
   private SortedMap<Integer, Gadget> mGadgetMap = treeMap();
   private int mAnonIdBase = TBGlobals.ID_ANON_START;
   private boolean mActive;
-
-  private static class HiddenGadget extends Gadget {
-
-    public HiddenGadget(Object defaultValue) {
-      mValue = defaultValue;
-    }
-
-    @Override
-    public Object readValue() {
-      return mValue;
-    }
-
-    @Override
-    public void writeValue(Object v) {
-      checkArgument(v != null);
-      mValue = v;
-    }
-
-    private Object mValue;
-  }
 }

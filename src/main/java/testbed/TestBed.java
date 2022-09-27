@@ -72,7 +72,7 @@ public abstract class TestBed extends GeomApp {
 
   @Override
   public void populateFrame(JPanel parentPanel) {
-    todo("initGadgets within GUIApp perhaps?");
+    todo("!initGadgets within GUIApp perhaps?");
     initGadgets();
     sOperList = arrayList();
 
