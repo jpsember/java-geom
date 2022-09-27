@@ -72,7 +72,7 @@ class CtComboBox extends Gadget implements ActionListener {
     ci.setId(itemid);
     ci.writeValue(field);
     children().add(itemid);
-    gadg ().add(ci);
+    gadg().add(ci);
     cbox.addItem(ci);
   }
 
@@ -154,7 +154,7 @@ class CtComboBox extends Gadget implements ActionListener {
 
     public abstract void addItem(CtComboBoxItem item);
 
-    public abstract Component getComponent();
+    public abstract JComponent getComponent();
 
     public int idToIndex(int id) {
       return parent.children().indexOf(id);
@@ -183,7 +183,7 @@ class CtComboBox extends Gadget implements ActionListener {
       c.addItem(item);
     }
 
-    public Component getComponent() {
+    public JComponent getComponent() {
       return c;
     }
 
@@ -227,7 +227,7 @@ class CtComboBox extends Gadget implements ActionListener {
       this.listener = listener;
     }
 
-    public Component getComponent() {
+    public JComponent getComponent() {
       return cpanel;
     }
 
@@ -247,9 +247,6 @@ class CtComboBox extends Gadget implements ActionListener {
     void processSelection(int id) {
       if (selectedId != id)
         setSelectedId(id);
-      //      if (listener != null)
-      //        listener.actionPerformed(new ActionEvent(cbox, cbox.getId(),
-      //            "radio button selected"));
     }
 
     public int getSelectedId() {
@@ -257,7 +254,7 @@ class CtComboBox extends Gadget implements ActionListener {
     }
 
     public void setSelectedId(int id) {
-      CtComboBoxItem item = (CtComboBoxItem) gadg ().get(id);
+      CtComboBoxItem item = (CtComboBoxItem) gadg().get(id);
 
       if (item != null && item.button != null) {
         item.button.setSelected(true);

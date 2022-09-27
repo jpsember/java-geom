@@ -2,12 +2,13 @@ package testbed;
 
 import static geom.GeomTools.*;
 
-import javax.swing.*;
 import static js.base.Tools.*;
 
-import java.awt.Component;
 import java.awt.GridBagLayout;
 import java.util.List;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 /**
  * Control panel class
@@ -27,7 +28,11 @@ public class ControlPanel extends JPanel implements Globals {
     GC.addGlue(this, 0, 1);
   }
 
-  public void prepareForGadgets() {
+  /**
+   * Prepare for adding gadgets to panel (must be balanced by a call to
+   * composeEnd())
+   */
+  public void composeStart() {
     // create an outermost panel, and add it to 
     // this control panel, in the first row
     mStackPanel = new StackPanel(null);
@@ -39,8 +44,11 @@ public class ControlPanel extends JPanel implements Globals {
     mStack = arrayList();
   }
 
-  public void finishedGadgets() {
-    checkState(mStack.isEmpty(), "control stack isn't empty");
+  /**
+   * Clean up after adding gadgets to panel
+   */
+  public void composeEnd() {
+    checkState(mStack.isEmpty(), "stack isn't empty");
     mStack = null;
   }
 
@@ -219,7 +227,7 @@ public class ControlPanel extends JPanel implements Globals {
     gadg().add(c);
 
     boolean shown = true;
-    Component cp = c.getComponent();
+    JComponent cp = c.getComponent();
     if (cp != null)
       mStackPanel.addItem(cp);
 

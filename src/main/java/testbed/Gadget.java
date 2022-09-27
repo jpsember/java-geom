@@ -2,9 +2,9 @@ package testbed;
 
 import static js.base.Tools.*;
 
-import java.awt.Component;
-
 import java.util.List;
+
+import javax.swing.JComponent;
 
 /**
  * Abstract class representing a user interface element
@@ -36,16 +36,16 @@ abstract class Gadget {
   /**
    * Get Swing component associated with gadget
    */
-  public final Component getComponent() {
+  public final JComponent getComponent() {
     return mComponent;
   }
 
-  public final void setComponent(Component c) {
+  public final void setComponent(JComponent c) {
     mComponent = c;
   }
 
   private int mId;
-  private Component mComponent;
+  private JComponent mComponent;
   // list of child controls
   private List<Integer> mChildIds;
 
