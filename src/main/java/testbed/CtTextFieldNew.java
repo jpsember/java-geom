@@ -1,6 +1,9 @@
 package testbed;
 
 import javax.swing.*;
+
+import js.guiapp.UserEvent;
+
 import java.awt.event.*;
 import static testbed.TestBedTools.*;
 
@@ -77,7 +80,7 @@ class CtTextFieldNew extends Gadget implements ActionListener {
     //If a string was returned, say so.
     if (s != null && !s.equals(sOrig)) {
       jButton.setText(s);
-      testBed().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
+      testBed().processAction(UserEvent.widgetEvent(getId()));
     }
   }
 

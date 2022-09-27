@@ -1,6 +1,9 @@
 package testbed;
 
 import javax.swing.*;
+
+import js.guiapp.UserEvent;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -78,7 +81,7 @@ class CtComboBox extends Gadget implements ActionListener {
   // ------------------------------------------------------
   public void actionPerformed(ActionEvent e) {
     int selId = cbox.getSelectedId();
-    testBed().processAction(new TBAction(TBAction.CTRLVALUE, selId));
+    testBed().processAction(UserEvent.widgetEvent(selId));
   }
 
   /**

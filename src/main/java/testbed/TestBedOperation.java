@@ -1,5 +1,7 @@
 package testbed;
 
+import js.guiapp.UserEvent;
+
 /**
  * Interface for TestBed operations
  */
@@ -18,9 +20,9 @@ public interface TestBedOperation extends Globals {
 
   /**
    * Process an action
-   * @param a action
+   * @param event action
    */
-  public void processAction(TBAction a);
+  public void processAction(UserEvent event);
 
   /**
    * Execute an algorithm.  If no algorithm is to be run, this method

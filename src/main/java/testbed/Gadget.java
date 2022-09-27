@@ -7,6 +7,9 @@ import java.awt.GridBagConstraints;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+
+import js.guiapp.UserEvent;
+
 import java.beans.*;
 import java.util.List;
 import static testbed.TestBedTools.*;
@@ -30,7 +33,7 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
   }
 
   public final void stateChanged(ChangeEvent changeEvent) {
-   testBed().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
+    testBed().processAction(UserEvent.widgetEvent(getId()));
   }
 
   // ------------------------------------------------------
@@ -38,7 +41,7 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
   // ------------------------------------------------------
 
   public final void propertyChange(PropertyChangeEvent e) {
-    testBed().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
+    testBed().processAction(UserEvent.widgetEvent(getId()));
   }
 
   public final List<Integer> children() {
@@ -122,8 +125,7 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
     }
 
     public void actionPerformed(ActionEvent e) {
-      // send application a CTRLVALUE action with the gadget id.
-     testBed().processAction(new TBAction(TBAction.CTRLVALUE, id()));
+      testBed().processAction(UserEvent.widgetEvent(id()));
     }
 
   }

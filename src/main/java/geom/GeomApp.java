@@ -154,8 +154,7 @@ public abstract class GeomApp extends GUIApp {
   public final void flushProject() {
     if (!currentProject().defined())
       return;
-    die("reenable this");
-    // projectState().widgetStateMap(gadgets().constructGadgetValueMap());
+    projectState().widgetStateMap(gadgets().constructGadgetValueMap());
     currentProject().flush();
   }
 

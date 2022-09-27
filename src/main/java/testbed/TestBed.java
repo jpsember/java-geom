@@ -3,6 +3,7 @@ package testbed;
 import geom.GeomApp;
 import geom.ScriptManager;
 import js.guiapp.MenuBarWrapper;
+import js.guiapp.UserEvent;
 
 import java.awt.*;
 import javax.swing.*;
@@ -17,7 +18,7 @@ public abstract class TestBed extends GeomApp {
    * Process actions for main controls. Default implementation passes action to
    * current operation
    */
-  public void processAction(TBAction a) {
+  public void processAction(UserEvent a) {
     if (!gadgetsActive())
       return;
     try {

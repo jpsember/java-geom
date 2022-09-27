@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Control panel class
  */
-public class ControlPanel extends JPanel implements Globals, IScript {
+public class ControlPanel extends JPanel implements Globals  {
 
   /**
    * Constructor

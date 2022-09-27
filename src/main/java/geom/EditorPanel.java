@@ -227,7 +227,7 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     if (evt.isShiftDown())
       modifierFlags |= UserEvent.FLAG_SHIFT;
 
-    UserEvent event = new UserEvent(type, this, viewPoint, modifierFlags);
+    UserEvent event = new UserEvent(type, this, viewPoint, modifierFlags, 0);
 
     if (GUIApp.guiAppConfig().devMode()) {
       // Note: this doesn't display stack traces in Eclipse in a way that supports clicking

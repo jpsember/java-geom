@@ -15,6 +15,7 @@ import js.geometry.IPoint;
 import js.geometry.IRect;
 import js.graphics.PointElement;
 import js.graphics.ScriptElement;
+import js.guiapp.UserEvent;
 import testbed.*;
 import static testbed.TestBedTools.*;
 
@@ -54,13 +55,15 @@ public class BoundsOper implements TestBedOperation, Globals {
     c.closeTab();
   }
 
-  public void processAction(TBAction a) {
+  public void processAction(UserEvent event) {
     GadgetList g = gadg ();
-    pr("action:", a);
-    if (a.ctrlId == 9988 || a.ctrlId == 9989)
-      pr("value:", g.vd(a.ctrlId));
+    pr("action:", event);
+    
+    if (event.widgetId() == 9988 || event.widgetId() == 9989)
+      pr("value:", g.vd(event.widgetId()));
 
-    if (a.code == TBAction.CTRLVALUE) {
+    todo("there ought to be a convenience method for this");
+    if (event.getCode() == UserEvent. CODE_WIDGET) {
       generate();
     }
   }
