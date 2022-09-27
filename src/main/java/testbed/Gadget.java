@@ -84,20 +84,7 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
 
     private static final String GADGETID = "GADGETID";
 
-    /**
-     * Constructor
-     * 
-     * @param id
-     *          : id of gadget associated with action
-     * @param name
-     *          : name of action (i.e., menu item label)
-     * @param toolTip
-     *          : tooltip message
-     * @param accel
-     *          : keystroke to use as accelerator
-     */
     public GadgetAction(int id, String name, String toolTip, KeyStroke accel) {
-
       super(name);
       putValue(GADGETID, id);
       setAccelerator(accel);
