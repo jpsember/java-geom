@@ -24,6 +24,7 @@
  **/
 package geom;
 
+import javax.swing.BorderFactory;
 
 import static js.base.Tools.*;
 
@@ -37,6 +38,8 @@ import static geom.GeomTools.*;
 
 public class InfoPanel extends ControlPanel {
 
+  private static final boolean GADGETS = false && alert("using gadgets, not widgets");
+
   public void opening(Project project) {
     if (!todo("!restore widget state map from project somehow")) {
       // mWidgetManager.setStateMap(project.widgetStateMap());
@@ -44,53 +47,41 @@ public class InfoPanel extends ControlPanel {
     }
   }
 
-  public InfoPanel( ) {
-    
-    
-    
-    todo("use Gadgets, not Widgets?");
-    
-    todo("actually, Widgets seem better supported...");
-    //setBorder(BorderFactory.createRaisedBevelBorder());
+  public InfoPanel() {
+if (!GADGETS)
+setBorder(BorderFactory.createRaisedBevelBorder());
 
-    
-    
-    if (true) {
-   
-    
-       prepareForGadgets();
-       
-       todo("make these non-persistent");
-       
-       textField(TBGlobals.SCRIPT_NAME, "File", "Current script name", 80, false, "script name");
-       textField(TBGlobals.MESSAGE, null, null, 80, false,"message");
-       
-       
-//      addMainControls(c);
-//      addOperations();
-//      addControls(c);
-//      addOperCtrls(c);
-       finishedGadgets();
-    
+    if (GADGETS) {
+
+      prepareForGadgets();
+
+      todo("make these non-persistent");
+
+      textField(TBGlobals.SCRIPT_NAME, "File", "Current script name", 80, false, "script name");
+      textField(TBGlobals.MESSAGE, null, null, 80, false, "message");
+
+      //      addMainControls(c);
+      //      addOperations();
+      //      addControls(c);
+      //      addOperCtrls(c);
+      finishedGadgets();
+
     } else {
-    
-    
-    
-//    
-//    WidgetManager m = new SwingWidgetManager();
-//    // Use the InfoPanel as the outermost container
-//    m.setPendingContainer(this);
-//
-//    m.columns(".x").open();
-//    {
-//      m.addLabel("Script:");
-//      mFilePath = m.monospaced().large().addText();
-//      mMessageField = m.skip().monospaced().addText();
-//    }
-//    m.addVertGrow();
-//    m.close();
-//    m.setPrepared(true);
-//    mWidgetManager = m;
+
+      WidgetManager m = new SwingWidgetManager();
+      // Use the InfoPanel as the outermost container
+      m.setPendingContainer(this);
+
+      m.columns(".x").open();
+      {
+        m.addLabel("Script:");
+        mFilePath = m.monospaced().large().addText();
+        mMessageField = m.skip().monospaced().addText();
+      }
+      m.addVertGrow();
+      m.close();
+      m.setPrepared(true);
+      mWidgetManager = m;
     }
   }
 
@@ -99,7 +90,7 @@ public class InfoPanel extends ControlPanel {
 
     String scriptDisplay = "";
     if (!script.isNone()) {
-      Project project = editor().currentProject();  
+      Project project = editor().currentProject();
       StringBuilder sb = new StringBuilder();
       sb.append(project.scriptIndex());
       sb.append("/");
@@ -109,8 +100,10 @@ public class InfoPanel extends ControlPanel {
       sb.append(nameOnly);
       scriptDisplay = sb.toString();
     }
-    gadg().setValue(TBGlobals.SCRIPT_NAME, scriptDisplay);
-//    mFilePath.setText(scriptDisplay);
+    if (GADGETS)
+      gadg().setValue(TBGlobals.SCRIPT_NAME, scriptDisplay);
+    else
+      mFilePath.setText(scriptDisplay);
   }
 
   public void setMessage(String text) {
@@ -122,12 +115,14 @@ public class InfoPanel extends ControlPanel {
       if (System.currentTimeMillis() - mErrorTime < 20000)
         return;
     }
-    gadg().setValue(TBGlobals.MESSAGE, text);
-//    mMessageField.setText(text);
+    if (GADGETS)
+      gadg().setValue(TBGlobals.MESSAGE, text);
+    else
+      mMessageField.setText(text);
   }
 
-  private   WidgetManager mWidgetManager;
+  private WidgetManager mWidgetManager;
   private long mErrorTime;
-//  private Widget mFilePath;
-//  private Widget mMessageField;
+  private Widget mFilePath;
+  private Widget mMessageField;
 }
