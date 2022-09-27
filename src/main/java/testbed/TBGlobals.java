@@ -2,7 +2,6 @@ package testbed;
 
 /**
  * Interface to store global variables for the TestBed framework
- *
  */
 public interface TBGlobals {
 

@@ -193,6 +193,8 @@ public final class Project extends BaseObject {
   // ------------------------------------------------------------------
 
   public int scriptIndex() {
+    if (gadg() == null)
+      die("gadgets is null!");
     int index = gadg().vi(TBGlobals.CURRENT_SCRIPT_INDEX);
     int count = scriptCount();
     if (index >= count) {

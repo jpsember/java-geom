@@ -131,7 +131,7 @@ public final class GadgetList {
   }
 
   public void add(Gadget c) {
-    todo("move this class to Geom package");
+    todo("move this class to Geom package?");
     checkState(!exists(c.getId()));
     mGadgetMap.put(c.getId(), c);
   }
