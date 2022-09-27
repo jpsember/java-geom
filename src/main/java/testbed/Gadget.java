@@ -20,7 +20,6 @@ import static testbed.TestBedTools.*;
 abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener {
 
   public final Gadget setId(int id) {
-    todo("the Gadget and action handlers should not be testbed, but instead geom");
     checkState(mId == 0, "already has an id");
     mId = id;
     return this;

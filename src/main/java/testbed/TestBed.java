@@ -72,10 +72,10 @@ public abstract class TestBed extends GeomApp {
 
   @Override
   public void populateFrame(JPanel parentPanel) {
-    sOperList = arrayList();
+    todo("initGadgets within GUIApp perhaps?");
     initGadgets();
+    sOperList = arrayList();
 
-    
     constructEditorPanel();
     constructInfoPanel();
 
@@ -83,7 +83,6 @@ public abstract class TestBed extends GeomApp {
     parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
     parentPanel.add(infoPanel(), BorderLayout.SOUTH);
 
-   
     ControlPanel c = controlPanel();
     c.prepareForGadgets();
     addMainControls(c);
@@ -107,7 +106,7 @@ public abstract class TestBed extends GeomApp {
   private static void addOperCtrls(ControlPanel c) {
     if (sOperList.size() > 0) {
       c.openTabSet(TBGlobals.OPER);
-      todo("pass in GadgetList to addControls() method");
+      //todo("pass in GadgetList to addControls() method");
       for (TestBedOperation oper : sOperList)
         oper.addControls();
       c.closeTabSet();
@@ -122,11 +121,11 @@ public abstract class TestBed extends GeomApp {
   }
 
   public static int operNum() {
-    return gadg ().vi(TBGlobals.OPER);
+    return gadg().vi(TBGlobals.OPER);
   }
 
   public static TestBedOperation oper() {
-    return oper(gadg ().vi(TBGlobals.OPER));
+    return oper(gadg().vi(TBGlobals.OPER));
   }
 
   public static TestBedOperation oper(int n) {
@@ -174,18 +173,18 @@ public abstract class TestBed extends GeomApp {
   // Gadgets
   // ------------------------------------------------------------------
   //
-//  @Override
-//  public void initGadgets() {
-//    super.initGadgets();
-//
-//    GadgetList g = gadgets();
-//
-//    // Add gadget for persisting frame bounds
-//    g.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
-//    // Add gadget for persisting zoom factor
-//    g.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
-//    g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
-//  }
+  //  @Override
+  //  public void initGadgets() {
+  //    super.initGadgets();
+  //
+  //    GadgetList g = gadgets();
+  //
+  //    // Add gadget for persisting frame bounds
+  //    g.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
+  //    // Add gadget for persisting zoom factor
+  //    g.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
+  //    g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
+  //  }
 
   public ControlPanel controlPanel() {
     if (mMainControlPanel == null)

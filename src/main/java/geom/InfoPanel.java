@@ -48,8 +48,8 @@ public class InfoPanel extends ControlPanel {
   }
 
   public InfoPanel() {
-if (!GADGETS)
-setBorder(BorderFactory.createRaisedBevelBorder());
+    if (!GADGETS)
+      setBorder(BorderFactory.createRaisedBevelBorder());
 
     if (GADGETS) {
 

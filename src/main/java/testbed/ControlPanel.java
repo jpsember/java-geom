@@ -19,7 +19,7 @@ public class ControlPanel extends JPanel implements Globals  {
    */
   public ControlPanel() {
     super(new GridBagLayout());
-    todo("verify we can use this for other things, like InfoPanel");
+    // todo("verify we can use this for other things, like InfoPanel");
     loadTools();
     setOpaque(true);
 
