@@ -24,17 +24,18 @@
  **/
 package geom;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
 
 import static js.base.Tools.*;
 
 import js.widget.SwingWidgetManager;
 import js.widget.Widget;
 import js.widget.WidgetManager;
+import testbed.ControlPanel;
+import testbed.TBGlobals;
+
 import static geom.GeomTools.*;
 
-public class InfoPanel extends JPanel {
+public class InfoPanel extends ControlPanel {
 
   public void opening(Project project) {
     if (!todo("!restore widget state map from project somehow")) {
@@ -44,22 +45,53 @@ public class InfoPanel extends JPanel {
   }
 
   public InfoPanel( ) {
-    setBorder(BorderFactory.createRaisedBevelBorder());
+    
+    
+    
+    todo("use Gadgets, not Widgets?");
+    
+    todo("actually, Widgets seem better supported...");
+    //setBorder(BorderFactory.createRaisedBevelBorder());
 
-    WidgetManager m = new SwingWidgetManager();
-    // Use the InfoPanel as the outermost container
-    m.setPendingContainer(this);
-
-    m.columns(".x").open();
-    {
-      m.addLabel("Script:");
-      mFilePath = m.monospaced().large().addText();
-      mMessageField = m.skip().monospaced().addText();
+    
+    
+    if (true) {
+   
+    
+       prepareForGadgets();
+       
+       todo("make these non-persistent");
+       
+       textField(TBGlobals.SCRIPT_NAME, "File", "Current script name", 80, false, "script name");
+       textField(TBGlobals.MESSAGE, null, null, 80, false,"message");
+       
+       
+//      addMainControls(c);
+//      addOperations();
+//      addControls(c);
+//      addOperCtrls(c);
+       finishedGadgets();
+    
+    } else {
+    
+    
+    
+//    
+//    WidgetManager m = new SwingWidgetManager();
+//    // Use the InfoPanel as the outermost container
+//    m.setPendingContainer(this);
+//
+//    m.columns(".x").open();
+//    {
+//      m.addLabel("Script:");
+//      mFilePath = m.monospaced().large().addText();
+//      mMessageField = m.skip().monospaced().addText();
+//    }
+//    m.addVertGrow();
+//    m.close();
+//    m.setPrepared(true);
+//    mWidgetManager = m;
     }
-    m.addVertGrow();
-    m.close();
-    m.setPrepared(true);
-    mWidgetManager = m;
   }
 
   public void refresh() {
@@ -77,7 +109,8 @@ public class InfoPanel extends JPanel {
       sb.append(nameOnly);
       scriptDisplay = sb.toString();
     }
-    mFilePath.setText(scriptDisplay);
+    gadg().setValue(TBGlobals.SCRIPT_NAME, scriptDisplay);
+//    mFilePath.setText(scriptDisplay);
   }
 
   public void setMessage(String text) {
@@ -89,11 +122,12 @@ public class InfoPanel extends JPanel {
       if (System.currentTimeMillis() - mErrorTime < 20000)
         return;
     }
-    mMessageField.setText(text);
+    gadg().setValue(TBGlobals.MESSAGE, text);
+//    mMessageField.setText(text);
   }
 
-  private final WidgetManager mWidgetManager;
+  private   WidgetManager mWidgetManager;
   private long mErrorTime;
-  private Widget mFilePath;
-  private Widget mMessageField;
+//  private Widget mFilePath;
+//  private Widget mMessageField;
 }

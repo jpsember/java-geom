@@ -72,6 +72,10 @@ public abstract class TestBed extends GeomApp {
 
   @Override
   public void populateFrame(JPanel parentPanel) {
+    sOperList = arrayList();
+    initGadgets();
+
+    
     constructEditorPanel();
     constructInfoPanel();
 
@@ -79,9 +83,7 @@ public abstract class TestBed extends GeomApp {
     parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
     parentPanel.add(infoPanel(), BorderLayout.SOUTH);
 
-    sOperList = arrayList();
-    initGadgets();
-
+   
     ControlPanel c = controlPanel();
     c.prepareForGadgets();
     addMainControls(c);

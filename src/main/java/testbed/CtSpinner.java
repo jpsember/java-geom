@@ -184,12 +184,6 @@ class CtSpinner extends Gadget {
       return CtSpinner.this;
     }
 
-    //    public mySlider(int min, int max, int value, int step) {
-    //      super(min, max, value);
-    //      if (NEWEXT)      this.setExtent(step);
-    //
-    //    }
-
     public mySlider(boolean dbls, double dmin, double dmax, double dvalue, double step) {
       dblFlag = dbls;
       double range = dmax - dmin;
