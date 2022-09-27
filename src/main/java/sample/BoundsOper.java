@@ -2,7 +2,6 @@ package sample;
 
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
-import static testbed.TestBedTools.gadgets;
 
 import java.util.List;
 import java.util.Random;
@@ -17,6 +16,7 @@ import js.geometry.IRect;
 import js.graphics.PointElement;
 import js.graphics.ScriptElement;
 import testbed.*;
+import static testbed.TestBedTools.*;
 
 public class BoundsOper implements TestBedOperation, Globals {
 
@@ -25,7 +25,7 @@ public class BoundsOper implements TestBedOperation, Globals {
 
   public void addControls() {
 
-    ControlPanel c = TestBed.singleton().controlPanel();
+    ControlPanel c = testBed().controlPanel();
 
     c.openTab("Bounds");
     c.staticText("Calculate minimum bounding box of objects");
@@ -55,7 +55,7 @@ public class BoundsOper implements TestBedOperation, Globals {
   }
 
   public void processAction(TBAction a) {
-    GadgetList g = gadgets();
+    GadgetList g = gadg ();
     pr("action:", a);
     if (a.ctrlId == 9988 || a.ctrlId == 9989)
       pr("value:", g.vd(a.ctrlId));
@@ -110,7 +110,7 @@ public class BoundsOper implements TestBedOperation, Globals {
   }
 
   private void generate() {
-    GadgetList g = gadgets();
+    GadgetList g = gadg ();
      int seed = g.vi(SEED);
     Random r = new Random(seed + 1);
     int c = g.vi(COUNT);

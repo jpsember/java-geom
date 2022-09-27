@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import static js.base.Tools.*;
+import static geom.GeomTools.*;
 import static testbed.TestBedTools.*;
 
 /**
@@ -68,7 +69,7 @@ class CtComboBox extends Gadget implements ActionListener {
     ci.setId(itemid);
     ci.writeValue(field);
     children().add(itemid);
-    gadgets().add(ci);
+    gadg ().add(ci);
     cbox.addItem(ci);
   }
 
@@ -77,7 +78,7 @@ class CtComboBox extends Gadget implements ActionListener {
   // ------------------------------------------------------
   public void actionPerformed(ActionEvent e) {
     int selId = cbox.getSelectedId();
-    TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, selId));
+    testBed().processAction(new TBAction(TBAction.CTRLVALUE, selId));
   }
 
   /**
@@ -257,7 +258,7 @@ class CtComboBox extends Gadget implements ActionListener {
     }
 
     public void setSelectedId(int id) {
-      CtComboBoxItem item = (CtComboBoxItem) gadgets().get(id);
+      CtComboBoxItem item = (CtComboBoxItem) gadg ().get(id);
 
       if (item != null && item.button != null) {
         item.button.setSelected(true);

@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.util.List;
 
 import static js.base.Tools.*;
+import static geom.GeomTools.*;
 
 public abstract class TestBed extends GeomApp {
 
@@ -17,7 +18,7 @@ public abstract class TestBed extends GeomApp {
    * current operation
    */
   public void processAction(TBAction a) {
-    if (!C.gadgetsActive())
+    if (!gadgetsActive())
       return;
     try {
       // Don't propagate action if we aren't initialized and displaying a script
@@ -29,6 +30,7 @@ public abstract class TestBed extends GeomApp {
     }
   }
 
+  @Deprecated
   public static TestBed singleton() {
     return (TestBed) GeomApp.singleton();
   }
@@ -117,11 +119,11 @@ public abstract class TestBed extends GeomApp {
   }
 
   public static int operNum() {
-    return C.vi(TBGlobals.OPER);
+    return gadg ().vi(TBGlobals.OPER);
   }
 
   public static TestBedOperation oper() {
-    return oper(C.vi(TBGlobals.OPER));
+    return oper(gadg ().vi(TBGlobals.OPER));
   }
 
   public static TestBedOperation oper(int n) {
@@ -168,43 +170,26 @@ public abstract class TestBed extends GeomApp {
   // ------------------------------------------------------------------
   // Gadgets
   // ------------------------------------------------------------------
-
-  private void initGadgets() {
-    mMainControlPanel = new ControlPanel();
-    mGadgetSet = new GadgetList();
-
-    GadgetList g = gadgets();
-
-    // Add gadget for persisting frame bounds
-    g.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
-    // Add gadget for persisting zoom factor
-    g.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
-    g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
-  }
-
-  public GadgetList gadgets() {
-    return mGadgetSet;
-  }
+  //
+//  @Override
+//  public void initGadgets() {
+//    super.initGadgets();
+//
+//    GadgetList g = gadgets();
+//
+//    // Add gadget for persisting frame bounds
+//    g.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
+//    // Add gadget for persisting zoom factor
+//    g.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
+//    g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
+//  }
 
   public ControlPanel controlPanel() {
+    if (mMainControlPanel == null)
+      mMainControlPanel = new ControlPanel();
     return mMainControlPanel;
   }
 
-  /**
-   * Determine if Gadget events should be propagated to listeners (including the
-   * project or script record of gadget values). False while user interface is
-   * still being constructed
-   */
-  public boolean gadgetsActive() {
-    return sGadgetsActive;
-  }
-
-  public void setGadgetsActive(boolean state) {
-    sGadgetsActive = state;
-  }
-
   private ControlPanel mMainControlPanel;
-  private GadgetList mGadgetSet;
-  private boolean sGadgetsActive;
 
 }

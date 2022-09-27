@@ -2,6 +2,7 @@ package testbed;
 
 import javax.swing.*;
 import java.awt.event.*;
+import static testbed.TestBedTools.*;
 
 /**
  * Text field gadget
@@ -76,7 +77,7 @@ class CtTextFieldNew extends Gadget implements ActionListener {
     //If a string was returned, say so.
     if (s != null && !s.equals(sOrig)) {
       jButton.setText(s);
-      TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
+      testBed().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
     }
   }
 

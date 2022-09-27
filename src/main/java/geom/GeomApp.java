@@ -16,8 +16,9 @@ import js.guiapp.RecentFiles;
 import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
+import testbed.AppFrameGadget;
 import testbed.GadgetList;
-import testbed.TestBed;
+import testbed.TBGlobals;
 
 import static geom.GeomTools.*;
 import static testbed.TestBedTools.*;
@@ -88,7 +89,7 @@ public abstract class GeomApp extends GUIApp {
       return;
     flushProject();
 
-   testBed().setGadgetsActive(false);
+    testBed().setGadgetsActive(false);
 
     mCurrentProject = Project.DEFAULT_INSTANCE;
     removeUIElements();
@@ -120,12 +121,10 @@ public abstract class GeomApp extends GUIApp {
     discardMenuBar();
 
     // Now that gadgets have been built, restore their state
-    GadgetList C = TestBed.singleton().gadgets();
+    GadgetList C = gadg();
     C.readGadgetValuesFromMap(projectState().widgetStateMap());
 
-    
-    TestBed.singleton(). 
-     setGadgetsActive(true);
+    testBed().setGadgetsActive(true);
 
     // Make sure the UI is updated to represent this project's state,
     // and to make sure the keyboard shortcuts work (something to do with focus?)
@@ -155,7 +154,7 @@ public abstract class GeomApp extends GUIApp {
   public final void flushProject() {
     if (!currentProject().defined())
       return;
-   die("reenable this");
+    die("reenable this");
     // projectState().widgetStateMap(gadgets().constructGadgetValueMap());
     currentProject().flush();
   }
@@ -411,5 +410,41 @@ public abstract class GeomApp extends GUIApp {
   }
 
   private int mTaskTicker;
+
+  // ------------------------------------------------------------------
+  // Gadgets
+  // ------------------------------------------------------------------
+
+  public void initGadgets() {
+    mGadgetSet = new GadgetList();
+
+    GadgetList g = gadgets();
+
+    // Add gadget for persisting frame bounds
+    g.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
+    // Add gadget for persisting zoom factor
+    g.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
+    g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
+  }
+
+  public GadgetList gadgets() {
+    return mGadgetSet;
+  }
+
+  /**
+   * Determine if Gadget events should be propagated to listeners (including the
+   * project or script record of gadget values). False while user interface is
+   * still being constructed
+   */
+  public boolean gadgetsActive() {
+    return sGadgetsActive;
+  }
+
+  public void setGadgetsActive(boolean state) {
+    sGadgetsActive = state;
+  }
+
+  private GadgetList mGadgetSet;
+  private boolean sGadgetsActive;
 
 }

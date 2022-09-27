@@ -9,6 +9,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.beans.*;
 import java.util.List;
+import static testbed.TestBedTools.*;
 
 /**
  * Base class for control gadgets
@@ -16,6 +17,7 @@ import java.util.List;
 abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener {
 
   public final Gadget setId(int id) {
+    todo("the Gadget and action handlers should not be testbed, but instead geom");
     checkState(mId == 0, "already has an id");
     mId = id;
     return this;
@@ -28,7 +30,7 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
   }
 
   public final void stateChanged(ChangeEvent changeEvent) {
-    TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
+   testBed().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
   }
 
   // ------------------------------------------------------
@@ -36,7 +38,7 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
   // ------------------------------------------------------
 
   public final void propertyChange(PropertyChangeEvent e) {
-    TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
+    testBed().processAction(new TBAction(TBAction.CTRLVALUE, getId()));
   }
 
   public final List<Integer> children() {
@@ -121,7 +123,7 @@ abstract class Gadget implements Globals, ChangeListener, PropertyChangeListener
 
     public void actionPerformed(ActionEvent e) {
       // send application a CTRLVALUE action with the gadget id.
-      TestBed.singleton().processAction(new TBAction(TBAction.CTRLVALUE, id()));
+     testBed().processAction(new TBAction(TBAction.CTRLVALUE, id()));
     }
 
   }

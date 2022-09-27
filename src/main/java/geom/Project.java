@@ -33,12 +33,12 @@ import js.data.DataUtil;
 import js.file.Files;
 import js.geometry.MyMath;
 import js.json.*;
-import testbed.C;
 import testbed.TBGlobals;
 import js.graphics.ScriptUtil;
 import js.graphics.gen.ScriptFileEntry;
 
 import static js.base.Tools.*;
+import static geom.GeomTools.*;
 
 public final class Project extends BaseObject {
 
@@ -193,7 +193,7 @@ public final class Project extends BaseObject {
   // ------------------------------------------------------------------
 
   public int scriptIndex() {
-    int index = C.vi(TBGlobals.CURRENT_SCRIPT_INDEX);
+    int index = gadg().vi(TBGlobals.CURRENT_SCRIPT_INDEX);
     int count = scriptCount();
     if (index >= count) {
       pr("scriptIndex", index, "exceeds count", count, "!!!!");
@@ -208,14 +208,14 @@ public final class Project extends BaseObject {
   }
 
   public void setScriptIndex(int index) {
-    C.set(TBGlobals.CURRENT_SCRIPT_INDEX, index);
+    gadg().set(TBGlobals.CURRENT_SCRIPT_INDEX, index);
   }
 
   /**
    * Get the current script
    */
   public ScriptWrapper script() {
-    int index = C.vi(TBGlobals.CURRENT_SCRIPT_INDEX);
+    int index = gadg().vi(TBGlobals.CURRENT_SCRIPT_INDEX);
     int count = scriptCount();
     if (index < 0 || index >= count)
       return ScriptWrapper.DEFAULT_INSTANCE;

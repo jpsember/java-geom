@@ -1,10 +1,9 @@
 package testbed;
 
-import geom.GeomTools;
+import static geom.GeomTools.*;
 
 import javax.swing.*;
 import static js.base.Tools.*;
-import static testbed.TestBedTools.*;
 
 import java.awt.Component;
 import java.awt.GridBagLayout;
@@ -144,7 +143,7 @@ public class ControlPanel extends JPanel implements Globals, IScript {
   }
 
   public ControlPanel staticText(String text) {
-    addControl(new CtLabel(0, text).setId(gadgets().getAnonId()), null);
+    addControl(new CtLabel(0, text).setId(gadg().getAnonId()), null);
     return this;
   }
 
@@ -195,7 +194,7 @@ public class ControlPanel extends JPanel implements Globals, IScript {
       sb.append("<html><center>");
 
       List<String> a = split(s, ' ');
-      GeomTools.splitString(s, 50, a);
+      splitString(s, 50, a);
       for (int i = 0; i < a.size(); i++) {
         if (i > 0)
           sb.append("<br>");
@@ -227,7 +226,7 @@ public class ControlPanel extends JPanel implements Globals, IScript {
   }
 
   private boolean addControl(Gadget c, String toolTip) {
-    gadgets().add(c);
+    gadg().add(c);
 
     boolean shown = true;
     if (!mHideNextGadget) {

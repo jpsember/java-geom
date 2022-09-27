@@ -1,13 +1,12 @@
 package testbed;
 
+import geom.GeomApp;
+
 public final class TestBedTools {
 
   public static TestBed testBed() {
-    return TestBed.singleton();
+      return (TestBed) GeomApp.singleton();
   }
 
-  public static GadgetList gadgets() {
-    return testBed().gadgets();
-  }
 
 }

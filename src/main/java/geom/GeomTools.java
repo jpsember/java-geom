@@ -3,7 +3,6 @@ package geom;
 import java.util.List;
 
 import testbed.GadgetList;
-import testbed.TestBed;
 
 public final class GeomTools {
 
@@ -12,7 +11,7 @@ public final class GeomTools {
   }
 
   public static GadgetList gadg() {
-    return TestBed.singleton().gadgets();
+    return editor().gadgets();
   }
   
   public static ScriptManager scriptManager() {

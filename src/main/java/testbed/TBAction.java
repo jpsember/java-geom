@@ -4,6 +4,7 @@ import js.geometry.FPoint;
 
 import java.awt.event.*;
 import static js.base.Tools.*;
+import static geom.GeomTools.*;
 
 public class TBAction {
 
@@ -102,7 +103,7 @@ public class TBAction {
   }
 
   public void enable(boolean f) {
-    C.get(ctrlId).getComponent().setEnabled(f);
+    gadg().get(ctrlId).getComponent().setEnabled(f);
   }
 
   /**

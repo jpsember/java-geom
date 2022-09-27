@@ -4,6 +4,7 @@ import js.geometry.IRect;
 import js.graphics.AbstractScriptElement;
 import js.guiapp.UserOperation;
 import static testbed.TestBedTools.*;
+import static geom.GeomTools.*;
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -40,7 +41,7 @@ public class AlgorithmStepper implements Globals {
    */
   public boolean runAlgorithm(TestBedOperation alg) {
     loadTools();
-    GadgetList g = gadgets();
+    GadgetList g = gadg();
     mLastException = null;
     mRunning = g.exists(TBGlobals.TRACEENABLED) && g.vb(TBGlobals.TRACEENABLED);
     mDisabled = 0;

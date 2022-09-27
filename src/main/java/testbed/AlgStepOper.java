@@ -3,6 +3,7 @@ package testbed;
 import static js.base.Tools.*;
 
 import js.guiapp.UserOperation;
+import static geom.GeomTools.*;
 
 public class AlgStepOper extends UserOperation {
 
@@ -13,7 +14,7 @@ public class AlgStepOper extends UserOperation {
 
   @Override
   public void start() {
-    GadgetList C = TestBed.singleton().gadgets();
+    GadgetList C = gadg() ;
     
     C.seti(TBGlobals.TRACESTEP, mNextStep);
   }
@@ -21,7 +22,7 @@ public class AlgStepOper extends UserOperation {
   @Override
   public boolean shouldBeEnabled() {
     todo("clunky to have to access gadgets like this");
-    GadgetList C = TestBed.singleton().gadgets();
+    GadgetList C = gadg();
     int current = C.vi(TBGlobals.TRACESTEP);
     int target = 0;
     if (mDir != 0)
