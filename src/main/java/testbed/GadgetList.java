@@ -9,6 +9,21 @@ import static js.base.Tools.*;
 public final class GadgetList {
 
   /**
+   * Determine if Gadget events should be propagated to listeners (including the
+   * project or script record of gadget values). False while user interface is
+   * still being constructed
+   */
+  public boolean active() {
+    return mActive;
+  }
+
+  public void setActive(boolean state) {
+    mActive = state;
+  }
+  
+  
+  
+  /**
    * Enable each gadget in a list
    * 
    * @param idList
@@ -226,7 +241,7 @@ public final class GadgetList {
    * @return int
    */
   public int getAnonId() {
-    return sAnonIdBase++;
+    return mAnonIdBase++;
   }
 
   public void readGadgetValuesFromMap(JSMap map) {
@@ -270,7 +285,8 @@ public final class GadgetList {
   //  
 
   private SortedMap<Integer, Gadget> mGadgetMap = treeMap();
-  private int sAnonIdBase = TBGlobals.ID_ANON_START;
+  private int mAnonIdBase = TBGlobals.ID_ANON_START;
+  private boolean mActive;
 
   private static class HiddenGadget extends Gadget {
 

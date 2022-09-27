@@ -19,7 +19,7 @@ public abstract class TestBed extends GeomApp {
    * current operation
    */
   public void processAction(UserEvent a) {
-    if (!gadgetsActive())
+    if (!gadgets().active())
       return;
     try {
       // Don't propagate action if we aren't initialized and displaying a script

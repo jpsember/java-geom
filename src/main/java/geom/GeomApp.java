@@ -21,7 +21,6 @@ import testbed.GadgetList;
 import testbed.TBGlobals;
 
 import static geom.GeomTools.*;
-import static testbed.TestBedTools.*;
 
 /**
  * A GUIApp that supports editing of geometric objects
@@ -89,7 +88,7 @@ public abstract class GeomApp extends GUIApp {
       return;
     flushProject();
 
-    testBed().setGadgetsActive(false);
+    gadg().setActive(false);
 
     mCurrentProject = Project.DEFAULT_INSTANCE;
     removeUIElements();
@@ -121,10 +120,9 @@ public abstract class GeomApp extends GUIApp {
     discardMenuBar();
 
     // Now that gadgets have been built, restore their state
-    GadgetList C = gadg();
-    C.readGadgetValuesFromMap(projectState().widgetStateMap());
-
-    testBed().setGadgetsActive(true);
+    GadgetList g = gadg();
+    g.readGadgetValuesFromMap(projectState().widgetStateMap());
+    g.setActive(true);
 
     // Make sure the UI is updated to represent this project's state,
     // and to make sure the keyboard shortcuts work (something to do with focus?)
@@ -430,20 +428,7 @@ public abstract class GeomApp extends GUIApp {
     return mGadgetSet;
   }
 
-  /**
-   * Determine if Gadget events should be propagated to listeners (including the
-   * project or script record of gadget values). False while user interface is
-   * still being constructed
-   */
-  public boolean gadgetsActive() {
-    return sGadgetsActive;
-  }
-
-  public void setGadgetsActive(boolean state) {
-    sGadgetsActive = state;
-  }
 
   private GadgetList mGadgetSet;
-  private boolean sGadgetsActive;
-
+  
 }
