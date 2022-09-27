@@ -7,7 +7,7 @@ import java.awt.Component;
 import java.util.List;
 
 /**
- * Base class for control gadgets
+ * Abstract class representing a user interface element
  */
 abstract class Gadget {
 
@@ -36,21 +36,12 @@ abstract class Gadget {
   /**
    * Get Swing component associated with gadget
    */
-  public Component getComponent() {
+  public final Component getComponent() {
     return mComponent;
   }
 
-  public void setComponent(Component c) {
+  public final void setComponent(Component c) {
     mComponent = c;
-  }
-
-  /**
-   * Determine if this gadget has a value that needs to be serialized. The
-   * default implementation returns true if gadget has a value defined
-   */
-  public boolean serialized() {
-    Object v = readValue();
-    return v != null;
   }
 
   private int mId;

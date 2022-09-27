@@ -6,18 +6,14 @@ import javax.swing.*;
 class CtTextArea extends Gadget {
 
   @Override
-  public boolean serialized() {
-    return false;
-  }
-
-  @Override
-   public void writeValue(Object v) {
+  public void writeValue(Object v) {
     textArea.setText((String) v);
   }
 
   @Override
-   public Object readValue() {
-    return textArea.getText();
+  public Object readValue() {
+    // We don't want these fields being serialized, so don't return a value
+    return null;
   }
 
   /**

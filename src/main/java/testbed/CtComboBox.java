@@ -113,10 +113,6 @@ class CtComboBox extends Gadget implements ActionListener {
    */
   private static class CtComboBoxItem extends Gadget {
 
-    public boolean serialized() {
-      return false;
-    }
-
     /**
      * Get string describing object
      * 

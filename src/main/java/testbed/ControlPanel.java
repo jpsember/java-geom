@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Control panel class
  */
-public class ControlPanel extends JPanel implements Globals  {
+public class ControlPanel extends JPanel implements Globals {
 
   /**
    * Constructor
@@ -37,17 +37,6 @@ public class ControlPanel extends JPanel implements Globals  {
       add(mStackPanel.component(), gc);
     }
     mStack = arrayList();
-    mHideNextGadget = false;
-  }
-
-  public ControlPanel hideNextControl() {
-    return hideNextControl(true);
-  }
-
-  public ControlPanel hideNextControl(boolean f) {
-    if (f)
-      mHideNextGadget = true;
-    return this;
   }
 
   public void finishedGadgets() {
@@ -56,7 +45,7 @@ public class ControlPanel extends JPanel implements Globals  {
   }
 
   public ControlPanel checkBox(int id, String label, String toolTip, boolean defaultValue) {
-    hideNextControl(nullOrEmpty(label));
+    checkArgument(!nullOrEmpty(label), "label is empty");
     addControl(new CtCheckBox(id, label, defaultValue, false, parseToolTip(toolTip), null), null);
     return this;
   }
@@ -230,12 +219,9 @@ public class ControlPanel extends JPanel implements Globals  {
     gadg().add(c);
 
     boolean shown = true;
-    if (!mHideNextGadget) {
-      Component cp = c.getComponent();
-      if (cp != null)
-        mStackPanel.addItem(cp);
-    }
-    mHideNextGadget = false;
+    Component cp = c.getComponent();
+    if (cp != null)
+      mStackPanel.addItem(cp);
 
     if (toolTip != null) {
       JComponent j = (JComponent) c.getComponent();
@@ -257,6 +243,5 @@ public class ControlPanel extends JPanel implements Globals  {
 
   private List<Object> mStack;
   private StackPanel mStackPanel;
-  private boolean mHideNextGadget;
 
 }

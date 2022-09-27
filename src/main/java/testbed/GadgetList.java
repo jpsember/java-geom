@@ -6,6 +6,9 @@ import js.json.JSMap;
 
 import static js.base.Tools.*;
 
+/**
+ * A collection of Gadgets
+ */
 public final class GadgetList {
 
   /**
@@ -220,15 +223,16 @@ public final class GadgetList {
   }
 
   /**
-   * Get the next anonymous id
-   * 
-   * @return int
+   * Allocate another anonymous id
    */
   public int getAnonId() {
     return mAnonIdBase++;
   }
 
-  public void readGadgetValuesFromMap(JSMap map) {
+  /**
+   * Set gadget values according to a JSMap
+   */
+  public void writeGadgetValues(JSMap map) {
     for (Map.Entry<String, Object> entry : map.wrappedMap().entrySet()) {
       int id = Integer.parseInt(entry.getKey());
       if (!exists(id))
@@ -238,19 +242,15 @@ public final class GadgetList {
   }
 
   /**
-   * Get JSMap representing widget values
+   * Read gadget values into JSMap
    */
-  public JSMap constructGadgetValueMap() {
+  public JSMap readGadgetValues() {
     JSMap m = map();
     for (Map.Entry<Integer, Gadget> ent : mGadgetMap.entrySet()) {
       Gadget g = ent.getValue();
-      // If it's not a gadget we're interested in retaining the value of, skip.
-      if (!g.serialized())
-        continue;
       Object v = g.readValue();
-      if (v == null)
-        continue;
-      m.putUnsafe("" + ent.getKey(), v);
+      if (v != null)
+        m.putUnsafe("" + ent.getKey(), v);
     }
     return m;
   }

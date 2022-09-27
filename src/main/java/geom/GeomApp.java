@@ -121,7 +121,7 @@ public abstract class GeomApp extends GUIApp {
 
     // Now that gadgets have been built, restore their state
     GadgetList g = gadg();
-    g.readGadgetValuesFromMap(projectState().widgetStateMap());
+    g.writeGadgetValues(projectState().widgetStateMap());
     g.setActive(true);
 
     // Make sure the UI is updated to represent this project's state,
@@ -152,7 +152,7 @@ public abstract class GeomApp extends GUIApp {
   public final void flushProject() {
     if (!currentProject().defined())
       return;
-    projectState().widgetStateMap(gadgets().constructGadgetValueMap());
+    projectState().widgetStateMap(gadgets().readGadgetValues());
     currentProject().flush();
   }
 
