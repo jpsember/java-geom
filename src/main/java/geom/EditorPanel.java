@@ -124,7 +124,7 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     g.transform(mTransform.toAffineTransform());
 
     GeomApp.singleton().paintStart(g);
-    
+
     if (script.hasImage()) {
       g.drawImage(script.image(), 0, 0, null);
     } else {
@@ -227,7 +227,7 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     if (evt.isShiftDown())
       modifierFlags |= UserEvent.FLAG_SHIFT;
 
-    UserEvent event = new UserEvent(type, this, viewPoint, modifierFlags, 0);
+    UserEvent event = new UserEvent(type, this, viewPoint, modifierFlags, null);
 
     if (GUIApp.guiAppConfig().devMode()) {
       // Note: this doesn't display stack traces in Eclipse in a way that supports clicking

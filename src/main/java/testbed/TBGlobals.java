@@ -8,23 +8,21 @@ public interface TBGlobals {
   /**
    * Reserved gadget ids
    */
-  static final int
+  static final String
   
-      SCRIPT_NAME = 8800, //
-      MESSAGE = 8801, //
+      SCRIPT_NAME = "script_name", //
+      MESSAGE = "message", //
       
-      CURRENT_SCRIPT_INDEX = 8901,
+      CURRENT_SCRIPT_INDEX = "script_index",
 
-      APP_FRAME = 8904, EDITOR_ZOOM = 8903,
+      APP_FRAME = "app_frame", EDITOR_ZOOM = "ed_zoom",
 
-      OPER = 9002,
+      OPER = "oper",
 
-      CTRLSVISIBLE = 9062, AUXTABSET = 9067, AUXTAB_TRACE = 9070,
+      CTRLSVISIBLE = "ctrls_visible", AUXTABSET = "aux_tabset", AUXTAB_TRACE = "aux_trace",
 
-      TRACESTEP = 9092, TRACEPLOT = 9093, TRACEENABLED = 9098,
-
-      // start of ids to assign to anonymous widgets
-      ID_ANON_START = 9500 
+      TRACESTEP = "trace_step", TRACEPLOT = "trace_plot", TRACEENABLED = "trace_enabled";
+ 
       
       
 

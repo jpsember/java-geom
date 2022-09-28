@@ -69,19 +69,19 @@ class CtTextFieldNew extends Gadget implements ActionListener {
   }
 
   public void actionPerformed(ActionEvent e) {
-    String lbl = null;
-    if (jLabel != null)
-      lbl = jLabel.getText();
-
-    String sOrig = jButton.getText();
-    String s = (String) JOptionPane.showInputDialog(null, null, lbl, JOptionPane.PLAIN_MESSAGE, null, null,
-        sOrig);
-
-    //If a string was returned, say so.
-    if (s != null && !s.equals(sOrig)) {
-      jButton.setText(s);
-      testBed().processAction(UserEvent.widgetEvent(getId()));
-    }
+//    String lbl = null;
+//    if (jLabel != null)
+//      lbl = jLabel.getText();
+//
+//    String sOrig = jButton.getText();
+//    String s = (String) JOptionPane.showInputDialog(null, null, lbl, JOptionPane.PLAIN_MESSAGE, null, null,
+//        sOrig);
+//
+//    //If a string was returned, say so.
+//    if (s != null && !s.equals(sOrig)) {
+//      jButton.setText(s);
+//      testBed().processAction(UserEvent.widgetEvent(getId()));
+//    }
   }
 
   private boolean readOnly() {

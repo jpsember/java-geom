@@ -1,7 +1,10 @@
 package geom;
 
+import static js.base.Tools.*;
+
 import java.util.List;
 
+import js.widget.WidgetManager;
 import testbed.GadgetCollection;
 
 public final class GeomTools {
@@ -10,10 +13,21 @@ public final class GeomTools {
     return GeomApp.singleton();
   }
 
-  public static GadgetCollection gadg() {
+  public static WidgetManager gadg() {
     return editor().gadgets();
   }
-  
+
+  /**
+   * Temporary while transitioning to Widgets
+   */
+  public static boolean validGadgets() {
+    if (gadg() == null) {
+      alert("no gadgets defined");
+      return false;
+    }
+    return true;
+  }
+
   public static ScriptManager scriptManager() {
     return ScriptManager.singleton();
   }

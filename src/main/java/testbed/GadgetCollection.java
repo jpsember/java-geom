@@ -256,6 +256,6 @@ public final class GadgetCollection {
   }
 
   private SortedMap<Integer, Gadget> mGadgetMap = treeMap();
-  private int mAnonIdBase = TBGlobals.ID_ANON_START;
+  private int mAnonIdBase;// = TBGlobals.ID_ANON_START;
   private boolean mActive;
 }

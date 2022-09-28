@@ -4,6 +4,7 @@ import geom.GeomApp;
 import geom.ScriptManager;
 import js.guiapp.MenuBarWrapper;
 import js.guiapp.UserEvent;
+import js.widget.WidgetManager;
 
 import java.awt.*;
 import javax.swing.*;
@@ -45,30 +46,35 @@ public abstract class TestBed extends GeomApp {
   }
 
   /**
-   * Add 'global' controls: available to all operations Default implementation
-   * does nothing.
+   * Add 'global' controls: available to all operations
+   * 
+   * Default implementation does nothing.
    */
-  public void addControls(GadgetPanel c) {
+  public void addControls(WidgetManager c) {
   }
 
-  private void addMainControls(GadgetPanel c) {
-    c.checkBox(TBGlobals.CTRLSVISIBLE, null, null, true);
+  private void addMainControls(WidgetManager c) {
+//    c.addToggleButton( TBGlobals.CTRLSVISIBLE, "null, null, true);
 
-    c.openTabSet(TBGlobals.AUXTABSET);
+    c.withTabs(TBGlobals.AUXTABSET);
     {
-      c.openTab(TBGlobals.AUXTAB_TRACE, "Trace");
-      c.checkBox(TBGlobals.TRACEENABLED, "Enabled", "if true, enables algorithm tracing", true);
-      c.checkBox(TBGlobals.TRACEPLOT, "Messages", "plots trace text", true);
-      c.intSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
-      c.closeTab();
+      c.tabTitle(TBGlobals.AUXTAB_TRACE);
+      c.tooltip("if true, enables algorithm tracing");
+      c.addToggleButton( TBGlobals.TRACEENABLED, "Enabled" ); //, true);
+      c.tooltip( "plots trace text");
+      c.addToggleButton(TBGlobals.TRACEPLOT, "Messages"); //, true);
+      c.min(0).max(500).stepSize(1).defaultVal(0).addSlider(TBGlobals.TRACESTEP);
+      
+      //c.intSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
+      c.close();
+//      c.closeTab();
     }
-    c.closeTabSet();
+    todo("do we need to close the tab set somehow?");
+//    c.closeTabSet();
   }
 
   @Override
   public void populateFrame(JPanel parentPanel) {
-    todo("!initGadgets within GUIApp perhaps?");
-    initGadgets();
     sOperList = arrayList();
 
     constructEditorPanel();
@@ -78,14 +84,18 @@ public abstract class TestBed extends GeomApp {
     parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
     parentPanel.add(infoPanel(), BorderLayout.SOUTH);
 
-    GadgetPanel c = controlPanel();
-    c.composeStart();
+    WidgetManager c = gadg();
+
+    c.setPendingContainer(controlPanel());
+    c.open();
+
     addMainControls(c);
     addOperations();
     addControls(c);
     addOperCtrls(c);
-    c.composeEnd();
-    parentPanel.add(c, BorderLayout.LINE_END);
+    c.close();
+
+    parentPanel.add(controlPanel(), BorderLayout.LINE_END);
   }
 
   /**
@@ -98,13 +108,17 @@ public abstract class TestBed extends GeomApp {
     JOptionPane.showMessageDialog(null, msg, "Error", JOptionPane.ERROR_MESSAGE);
   }
 
-  private static void addOperCtrls(GadgetPanel c) {
+  private static void addOperCtrls(WidgetManager c) {
     if (sOperList.size() > 0) {
-      c.openTabSet(TBGlobals.OPER);
+      c.withTabs(TBGlobals.OPER)
+      ;
       //todo("pass in GadgetList to addControls() method");
-      for (TestBedOperation oper : sOperList)
+      for (TestBedOperation oper : sOperList)  
         oper.addControls();
-      c.closeTabSet();
+        
+      alert("is close() for tab set necessary?");
+      if (false)
+      c.close(); //c.closeTabSet();
     } else {
       c.open();
       c.close();
@@ -181,12 +195,13 @@ public abstract class TestBed extends GeomApp {
   //    g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
   //  }
 
-  public GadgetPanel controlPanel() {
-    if (mMainControlPanel == null)
-      mMainControlPanel = new GadgetPanel();
+  public JPanel controlPanel() {
+    if (mMainControlPanel == null) {
+      mMainControlPanel = new JPanel();
+    }
     return mMainControlPanel;
   }
 
-  private GadgetPanel mMainControlPanel;
+  private JPanel mMainControlPanel;
 
 }

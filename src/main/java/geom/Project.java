@@ -193,9 +193,9 @@ public final class Project extends BaseObject {
   // ------------------------------------------------------------------
 
   public int scriptIndex() {
-    if (gadg() == null)
-      die("gadgets is null!");
-    int index = gadg().vi(TBGlobals.CURRENT_SCRIPT_INDEX);
+    int index = 0;
+    if (validGadgets())  
+    index = gadg().vi(TBGlobals.CURRENT_SCRIPT_INDEX);
     int count = scriptCount();
     if (index >= count) {
       pr("scriptIndex", index, "exceeds count", count, "!!!!");
@@ -210,6 +210,7 @@ public final class Project extends BaseObject {
   }
 
   public void setScriptIndex(int index) {
+    if (validGadgets())
     gadg().set(TBGlobals.CURRENT_SCRIPT_INDEX, index);
   }
 
@@ -217,7 +218,8 @@ public final class Project extends BaseObject {
    * Get the current script
    */
   public ScriptWrapper script() {
-    int index = gadg().vi(TBGlobals.CURRENT_SCRIPT_INDEX);
+    int index = scriptIndex();
+    //    int index = gadg().vi(TBGlobals.CURRENT_SCRIPT_INDEX);
     int count = scriptCount();
     if (index < 0 || index >= count)
       return ScriptWrapper.DEFAULT_INSTANCE;

@@ -28,7 +28,6 @@ import javax.swing.BorderFactory;
 
 import static js.base.Tools.*;
 
-import js.widget.SwingWidgetManager;
 import js.widget.Widget;
 import js.widget.WidgetManager;
 import testbed.GadgetPanel;
@@ -38,45 +37,30 @@ import static geom.GeomTools.*;
 
 public class InfoPanel extends GadgetPanel {
 
-  private static final boolean GADGETS = false && alert("using gadgets, not widgets");
-
   public void opening(Project project) {
     if (!todo("!restore widget state map from project somehow")) {
       // mWidgetManager.setStateMap(project.widgetStateMap());
-      mWidgetManager.restoreWidgetValues();
+      // mWidgetManager.restoreWidgetValues();
     }
   }
 
   public InfoPanel() {
-    if (!GADGETS)
-      setBorder(BorderFactory.createRaisedBevelBorder());
 
-    if (GADGETS) {
-      composeStart();
+    setBorder(BorderFactory.createRaisedBevelBorder());
 
-      todo("make these non-persistent");
+    WidgetManager m = gadg(); //new WidgetManager();
+    // Use the InfoPanel as the outermost container
+    m.setPendingContainer(this);
 
-      textField(TBGlobals.SCRIPT_NAME, "File", "Current script name", 80, false, "script name");
-      textField(TBGlobals.MESSAGE, null, null, 80, false, "message");
-      composeEnd();
-
-    } else {
-
-      WidgetManager m = new SwingWidgetManager();
-      // Use the InfoPanel as the outermost container
-      m.setPendingContainer(this);
-
-      m.columns(".x").open();
-      {
-        m.addLabel("Script:");
-        mFilePath = m.monospaced().large().addText();
-        mMessageField = m.skip().monospaced().addText();
-      }
-      m.addVertGrow();
-      m.close();
-      m.setPrepared(true);
-      mWidgetManager = m;
+    m.columns(".x").open();
+    {
+      m.addLabel("Script:");
+       m.monospaced().large().addText();
+       m.skip().monospaced().addText();
     }
+    m.addVertGrow();
+    m.close();
+   // m.setPrepared(true);
   }
 
   public void refresh() {
@@ -94,10 +78,7 @@ public class InfoPanel extends GadgetPanel {
       sb.append(nameOnly);
       scriptDisplay = sb.toString();
     }
-    if (GADGETS)
-      gadg().setValue(TBGlobals.SCRIPT_NAME, scriptDisplay);
-    else
-      mFilePath.setText(scriptDisplay);
+    gadg().setValue(TBGlobals.SCRIPT_NAME, scriptDisplay);
   }
 
   public void setMessage(String text) {
@@ -109,14 +90,13 @@ public class InfoPanel extends GadgetPanel {
       if (System.currentTimeMillis() - mErrorTime < 20000)
         return;
     }
-    if (GADGETS)
-      gadg().setValue(TBGlobals.MESSAGE, text);
-    else
-      mMessageField.setText(text);
+
+    gadg().setValue(TBGlobals.MESSAGE, text);
+
   }
 
-  private WidgetManager mWidgetManager;
+//  private WidgetManager mWidgetManager;
   private long mErrorTime;
-  private Widget mFilePath;
-  private Widget mMessageField;
+//  private Widget mFilePath;
+//  private Widget mMessageField;
 }

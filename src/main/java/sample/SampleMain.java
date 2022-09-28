@@ -2,6 +2,7 @@ package sample;
 
 import js.app.App;
 import js.json.JSMap;
+import js.widget.WidgetManager;
 import testbed.*;
 
 import static js.base.Tools.*;
@@ -32,9 +33,9 @@ public class SampleMain extends TestBed {
   }
 
   @Override
-  public void addControls(GadgetPanel c) {
+  public void addControls(WidgetManager c) {
     c.open();
-    c.staticText("This is where app-wide controls get added");
+    c.addLabel("This is where app-wide controls get added");
     c.close();
   }
 

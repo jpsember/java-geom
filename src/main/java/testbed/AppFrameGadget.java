@@ -3,8 +3,9 @@ package testbed;
 import geom.GeomApp;
 import js.geometry.IRect;
 import js.json.JSList;
+import js.widget.Widget;
 
-public class AppFrameGadget extends Gadget {
+public class AppFrameGadget extends Widget {
 
   @Override
   public JSList readValue() {

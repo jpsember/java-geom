@@ -16,6 +16,7 @@ import js.guiapp.RecentFiles;
 import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
+import js.widget.WidgetManager;
 import testbed.AppFrameGadget;
 import testbed.GadgetCollection;
 import testbed.TBGlobals;
@@ -87,8 +88,8 @@ public abstract class GeomApp extends GUIApp {
     if (currentProject().isDefault())
       return;
     flushProject();
-
-    gadg().setActive(false);
+    if (validGadgets())
+      gadg().setActive(false);
 
     mCurrentProject = Project.DEFAULT_INSTANCE;
     removeUIElements();
@@ -120,9 +121,11 @@ public abstract class GeomApp extends GUIApp {
     discardMenuBar();
 
     // Now that gadgets have been built, restore their state
-    GadgetCollection g = gadg();
-    g.writeGadgetValues(projectState().widgetStateMap());
-    g.setActive(true);
+    if (validGadgets()) {
+      WidgetManager g = gadg();
+      g.writeGadgetValues(projectState().widgetStateMap());
+      g.setActive(true);
+    }
 
     // Make sure the UI is updated to represent this project's state,
     // and to make sure the keyboard shortcuts work (something to do with focus?)
@@ -152,7 +155,8 @@ public abstract class GeomApp extends GUIApp {
   public final void flushProject() {
     if (!currentProject().defined())
       return;
-    projectState().widgetStateMap(gadgets().readGadgetValues());
+    if (validGadgets())
+      projectState().widgetStateMap(gadgets().readGadgetValues());
     currentProject().flush();
   }
 
@@ -408,24 +412,16 @@ public abstract class GeomApp extends GUIApp {
 
   private int mTaskTicker;
 
-  // ------------------------------------------------------------------
-  // Gadgets
-  // ------------------------------------------------------------------
 
+  @Override
   public void initGadgets() {
-    mGadgetSet = new GadgetCollection();
-    GadgetCollection g = gadgets();
+    super.initGadgets();
+    WidgetManager g = gadgets();
 
     // Add gadget for persisting frame bounds
     g.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
     // Add gadget for persisting zoom factor
     g.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
     g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
-  }
-
-  public GadgetCollection gadgets() {
-    return mGadgetSet;
-  }
-
-  private GadgetCollection mGadgetSet;
+  } 
 }

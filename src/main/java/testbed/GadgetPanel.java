@@ -139,7 +139,7 @@ public class GadgetPanel extends JPanel {
   }
 
   public GadgetPanel staticText(String text) {
-    addControl(new CtLabel(0, text).setId(gadg().getAnonId()), null);
+   // addControl(new CtLabel(0, text).setId(gadg().getAnonId()), null);
     return this;
   }
 
@@ -214,22 +214,23 @@ public class GadgetPanel extends JPanel {
   }
 
   private boolean addControl(Gadget c, String toolTip) {
-    gadg().add(c);
-
-    boolean shown = true;
-    JComponent cp = c.getComponent();
-    if (cp != null)
-      mStackPanel.addItem(cp);
-
-    if (toolTip != null) {
-      JComponent j = (JComponent) c.getComponent();
-      if (j == null) {
-        alert("JComponent is null for tooltip, c=", c);
-      } else
-        j.setToolTipText(parseToolTip(toolTip));
-    }
-
-    return shown;
+    throw notSupported();
+//    gadg().add(c);
+//
+//    boolean shown = true;
+//    JComponent cp = c.getComponent();
+//    if (cp != null)
+//      mStackPanel.addItem(cp);
+//
+//    if (toolTip != null) {
+//      JComponent j = (JComponent) c.getComponent();
+//      if (j == null) {
+//        alert("JComponent is null for tooltip, c=", c);
+//      } else
+//        j.setToolTipText(parseToolTip(toolTip));
+//    }
+//
+//    return shown;
   }
 
   private void addSpinner(int id, String label, double min, double max, double value, double step,

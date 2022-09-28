@@ -30,7 +30,7 @@ class GadgetAction extends MyAction {
   }
 
   public void actionPerformed(ActionEvent e) {
-    testBed().processAction(UserEvent.widgetEvent(id()));
+   // testBed().processAction(UserEvent.widgetEvent(id()));
   }
 
 }

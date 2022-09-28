@@ -16,7 +16,7 @@ class TabbedPaneGadget extends Gadget implements ChangeListener {
   // ChangeListener implementation
   @Override
   public final void stateChanged(ChangeEvent changeEvent) {
-    testBed().processAction(UserEvent.widgetEvent(getId()));
+  //  testBed().processAction(UserEvent.widgetEvent(getId()));
   }
 
   /**
