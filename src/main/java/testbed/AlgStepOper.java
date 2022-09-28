@@ -17,7 +17,6 @@ public class AlgStepOper extends UserOperation {
   @Override
   public void start() {
     WidgetManager C = gadg() ;
-    
     C.seti(TBGlobals.TRACESTEP, mNextStep);
   }
 

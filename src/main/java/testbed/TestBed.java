@@ -19,14 +19,17 @@ public abstract class TestBed extends GeomApp {
    * Process actions for main controls. Default implementation passes action to
    * current operation
    */
-  public void processAction(UserEvent a) {
+  @Override
+  public void userEventManagerListener(UserEvent event) {
     if (!gadgets().active())
       return;
     try {
       // Don't propagate action if we aren't initialized and displaying a script
       todo("more succinct way to check if script defined?");
+      todo("Rename processAction -> processEvent");
       if (ScriptManager.singleton().currentScript().defined())
-        oper().processAction(a);
+        oper().processAction(event);
+      super.userEventManagerListener(event);
     } catch (TBError e) {
       showError(e.toString());
     }
@@ -58,16 +61,23 @@ public abstract class TestBed extends GeomApp {
     c.openTabSet(TBGlobals.AUXTABSET);
     {
       c.openTab(TBGlobals.AUXTAB_TRACE);
-      c.tooltip("if true, enables algorithm tracing");
-      c.addToggleButton(TBGlobals.TRACEENABLED, "Enabled", true);
-      c.tooltip("plots trace text");
-      c.addToggleButton(TBGlobals.TRACEPLOT, "Messages", true);
-   
-      if (!todo("adding label is a problem"))
-        c.addLabel("Step");
-      c.tooltip("Highlight individual steps in algorithm");
-      todo("alg stepper is not propagating events");
-      c.min(0).max(500).stepSize(1).defaultVal(0).addSlider(TBGlobals.TRACESTEP);
+      {
+        c.tooltip("if true, enables algorithm tracing");
+        c.addToggleButton(TBGlobals.TRACEENABLED, "Enabled", true);
+        c.tooltip("plots trace text");
+        c.addToggleButton(TBGlobals.TRACEPLOT, "Messages", true);
+
+        {
+          c.columns(".x").open("multicolumn subsection");
+
+          c.addLabel("Step:") //
+              .tooltip("Highlight individual steps in algorithm") //
+              .min(0).max(500).stepSize(1).defaultVal(0).addSlider(TBGlobals.TRACESTEP);
+          todo("alg stepper is not propagating events");
+
+          c.close("multicolumn subsection");
+        }
+      }
       c.closeTab();
     }
 
