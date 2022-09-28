@@ -55,9 +55,11 @@ public abstract class TestBed extends GeomApp {
 
   private void addMainControls(WidgetManager c) {
 
-    c.withTabs(TBGlobals.AUXTABSET);
+    c.openTabSet
+     (TBGlobals.AUXTABSET);
     {
-      c.tabTitle(TBGlobals.AUXTAB_TRACE);
+      c.openTab(
+       TBGlobals.AUXTAB_TRACE);
       c.tooltip("if true, enables algorithm tracing");
       c.addToggleButton(TBGlobals.TRACEENABLED, "Enabled", true);
       c.tooltip("plots trace text");
@@ -66,16 +68,16 @@ public abstract class TestBed extends GeomApp {
 
       //c.intSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
 
-      // we don't need to close individual tabs, since
-      // each tab is a single component and didn't require a separate grid to be opened
+      c.closeTab();
     }
 
     if (alert("another tab")) {
-      c.tabTitle("zowie");
+      c.openTab("zowie");
       c.tooltip("booyaw");
       c.addToggleButton("zowie_checkbox", "Jeff", false);
+      c.closeTab();
     }
-
+    c.closeTabSet();
   }
 
   @Override
@@ -116,9 +118,10 @@ public abstract class TestBed extends GeomApp {
 
   private static void addOperCtrls(WidgetManager c) {
     if (sOperList.size() > 0) {
-      c.withTabs(TBGlobals.OPER);
-      for (TestBedOperation oper : sOperList)
+      c.openTabSet(TBGlobals.OPER);
+      for (TestBedOperation oper : sOperList)  
         oper.addControls(c);
+      c.closeTabSet();
     } else {
       c.open("zero opers");
       c.close("zero opers");

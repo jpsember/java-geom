@@ -2,14 +2,10 @@ package testbed;
 
 import javax.swing.*;
 
-import js.guiapp.UserEvent;
-
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import static js.base.Tools.*;
-import static geom.GeomTools.*;
-import static testbed.TestBedTools.*;
 
 /**
  * ComboBox gadget.
@@ -81,7 +77,8 @@ class CtComboBox extends Gadget implements ActionListener {
   // ------------------------------------------------------
   public void actionPerformed(ActionEvent e) {
     int selId = cbox.getSelectedId();
-   // testBed().processAction(UserEvent.widgetEvent(selId));
+    todo("actionPerformed not finished;",selId);
+    // testBed().processAction(UserEvent.widgetEvent(selId));
   }
 
   /**
@@ -136,6 +133,7 @@ class CtComboBox extends Gadget implements ActionListener {
 
     public void setButton(AbstractButton b) {
       this.button = b;
+      todo("button unused:",button);
     }
 
   }
@@ -211,7 +209,9 @@ class CtComboBox extends Gadget implements ActionListener {
     public myRadioSet(CtComboBox cbox, String toolTip) {
       super(cbox);
       this.cbox = cbox;
-      this.bgroup = new ButtonGroup();
+      todo("cbox not used:",this.cbox);
+      todo("listener not used:",listener);
+       this.bgroup = new ButtonGroup();
 
       this.selectedId = -1;
       this.toolTip = toolTip;

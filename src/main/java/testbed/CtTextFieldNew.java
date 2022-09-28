@@ -2,10 +2,7 @@ package testbed;
 
 import javax.swing.*;
 
-import js.guiapp.UserEvent;
-
 import java.awt.event.*;
-import static testbed.TestBedTools.*;
 
 /**
  * Text field gadget

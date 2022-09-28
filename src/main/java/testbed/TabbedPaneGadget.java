@@ -6,10 +6,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import js.guiapp.UserEvent;
-
 import static js.base.Tools.*;
-import static testbed.TestBedTools.*;
 
 class TabbedPaneGadget extends Gadget implements ChangeListener {
 

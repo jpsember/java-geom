@@ -5,7 +5,6 @@ import static js.base.Tools.*;
 import java.util.List;
 
 import js.widget.WidgetManager;
-import testbed.GadgetCollection;
 
 public final class GeomTools {
 

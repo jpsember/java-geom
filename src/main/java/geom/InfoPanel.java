@@ -28,7 +28,6 @@ import javax.swing.BorderFactory;
 
 import static js.base.Tools.*;
 
-import js.widget.Widget;
 import js.widget.WidgetManager;
 import testbed.GadgetPanel;
 import testbed.TBGlobals;

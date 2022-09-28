@@ -7,7 +7,6 @@ import static js.base.Tools.*;
 import java.awt.GridBagLayout;
 import java.util.List;
 
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 /**

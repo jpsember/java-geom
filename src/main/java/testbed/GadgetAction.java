@@ -1,12 +1,9 @@
 package testbed;
 
-import static testbed.TestBedTools.*;
-
 import java.awt.event.ActionEvent;
 
 import javax.swing.KeyStroke;
 
-import js.guiapp.UserEvent;
 
 class GadgetAction extends MyAction {
 

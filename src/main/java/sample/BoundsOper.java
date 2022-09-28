@@ -18,7 +18,6 @@ import js.graphics.ScriptElement;
 import js.guiapp.UserEvent;
 import js.widget.WidgetManager;
 import testbed.*;
-import static testbed.TestBedTools.*;
 
 public class BoundsOper implements TestBedOperation, Globals {
 
@@ -27,45 +26,43 @@ public class BoundsOper implements TestBedOperation, Globals {
 
   public void addControls(WidgetManager c) {
 
-    c.tabTitle("Bounds");
-    c.open("Bounds tab");
+    c.openTab("Bounds");
     c.addLabel("Calculate minimum bounding box of objects");
 
-    
     c.open("random params");
     c.max(100).addSlider(SEED);
     c.max(100).defaultVal(12).addSlider(COUNT);
     c.close("random params");
-//    {
-//      c.open();
-//      c.intSlider(SEED, "Seed", "Random number generator seed", 0, 100, 0, 1);
-//      c.newColumn();
-//      c.intSpinner(COUNT, "Count", "Number to generate", 0, 100, 12, 1);
-//      c.close();
-//    }
-//    c.button(9999, "Hello", "Sample button") //
-//        .doubleSlider(9988, "DoubleSlid", "Double slider", 5.2, 10.2, 7.5, 0.1) //
-//        .doubleSpinner(9989, "DblSpin", "Double spinner", 5.2, 10.2, 7.5, 0.1) //
-//        .textField(9970, "field", "hint", 12, true, "hello") //
-//        .textArea(9971, "area", "text area", true, "hello");
-//
-//    if (false) { // haven't added full support for these yet
-//      c.openComboBox(7800, "Combo Box", "This is a combo box", true) //
-//       .choice(7805, "choice A") //
-//       .choice(7806, "choice B") //
-//      .choice(7807, "choice C") //
-//       .closeComboBox();
-//    }
+    //    {
+    //      c.open();
+    //      c.intSlider(SEED, "Seed", "Random number generator seed", 0, 100, 0, 1);
+    //      c.newColumn();
+    //      c.intSpinner(COUNT, "Count", "Number to generate", 0, 100, 12, 1);
+    //      c.close();
+    //    }
+    //    c.button(9999, "Hello", "Sample button") //
+    //        .doubleSlider(9988, "DoubleSlid", "Double slider", 5.2, 10.2, 7.5, 0.1) //
+    //        .doubleSpinner(9989, "DblSpin", "Double spinner", 5.2, 10.2, 7.5, 0.1) //
+    //        .textField(9970, "field", "hint", 12, true, "hello") //
+    //        .textArea(9971, "area", "text area", true, "hello");
+    //
+    //    if (false) { // haven't added full support for these yet
+    //      c.openComboBox(7800, "Combo Box", "This is a combo box", true) //
+    //       .choice(7805, "choice A") //
+    //       .choice(7806, "choice B") //
+    //      .choice(7807, "choice C") //
+    //       .closeComboBox();
+    //    }
 
-    c.close("Bounds tab");
+    //c.close("Bounds tab");
+    c.closeTab();
   }
 
   public void processAction(UserEvent event) {
-    WidgetManager g = gadg ();
     pr("action:", event);
-    
+
     todo("there ought to be a convenience method for this");
-    if (event.getCode() == UserEvent. CODE_WIDGET) {
+    if (event.getCode() == UserEvent.CODE_WIDGET) {
       generate();
     }
   }
@@ -115,8 +112,8 @@ public class BoundsOper implements TestBedOperation, Globals {
   }
 
   private void generate() {
-    WidgetManager g = gadg ();
-     int seed = g.vi(SEED);
+    WidgetManager g = gadg();
+    int seed = g.vi(SEED);
     Random r = new Random(seed + 1);
     int c = g.vi(COUNT);
     List<EditorElement> elemList = arrayList();
