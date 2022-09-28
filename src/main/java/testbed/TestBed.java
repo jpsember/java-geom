@@ -54,27 +54,28 @@ public abstract class TestBed extends GeomApp {
   }
 
   private void addMainControls(WidgetManager c) {
-//    c.addToggleButton( TBGlobals.CTRLSVISIBLE, "null, null, true);
-    
+
     c.withTabs(TBGlobals.AUXTABSET);
     {
       c.tabTitle(TBGlobals.AUXTAB_TRACE);
       c.tooltip("if true, enables algorithm tracing");
-      c.addToggleButton( TBGlobals.TRACEENABLED, "Enabled" ); //, true);
-      c.tooltip( "plots trace text");
-      c.addToggleButton(TBGlobals.TRACEPLOT, "Messages"); //, true);
+      c.addToggleButton(TBGlobals.TRACEENABLED, "Enabled", true);
+      c.tooltip("plots trace text");
+      c.addToggleButton(TBGlobals.TRACEPLOT, "Messages", true);
       c.min(0).max(500).stepSize(1).defaultVal(0).addSlider(TBGlobals.TRACESTEP);
-      
+
       //c.intSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
-      
+
       // we don't need to close individual tabs, since
       // each tab is a single component and didn't require a separate grid to be opened
-      
-      //c.close("TRACE tab");
-//      c.closeTab();
     }
-    todo("do we need to close the tab set somehow?");
-//    c.closeTabSet();
+
+    if (alert("another tab")) {
+      c.tabTitle("zowie");
+      c.tooltip("booyaw");
+      c.addToggleButton("zowie_checkbox", "Jeff", false);
+    }
+
   }
 
   @Override
@@ -82,6 +83,7 @@ public abstract class TestBed extends GeomApp {
     sOperList = arrayList();
 
     constructEditorPanel();
+    constructControlPanel();
     constructInfoPanel();
 
     parentPanel.setLayout(new BorderLayout());
@@ -114,15 +116,9 @@ public abstract class TestBed extends GeomApp {
 
   private static void addOperCtrls(WidgetManager c) {
     if (sOperList.size() > 0) {
-      c.withTabs(TBGlobals.OPER)
-      ;
-      //todo("pass in GadgetList to addControls() method");
-      for (TestBedOperation oper : sOperList)  
+      c.withTabs(TBGlobals.OPER);
+      for (TestBedOperation oper : sOperList)
         oper.addControls();
-        
-      alert("is close() for tab set necessary?");
-      if (false)
-      c.close("closeTabSet??"); //c.closeTabSet();
     } else {
       c.open("zero opers");
       c.close("zero opers");
@@ -182,28 +178,12 @@ public abstract class TestBed extends GeomApp {
 
   private static List<TestBedOperation> sOperList;
 
-  // ------------------------------------------------------------------
-  // Gadgets
-  // ------------------------------------------------------------------
-  //
-  //  @Override
-  //  public void initGadgets() {
-  //    super.initGadgets();
-  //
-  //    GadgetList g = gadgets();
-  //
-  //    // Add gadget for persisting frame bounds
-  //    g.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
-  //    // Add gadget for persisting zoom factor
-  //    g.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
-  //    g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
-  //  }
-
   public JPanel controlPanel() {
-    if (mMainControlPanel == null) {
-      mMainControlPanel = new JPanel();
-    }
     return mMainControlPanel;
+  }
+
+  private void constructControlPanel() {
+    mMainControlPanel = new JPanel();
   }
 
   private JPanel mMainControlPanel;
