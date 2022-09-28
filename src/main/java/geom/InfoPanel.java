@@ -58,8 +58,8 @@ public class InfoPanel extends GadgetPanel {
     //    if (!alert("disabled for moment")) //
     {
       m.addLabel("Script:");
-      m.monospaced().large().addText();
-      m.skip().monospaced().addText();
+      m.monospaced().large().addText(TBGlobals.SCRIPT_NAME);
+      m.skip().monospaced().addText(TBGlobals.MESSAGE);
     }
     m.addVertGrow();
     m.close("InfoPanel");
@@ -94,7 +94,6 @@ public class InfoPanel extends GadgetPanel {
     }
 
     gadg().setValue(TBGlobals.MESSAGE, text);
-
   }
 
   //  private WidgetManager mWidgetManager;
