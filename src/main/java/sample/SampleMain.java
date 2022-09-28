@@ -34,9 +34,9 @@ public class SampleMain extends TestBed {
 
   @Override
   public void addControls(WidgetManager c) {
-    c.open();
+    c.open("SampleMain controls");
     c.addLabel("This is where app-wide controls get added");
-    c.close();
+    c.close("SampleMain controls");
   }
 
 }

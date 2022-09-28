@@ -48,19 +48,21 @@ public class InfoPanel extends GadgetPanel {
 
     setBorder(BorderFactory.createRaisedBevelBorder());
 
-    WidgetManager m = gadg(); //new WidgetManager();
-    // Use the InfoPanel as the outermost container
+    WidgetManager m = gadg();
+
+    // Use the InfoPanel as the root container
     m.setPendingContainer(this);
 
-    m.columns(".x").open();
+    m.columns(".x");
+    m.open("InfoPanel");
+    //    if (!alert("disabled for moment")) //
     {
       m.addLabel("Script:");
-       m.monospaced().large().addText();
-       m.skip().monospaced().addText();
+      m.monospaced().large().addText();
+      m.skip().monospaced().addText();
     }
     m.addVertGrow();
-    m.close();
-   // m.setPrepared(true);
+    m.close("InfoPanel");
   }
 
   public void refresh() {
@@ -95,8 +97,8 @@ public class InfoPanel extends GadgetPanel {
 
   }
 
-//  private WidgetManager mWidgetManager;
+  //  private WidgetManager mWidgetManager;
   private long mErrorTime;
-//  private Widget mFilePath;
-//  private Widget mMessageField;
+  //  private Widget mFilePath;
+  //  private Widget mMessageField;
 }

@@ -55,7 +55,7 @@ public abstract class TestBed extends GeomApp {
 
   private void addMainControls(WidgetManager c) {
 //    c.addToggleButton( TBGlobals.CTRLSVISIBLE, "null, null, true);
-
+    
     c.withTabs(TBGlobals.AUXTABSET);
     {
       c.tabTitle(TBGlobals.AUXTAB_TRACE);
@@ -66,7 +66,11 @@ public abstract class TestBed extends GeomApp {
       c.min(0).max(500).stepSize(1).defaultVal(0).addSlider(TBGlobals.TRACESTEP);
       
       //c.intSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
-      c.close();
+      
+      // we don't need to close individual tabs, since
+      // each tab is a single component and didn't require a separate grid to be opened
+      
+      //c.close("TRACE tab");
 //      c.closeTab();
     }
     todo("do we need to close the tab set somehow?");
@@ -87,13 +91,13 @@ public abstract class TestBed extends GeomApp {
     WidgetManager c = gadg();
 
     c.setPendingContainer(controlPanel());
-    c.open();
+    c.open("ControlPanel");
 
     addMainControls(c);
     addOperations();
     addControls(c);
     addOperCtrls(c);
-    c.close();
+    c.close("ControlPanel");
 
     parentPanel.add(controlPanel(), BorderLayout.LINE_END);
   }
@@ -118,10 +122,10 @@ public abstract class TestBed extends GeomApp {
         
       alert("is close() for tab set necessary?");
       if (false)
-      c.close(); //c.closeTabSet();
+      c.close("closeTabSet??"); //c.closeTabSet();
     } else {
-      c.open();
-      c.close();
+      c.open("zero opers");
+      c.close("zero opers");
     }
   }
 

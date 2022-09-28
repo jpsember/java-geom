@@ -32,7 +32,7 @@ public class BoundsOper implements TestBedOperation, Globals {
     //GadgetPanel c = testBed().controlPanel();
 
     c.tabTitle("Bounds");
-    c.open();
+    c.open("Bounds tab");
     c.addLabel("Calculate minimum bounding box of objects");
 
 //    {
@@ -56,7 +56,7 @@ public class BoundsOper implements TestBedOperation, Globals {
 //       .closeComboBox();
 //    }
 
-    c.close();
+    c.close("Bounds tab");
   }
 
   public void processAction(UserEvent event) {
