@@ -118,7 +118,7 @@ public abstract class TestBed extends GeomApp {
     if (sOperList.size() > 0) {
       c.withTabs(TBGlobals.OPER);
       for (TestBedOperation oper : sOperList)
-        oper.addControls();
+        oper.addControls(c);
     } else {
       c.open("zero opers");
       c.close("zero opers");

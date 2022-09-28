@@ -18,7 +18,6 @@ import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
 import js.widget.WidgetManager;
 import testbed.AppFrameGadget;
-import testbed.GadgetCollection;
 import testbed.TBGlobals;
 
 import static geom.GeomTools.*;

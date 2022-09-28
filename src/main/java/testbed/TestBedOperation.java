@@ -1,6 +1,7 @@
 package testbed;
 
 import js.guiapp.UserEvent;
+import js.widget.WidgetManager;
 
 /**
  * Interface for TestBed operations
@@ -15,8 +16,9 @@ public interface TestBedOperation extends Globals {
    *    :
    *   C.sCloseTab();
    * </pre>
+   * @param widgets TODO
    */
-  public void addControls();
+  public void addControls(WidgetManager widgets);
 
   /**
    * Process an action

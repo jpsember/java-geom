@@ -25,16 +25,17 @@ public class BoundsOper implements TestBedOperation, Globals {
   private static final String SEED = "bo_seed";
   private static final String COUNT = "bo_count";
 
-  public void addControls() {
-
-    WidgetManager c = gadg();
-    
-    //GadgetPanel c = testBed().controlPanel();
+  public void addControls(WidgetManager c) {
 
     c.tabTitle("Bounds");
     c.open("Bounds tab");
     c.addLabel("Calculate minimum bounding box of objects");
 
+    
+    c.open("random params");
+    c.max(100).addSlider(SEED);
+    c.max(100).defaultVal(12).addSlider(COUNT);
+    c.close("random params");
 //    {
 //      c.open();
 //      c.intSlider(SEED, "Seed", "Random number generator seed", 0, 100, 0, 1);
