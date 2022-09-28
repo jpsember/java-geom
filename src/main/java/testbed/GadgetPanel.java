@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 /**
  * JPanel containing gadgets, with support for their composition
  */
+@Deprecated
 public class GadgetPanel extends JPanel {
 
   /**

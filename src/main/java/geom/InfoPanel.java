@@ -25,16 +25,16 @@
 package geom;
 
 import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 
 import static js.base.Tools.*;
 
 import js.widget.WidgetManager;
-import testbed.GadgetPanel;
 import testbed.TBGlobals;
 
 import static geom.GeomTools.*;
 
-public class InfoPanel extends GadgetPanel {
+public class InfoPanel extends JPanel {
 
   public void opening(Project project) {
     if (!todo("!restore widget state map from project somehow")) {
@@ -54,7 +54,6 @@ public class InfoPanel extends GadgetPanel {
 
     m.columns(".x");
     m.open("InfoPanel");
-    //    if (!alert("disabled for moment")) //
     {
       m.addLabel("Script:");
       m.monospaced().large().addText(TBGlobals.SCRIPT_NAME);

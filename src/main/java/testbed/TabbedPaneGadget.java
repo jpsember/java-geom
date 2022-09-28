@@ -3,18 +3,11 @@ package testbed;
 import java.awt.Component;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import static js.base.Tools.*;
 
-class TabbedPaneGadget extends Gadget implements ChangeListener {
-
-  // ChangeListener implementation
-  @Override
-  public final void stateChanged(ChangeEvent changeEvent) {
-  //  testBed().processAction(UserEvent.widgetEvent(getId()));
-  }
+@Deprecated
+class TabbedPaneGadget extends Gadget {
 
   /**
    * Read value. Returns the current pane's identifier.
@@ -75,12 +68,7 @@ class TabbedPaneGadget extends Gadget implements ChangeListener {
   public TabbedPaneGadget(boolean vertical) {
     JTabbedPane tabPane = new JTabbedPane(vertical ? JTabbedPane.TOP : JTabbedPane.LEFT);
     tabPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
-    tabPane.addChangeListener(this);
     setComponent(tabPane);
-  }
-
-  private JTabbedPane getSet() {
-    return (JTabbedPane) this.getComponent();
   }
 
   /**
@@ -104,6 +92,10 @@ class TabbedPaneGadget extends Gadget implements ChangeListener {
     ids.add(pnlId);
 
     getSet().add(title, component);
+  }
+
+  private JTabbedPane getSet() {
+    return (JTabbedPane) getComponent();
   }
 
   // ids of panels

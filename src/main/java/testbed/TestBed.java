@@ -55,26 +55,26 @@ public abstract class TestBed extends GeomApp {
 
   private void addMainControls(WidgetManager c) {
 
-    c.openTabSet
-     (TBGlobals.AUXTABSET);
+    c.openTabSet(TBGlobals.AUXTABSET);
     {
-      c.openTab(
-       TBGlobals.AUXTAB_TRACE);
+      c.openTab(TBGlobals.AUXTAB_TRACE);
       c.tooltip("if true, enables algorithm tracing");
       c.addToggleButton(TBGlobals.TRACEENABLED, "Enabled", true);
       c.tooltip("plots trace text");
       c.addToggleButton(TBGlobals.TRACEPLOT, "Messages", true);
+   
+      if (!todo("adding label is a problem"))
+        c.addLabel("Step");
+      c.tooltip("Highlight individual steps in algorithm");
+      todo("alg stepper is not propagating events");
       c.min(0).max(500).stepSize(1).defaultVal(0).addSlider(TBGlobals.TRACESTEP);
-
-      //c.intSlider(TBGlobals.TRACESTEP, null, "Highlight individual steps in algorithm", 0, 500, 0, 1);
-
       c.closeTab();
     }
 
     if (alert("another tab")) {
-      c.openTab("zowie");
-      c.tooltip("booyaw");
-      c.addToggleButton("zowie_checkbox", "Jeff", false);
+      c.openTab("Beta");
+      c.tooltip("an example of a second tab");
+      c.addToggleButton("beta_checkbox", "Hello", true);
       c.closeTab();
     }
     c.closeTabSet();
@@ -119,7 +119,7 @@ public abstract class TestBed extends GeomApp {
   private static void addOperCtrls(WidgetManager c) {
     if (sOperList.size() > 0) {
       c.openTabSet(TBGlobals.OPER);
-      for (TestBedOperation oper : sOperList)  
+      for (TestBedOperation oper : sOperList)
         oper.addControls(c);
       c.closeTabSet();
     } else {

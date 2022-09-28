@@ -36,7 +36,7 @@ abstract class Gadget {
   /**
    * Get Swing component associated with gadget
    */
-  public final JComponent getComponent() {
+  public JComponent getComponent() {
     return mComponent;
   }
 
