@@ -12,6 +12,7 @@ import static js.base.Tools.*;
  * 
  * Appears as either a JComboBox or a set of JRadioButtons.
  */
+@Deprecated
 class CtComboBox extends Gadget implements ActionListener {
 
   /**
