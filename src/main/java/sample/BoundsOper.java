@@ -41,6 +41,21 @@ public class BoundsOper implements TestBedOperation {
       }
       c.close("random params");
 
+      
+      c.columns(".x");
+      c.open("listener experiment");
+      c.pushListener((x)->pr("outer listener, id:",x));
+      {
+        c.label("Slider1:").addLabel();
+        c.max(100).listener((x)-> pr("slider1 listener",x)).addSlider("exp_slider_1");
+        c.label("Slider2:").addLabel();
+        c.max(100).listener((x)-> pr("slider2 listener",x)).defaultVal(12).addSlider("exp_slider_2");
+        c.label("Slider3:").addLabel();
+        c.max(100).defaultVal(12).addSlider("exp_slider_3");
+      }
+      c.popListener();
+      
+      c.close();
     }
     c.closeTab();
   }

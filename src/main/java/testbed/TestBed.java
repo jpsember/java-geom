@@ -118,7 +118,8 @@ public abstract class TestBed extends GeomApp {
     addControls(c);
     addOperCtrls(c);
     c.close("ControlPanel");
-
+    c.finish();
+    
     parentPanel.add(controlPanel(), BorderLayout.LINE_END);
   }
 
