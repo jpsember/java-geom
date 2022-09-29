@@ -5,42 +5,47 @@ import static js.base.Tools.*;
 
 import java.awt.Color;
 
-public class MyColor {
+/**
+ * Manages a set of Color objects, where each base Color has an id, and has a
+ * number of shades available (from 0:darkest to 1.0: lightest)
+ */
+public final class Colors {
 
+  // Color ids
+  //
   public static final int WHITE = 0, LIGHTGRAY = 1, GRAY = 2, DARKGRAY = 3, BLACK = 4, RED = 5, PINK = 6,
       ORANGE = 7, YELLOW = 8, GREEN = 9, MAGENTA = 10, CYAN = 11, BLUE = 12, BROWN = 13, PURPLE = 14,
       DARKGREEN = 15, DEFAULT_COLORS = 16;
 
-  public static final int SLOTS = 256;
+  private static final int SLOTS = 256;
 
   private static final int COLOR_LEVELS = 64;
 
   /**
-   * Get color
-   * 
-   * @param slot
-   *          : 0..SLOTS-1
-   * @return Color
+   * Get color with shade = 0.5
    */
-  public static Color get(int slot) {
-    todo("refactor/rename tjhis class");
-    return get(slot, .5);
+  public static Color get(int id) {
+    return get(id, .5);
+  }
+
+  /**
+   * Get color, indexed by id and a shade 0..1
+   */
+  public static Color get(int id, double shade) {
+    int iLevel = MyMath.clamp((int) (shade * ((double) COLOR_LEVELS)), 0, COLOR_LEVELS - 1);
+    Color c = sColors[id * COLOR_LEVELS + iLevel];
+    return c;
   }
 
   private static void add(int hue, int shade, double r, double g, double b) {
     Color c = construct(r, g, b);
-    colors[hue * COLOR_LEVELS + shade] = c;
-  }
-
-  public static Color get(int hue, double level) {
-    int iLevel = MyMath.clamp((int) (level * ((double) COLOR_LEVELS)), 0, COLOR_LEVELS - 1);
-    Color c = colors[hue * COLOR_LEVELS + iLevel];
-    return c;
-
+    sColors[hue * COLOR_LEVELS + shade] = c;
   }
 
   static {
-    colors = new Color[SLOTS * COLOR_LEVELS];
+    loadTools();
+
+    sColors = new Color[SLOTS * COLOR_LEVELS];
 
     add(WHITE, 1, 1, 1);
     add(LIGHTGRAY, 0.75, 0.75, 0.75);
@@ -59,42 +64,20 @@ public class MyColor {
     add(PURPLE, .516, .125, .94);
     add(DARKGREEN, 0.06, 0.38, 0.06);
   }
-  // static init above must occur before these:
-  public static Color cDARKGREEN = get(DARKGREEN);
-  public static Color cBLUE = get(BLUE);
-  public static Color cRED = get(RED);
-  public static Color cLIGHTGRAY = get(LIGHTGRAY);
-  public static Color cPURPLE = get(PURPLE);
-  public static Color cDARKGRAY = Color.DARK_GRAY;
 
   /**
-   * Construct a Color object from rgb values, after clamping them
-   *
-   * @param r
-   *          : red 0..1
-   * @param g
-   *          : green 0..1
-   * @param b
-   *          : blue 0..1
-   * @return
+   * Construct a Color from rgb values, after clamping them
    */
   private static Color construct(double r, double g, double b) {
     return new Color((float) MyMath.clamp(r, 0, 1.0), (float) MyMath.clamp(g, 0, 1.0),
         (float) MyMath.clamp(b, 0, 1.0));
-
   }
 
   /**
    * Add a color as a transition between two colors
    * 
-   * @param slot
-   *          : 0..SLOTS-1
-   * @param a
-   *          : start color
-   * @param b
-   *          : end color
    */
-  public static void addTransition(int slot, Color a, Color b) {
+  public static void addTransition(int id, Color a, Color b) {
     double accR = a.getRed() / 256.0;
     double accG = a.getGreen() / 256.0;
     double accB = a.getBlue() / 256.0;
@@ -104,7 +87,7 @@ public class MyColor {
     double bi = ((b.getBlue() / 256.0) - accB) / COLOR_LEVELS;
 
     for (int i = 0; i < COLOR_LEVELS; i++) {
-      add(slot, i, accR, accG, accB);
+      add(id, i, accR, accG, accB);
       accR += ri;
       accG += gi;
       accB += bi;
@@ -113,15 +96,15 @@ public class MyColor {
 
   /**
    * Add color
-   * 
-   * @param slot
-   *          : 0..SLOTS-1
-   * @param r
-   * @param g
-   * @param b
-   *          : components, 0..1
    */
-  public static void add(int slot, double r, double g, double b) {
+  public static void add(int id, Color c) {
+    add(id, c.getRed() / 256.0, c.getGreen() / 256.0, c.getBlue() / 256.0);
+  }
+
+  /**
+   * Add color
+   */
+  public static void add(int id, double r, double g, double b) {
     for (int i = 0; i < COLOR_LEVELS; i++) {
       double scale = (i * 2) / (double) COLOR_LEVELS;
       double r0 = r * scale, g0 = g * scale, b0 = b * scale;
@@ -135,22 +118,10 @@ public class MyColor {
       r0 += extra * .3;
       g0 += extra * .3;
       b0 += extra * .3;
-      add(slot, i, r0, g0, b0);
+      add(id, i, r0, g0, b0);
     }
   }
 
-  /**
-   * Add color
-   * 
-   * @param slot
-   *          : 0..SLOTS-1
-   * @param c
-   *          : Color to take components from
-   */
-  public static void add(int slot, Color c) {
-    add(slot, c.getRed() / 256.0, c.getGreen() / 256.0, c.getBlue() / 256.0);
-  }
-
-  private static Color[] colors;
+  private static Color[] sColors;
 
 }

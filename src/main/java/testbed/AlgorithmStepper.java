@@ -112,7 +112,7 @@ public class AlgorithmStepper {
     if (widgets().vb(TRACEPLOT)) {
       String msg = tr.getMessage();
       if (!msg.isEmpty()) {
-        V.pushColor(MyColor.get(MyColor.RED, .32));
+        V.pushColor(Colors.get(Colors.RED, .32));
         // Modify transform so we ignore the view's page location and scale factor
         Graphics2D g = V.get2DGraphics();
         AffineTransform savedTransform = g.getTransform();

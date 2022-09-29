@@ -107,7 +107,6 @@ public abstract class TestBed extends GeomApp {
     constructControlPanel();
     constructInfoPanel();
 
-    parentPanel.setLayout(new BorderLayout());
     parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
     parentPanel.add(infoPanel(), BorderLayout.SOUTH);
 
