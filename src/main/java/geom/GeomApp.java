@@ -85,8 +85,7 @@ public abstract class GeomApp extends GUIApp {
     if (currentProject().isDefault())
       return;
     flushProject();
-    if (validGadgets())
-      widgets().setActive(false);
+    widgets().setActive(false);
 
     mCurrentProject = Project.DEFAULT_INSTANCE;
     removeUIElements();
@@ -113,12 +112,11 @@ public abstract class GeomApp extends GUIApp {
 
     scriptManager().replaceCurrentScriptWith(currentProject().script());
 
-    // TODO: restore panel visibilities, etc according to project
     updateTitle();
     discardMenuBar();
 
-    // Now that gadgets have been built, restore their state
-    if (validGadgets()) {
+    // Now that widgets have been built, restore their state
+    {
       WidgetManager g = widgets();
       g.writeGadgetValues(projectState().widgetStateMap());
       g.setActive(true);
@@ -152,8 +150,7 @@ public abstract class GeomApp extends GUIApp {
   public final void flushProject() {
     if (!currentProject().defined())
       return;
-    if (validGadgets())
-      projectState().widgetStateMap(widgets().readGadgetValues());
+    projectState().widgetStateMap(widgets().readGadgetValues());
     currentProject().flush();
   }
 

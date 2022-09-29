@@ -193,9 +193,7 @@ public final class Project extends BaseObject {
   // ------------------------------------------------------------------
 
   public int scriptIndex() {
-    int index = 0;
-    if (validGadgets())
-      index = widgets().vi(CURRENT_SCRIPT_INDEX);
+    int index = widgets().vi(CURRENT_SCRIPT_INDEX);
     int count = scriptCount();
     if (index >= count) {
       if (index > 0)
@@ -211,8 +209,7 @@ public final class Project extends BaseObject {
   }
 
   public void setScriptIndex(int index) {
-    if (validGadgets())
-      widgets().set(CURRENT_SCRIPT_INDEX, index);
+    widgets().set(CURRENT_SCRIPT_INDEX, index);
   }
 
   /**
