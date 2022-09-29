@@ -18,7 +18,6 @@ import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
 import js.widget.WidgetManager;
 import testbed.AppFrameWidget;
-import testbed.TBGlobals;
 
 import static geom.GeomTools.*;
 
@@ -26,6 +25,16 @@ import static geom.GeomTools.*;
  * A GUIApp that supports editing of geometric objects
  */
 public abstract class GeomApp extends GUIApp {
+
+  /**
+   * Widget ids
+   */
+  public static final String //
+  EDITOR_ZOOM = "ed_zoom", //
+      CURRENT_SCRIPT_INDEX = "script_index", //
+      SCRIPT_NAME = "script_name", //
+      MESSAGE = "message", //
+      APP_FRAME = "app_frame"; //
 
   @Override
   public UserOperation getDefaultUserOperation() {
@@ -400,16 +409,15 @@ public abstract class GeomApp extends GUIApp {
 
   private int mTaskTicker;
 
-
   @Override
   public void initGadgets() {
     super.initGadgets();
     WidgetManager g = widgets();
 
     // Add gadget for persisting frame bounds
-    g.add(new AppFrameWidget().setId(TBGlobals.APP_FRAME));
+    g.add(new AppFrameWidget().setId(APP_FRAME));
     // Add gadget for persisting zoom factor
-    g.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
-    g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
-  } 
+    g.addHidden(EDITOR_ZOOM, 1f);
+    g.addHidden(CURRENT_SCRIPT_INDEX, 0);
+  }
 }

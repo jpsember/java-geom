@@ -16,6 +16,18 @@ import static geom.GeomTools.*;
 public abstract class TestBed extends GeomApp {
 
   /**
+   * Reserved gadget ids
+   */
+  public static final String //
+        OPER = "oper", //
+      CTRLSVISIBLE = "ctrls_visible", //
+      AUXTABSET = "aux_tabset", //
+      AUXTAB_TRACE = "aux_trace", //
+      TRACESTEP = "trace_step", //
+      TRACEPLOT = "trace_plot", //
+      TRACEENABLED = "trace_enabled";
+
+  /**
    * Process actions for main controls. Default implementation passes action to
    * current operation
    */
@@ -57,21 +69,21 @@ public abstract class TestBed extends GeomApp {
 
   private void addMainControls(WidgetManager c) {
 
-    c.openTabSet(TBGlobals.AUXTABSET);
+    c.openTabSet(AUXTABSET);
     {
-      c.openTab(TBGlobals.AUXTAB_TRACE);
+      c.openTab(AUXTAB_TRACE);
       {
         c.tooltip("if true, enables algorithm tracing");
-        c.addToggleButton(TBGlobals.TRACEENABLED, "Enabled", true);
+        c.addToggleButton(TRACEENABLED, "Enabled", true);
         c.tooltip("plots trace text");
-        c.addToggleButton(TBGlobals.TRACEPLOT, "Messages", true);
+        c.addToggleButton(TRACEPLOT, "Messages", true);
 
         {
           c.columns(".x").open("multicolumn subsection");
 
           c.addLabel("Step:") //
               .tooltip("Highlight individual steps in algorithm") //
-              .min(0).max(500).stepSize(1).defaultVal(0).addSlider(TBGlobals.TRACESTEP);
+              .min(0).max(500).stepSize(1).defaultVal(0).addSlider(TRACESTEP);
 
           c.close("multicolumn subsection");
         }
@@ -126,7 +138,7 @@ public abstract class TestBed extends GeomApp {
 
   private static void addOperCtrls(WidgetManager c) {
     if (sOperList.size() > 0) {
-      c.openTabSet(TBGlobals.OPER);
+      c.openTabSet(OPER);
       for (TestBedOperation oper : sOperList)
         oper.addControls(c);
       c.closeTabSet();
@@ -141,11 +153,11 @@ public abstract class TestBed extends GeomApp {
   }
 
   public static int operNum() {
-    return widgets().vi(TBGlobals.OPER);
+    return widgets().vi(OPER);
   }
 
   public static TestBedOperation oper() {
-    return oper(widgets().vi(TBGlobals.OPER));
+    return oper(widgets().vi(OPER));
   }
 
   public static TestBedOperation oper(int n) {
@@ -153,17 +165,17 @@ public abstract class TestBed extends GeomApp {
   }
 
   public boolean plotTraceMessages() {
-    return widgets().vb(TBGlobals.TRACEPLOT);
+    return widgets().vb(TRACEPLOT);
   }
 
   @Override
   public float zoomFactor() {
-    return widgets().vf(TBGlobals.EDITOR_ZOOM);
+    return widgets().vf(EDITOR_ZOOM);
   }
 
   @Override
   public void setZoomFactor(float zoom) {
-    widgets().set(TBGlobals.EDITOR_ZOOM, zoom);
+    widgets().set(EDITOR_ZOOM, zoom);
   }
 
   @Override

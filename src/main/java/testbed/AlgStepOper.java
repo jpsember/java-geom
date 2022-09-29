@@ -7,6 +7,8 @@ import js.widget.WidgetManager;
 
 import static geom.GeomTools.*;
 
+import static testbed.TestBed.*;
+
 public class AlgStepOper extends UserOperation {
 
   public AlgStepOper(int direction) {
@@ -16,15 +18,15 @@ public class AlgStepOper extends UserOperation {
 
   @Override
   public void start() {
-    WidgetManager C = widgets() ;
-    C.seti(TBGlobals.TRACESTEP, mNextStep);
+    WidgetManager C = widgets();
+    C.seti(TRACESTEP, mNextStep);
   }
 
   @Override
   public boolean shouldBeEnabled() {
     todo("clunky to have to access gadgets like this");
     WidgetManager C = widgets();
-    int current = C.vi(TBGlobals.TRACESTEP);
+    int current = C.vi(TRACESTEP);
     int target = 0;
     if (mDir != 0)
       target = Math.max(0, current + mDir);

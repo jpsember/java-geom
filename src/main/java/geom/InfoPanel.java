@@ -30,9 +30,9 @@ import javax.swing.JPanel;
 import static js.base.Tools.*;
 
 import js.widget.WidgetManager;
-import testbed.TBGlobals;
 
 import static geom.GeomTools.*;
+import static geom.GeomApp.*;
 
 public class InfoPanel extends JPanel {
 
@@ -56,8 +56,8 @@ public class InfoPanel extends JPanel {
     m.open("InfoPanel");
     {
       m.addLabel("Script:");
-      m.monospaced().large().addText(TBGlobals.SCRIPT_NAME);
-      m.skip().monospaced().addText(TBGlobals.MESSAGE);
+      m.monospaced().large().addText( SCRIPT_NAME);
+      m.skip().monospaced().addText( MESSAGE);
     }
     m.addVertGrow();
     m.close("InfoPanel");
@@ -78,7 +78,7 @@ public class InfoPanel extends JPanel {
       sb.append(nameOnly);
       scriptDisplay = sb.toString();
     }
-    widgets().setValue(TBGlobals.SCRIPT_NAME, scriptDisplay);
+    widgets().setValue( SCRIPT_NAME, scriptDisplay);
   }
 
   public void setMessage(String text) {
@@ -91,7 +91,7 @@ public class InfoPanel extends JPanel {
         return;
     }
 
-    widgets().setValue(TBGlobals.MESSAGE, text);
+    widgets().setValue( MESSAGE, text);
   }
 
   //  private WidgetManager mWidgetManager;

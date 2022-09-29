@@ -13,6 +13,8 @@ import java.awt.geom.*;
 import static js.base.Tools.*;
 import static testbed.Globals.*;
 
+import static testbed.TestBed.*;
+
 public class AlgorithmStepper {
 
   public static AlgorithmStepper sharedInstance() {
@@ -45,13 +47,13 @@ public class AlgorithmStepper {
     loadTools();
     WidgetManager g = widgets();
     mLastException = null;
-    mRunning = g.exists(TBGlobals.TRACEENABLED) && g.vb(TBGlobals.TRACEENABLED);
+    mRunning = g.exists(TRACEENABLED) && g.vb(TRACEENABLED);
     mDisabled = 0;
     mStep = 0;
     mStepDecision = null;
     mStepToStopAt = 0;
     if (mRunning)
-      mStepToStopAt = g.vi(TBGlobals.TRACESTEP);
+      mStepToStopAt = g.vi(TRACESTEP);
     if (mStepToStopAt == 0)
       mRunning = false;
 
@@ -110,7 +112,7 @@ public class AlgorithmStepper {
     }
     V.pop(2);
 
-    if (widgets().vb(TBGlobals.TRACEPLOT)) {
+    if (widgets().vb(TRACEPLOT)) {
       String msg = tr.getMessage();
       if (!msg.isEmpty()) {
         V.pushColor(MyColor.get(MyColor.RED, .32));

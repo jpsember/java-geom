@@ -33,12 +33,12 @@ import js.data.DataUtil;
 import js.file.Files;
 import js.geometry.MyMath;
 import js.json.*;
-import testbed.TBGlobals;
 import js.graphics.ScriptUtil;
 import js.graphics.gen.ScriptFileEntry;
 
 import static js.base.Tools.*;
 import static geom.GeomTools.*;
+import static geom.GeomApp.*;
 
 public final class Project extends BaseObject {
 
@@ -195,7 +195,7 @@ public final class Project extends BaseObject {
   public int scriptIndex() {
     int index = 0;
     if (validGadgets())  
-    index = widgets().vi(TBGlobals.CURRENT_SCRIPT_INDEX);
+    index = widgets().vi( CURRENT_SCRIPT_INDEX);
     int count = scriptCount();
     if (index >= count) {
       pr("scriptIndex", index, "exceeds count", count, "!!!!");
@@ -211,7 +211,7 @@ public final class Project extends BaseObject {
 
   public void setScriptIndex(int index) {
     if (validGadgets())
-    widgets().set(TBGlobals.CURRENT_SCRIPT_INDEX, index);
+    widgets().set( CURRENT_SCRIPT_INDEX, index);
   }
 
   /**
