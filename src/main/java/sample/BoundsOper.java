@@ -19,7 +19,7 @@ import js.guiapp.UserEvent;
 import js.widget.WidgetManager;
 import testbed.*;
 
-public class BoundsOper implements TestBedOperation, Globals {
+public class BoundsOper implements TestBedOperation  {
 
   private static final String SEED = "bo_seed";
   private static final String COUNT = "bo_count";

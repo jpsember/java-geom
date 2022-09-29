@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.geom.*;
 
 import static js.base.Tools.*;
-import static testbed.Globals.*;
+import static testbed.V.*;
 
 import static testbed.TestBed.*;
 
@@ -39,12 +39,9 @@ public class AlgorithmStepper {
   /**
    * Execute an algorithm, with optional tracing
    * 
-   * @param alg
-   *          : algorithm to execute
    * @return true if algorithm ran to completion
    */
   public boolean runAlgorithm(TestBedOperation alg) {
-    loadTools();
     WidgetManager g = widgets();
     mLastException = null;
     mRunning = g.exists(TRACEENABLED) && g.vb(TRACEENABLED);

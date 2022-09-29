@@ -24,9 +24,8 @@ public class AlgStepOper extends UserOperation {
 
   @Override
   public boolean shouldBeEnabled() {
-    todo("clunky to have to access gadgets like this");
-    WidgetManager C = widgets();
-    int current = C.vi(TRACESTEP);
+    WidgetManager w = widgets();
+    int current = w.vi(TRACESTEP);
     int target = 0;
     if (mDir != 0)
       target = Math.max(0, current + mDir);
