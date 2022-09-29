@@ -22,7 +22,7 @@
  * SOFTWARE.
  * 
  **/
-package geom;
+package geom.oper;
 
 import js.base.BaseObject;
 import js.base.Pair;

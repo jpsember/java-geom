@@ -19,7 +19,7 @@ import js.guiapp.UserEvent;
 import js.widget.WidgetManager;
 import testbed.*;
 
-public class BoundsOper implements TestBedOperation  {
+public class BoundsOper implements TestBedOperation {
 
   private static final String SEED = "bo_seed";
   private static final String COUNT = "bo_count";
@@ -102,7 +102,7 @@ public class BoundsOper implements TestBedOperation  {
 
     final int PADDING = 3;
 
-    IPoint size = geomApp().getEditorPanel().pageSize();
+    IPoint size = geomApp().pageSize();
     float sx = size.x - 2 * PADDING;
     float sy = size.y - 2 * PADDING;
     for (int i = 0; i < c; i++) {

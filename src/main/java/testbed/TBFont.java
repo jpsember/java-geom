@@ -24,7 +24,7 @@ class TBFont {
   }
 
   public static TBFont get(int index) {
-   checkState(sFonts != null, "TBFont.prepare() not called");
+    checkState(sFonts != null, "TBFont.prepare() not called");
     return sFonts[index];
   }
 

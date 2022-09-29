@@ -1,7 +1,6 @@
 package testbed;
 
 import geom.GeomApp;
-import geom.ScriptManager;
 import js.guiapp.MenuBarWrapper;
 import js.guiapp.UserEvent;
 import js.widget.WidgetManager;
@@ -19,7 +18,7 @@ public abstract class TestBed extends GeomApp {
    * Reserved gadget ids
    */
   public static final String //
-        OPER = "oper", //
+  OPER = "oper", //
       CTRLSVISIBLE = "ctrls_visible", //
       AUXTABSET = "aux_tabset", //
       AUXTAB_TRACE = "aux_trace", //
@@ -38,7 +37,7 @@ public abstract class TestBed extends GeomApp {
     try {
       // Don't propagate action if we aren't initialized and displaying a script
       todo("more succinct way to check if script defined?");
-      if (ScriptManager.singleton().currentScript().defined())
+      if (scriptManager().currentScript().defined())
         oper().processUserEvent(event);
       super.userEventManagerListener(event);
     } catch (TBError e) {

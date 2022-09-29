@@ -2,12 +2,7 @@ package testbed;
 
 import static js.base.Tools.*;
 
-/**
- * Make TBError unchecked, since we want to be able to throw them from some
- * interface methods that don't have 'throws' clauses, and having to declare
- * them is irritating.
- */
-public class TBError extends Error {
+public class TBError extends RuntimeException {
 
   public TBError(Throwable cause) {
     this(cause.toString());

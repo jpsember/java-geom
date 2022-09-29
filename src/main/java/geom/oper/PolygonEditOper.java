@@ -37,7 +37,6 @@ import java.awt.Cursor;
 import java.util.List;
 
 import geom.EditorElement;
-import geom.MergePoly;
 import geom.StateTools;
 import geom.elem.EditablePolygonElement;
 import geom.gen.Command;

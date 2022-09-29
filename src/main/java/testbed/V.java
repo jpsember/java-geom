@@ -22,7 +22,6 @@ import static geom.GeomTools.*;
  */
 public class V  {
 
-
   // predefined strokes:
   public static final int STRK_NORMAL = 0, STRK_THICK = 1, STRK_THIN = 2, STRK_VERYTHICK = 3,
       STRK_RUBBERBAND = 4, STRK_TOTAL = 5;
@@ -386,6 +385,7 @@ public class V  {
    * @return Graphics2D
    */
   public static Graphics2D get2DGraphics() {
+    todo("Rename this class");
     return g;
   }
 

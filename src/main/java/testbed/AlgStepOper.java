@@ -1,7 +1,5 @@
 package testbed;
 
-import static js.base.Tools.*;
-
 import js.guiapp.UserOperation;
 import js.widget.WidgetManager;
 
@@ -12,7 +10,6 @@ import static testbed.TestBed.*;
 public class AlgStepOper extends UserOperation {
 
   public AlgStepOper(int direction) {
-    loadTools();
     mDir = direction;
   }
 

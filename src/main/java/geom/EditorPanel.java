@@ -105,10 +105,6 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     mSavedTransform = null;
   }
 
-  public IPoint pageSize() {
-    return scriptManager().currentScript().assertNotNone().pageSize();
-  }
-
   private void paintContents() {
     ScriptWrapper script = scriptManager().currentScript();
     if (script.isNone())
@@ -119,7 +115,7 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-    IPoint pageSize = pageSize();
+    IPoint pageSize = geomApp().pageSize();
     determineTransform(pageSize);
     g.transform(mTransform.toAffineTransform());
 

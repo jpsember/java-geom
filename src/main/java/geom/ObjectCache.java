@@ -35,7 +35,7 @@ import js.geometry.MyMath;
 /**
  * In-memory cache; thread safe
  */
-public class ObjectCache<KEY, VALUE> extends BaseObject {
+class ObjectCache<KEY, VALUE> extends BaseObject {
 
   public VALUE get(KEY scriptFile) {
     return mCache.get(scriptFile);

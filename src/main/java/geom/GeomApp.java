@@ -10,6 +10,7 @@ import geom.gen.Command;
 import geom.gen.ProjectState;
 import geom.oper.*;
 import js.file.Files;
+import js.geometry.IPoint;
 import js.guiapp.GUIApp;
 import js.guiapp.MenuBarWrapper;
 import js.guiapp.RecentFiles;
@@ -17,7 +18,6 @@ import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
 import js.widget.WidgetManager;
-import testbed.AppFrameWidget;
 
 import static geom.GeomTools.*;
 
@@ -35,6 +35,15 @@ public abstract class GeomApp extends GUIApp {
       SCRIPT_NAME = "script_name", //
       MESSAGE = "message", //
       APP_FRAME = "app_frame"; //
+
+  @Override
+  public final String getTitleText() {
+    if (currentProject().defined()) {
+      File dir = currentProject().directory();
+      return dir.getName();
+    }
+    return null;
+  }
 
   @Override
   public UserOperation getDefaultUserOperation() {
@@ -60,6 +69,10 @@ public abstract class GeomApp extends GUIApp {
    * Return true iff this project has support for images
    */
   public abstract boolean hasImageSupport();
+
+  public IPoint pageSize() {
+    return scriptManager().currentScript().assertNotNone().pageSize();
+  }
 
   /**
    * Called from EditorPanel; default implementation does nothing

@@ -1,13 +1,14 @@
 package testbed;
 
-import java.awt.*;
 import js.geometry.MyMath;
+import static js.base.Tools.*;
+
+import java.awt.Color;
 
 public class MyColor {
 
-  public static final int WHITE = 0, LIGHTGRAY = 1, GRAY = 2, DARKGRAY = 3,
-      BLACK = 4, RED = 5, PINK = 6, ORANGE = 7, YELLOW = 8, GREEN = 9,
-      MAGENTA = 10, CYAN = 11, BLUE = 12, BROWN = 13, PURPLE = 14,
+  public static final int WHITE = 0, LIGHTGRAY = 1, GRAY = 2, DARKGRAY = 3, BLACK = 4, RED = 5, PINK = 6,
+      ORANGE = 7, YELLOW = 8, GREEN = 9, MAGENTA = 10, CYAN = 11, BLUE = 12, BROWN = 13, PURPLE = 14,
       DARKGREEN = 15, DEFAULT_COLORS = 16;
 
   public static final int SLOTS = 256;
@@ -16,10 +17,13 @@ public class MyColor {
 
   /**
    * Get color
-   * @param slot : 0..SLOTS-1
+   * 
+   * @param slot
+   *          : 0..SLOTS-1
    * @return Color
    */
   public static Color get(int slot) {
+    todo("refactor/rename tjhis class");
     return get(slot, .5);
   }
 
@@ -29,8 +33,7 @@ public class MyColor {
   }
 
   public static Color get(int hue, double level) {
-    int iLevel = MyMath.clamp((int) (level * ((double) COLOR_LEVELS)), 0,
-        COLOR_LEVELS - 1);
+    int iLevel = MyMath.clamp((int) (level * ((double) COLOR_LEVELS)), 0, COLOR_LEVELS - 1);
     Color c = colors[hue * COLOR_LEVELS + iLevel];
     return c;
 
@@ -63,27 +66,33 @@ public class MyColor {
   public static Color cLIGHTGRAY = get(LIGHTGRAY);
   public static Color cPURPLE = get(PURPLE);
   public static Color cDARKGRAY = Color.DARK_GRAY;
-   
 
   /**
    * Construct a Color object from rgb values, after clamping them
    *
-   * @param r : red 0..1
-   * @param g : green 0..1
-   * @param b : blue 0..1
+   * @param r
+   *          : red 0..1
+   * @param g
+   *          : green 0..1
+   * @param b
+   *          : blue 0..1
    * @return
    */
   private static Color construct(double r, double g, double b) {
-    return new Color((float) MyMath.clamp(r, 0, 1.0), (float) MyMath.clamp(g,
-        0, 1.0), (float) MyMath.clamp(b, 0, 1.0));
+    return new Color((float) MyMath.clamp(r, 0, 1.0), (float) MyMath.clamp(g, 0, 1.0),
+        (float) MyMath.clamp(b, 0, 1.0));
 
   }
 
   /**
    * Add a color as a transition between two colors
-   * @param slot : 0..SLOTS-1
-   * @param a : start color
-   * @param b : end color
+   * 
+   * @param slot
+   *          : 0..SLOTS-1
+   * @param a
+   *          : start color
+   * @param b
+   *          : end color
    */
   public static void addTransition(int slot, Color a, Color b) {
     double accR = a.getRed() / 256.0;
@@ -105,10 +114,12 @@ public class MyColor {
   /**
    * Add color
    * 
-   * @param slot : 0..SLOTS-1
+   * @param slot
+   *          : 0..SLOTS-1
    * @param r
    * @param g
-   * @param b : components, 0..1
+   * @param b
+   *          : components, 0..1
    */
   public static void add(int slot, double r, double g, double b) {
     for (int i = 0; i < COLOR_LEVELS; i++) {
@@ -131,8 +142,10 @@ public class MyColor {
   /**
    * Add color
    * 
-   * @param slot : 0..SLOTS-1
-   * @param c : Color to take components from
+   * @param slot
+   *          : 0..SLOTS-1
+   * @param c
+   *          : Color to take components from
    */
   public static void add(int slot, Color c) {
     add(slot, c.getRed() / 256.0, c.getGreen() / 256.0, c.getBlue() / 256.0);

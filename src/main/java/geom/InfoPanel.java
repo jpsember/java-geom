@@ -34,13 +34,10 @@ import js.widget.WidgetManager;
 import static geom.GeomTools.*;
 import static geom.GeomApp.*;
 
-public class InfoPanel extends JPanel {
+class InfoPanel extends JPanel {
 
+  @Deprecated
   public void opening(Project project) {
-    if (!todo("!restore widget state map from project somehow")) {
-      // mWidgetManager.setStateMap(project.widgetStateMap());
-      // mWidgetManager.restoreWidgetValues();
-    }
   }
 
   public InfoPanel() {
@@ -56,8 +53,8 @@ public class InfoPanel extends JPanel {
     m.open("InfoPanel");
     {
       m.addLabel("Script:");
-      m.monospaced().large().addText( SCRIPT_NAME);
-      m.skip().monospaced().addText( MESSAGE);
+      m.monospaced().large().addText(SCRIPT_NAME);
+      m.skip().monospaced().addText(MESSAGE);
     }
     m.addVertGrow();
     m.close("InfoPanel");
@@ -78,7 +75,7 @@ public class InfoPanel extends JPanel {
       sb.append(nameOnly);
       scriptDisplay = sb.toString();
     }
-    widgets().setValue( SCRIPT_NAME, scriptDisplay);
+    widgets().setValue(SCRIPT_NAME, scriptDisplay);
   }
 
   public void setMessage(String text) {
@@ -91,11 +88,8 @@ public class InfoPanel extends JPanel {
         return;
     }
 
-    widgets().setValue( MESSAGE, text);
+    widgets().setValue(MESSAGE, text);
   }
 
-  //  private WidgetManager mWidgetManager;
   private long mErrorTime;
-  //  private Widget mFilePath;
-  //  private Widget mMessageField;
 }

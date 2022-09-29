@@ -7,6 +7,7 @@ import js.widget.WidgetManager;
  * Interface for TestBed operations
  */
 public interface TestBedOperation {
+
   /**
    * Add controls for this operation. Each operation exists in its own tab, so
    * the controls should consist of:

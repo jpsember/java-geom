@@ -1,11 +1,11 @@
-package testbed;
+package geom;
 
 import js.geometry.IRect;
 import js.guiapp.GUIApp;
 import js.json.JSList;
 import js.widget.Widget;
 
-public class AppFrameWidget extends Widget {
+class AppFrameWidget extends Widget {
 
   @Override
   public JSList readValue() {
