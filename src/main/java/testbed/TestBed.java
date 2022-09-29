@@ -36,7 +36,6 @@ public abstract class TestBed extends GeomApp {
       return;
     try {
       // Don't propagate action if we aren't initialized and displaying a script
-      todo("more succinct way to check if script defined?");
       if (scriptManager().currentScript().defined())
         oper().processUserEvent(event);
       super.userEventManagerListener(event);

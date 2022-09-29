@@ -4,6 +4,7 @@ import js.geometry.MyMath;
 import static js.base.Tools.*;
 
 import java.awt.Color;
+import java.util.Map;
 
 /**
  * Manages a set of Color objects, where each base Color has an id, and has a
@@ -17,9 +18,8 @@ public final class Colors {
       ORANGE = 7, YELLOW = 8, GREEN = 9, MAGENTA = 10, CYAN = 11, BLUE = 12, BROWN = 13, PURPLE = 14,
       DARKGREEN = 15, DEFAULT_COLORS = 16;
 
-  private static final int SLOTS = 256;
 
-  private static final int COLOR_LEVELS = 64;
+  private static final int SHADE_LEVELS = 64;
 
   /**
    * Get color with shade = 0.5
@@ -32,37 +32,13 @@ public final class Colors {
    * Get color, indexed by id and a shade 0..1
    */
   public static Color get(int id, double shade) {
-    int iLevel = MyMath.clamp((int) (shade * ((double) COLOR_LEVELS)), 0, COLOR_LEVELS - 1);
-    Color c = sColors[id * COLOR_LEVELS + iLevel];
-    return c;
+    int iLevel = MyMath.clamp((int) (shade * SHADE_LEVELS), 0, SHADE_LEVELS - 1);
+    Color[] set = getColorSet(id);
+    return set[iLevel];
   }
 
-  private static void add(int hue, int shade, double r, double g, double b) {
-    Color c = construct(r, g, b);
-    sColors[hue * COLOR_LEVELS + shade] = c;
-  }
-
-  static {
-    loadTools();
-
-    sColors = new Color[SLOTS * COLOR_LEVELS];
-
-    add(WHITE, 1, 1, 1);
-    add(LIGHTGRAY, 0.75, 0.75, 0.75);
-    add(GRAY, 0.50, 0.50, 0.50);
-    add(DARKGRAY, 0.25, 0.25, 0.25);
-    add(BLACK, 0, 0, 0);
-    add(RED, Color.RED);
-    add(PINK, Color.PINK);//1, 0.68, 0.68);
-    add(ORANGE, Color.ORANGE);
-    add(YELLOW, Color.YELLOW);
-    add(GREEN, Color.GREEN);
-    add(MAGENTA, Color.MAGENTA);
-    add(CYAN, Color.CYAN);
-    add(BLUE, Color.BLUE);
-    add(BROWN, .45, .25, .05); //0.60, 0.40, 0.20);
-    add(PURPLE, .516, .125, .94);
-    add(DARKGREEN, 0.06, 0.38, 0.06);
+  private static void add(Color[] set, int shade, double r, double g, double b) {
+    set[shade] = construct(r, g, b);
   }
 
   /**
@@ -82,12 +58,13 @@ public final class Colors {
     double accG = a.getGreen() / 256.0;
     double accB = a.getBlue() / 256.0;
 
-    double ri = ((b.getRed() / 256.0) - accR) / COLOR_LEVELS;
-    double gi = ((b.getGreen() / 256.0) - accG) / COLOR_LEVELS;
-    double bi = ((b.getBlue() / 256.0) - accB) / COLOR_LEVELS;
+    double ri = ((b.getRed() / 256.0) - accR) / SHADE_LEVELS;
+    double gi = ((b.getGreen() / 256.0) - accG) / SHADE_LEVELS;
+    double bi = ((b.getBlue() / 256.0) - accB) / SHADE_LEVELS;
 
-    for (int i = 0; i < COLOR_LEVELS; i++) {
-      add(id, i, accR, accG, accB);
+    Color[] set = addSet(id);
+    for (int i = 0; i < SHADE_LEVELS; i++) {
+      add(set, i, accR, accG, accB);
       accR += ri;
       accG += gi;
       accB += bi;
@@ -105,8 +82,9 @@ public final class Colors {
    * Add color
    */
   public static void add(int id, double r, double g, double b) {
-    for (int i = 0; i < COLOR_LEVELS; i++) {
-      double scale = (i * 2) / (double) COLOR_LEVELS;
+    Color[] set = addSet(id);
+    for (int i = 0; i < SHADE_LEVELS; i++) {
+      double scale = (i * 2) / (double) SHADE_LEVELS;
       double r0 = r * scale, g0 = g * scale, b0 = b * scale;
       double extra = 0;
       if (r0 > 1.0)
@@ -118,10 +96,52 @@ public final class Colors {
       r0 += extra * .3;
       g0 += extra * .3;
       b0 += extra * .3;
-      add(id, i, r0, g0, b0);
+      add(set, i, r0, g0, b0);
     }
   }
 
-  private static Color[] sColors;
+  private static Map<Integer, Color[]> colorsMap() {
+    if (sColorsMap == null) {
+      sColorsMap = hashMap();
+      init();
+    }
+    return sColorsMap;
+  }
+
+  private static void init() {
+    add(WHITE, 1, 1, 1);
+    add(LIGHTGRAY, 0.75, 0.75, 0.75);
+    add(GRAY, 0.50, 0.50, 0.50);
+    add(DARKGRAY, 0.25, 0.25, 0.25);
+    add(BLACK, 0, 0, 0);
+    add(RED, Color.RED);
+    add(PINK, Color.PINK);//1, 0.68, 0.68);
+    add(ORANGE, Color.ORANGE);
+    add(YELLOW, Color.YELLOW);
+    add(GREEN, Color.GREEN);
+    add(MAGENTA, Color.MAGENTA);
+    add(CYAN, Color.CYAN);
+    add(BLUE, Color.BLUE);
+    add(BROWN, .45, .25, .05); //0.60, 0.40, 0.20);
+    add(PURPLE, .516, .125, .94);
+    add(DARKGREEN, 0.06, 0.38, 0.06);
+  }
+
+  private static Color[] getColorSet(int id) {
+    Color[] set = colorsMap().get(id);
+    if (set == null)
+      badArg("no color with id:", id);
+    return set;
+  }
+
+  private static Color[] addSet(int id) {
+    if (colorsMap().containsKey(id))
+      badState("duplicate color, id:", id);
+    Color[] set = new Color[SHADE_LEVELS];
+    colorsMap().put(id, set);
+    return set;
+  }
+
+  private static Map<Integer, Color[]> sColorsMap;
 
 }
