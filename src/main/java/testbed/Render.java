@@ -10,17 +10,12 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.*;
-import java.util.ArrayList;
 import java.util.List;
 
 import static js.base.Tools.*;
 import static geom.GeomTools.*;
 
-/**
- * Main view of TestBed applications. It has the short name 'V' to minimize
- * typing.
- */
-public class V  {
+public final class Render {
 
   // predefined strokes:
   public static final int STRK_NORMAL = 0, STRK_THICK = 1, STRK_THIN = 2, STRK_VERYTHICK = 3,
@@ -45,9 +40,6 @@ public class V  {
   // Font indexes:
   public static final int FNT_SMALL = 0, FNT_MEDIUM = 1, FNT_LARGE = 2, FNT_ITALIC = 3, FNT_TOTAL = 4;
 
-  private V() {
-  }
-
   public static void setGraphics(Graphics2D graphics) {
     g = graphics;
     if (graphics == null)
@@ -57,7 +49,7 @@ public class V  {
     float z = geomApp().zoomFactor();
     sScaleFactor = 2f / z;
     prepareForRender();
-    V.setFont(FNT_MEDIUM);
+    setFont(FNT_MEDIUM);
   }
 
   /**
@@ -119,10 +111,7 @@ public class V  {
   }
 
   /**
-   * Set font
-   * 
-   * @param font
-   *          FNT_xx
+   * Set font to FNT_xxx
    */
   public static void setFont(int font) {
     sCurrentFontIndex = font;
@@ -340,7 +329,7 @@ public class V  {
    */
   public static void pop() {
     if (sPlotStateStack.isEmpty())
-      throw new IllegalStateException("render stack empty");
+      badState("render stack empty");
     Object tag = peekElem();
     if (tag == ST_COLOR) {
       popElem();
@@ -363,7 +352,6 @@ public class V  {
       if (val != null)
         setFont(val.intValue());
     } else if (tag == ST_FONT) {
-      // Pop {Font, activeFont, "FONT"}
       popElem();
       sCurrentFontIndex = popElem();
       g.setFont(popElem());
@@ -379,36 +367,17 @@ public class V  {
   }
 
   /**
-   * Get the current graphics context being updated by updateView(), in case we
-   * need to manipulate it in ways not provided by this class.
-   * 
-   * @return Graphics2D
+   * Get the current graphics context being rendered
    */
-  public static Graphics2D get2DGraphics() {
-    todo("Rename this class");
+  public static Graphics2D graphics() {
     return g;
   }
 
   /**
    * Save current color on stack, set to new
-   * 
-   * @param c
-   *          new color
    */
   public static void pushColor(Color c) {
-    pushColor(c, null);
-  }
-
-  /**
-   * Save current color on stack, set to new
-   * 
-   * @param c
-   *          new color
-   */
-  public static void pushColor(Color c, Color defaultColor) {
-    if (c == null) {
-      checkArgument(defaultColor != null);
-    }
+    checkArgument(c != null);
     pushElem(g.getColor());
     pushElem(ST_COLOR);
     setColor(c);
@@ -416,11 +385,6 @@ public class V  {
 
   /**
    * Draw a line segment
-   * 
-   * @param p0
-   *          first endpoint
-   * @param p1
-   *          second endpoint
    */
   public static void drawLine(FPoint p0, FPoint p1) {
     drawLine(p0.x, p0.y, p1.x, p1.y);
@@ -428,12 +392,6 @@ public class V  {
 
   /**
    * Draw a pixel as a filled square
-   * 
-   * @param x
-   * @param y
-   *          location
-   * @param pixelSize
-   *          width of square
    */
   public static void drawPixel(double x, double y, double pixelSize) {
     fillRect(x - pixelSize * .5, y - pixelSize * .5, pixelSize, pixelSize);
@@ -441,11 +399,6 @@ public class V  {
 
   /**
    * Draw a pixel as a filled square
-   * 
-   * @param pt
-   *          location
-   * @param pixelSize
-   *          width of square
    */
   public static void drawPixel(FPoint pt, double pixelSize) {
     drawPixel(pt.x, pt.y, pixelSize);
@@ -453,13 +406,6 @@ public class V  {
 
   /**
    * Draw a line segment
-   * 
-   * @param x0
-   * @param y0
-   *          first endpoint
-   * @param x1
-   * @param y1
-   *          second endpoint
    */
   public static void drawLine(double x0, double y0, double x1, double y1) {
     Line2D.Double wl = new Line2D.Double();
@@ -471,18 +417,6 @@ public class V  {
    * Save current stroke on stack, set to new
    */
   public static void pushStroke(int s) {
-    pushStroke(s, -1);
-  }
-
-  /**
-   * Save current stroke on stack, set to new
-   */
-  public static void pushStroke(int s, int defaultStroke) {
-    if (s < 0) {
-      s = defaultStroke;
-      if (defaultStroke < 0)
-        notSupported();
-    }
     pushStroke(sStrokes[s]);
   }
 
@@ -501,42 +435,13 @@ public class V  {
   private static final Object ST_FONT_INDEX = "FONT_INDEX";
   private static final Object ST_FONT = "FONT ";
 
-  //  /**
-  //   * Draw a filled rectangle
-  //   * 
-  //   * @param pos
-  //   *          location
-  //   * @param size
-  //   *          size
-  //   */
-  //  public static void fillRect(FPoint2 pos, FPoint2 size) {
-  //    fillRect(pos.x, pos.y, size.x, size.y);
-  //  }
-
-  //  /**
-  //   * Draw a filled rectangle
-  //   * 
-  //   * @param r
-  //   *          rectangle
-  //   */
-  //  public static void fillRect(FRect r) {
-  //    fillRect(r.x, r.y, r.width, r.height);
-  //  }
+  private static final Rectangle2D.Double sWorkRect = new Rectangle2D.Double();
 
   /**
    * Draw a filled rectangle
-   * 
-   * @param x
-   * @param y
-   *          location
-   * @param w
-   *          width
-   * @param h
-   *          height
    */
   public static void fillRect(double x, double y, double w, double h) {
-
-    final Rectangle2D.Double r = new Rectangle2D.Double();
+    Rectangle2D.Double r = sWorkRect;
     r.x = x;
     r.y = y;
     r.width = w;
@@ -546,17 +451,9 @@ public class V  {
 
   /**
    * Draw a rectangle
-   * 
-   * @param x
-   * @param y
-   *          location
-   * @param w
-   *          width
-   * @param h
-   *          height
    */
   public static void drawRect(double x, double y, double w, double h) {
-    Rectangle2D.Double r = new Rectangle2D.Double();
+    Rectangle2D.Double r = sWorkRect;
     r.x = x;
     r.y = y;
     r.width = w;
@@ -570,12 +467,16 @@ public class V  {
 
   static void cleanUpRender() {
     if (!sPlotStateStack.isEmpty()) {
-     alert("plot stack not empty");
+      alert("plot stack not empty");
       sPlotStateStack.clear();
     }
   }
 
   public static void prepareForRender() {
+    if (sScaleFactor == sCachedScaleFactor)
+      return;
+    sCachedScaleFactor = sScaleFactor;
+
     sStrokes = new Stroke[STRK_TOTAL];
 
     // construct strokes so we have uniform thickness despite scaling
@@ -583,14 +484,14 @@ public class V  {
     buildStroke(STRK_THICK, 2f);
     buildStroke(STRK_THIN, .4f);
     buildStroke(STRK_VERYTHICK, 3f);
-    {
-      float[] dash = new float[2];
-      float sc = calcStrokeWidth(8);
-      dash[0] = sc;
-      dash[1] = sc * .5f;
-      sStrokes[STRK_RUBBERBAND] = new BasicStroke(calcStrokeWidth(.4f), BasicStroke.CAP_BUTT,
-          BasicStroke.JOIN_ROUND, 1.0f, dash, 0);
-    }
+
+    float[] dash = new float[2];
+    float sc = calcStrokeWidth(8);
+    dash[0] = sc;
+    dash[1] = sc * .5f;
+    sStrokes[STRK_RUBBERBAND] = new BasicStroke(calcStrokeWidth(.4f), BasicStroke.CAP_BUTT,
+        BasicStroke.JOIN_ROUND, 1.0f, dash, 0);
+
   }
 
   private static float calcStrokeWidth(float width) {
@@ -602,10 +503,11 @@ public class V  {
     sStrokes[index] = new BasicStroke(f);
   }
 
-  private static ArrayList<Object> sPlotStateStack = arrayList();
+  private static List<Object> sPlotStateStack = arrayList();
   private static int sCurrentFontIndex;
   private static Stroke[] sStrokes;
+  private static float sCachedScaleFactor;
   private static float sScaleFactor;
-  private static Graphics2D g;
+  private static Graphics2D g; // for succinctness, this is only one character
 
 }

@@ -9,13 +9,12 @@ import java.util.List;
 
 class TBFont {
 
-  private static String[] ifonts = { "Monospaced p 12", "Monospaced p 16", "Monospaced b 20", "Times i 16", };
-
   public static void prepare() {
     if (sFonts == null) {
-      sFonts = new TBFont[ifonts.length];
-      for (int i = 0; i < ifonts.length; i++)
-        sFonts[i] = parse(ifonts[i]);
+      String[] script = { "Monospaced p 12", "Monospaced p 16", "Monospaced b 20", "Times i 16", };
+      sFonts = new TBFont[script.length];
+      for (int i = 0; i < script.length; i++)
+        sFonts[i] = parse(script[i]);
     }
   }
 
@@ -34,13 +33,8 @@ class TBFont {
    * name style size
    *
    * name is a font name style is [p|i|b] plain/italic/bold size is integer size
-   *
-   * @param str
-   *          String of arguments separated by whitespace
-   * @return TBFont
    */
   private static TBFont parse(String str) {
-    TBFont f = null;
     int s = Font.PLAIN;
     int sf = 0;
 
@@ -64,14 +58,11 @@ class TBFont {
         throw new TBError("TBFont parse problem: " + s);
       }
     }
-    f = new TBFont(name, sf, size);
-
-    return f;
+    return new TBFont(name, sf, size);
   }
 
   public static Font fixedWidthFont() {
     return fixedWidthFont;
-
   }
 
   private static Font fixedWidthFont = new Font("Monospaced", Font.PLAIN, 13);
@@ -82,10 +73,8 @@ class TBFont {
   }
 
   public FontMetrics metrics() {
-    if (mFontMetrics == null) {
-      mFontMetrics = V.get2DGraphics().getFontMetrics(mFont);
-    }
-
+    if (mFontMetrics == null)
+      mFontMetrics = Render.graphics().getFontMetrics(mFont);
     return mFontMetrics;
   }
 

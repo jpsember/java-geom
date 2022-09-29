@@ -11,8 +11,7 @@ import java.awt.*;
 import java.awt.geom.*;
 
 import static js.base.Tools.*;
-import static testbed.V.*;
-
+import static testbed.Render.*;
 import static testbed.TestBed.*;
 
 public class AlgorithmStepper {
@@ -100,31 +99,31 @@ public class AlgorithmStepper {
    */
   private void plotTrace(AlgorithmException tr) {
 
-    V.pushColor(Color.red);
-    V.pushStroke(STRK_NORMAL);
+    pushColor(Color.red);
+    pushStroke(STRK_NORMAL);
     for (AbstractScriptElement elem : tr.plotables()) {
       renderElem(elem);
-      IRect bounds = elem.bounds().withInset((int) (-5 * V.getScale()));
-      V.drawRect(bounds);
+      IRect bounds = elem.bounds().withInset((int) (-5 * getScale()));
+      drawRect(bounds);
     }
-    V.pop(2);
+    pop(2);
 
     if (widgets().vb(TRACEPLOT)) {
       String msg = tr.getMessage();
       if (!msg.isEmpty()) {
-        V.pushColor(Colors.get(Colors.RED, .32));
+        pushColor(Colors.get(Colors.RED, .32));
         // Modify transform so we ignore the view's page location and scale factor
-        Graphics2D g = V.get2DGraphics();
+        Graphics2D g = graphics();
         AffineTransform savedTransform = g.getTransform();
         float scl = 1.8f;
         g.setTransform(AffineTransform.getScaleInstance(scl, scl));
-        V.draw(msg, -20000, 20000, // it will clamp this into range on the bottom left
+        draw(msg, -20000, 20000, // it will clamp this into range on the bottom left
             TX_BGND | TX_FRAME | TX_CLAMP | 80);
         g.setTransform(savedTransform);
-        V.pop();
+        pop();
       }
     }
-    V.cleanUpRender();
+    cleanUpRender();
   }
 
   /**

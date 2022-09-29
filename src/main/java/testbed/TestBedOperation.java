@@ -13,10 +13,10 @@ public interface TestBedOperation {
    * the controls should consist of:
    * 
    * <pre>
-   *   w.sOpenTab("Oper name");
+   *   w.openTab("Oper name");
    *    :
    *    :
-   *   w.sCloseTab();
+   *   w.closeTab();
    * </pre>
    */
   public void addControls(WidgetManager w);
