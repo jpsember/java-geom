@@ -169,16 +169,6 @@ public abstract class TestBed extends GeomApp {
   }
 
   @Override
-  public float zoomFactor() {
-    return widgets().vf(EDITOR_ZOOM);
-  }
-
-  @Override
-  public void setZoomFactor(float zoom) {
-    widgets().set(EDITOR_ZOOM, zoom);
-  }
-
-  @Override
   public void paintStart(Graphics2D graphics) {
     V.setGraphics(graphics);
     AlgorithmStepper.sharedInstance().runAlgorithm(oper());

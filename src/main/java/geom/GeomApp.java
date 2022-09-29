@@ -173,7 +173,6 @@ public abstract class GeomApp extends GUIApp {
 
   private void removeUIElements() {
     contentPane().removeAll();
-    todo("add support for ControlPanel");
   }
 
   @Override
@@ -323,12 +322,12 @@ public abstract class GeomApp extends GUIApp {
    * This is needed for some operations that occur outside of rendering
    * operation
    */
-  public float zoomFactor() {
-    return 1f;
+  public final float zoomFactor() {
+    return widgets().vf(EDITOR_ZOOM);
   }
 
-  public void setZoomFactor(float zoom) {
-    throw notSupported("setZoomFactor");
+  public final void setZoomFactor(float zoom) {
+    widgets().set(EDITOR_ZOOM, zoom);
   }
 
   public final int paddingPixels() {
