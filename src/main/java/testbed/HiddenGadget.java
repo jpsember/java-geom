@@ -2,6 +2,7 @@ package testbed;
 
 import static js.base.Tools.*;
 
+@Deprecated
 class HiddenGadget extends Gadget {
 
   public HiddenGadget(Object defaultValue) {

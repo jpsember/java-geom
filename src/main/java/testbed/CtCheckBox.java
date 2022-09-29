@@ -2,6 +2,7 @@ package testbed;
 
 import javax.swing.*;
 
+@Deprecated
 class CtCheckBox extends Gadget {
 
   /**

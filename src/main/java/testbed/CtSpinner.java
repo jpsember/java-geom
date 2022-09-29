@@ -9,6 +9,7 @@ import static js.base.Tools.*;
 
 import java.awt.*;
 
+@Deprecated
 class CtSpinner extends Gadget implements ChangeListener {
 
   private static final boolean db = false && alert("debug printing in effect");

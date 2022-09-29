@@ -9,6 +9,7 @@ import javax.swing.JComponent;
 /**
  * Abstract class representing a user interface element
  */
+@Deprecated
 abstract class Gadget {
 
   public final Gadget setId(int id) {

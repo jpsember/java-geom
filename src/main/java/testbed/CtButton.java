@@ -6,6 +6,7 @@ import javax.swing.Action;
 /**
  * Button gadget
  */
+@Deprecated
 class CtButton extends Gadget {
 
   public boolean serialized() {

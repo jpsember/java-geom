@@ -7,6 +7,7 @@ import java.awt.event.*;
 /**
  * Text field gadget
  */
+@Deprecated
 class CtTextFieldNew extends Gadget implements ActionListener {
   public Object readValue() {
     if (readOnly())

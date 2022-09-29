@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * Label gadget
  */
+@Deprecated
 class CtLabel extends Gadget {
 
   public boolean serialized() {

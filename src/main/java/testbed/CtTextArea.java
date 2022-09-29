@@ -3,6 +3,7 @@ package testbed;
 import javax.swing.JTextArea;
 import javax.swing.*;
 
+@Deprecated
 class CtTextArea extends Gadget {
 
   @Override

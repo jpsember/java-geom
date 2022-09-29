@@ -9,6 +9,7 @@ import static js.base.Tools.*;
 /**
  * A collection of Gadgets
  */
+@Deprecated
 public final class GadgetCollection {
 
   /**
