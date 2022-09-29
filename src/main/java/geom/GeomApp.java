@@ -335,7 +335,7 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public final void setZoomFactor(float zoom) {
-    widgets().set(EDITOR_ZOOM, zoom);
+    widgets().setf(EDITOR_ZOOM, zoom);
   }
 
   public final int paddingPixels() {

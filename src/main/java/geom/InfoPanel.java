@@ -72,7 +72,7 @@ class InfoPanel extends JPanel {
       sb.append(nameOnly);
       scriptDisplay = sb.toString();
     }
-    widgets().setValue(SCRIPT_NAME, scriptDisplay);
+    widgets().sets(SCRIPT_NAME, scriptDisplay);
   }
 
   public void setMessage(String text) {
@@ -85,7 +85,7 @@ class InfoPanel extends JPanel {
         return;
     }
 
-    widgets().setValue(MESSAGE, text);
+    widgets().sets(MESSAGE, text);
   }
 
   private long mErrorTime;

@@ -209,7 +209,7 @@ public final class Project extends BaseObject {
   }
 
   public void setScriptIndex(int index) {
-    widgets().set(CURRENT_SCRIPT_INDEX, index);
+    widgets().setf(CURRENT_SCRIPT_INDEX, index);
   }
 
   /**
