@@ -79,7 +79,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
   @Override
   public void start() {
     if (mAddMode) {
-      mCommand = editor().buildCommand("Add Polygon");
+      mCommand = geomApp().buildCommand("Add Polygon");
       mVertexIndex = 0;
       setState(mCurveMode ? STATE_STARTING_CURVE : STATE_UP);
 
@@ -92,11 +92,11 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
       EditablePolygonElement polygon = new EditablePolygonElement(null, template, mCurveMode);
 
       mSlot = StateTools.addNewElement(mCommand, polygon);
-      editor().setMouseCursor(Cursor.HAND_CURSOR);
+      geomApp().setMouseCursor(Cursor.HAND_CURSOR);
 
       mMouseOffset = IPoint.ZERO;
     } else {
-      mCommand = editor().buildCommand("Adjust Polygon");
+      mCommand = geomApp().buildCommand("Adjust Polygon");
       EditorElement elem = mCommand.newState().elements().get(mSlot);
       mOriginalElem = (EditablePolygonElement) elem;
       IPoint vertexLoc = mOriginalElem.polygon().vertex(mVertexIndex);
@@ -127,7 +127,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
 
     case UserEvent.CODE_DOWN: {
       if (event.isRight()) {
-        editor().perform(mCommand);
+        geomApp().perform(mCommand);
         event.clearOperation();
         break;
       }
@@ -178,7 +178,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
       EditablePolygonElement p = activePolygon();
       p = p.withInsertVertex(mVertexIndex, applyMouseOffset(event.getWorldLocation()));
       writeActivePolygon(p);
-      editor().perform(mCommand);
+      geomApp().perform(mCommand);
     }
       break;
     }
@@ -193,7 +193,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
       if (mState == STATE_STARTING_CURVE && !event.isRight()) {
         setState(STATE_ADJUST);
       } else {
-        editor().perform(mCommand);
+        geomApp().perform(mCommand);
         event.clearOperation();
       }
     }
@@ -236,7 +236,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
    */
   private void writeActivePolygon(EditablePolygonElement p) {
     StateTools.replaceAndSelectItem(mCommand, mSlot, p);
-    editor().perform(mCommand);
+    geomApp().perform(mCommand);
   }
 
   @Override
@@ -270,8 +270,8 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
     if (!p.polygon().isWellDefined()) {
       log("...removing incomplete edit polygon");
       StateTools.remove(mCommand, mSlot);
-      editor().perform(mCommand);
-      editor().discardLastCommand();
+      geomApp().perform(mCommand);
+      geomApp().discardLastCommand();
       return;
     }
 
@@ -337,7 +337,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
 
     // Discard the 'add polygon' operation, since we're about to merge it; we will
     // want the result of the merge to be the one added to the undo history
-    editor().discardLastCommand();
+    geomApp().discardLastCommand();
 
     StateTools.remove(mCommand, mSlot);
     if (bIndex >= 0) {
@@ -348,7 +348,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
     }
     StateTools.addNewElement(mCommand, closedPolygon);
     mCommand.mergeDisabled(true);
-    editor().perform(mCommand);
+    geomApp().perform(mCommand);
   }
 
   // ------------------------------------------------------------------

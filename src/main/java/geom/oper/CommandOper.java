@@ -55,7 +55,7 @@ public abstract class CommandOper extends UserOperation {
     if (!isCommandValid())
       return;
     log("performing command:", command());
-    editor().perform(command());
+    geomApp().perform(command());
   }
 
   /**
@@ -81,7 +81,7 @@ public abstract class CommandOper extends UserOperation {
     ScriptEditState editState = scriptManager().state();
     if (mCommandBuilder == null || !editState.equals(mCachedScriptEditState)) {
       mCachedScriptEditState = editState;
-      mCommandBuilder = editor().buildCommand(getClass().getSimpleName());
+      mCommandBuilder = geomApp().buildCommand(getClass().getSimpleName());
       mCachedValidFlag = constructCommand(mCommandBuilder);
       log("built fresh command:", mCommandBuilder);
     }

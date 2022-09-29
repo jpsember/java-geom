@@ -42,13 +42,13 @@ public class OpenNextProjectOper extends UserOperation {
   @Override
   public void start() {
     // If there's an existing project or recent project, start requester in its parent directory
-    Project project =  editor().currentProject();
+    Project project =  geomApp().currentProject();
     File currentProjectDirectory;
     if (project.defined())
       currentProjectDirectory = project.directory();
     else {
       // Use most recent project (if there is one)
-      currentProjectDirectory =  editor().recentProjects().getMostRecentFile();
+      currentProjectDirectory =  geomApp().recentProjects().getMostRecentFile();
     }
 
     if (Files.empty(currentProjectDirectory))
@@ -67,6 +67,6 @@ public class OpenNextProjectOper extends UserOperation {
     File nextProjDir = projectFiles.get(nextSlot);
 
     
-    editor().openProject(nextProjDir);
+    geomApp().openProject(nextProjDir);
   }
 }

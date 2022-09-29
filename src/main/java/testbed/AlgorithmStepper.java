@@ -5,15 +5,15 @@ import js.graphics.AbstractScriptElement;
 import js.guiapp.UserOperation;
 import js.widget.WidgetManager;
 
-import static testbed.TestBedTools.*;
 import static geom.GeomTools.*;
 
 import java.awt.*;
 import java.awt.geom.*;
 
 import static js.base.Tools.*;
+import static testbed.Globals.*;
 
-public class AlgorithmStepper implements Globals {
+public class AlgorithmStepper {
 
   public static AlgorithmStepper sharedInstance() {
     return sAlgorithmStepper;
@@ -43,7 +43,7 @@ public class AlgorithmStepper implements Globals {
    */
   public boolean runAlgorithm(TestBedOperation alg) {
     loadTools();
-    WidgetManager g = gadg();
+    WidgetManager g = widgets();
     mLastException = null;
     mRunning = g.exists(TBGlobals.TRACEENABLED) && g.vb(TBGlobals.TRACEENABLED);
     mDisabled = 0;
@@ -110,7 +110,7 @@ public class AlgorithmStepper implements Globals {
     }
     V.pop(2);
 
-    if (testBed().plotTraceMessages()) {
+    if (widgets().vb(TBGlobals.TRACEPLOT)) {
       String msg = tr.getMessage();
       if (!msg.isEmpty()) {
         V.pushColor(MyColor.get(MyColor.RED, .32));

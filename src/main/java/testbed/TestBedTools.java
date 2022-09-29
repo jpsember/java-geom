@@ -1,12 +1,7 @@
 package testbed;
 
-import geom.GeomApp;
-
+@Deprecated
 public final class TestBedTools {
-
-  public static TestBed testBed() {
-      return (TestBed) GeomApp.singleton();
-  }
-
+ 
 
 }

@@ -21,10 +21,9 @@ public interface TestBedOperation extends Globals {
   public void addControls(WidgetManager widgets);
 
   /**
-   * Process an action
-   * @param event action
+   * Process a UserEvent
    */
-  public void processAction(UserEvent event);
+  public void processUserEvent(UserEvent event);
 
   /**
    * Execute an algorithm.  If no algorithm is to be run, this method

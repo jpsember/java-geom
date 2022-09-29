@@ -99,7 +99,7 @@ public final class ScriptWrapper extends BaseObject {
   public boolean hasImage() {
     if (isNone())
       return false;
-    if (!GeomTools.editor().hasImageSupport())
+    if (!GeomTools.geomApp().hasImageSupport())
       return false;
     if (mImageFile == null) {
       if (Files.nonEmpty(scriptFile())) {

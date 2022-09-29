@@ -52,7 +52,7 @@ public class AdjustBoxRotationOper extends UserOperation implements UserEvent.Li
   public void start() {
     log("start");
 
-    mCommand = editor().buildCommand("Adjust Box Rotation");
+    mCommand = geomApp().buildCommand("Adjust Box Rotation");
     EditorElement elem = mCommand.newState().elements().get(mSlot);
     mOriginalElem = (EditableRectElement) elem;
     float angle = MyMath.polarAngle(FPoint.difference(mMouseDownLoc.toFPoint(), origin()));
@@ -72,12 +72,12 @@ public class AdjustBoxRotationOper extends UserOperation implements UserEvent.Li
       ElementProperties.Builder properties = mOriginalElem.properties().toBuilder();
       properties.rotation(MyMath.clamp(toDegrees(newAngle + mAngleOffset), -85, 85));
       StateTools.replaceAndSelectItem(mCommand, mSlot, mOriginalElem.withProperties(properties));
-      editor().perform(mCommand);
+      geomApp().perform(mCommand);
     }
       break;
 
     case UserEvent.CODE_UP:
-      editor().perform(mCommand);
+      geomApp().perform(mCommand);
       event.clearOperation();
       break;
     }

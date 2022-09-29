@@ -43,7 +43,7 @@ public final class FindProblemsOper extends UserOperation {
   @Override
   public void start() {
 
-    Project proj =  editor().currentProject();
+    Project proj =  geomApp().currentProject();
     if (proj.isDefault())
       return;
 
@@ -73,7 +73,7 @@ public final class FindProblemsOper extends UserOperation {
     pr("Project:", proj.directory());
     if (firstProblem >= 0) {
       pr("Problems:", INDENT, summary);
-       editor().switchToScript(firstProblem);
+       geomApp().switchToScript(firstProblem);
     } else
       pr("...no problems");
   }

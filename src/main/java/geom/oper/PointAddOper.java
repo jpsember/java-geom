@@ -41,7 +41,7 @@ public class PointAddOper extends UserOperation implements UserEvent.Listener {
 
   @Override
   public void start() {
-    editor().setMouseCursor(Cursor.HAND_CURSOR);
+    geomApp().setMouseCursor(Cursor.HAND_CURSOR);
   }
 
   @Override
@@ -55,22 +55,22 @@ public class PointAddOper extends UserOperation implements UserEvent.Listener {
     case UserEvent.CODE_DOWN: {
       IPoint pos = event.getWorldLocation();
       mOriginalElement = EditablePointElement.DEFAULT_INSTANCE.withLocation(pos);
-      mCommand = editor().buildCommand("Add Point");
+      mCommand = geomApp().buildCommand("Add Point");
       mSlot = StateTools.addNewElement(mCommand, mOriginalElement);
-      editor().perform(mCommand);
-      editor().setMouseCursor(Cursor.CROSSHAIR_CURSOR);
+      geomApp().perform(mCommand);
+      geomApp().setMouseCursor(Cursor.CROSSHAIR_CURSOR);
     }
       break;
 
     case UserEvent.CODE_DRAG: {
       EditablePointElement p = mOriginalElement.withLocation(event.getWorldLocation());
       StateTools.replaceAndSelectItem(mCommand, mSlot, p);
-      editor().perform(mCommand);
+      geomApp().perform(mCommand);
     }
       break;
 
     case UserEvent.CODE_UP:
-      editor().perform(mCommand);
+      geomApp().perform(mCommand);
       event.clearOperation();
       break;
     }

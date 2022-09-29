@@ -47,7 +47,7 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     ScriptWrapper script = scriptManager().currentScript();
     if (!script.isNone()) {
       mGraphics = (Graphics2D) g;
-      mCurrentZoom = editor().zoomFactor();
+      mCurrentZoom = geomApp().zoomFactor();
       super.paintComponent(g);
       paintContents();
       mGraphics = null;
@@ -123,7 +123,7 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     determineTransform(pageSize);
     g.transform(mTransform.toAffineTransform());
 
-    GeomApp.singleton().paintStart(g);
+    geomApp().paintStart(g);
 
     if (script.hasImage()) {
       g.drawImage(script.image(), 0, 0, null);
@@ -165,7 +165,7 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     }
     op.paint();
 
-    GeomApp.singleton().paintStop();
+    geomApp().paintStop();
   }
 
   // ------------------------------------------------------------------

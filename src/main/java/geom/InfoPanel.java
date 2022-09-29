@@ -47,7 +47,7 @@ public class InfoPanel extends JPanel {
 
     setBorder(BorderFactory.createRaisedBevelBorder());
 
-    WidgetManager m = gadg();
+    WidgetManager m = widgets();
 
     // Use the InfoPanel as the root container
     m.setPendingContainer(this);
@@ -68,7 +68,7 @@ public class InfoPanel extends JPanel {
 
     String scriptDisplay = "";
     if (!script.isNone()) {
-      Project project = editor().currentProject();
+      Project project = geomApp().currentProject();
       StringBuilder sb = new StringBuilder();
       sb.append(project.scriptIndex());
       sb.append("/");
@@ -78,7 +78,7 @@ public class InfoPanel extends JPanel {
       sb.append(nameOnly);
       scriptDisplay = sb.toString();
     }
-    gadg().setValue(TBGlobals.SCRIPT_NAME, scriptDisplay);
+    widgets().setValue(TBGlobals.SCRIPT_NAME, scriptDisplay);
   }
 
   public void setMessage(String text) {
@@ -91,7 +91,7 @@ public class InfoPanel extends JPanel {
         return;
     }
 
-    gadg().setValue(TBGlobals.MESSAGE, text);
+    widgets().setValue(TBGlobals.MESSAGE, text);
   }
 
   //  private WidgetManager mWidgetManager;

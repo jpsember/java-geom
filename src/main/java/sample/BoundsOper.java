@@ -27,44 +27,26 @@ public class BoundsOper implements TestBedOperation, Globals {
   public void addControls(WidgetManager c) {
 
     c.openTab("Bounds");
-    c.addLabel("Calculate minimum bounding box of objects");
+    {
+      c.addLabel("Calculate minimum bounding box of objects");
 
-    c.open("random params");
-    c.max(100).addSlider(SEED);
-    c.max(100).defaultVal(12).addSlider(COUNT);
-    c.close("random params");
-    //    {
-    //      c.open();
-    //      c.intSlider(SEED, "Seed", "Random number generator seed", 0, 100, 0, 1);
-    //      c.newColumn();
-    //      c.intSpinner(COUNT, "Count", "Number to generate", 0, 100, 12, 1);
-    //      c.close();
-    //    }
-    //    c.button(9999, "Hello", "Sample button") //
-    //        .doubleSlider(9988, "DoubleSlid", "Double slider", 5.2, 10.2, 7.5, 0.1) //
-    //        .doubleSpinner(9989, "DblSpin", "Double spinner", 5.2, 10.2, 7.5, 0.1) //
-    //        .textField(9970, "field", "hint", 12, true, "hello") //
-    //        .textArea(9971, "area", "text area", true, "hello");
-    //
-    //    if (false) { // haven't added full support for these yet
-    //      c.openComboBox(7800, "Combo Box", "This is a combo box", true) //
-    //       .choice(7805, "choice A") //
-    //       .choice(7806, "choice B") //
-    //      .choice(7807, "choice C") //
-    //       .closeComboBox();
-    //    }
+      c.columns(".x");
+      c.open("random params");
+      {
+        c.addLabel("Seed:");
+        c.max(100).addSlider(SEED);
+        c.addLabel("Count:");
+        c.max(100).defaultVal(12).addSlider(COUNT);
+      }
+      c.close("random params");
 
-    //c.close("Bounds tab");
+    }
     c.closeTab();
   }
 
-  public void processAction(UserEvent event) {
-    pr("action:", event);
-
-    todo("there ought to be a convenience method for this");
-    if (event.getCode() == UserEvent.CODE_WIDGET) {
+  public void processUserEvent(UserEvent event) {
+    if (event.isWidget())
       generate();
-    }
   }
 
   public void runAlgorithm() {
@@ -112,7 +94,7 @@ public class BoundsOper implements TestBedOperation, Globals {
   }
 
   private void generate() {
-    WidgetManager g = gadg();
+    WidgetManager g = widgets();
     int seed = g.vi(SEED);
     Random r = new Random(seed + 1);
     int c = g.vi(COUNT);
@@ -120,7 +102,7 @@ public class BoundsOper implements TestBedOperation, Globals {
 
     final int PADDING = 3;
 
-    IPoint size = editor().getEditorPanel().pageSize();
+    IPoint size = geomApp().getEditorPanel().pageSize();
     float sx = size.x - 2 * PADDING;
     float sy = size.y - 2 * PADDING;
     for (int i = 0; i < c; i++) {
@@ -131,8 +113,8 @@ public class BoundsOper implements TestBedOperation, Globals {
     Command.Builder b = Command.newBuilder();
     ScriptEditState editState = scriptManager().state();
     b.newState(editState.toBuilder().elements(elemList));
-    editor().perform(b);
-    editor().performRepaint(GeomApp.REPAINT_EDITOR);
+    geomApp().perform(b);
+    geomApp().performRepaint(GeomApp.REPAINT_EDITOR);
   }
 
   private IRect mBounds;

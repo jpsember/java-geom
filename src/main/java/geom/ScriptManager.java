@@ -99,7 +99,7 @@ public class ScriptManager {
     );
 
     // Discard undo manager, since it refers to a different script
-    editor().discardUndoManager();
+    geomApp().discardUndoManager();
   }
 
   private ScriptEditState mState = ScriptEditState.DEFAULT_INSTANCE;

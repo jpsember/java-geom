@@ -47,7 +47,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
 
   @Override
   public void start() {
-    editor().setMouseCursor(Cursor.DEFAULT_CURSOR);
+    geomApp().setMouseCursor(Cursor.DEFAULT_CURSOR);
   }
 
   @Override
@@ -103,7 +103,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
     IntArray.Builder b1 = IntArray.newBuilder();
     IntArray.Builder b2 = IntArray.newBuilder();
 
-    int paddingPixels = editor().paddingPixels();
+    int paddingPixels = geomApp().paddingPixels();
 
     int slot = INIT_INDEX;
     for (EditorElement element : state.elements()) {
@@ -139,7 +139,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
       if (!pickSet().isEmpty()) {
         walkThroughPickSet();
       } else {
-        editor().perform(new SetSelectedElementsOper(IntArray.DEFAULT_INSTANCE));
+        geomApp().perform(new SetSelectedElementsOper(IntArray.DEFAULT_INSTANCE));
       }
     } else {
       if (!pickSet().isEmpty()) {
@@ -150,7 +150,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
           current = SlotList.minus(current, single);
         else
           current = SlotList.union(current, single);
-        editor().perform(new SetSelectedElementsOper(current));
+        geomApp().perform(new SetSelectedElementsOper(current));
       }
     }
   }
@@ -177,7 +177,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
     }
     if (outputSlot < 0)
       outputSlot = last(pickSet());
-    editor().perform(new SetSelectedElementsOper(IntArray.with(outputSlot)));
+    geomApp().perform(new SetSelectedElementsOper(IntArray.with(outputSlot)));
   }
 
   private void doContinueDrag(UserEvent event) {
@@ -213,7 +213,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
      *
      * [] start move focus operation
      */
-    GeomApp ed = editor();
+    GeomApp ed = geomApp();
 
     if (!event.isShift()) {
       UserOperation oper = findOperationForEditableObject();
@@ -235,7 +235,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
         oper = obj.isEditingSelectedObject(ed, slot, mInitialDownEvent);
         if (oper == null) {
           IntArray selItem = IntArray.with(slot);
-          editor().perform(new SetSelectedElementsOper(selItem));
+          geomApp().perform(new SetSelectedElementsOper(selItem));
           oper = new MoveElementsOper(mInitialDownEvent);
         }
         event.setOperation(oper);
@@ -264,7 +264,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
     }
 
     EditorElement obj = (EditorElement) scriptManager().state().elements().get(editableSlot);
-    return obj.isEditingSelectedObject(editor(), editableSlot, mInitialDownEvent);
+    return obj.isEditingSelectedObject(geomApp(), editableSlot, mInitialDownEvent);
   }
 
   private IntArray pickSet() {

@@ -32,12 +32,12 @@ public class ProjectCloseOper extends UserOperation {
 
   @Override
   public boolean shouldBeEnabled() {
-    return  editor().currentProject().defined();
+    return  geomApp().currentProject().defined();
   }
 
   @Override
   public void start() {
-     editor().closeProject();
+     geomApp().closeProject();
   }
 
 }

@@ -33,6 +33,7 @@ import static js.base.Tools.*;
 import js.base.BaseObject;
 import js.data.DataUtil;
 import js.file.Files;
+import js.guiapp.GUIApp;
 import js.parsing.RegExp;
 
 public final class AppDefaults extends BaseObject {
@@ -46,7 +47,7 @@ public final class AppDefaults extends BaseObject {
    */
   public static File projectsConfigurationDirectory() {
     if (sProjectsConfigurationDirectory == null) {
-      String appName = GeomApp.singleton().name();
+      String appName = GUIApp.sharedInstance().name();
       checkArgument(RegExp.patternMatchesString("\\w+", appName), "illegal app name:", appName);
       String modifiedAppName = "app_defaults_" + DataUtil.convertCamelCaseToUnderscores(appName);
       sProjectsConfigurationDirectory = new File(Files.homeDirectory(), "." + modifiedAppName);

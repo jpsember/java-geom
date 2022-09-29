@@ -31,7 +31,7 @@ public class V implements Globals {
       return;
 
     TBFont.prepare();
-    float z = editor().zoomFactor();
+    float z = geomApp().zoomFactor();
     sScaleFactor = 2f / z;
     prepareForRender();
     V.setFont(FNT_MEDIUM);

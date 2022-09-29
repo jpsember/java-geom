@@ -27,17 +27,6 @@ import static geom.GeomTools.*;
  */
 public abstract class GeomApp extends GUIApp {
 
-  private static GeomApp sSingleton;
-
-  public GeomApp() {
-    checkState(sSingleton == null, "GeomApp already constructed");
-    sSingleton = this;
-  }
-
-  public static GeomApp singleton() {
-    return sSingleton;
-  }
-
   @Override
   public UserOperation getDefaultUserOperation() {
     return new DefaultOper();
@@ -88,7 +77,7 @@ public abstract class GeomApp extends GUIApp {
       return;
     flushProject();
     if (validGadgets())
-      gadg().setActive(false);
+      widgets().setActive(false);
 
     mCurrentProject = Project.DEFAULT_INSTANCE;
     removeUIElements();
@@ -121,7 +110,7 @@ public abstract class GeomApp extends GUIApp {
 
     // Now that gadgets have been built, restore their state
     if (validGadgets()) {
-      WidgetManager g = gadg();
+      WidgetManager g = widgets();
       g.writeGadgetValues(projectState().widgetStateMap());
       g.setActive(true);
     }
@@ -155,7 +144,7 @@ public abstract class GeomApp extends GUIApp {
     if (!currentProject().defined())
       return;
     if (validGadgets())
-      projectState().widgetStateMap(gadgets().readGadgetValues());
+      projectState().widgetStateMap(widgets().readGadgetValues());
     currentProject().flush();
   }
 
@@ -415,7 +404,7 @@ public abstract class GeomApp extends GUIApp {
   @Override
   public void initGadgets() {
     super.initGadgets();
-    WidgetManager g = gadgets();
+    WidgetManager g = widgets();
 
     // Add gadget for persisting frame bounds
     g.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));

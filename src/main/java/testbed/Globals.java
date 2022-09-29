@@ -30,4 +30,8 @@ public interface Globals {
 
   public static final int TAB_ID_START = 1000;
 
+  public static TestBed testBed() {
+    return TestBed.sharedInstance();
+  }
+  
 }

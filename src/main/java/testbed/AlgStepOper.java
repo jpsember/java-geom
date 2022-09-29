@@ -16,14 +16,14 @@ public class AlgStepOper extends UserOperation {
 
   @Override
   public void start() {
-    WidgetManager C = gadg() ;
+    WidgetManager C = widgets() ;
     C.seti(TBGlobals.TRACESTEP, mNextStep);
   }
 
   @Override
   public boolean shouldBeEnabled() {
     todo("clunky to have to access gadgets like this");
-    WidgetManager C = gadg();
+    WidgetManager C = widgets();
     int current = C.vi(TBGlobals.TRACESTEP);
     int target = 0;
     if (mDir != 0)

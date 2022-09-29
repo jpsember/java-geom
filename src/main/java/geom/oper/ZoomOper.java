@@ -54,7 +54,7 @@ public final class ZoomOper extends UserOperation {
 
   @Override
   public boolean shouldBeEnabled() {
-    float oldZoom = editor().zoomFactor(); 
+    float oldZoom = geomApp().zoomFactor(); 
     float newZoom;
     if (mStepFactor == 0)
       newZoom = 1f;
@@ -71,7 +71,7 @@ public final class ZoomOper extends UserOperation {
 
   @Override
   public void start() {
-    editor().setZoomFactor(mNewZoomFactor);
+    geomApp().setZoomFactor(mNewZoomFactor);
   }
 
   private final float mStepFactor;

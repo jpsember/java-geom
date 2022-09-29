@@ -153,7 +153,7 @@ public final class Project extends BaseObject {
   }
 
   private void buildScriptList() {
-    boolean hasImages = GeomTools.editor().hasImageSupport();
+    boolean hasImages = GeomTools.geomApp().hasImageSupport();
     List<ScriptFileEntry> scriptFileList = ScriptUtil.buildScriptList(directory(), hasImages);
     List<ScriptWrapper> scripts = arrayList();
 
@@ -195,7 +195,7 @@ public final class Project extends BaseObject {
   public int scriptIndex() {
     int index = 0;
     if (validGadgets())  
-    index = gadg().vi(TBGlobals.CURRENT_SCRIPT_INDEX);
+    index = widgets().vi(TBGlobals.CURRENT_SCRIPT_INDEX);
     int count = scriptCount();
     if (index >= count) {
       pr("scriptIndex", index, "exceeds count", count, "!!!!");
@@ -211,7 +211,7 @@ public final class Project extends BaseObject {
 
   public void setScriptIndex(int index) {
     if (validGadgets())
-    gadg().set(TBGlobals.CURRENT_SCRIPT_INDEX, index);
+    widgets().set(TBGlobals.CURRENT_SCRIPT_INDEX, index);
   }
 
   /**

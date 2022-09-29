@@ -21,14 +21,13 @@ public abstract class TestBed extends GeomApp {
    */
   @Override
   public void userEventManagerListener(UserEvent event) {
-    if (!gadgets().active())
+    if (!widgets().active())
       return;
     try {
       // Don't propagate action if we aren't initialized and displaying a script
       todo("more succinct way to check if script defined?");
-      todo("Rename processAction -> processEvent");
       if (ScriptManager.singleton().currentScript().defined())
-        oper().processAction(event);
+        oper().processUserEvent(event);
       super.userEventManagerListener(event);
     } catch (TBError e) {
       showError(e.toString());
@@ -73,7 +72,6 @@ public abstract class TestBed extends GeomApp {
           c.addLabel("Step:") //
               .tooltip("Highlight individual steps in algorithm") //
               .min(0).max(500).stepSize(1).defaultVal(0).addSlider(TBGlobals.TRACESTEP);
-          todo("alg stepper is not propagating events");
 
           c.close("multicolumn subsection");
         }
@@ -102,7 +100,7 @@ public abstract class TestBed extends GeomApp {
     parentPanel.add(getEditorPanel(), BorderLayout.CENTER);
     parentPanel.add(infoPanel(), BorderLayout.SOUTH);
 
-    WidgetManager c = gadg();
+    WidgetManager c = widgets();
 
     c.setPendingContainer(controlPanel());
     c.open("ControlPanel");
@@ -143,11 +141,11 @@ public abstract class TestBed extends GeomApp {
   }
 
   public static int operNum() {
-    return gadg().vi(TBGlobals.OPER);
+    return widgets().vi(TBGlobals.OPER);
   }
 
   public static TestBedOperation oper() {
-    return oper(gadg().vi(TBGlobals.OPER));
+    return oper(widgets().vi(TBGlobals.OPER));
   }
 
   public static TestBedOperation oper(int n) {
@@ -155,17 +153,17 @@ public abstract class TestBed extends GeomApp {
   }
 
   public boolean plotTraceMessages() {
-    return gadgets().vb(TBGlobals.TRACEPLOT);
+    return widgets().vb(TBGlobals.TRACEPLOT);
   }
 
   @Override
   public float zoomFactor() {
-    return gadgets().vf(TBGlobals.EDITOR_ZOOM);
+    return widgets().vf(TBGlobals.EDITOR_ZOOM);
   }
 
   @Override
   public void setZoomFactor(float zoom) {
-    gadgets().set(TBGlobals.EDITOR_ZOOM, zoom);
+    widgets().set(TBGlobals.EDITOR_ZOOM, zoom);
   }
 
   @Override

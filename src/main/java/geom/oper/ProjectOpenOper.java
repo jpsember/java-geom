@@ -44,12 +44,12 @@ public class ProjectOpenOper extends UserOperation {
     File defaultDirectory = null;
 
     // If there's an existing project or recent project, start requester in its parent directory
-    Project project =  editor().currentProject();
+    Project project =  geomApp().currentProject();
     if (project.defined())
       defaultDirectory = project.directory();
     else {
       // Use most recent project (if there is one)
-      defaultDirectory =  editor().recentProjects().getMostRecentFile();
+      defaultDirectory =  geomApp().recentProjects().getMostRecentFile();
     }
 
     if (!Files.empty(defaultDirectory) && !defaultDirectory.isDirectory())
@@ -59,7 +59,7 @@ public class ProjectOpenOper extends UserOperation {
         Files.empty(defaultDirectory) ? null : Files.parent(defaultDirectory), "Open Project");
     if (Files.empty(file))
       return;
-     editor().closeProject();
-     editor().openProject(file);
+     geomApp().closeProject();
+     geomApp().openProject(file);
   }
 }

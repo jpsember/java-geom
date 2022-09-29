@@ -4,23 +4,25 @@ import static js.base.Tools.*;
 
 import java.util.List;
 
+import js.guiapp.GUIApp;
 import js.widget.WidgetManager;
 
 public final class GeomTools {
 
-  public static GeomApp editor() {
-    return GeomApp.singleton();
+  public static GeomApp geomApp() {
+    return GUIApp.sharedInstance();
   }
 
-  public static WidgetManager gadg() {
-    return editor().gadgets();
+  public static WidgetManager widgets() {
+    return GUIApp.sharedInstance().widgetManager();
   }
 
   /**
    * Temporary while transitioning to Widgets
    */
   public static boolean validGadgets() {
-    if (gadg() == null) {
+    todo("is validGadgets() required?");
+    if (widgets() == null) {
       alert("no gadgets defined");
       return false;
     }

@@ -66,9 +66,9 @@ public class RectAddOper extends UserOperation implements UserEvent.Listener {
     log("start");
     mAddState = null;
     mMouseOffset = IPoint.ZERO;
-    mCommand = editor().buildCommand("Add " + getObjectMenuName());
+    mCommand = geomApp().buildCommand("Add " + getObjectMenuName());
     mSlot = StateTools.addNewElement(mCommand, getObjectDefaultInstance());
-    editor().setMouseCursor(Cursor.HAND_CURSOR);
+    geomApp().setMouseCursor(Cursor.HAND_CURSOR);
   }
 
   @Override
@@ -89,9 +89,9 @@ public class RectAddOper extends UserOperation implements UserEvent.Listener {
         mOrigin = pos;
         IRect bounds = boundingRect(mOrigin, IPoint.sum(mOrigin, mMouseOffset));
         writeActiveRect(constructNewObject(bounds));
-        editor().perform(mCommand);
+        geomApp().perform(mCommand);
         addState().set(STATE_CORNER);
-        editor().setMouseCursor(Cursor.CROSSHAIR_CURSOR);
+        geomApp().setMouseCursor(Cursor.CROSSHAIR_CURSOR);
       }
       break;
     case STATE_CORNER:
@@ -113,10 +113,10 @@ public class RectAddOper extends UserOperation implements UserEvent.Listener {
         //        projectState().addBoxCornerIndex(extremeCorner);
         EditorElement p = constructNewObject(bounds);
         writeActiveRect(p);
-        editor().perform(mCommand);
+        geomApp().perform(mCommand);
       } else if (event.getCode() == UserEvent.CODE_UP) {
         addState().set(STATE_DONE);
-        editor().perform(mCommand);
+        geomApp().perform(mCommand);
         event.clearOperation();
       }
       break;
@@ -206,12 +206,12 @@ public class RectAddOper extends UserOperation implements UserEvent.Listener {
     if (mAddMousePos == null)
       return;
 
-    EditorPanel p = editor().getEditorPanel();
+    EditorPanel p = geomApp().getEditorPanel();
     boolean choosingOrigin = addState().is(STATE_ORIGIN);
     IRect guide = guideRect(choosingOrigin);
 
     p.apply(sGuidePaint);
-    p.render(constructGuidePath(guide, cornerIndex(), editor().zoomFactor()));
+    p.render(constructGuidePath(guide, cornerIndex(), geomApp().zoomFactor()));
 
     // Use the normal box rendering method to draw the guide rectangle;
     // it is less confusing for the user

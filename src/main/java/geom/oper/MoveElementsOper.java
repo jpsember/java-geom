@@ -45,10 +45,10 @@ public class MoveElementsOper extends UserOperation implements UserEvent.Listene
 
   public MoveElementsOper(UserEvent initialDownEvent) {
     mDownEventWorldLocation = initialDownEvent.getWorldLocation();
-    mCommand = editor().buildCommand("");
+    mCommand = geomApp().buildCommand("");
     mInitialState = mCommand.newState();
     setDescriptionForSelected(mCommand, "Move", mInitialState.selectedElements().length);
-    editor().setMouseCursor(Cursor.HAND_CURSOR);
+    geomApp().setMouseCursor(Cursor.HAND_CURSOR);
   }
 
   @Override
@@ -59,7 +59,7 @@ public class MoveElementsOper extends UserOperation implements UserEvent.Listene
       break;
 
     case UserEvent.CODE_UP:
-      editor().perform(mCommand);
+      geomApp().perform(mCommand);
       event.clearOperation();
       break;
     }
@@ -82,7 +82,7 @@ public class MoveElementsOper extends UserOperation implements UserEvent.Listene
       elem.set(slot, updatedObj);
     }
     mCommand.newState(mInitialState.toBuilder().elements(elem));
-    editor().perform(mCommand);
+    geomApp().perform(mCommand);
   }
 
   private IPoint mDownEventWorldLocation;

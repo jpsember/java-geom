@@ -49,10 +49,10 @@ public class RedoOper extends UserOperation {
   public void start() {
     ScriptEditState restoredState = undoManager().performRedo();
     scriptManager().setState(restoredState);
-    editor().performRepaint(GeomApp.REPAINT_ALL);
+    geomApp().performRepaint(GeomApp.REPAINT_ALL);
   }
 
   private UndoManager undoManager() {
-    return editor().undoManager();
+    return geomApp().undoManager();
   }
 }

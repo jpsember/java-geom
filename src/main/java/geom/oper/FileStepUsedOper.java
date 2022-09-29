@@ -47,7 +47,7 @@ public final class FileStepUsedOper extends UserOperation {
   @Override
   public boolean shouldBeEnabled() {
     mNextFileIndex = null;
-    Project project = editor().currentProject();
+    Project project = geomApp().currentProject();
     if (!project.definedAndNonEmpty())
       return false;
 
@@ -74,7 +74,7 @@ public final class FileStepUsedOper extends UserOperation {
   public void start() {
     if (mNextFileIndex == null)
       return;
-    editor().switchToScript(mNextFileIndex);
+    geomApp().switchToScript(mNextFileIndex);
   }
 
   private int stepSign() {

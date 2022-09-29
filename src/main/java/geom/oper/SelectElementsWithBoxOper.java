@@ -69,7 +69,7 @@ public class SelectElementsWithBoxOper extends UserOperation implements UserEven
 
   @Override
   public void paint() {
-    EditorPanel p = editor().getEditorPanel();
+    EditorPanel p = geomApp().getEditorPanel();
     IRect r = getRect();
     FRect f = p.pushFocusOn(r.toRect());
     p.apply(HIGHLIGHT_PAINT).renderFrame(f);
@@ -93,7 +93,7 @@ public class SelectElementsWithBoxOper extends UserOperation implements UserEven
     IntArray built = slots;
     if (mInitialEvent.isShift())
       built = SlotList.union(built, IntArray.with(state.selectedElements()));
-    editor().perform(new SetSelectedElementsOper(built));
+    geomApp().perform(new SetSelectedElementsOper(built));
   }
 
   private IRect getRect() {

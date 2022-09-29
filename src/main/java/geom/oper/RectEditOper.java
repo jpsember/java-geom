@@ -55,9 +55,9 @@ public class RectEditOper extends UserOperation implements UserEvent.Listener {
   @Override
   public void start() {
     log("start");
-    editor().setMouseCursor(sCursors[mHandle]);
+    geomApp().setMouseCursor(sCursors[mHandle]);
     mMouseOffset = IPoint.ZERO;
-    mCommand = editor().buildCommand("Adjust Box");
+    mCommand = geomApp().buildCommand("Adjust Box");
     EditorElement elem = mCommand.newState().elements().get(mSlot);
     mOriginalElem = (EditableRectElement) elem;
     IPoint vertexLoc = originalBounds().corner(cornerIndex(mHandle));
@@ -74,12 +74,12 @@ public class RectEditOper extends UserOperation implements UserEvent.Listener {
     case UserEvent.CODE_DRAG: {
       RectElement p = setElementPosition(mHandle, applyMouseOffset(event.getWorldLocation()));
       StateTools.replaceAndSelectItem(mCommand, mSlot, constructNewObject(p.bounds()));
-      editor().perform(mCommand);
+      geomApp().perform(mCommand);
     }
       break;
 
     case UserEvent.CODE_UP:
-      editor().perform(mCommand);
+      geomApp().perform(mCommand);
       event.clearOperation();
       break;
     }
