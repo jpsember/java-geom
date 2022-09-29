@@ -102,4 +102,11 @@ public interface EditorElement extends ScriptElement {
    */
   EditorElement withProperties(ElementProperties properties);
 
+  /**
+   * Get an optonal informational message about the element for displaying in an editor.
+   * Default returns null
+   */
+  default String infoMessage() {
+    return null;
+  }
 }

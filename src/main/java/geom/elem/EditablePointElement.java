@@ -93,4 +93,8 @@ public class EditablePointElement extends PointElement implements EditorElement 
     return new EditablePointElement(properties, location());
   }
 
+  @Override
+  public String infoMessage() {
+    return location().toString();
+  }
 }

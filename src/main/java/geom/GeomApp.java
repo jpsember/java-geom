@@ -8,7 +8,9 @@ import java.util.List;
 
 import geom.gen.Command;
 import geom.gen.ProjectState;
+import geom.gen.ScriptEditState;
 import geom.oper.*;
+import js.base.BasePrinter;
 import js.file.Files;
 import js.geometry.IPoint;
 import js.guiapp.GUIApp;
@@ -120,7 +122,6 @@ public abstract class GeomApp extends GUIApp {
     recentProjects().setCurrentFile(project.directory());
     AppDefaults.sharedInstance().edit().recentProjects(recentProjects().state());
     rebuildFrameContent();
-   
     scriptManager().replaceCurrentScriptWith(currentProject().script());
 
     updateTitle();
@@ -300,6 +301,16 @@ public abstract class GeomApp extends GUIApp {
     command = command.build();
     undoManager().record(command);
     scriptManager().setState(command.newState());
+    
+    // If there's a single selected element, render its information to the InfoPanel
+
+    String infoMsg = null;
+    ScriptEditState state = scriptManager().state();
+    if (state.selectedElements().length == 1) {
+      EditorElement elem = state.elements().get(state.selectedElements()[0]);
+      infoMsg = elem.infoMessage();
+    }
+    setInfoMessage(nullToEmpty(infoMsg));
   }
 
   public void perform(CommandOper oper) {
@@ -374,9 +385,10 @@ public abstract class GeomApp extends GUIApp {
 
   @Override
   public void repaintPanels(int repaintFlags) {
-    if (0 != (repaintFlags & REPAINT_EDITOR)) {
+    repaintFlags |= mPendingRepaintFlags;
+    mPendingRepaintFlags = 0;
+    if (0 != (repaintFlags & REPAINT_EDITOR))
       getEditorPanel().repaint();
-    }
     if (infoPanel() != null)
       if (0 != (repaintFlags & REPAINT_INFO))
         infoPanel().refresh();
@@ -425,4 +437,12 @@ public abstract class GeomApp extends GUIApp {
     w.addHidden(EDITOR_ZOOM, 1f);
     w.addHidden(CURRENT_SCRIPT_INDEX, 0);
   }
+
+  public void setInfoMessage(Object... messages) {
+    String content = BasePrinter.toString(messages);
+    if (infoPanel().setMessage(content))
+      mPendingRepaintFlags |= REPAINT_INFO;
+  }
+
+  private int mPendingRepaintFlags;
 }

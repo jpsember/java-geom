@@ -34,8 +34,8 @@ import js.widget.WidgetManager;
 import static geom.GeomTools.*;
 import static geom.GeomApp.*;
 
+// I'm not sure this needs to be visible outside of the geom package...
 class InfoPanel extends JPanel {
-
 
   public InfoPanel() {
 
@@ -75,17 +75,24 @@ class InfoPanel extends JPanel {
     widgets().sets(SCRIPT_NAME, scriptDisplay);
   }
 
-  public void setMessage(String text) {
+  /**
+   * Returns true if message has changed
+   */
+  public boolean setMessage(String text) {
+    boolean changed = false;
     text = nullToEmpty(text);
     if (text.startsWith("!")) {
       text = "*** " + text.substring(1);
       mErrorTime = System.currentTimeMillis();
     } else {
       if (System.currentTimeMillis() - mErrorTime < 20000)
-        return;
+        return false;
     }
-
-    widgets().sets(MESSAGE, text);
+    String oldMessage = widgets().vs(MESSAGE);
+    changed = !text.equals(oldMessage);
+    if (changed)
+      widgets().sets(MESSAGE, text);
+    return changed;
   }
 
   private long mErrorTime;

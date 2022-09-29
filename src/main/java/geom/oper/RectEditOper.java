@@ -42,7 +42,7 @@ import static geom.GeomTools.*;
 
 public class RectEditOper extends UserOperation implements UserEvent.Listener {
 
-  public RectEditOper(  UserEvent event, int slot, int handle) {
+  public RectEditOper(UserEvent event, int slot, int handle) {
     mHandle = handle;
     mSlot = slot;
     mMouseDownLoc = event.getWorldLocation();
@@ -73,6 +73,7 @@ public class RectEditOper extends UserOperation implements UserEvent.Listener {
 
     case UserEvent.CODE_DRAG: {
       RectElement p = setElementPosition(mHandle, applyMouseOffset(event.getWorldLocation()));
+      geomApp().setInfoMessage(p.bounds());
       StateTools.replaceAndSelectItem(mCommand, mSlot, constructNewObject(p.bounds()));
       geomApp().perform(mCommand);
     }

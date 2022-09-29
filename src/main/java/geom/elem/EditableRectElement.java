@@ -72,6 +72,11 @@ public class EditableRectElement extends RectElement implements EditorElement {
   }
 
   @Override
+  public String infoMessage() {
+    return bounds().toString();
+  }
+
+  @Override
   public boolean contains(int paddingPixels, IPoint pt) {
     IRect paddedBounds = bounds().withInset(-paddingPixels);
     return paddedBounds.contains(pt);
