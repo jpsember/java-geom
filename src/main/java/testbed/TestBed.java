@@ -15,7 +15,7 @@ import static geom.GeomTools.*;
 public abstract class TestBed extends GeomApp {
 
   /**
-   * Reserved gadget ids
+   * Reserved widget ids
    */
   public static final String //
   OPER = "oper", //

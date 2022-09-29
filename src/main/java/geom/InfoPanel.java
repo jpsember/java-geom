@@ -36,9 +36,6 @@ import static geom.GeomApp.*;
 
 class InfoPanel extends JPanel {
 
-  @Deprecated
-  public void opening(Project project) {
-  }
 
   public InfoPanel() {
 

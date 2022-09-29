@@ -120,9 +120,7 @@ public abstract class GeomApp extends GUIApp {
     recentProjects().setCurrentFile(project.directory());
     AppDefaults.sharedInstance().edit().recentProjects(recentProjects().state());
     rebuildFrameContent();
-    if (infoPanel() != null)
-      infoPanel().opening(project);
-
+   
     scriptManager().replaceCurrentScriptWith(currentProject().script());
 
     updateTitle();
@@ -131,7 +129,7 @@ public abstract class GeomApp extends GUIApp {
     // Now that widgets have been built, restore their state
     {
       WidgetManager g = widgets();
-      g.writeGadgetValues(projectState().widgetStateMap());
+      g.setWidgetValues(projectState().widgetStateMap());
       g.setActive(true);
     }
 
@@ -163,7 +161,7 @@ public abstract class GeomApp extends GUIApp {
   public final void flushProject() {
     if (!currentProject().defined())
       return;
-    projectState().widgetStateMap(widgets().readGadgetValues());
+    projectState().widgetStateMap(widgets().readWidgetValues());
     currentProject().flush();
   }
 
@@ -419,14 +417,12 @@ public abstract class GeomApp extends GUIApp {
   private int mTaskTicker;
 
   @Override
-  public void initGadgets() {
-    super.initGadgets();
-    WidgetManager g = widgets();
-
-    // Add gadget for persisting frame bounds
-    g.add(new AppFrameWidget().setId(APP_FRAME));
-    // Add gadget for persisting zoom factor
-    g.addHidden(EDITOR_ZOOM, 1f);
-    g.addHidden(CURRENT_SCRIPT_INDEX, 0);
+  public void initWidgets() {
+    super.initWidgets();
+    WidgetManager w = widgets();
+    // Add widget for persisting frame bounds
+    w.add(new AppFrameWidget().setId(APP_FRAME));
+    w.addHidden(EDITOR_ZOOM, 1f);
+    w.addHidden(CURRENT_SCRIPT_INDEX, 0);
   }
 }
