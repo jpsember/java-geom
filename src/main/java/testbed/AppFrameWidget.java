@@ -5,7 +5,7 @@ import js.guiapp.GUIApp;
 import js.json.JSList;
 import js.widget.Widget;
 
-public class AppFrameGadget extends Widget {
+public class AppFrameWidget extends Widget {
 
   @Override
   public JSList readValue() {

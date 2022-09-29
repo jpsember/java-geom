@@ -2,8 +2,8 @@ package testbed;
 
 /**
  * Interface to store global variables for the TestBed framework
- *
  */
+@Deprecated // Move into V
 public interface Globals {
 
   // predefined strokes:
@@ -13,10 +13,11 @@ public interface Globals {
   public static final int MARK_X = 0, MARK_DISC = 1, MARK_CIRCLE = 2, MARK_SQUARE = 3, MARK_FSQUARE = 4,
       MARK_NONE = 5;
 
-  // text plotting flags
-
-  // do multiline text with no line > n chars wide?
+  /**
+   * Text plotting flags
+   */
   public static final int //
+  // do multiline text with no line > n chars wide?
   TX_LINEWIDTH = 0x00ff
   // clear background?
       , TX_BGND = 0x0100
@@ -28,10 +29,4 @@ public interface Globals {
   // Font indexes:
   public static final int FNT_SMALL = 0, FNT_MEDIUM = 1, FNT_LARGE = 2, FNT_ITALIC = 3, FNT_TOTAL = 4;
 
-  public static final int TAB_ID_START = 1000;
-
-  public static TestBed testBed() {
-    return TestBed.sharedInstance();
-  }
-  
 }

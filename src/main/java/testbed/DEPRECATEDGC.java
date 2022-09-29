@@ -3,10 +3,11 @@ package testbed;
 import java.awt.*;
 import javax.swing.*;
 
-class GC extends GridBagConstraints {
-  private static GC gc = new GC();
+@Deprecated
+class DEPRECATEDGC extends GridBagConstraints {
+  private static DEPRECATEDGC gc = new DEPRECATEDGC();
 
-  public static GC gc(int gridX, int gridY, int gridWidth, int gridHeight,
+  public static DEPRECATEDGC gc(int gridX, int gridY, int gridWidth, int gridHeight,
       int weightX, int weightY) {
     gc.gridx = gridX;
     gc.gridy = gridY;
@@ -45,7 +46,7 @@ class GC extends GridBagConstraints {
    */
 
   public static void addGlue(Container component, int gridX, int gridY) {
-    GC gc = gc(gridX, gridY, GC.REMAINDER, GC.REMAINDER, 1, 1);
+    DEPRECATEDGC gc = gc(gridX, gridY, DEPRECATEDGC.REMAINDER, DEPRECATEDGC.REMAINDER, 1, 1);
     component.add(glue(), gc);
   }
 }

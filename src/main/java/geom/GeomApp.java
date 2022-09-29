@@ -17,7 +17,7 @@ import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
 import js.widget.WidgetManager;
-import testbed.AppFrameGadget;
+import testbed.AppFrameWidget;
 import testbed.TBGlobals;
 
 import static geom.GeomTools.*;
@@ -407,7 +407,7 @@ public abstract class GeomApp extends GUIApp {
     WidgetManager g = widgets();
 
     // Add gadget for persisting frame bounds
-    g.add(new AppFrameGadget().setId(TBGlobals.APP_FRAME));
+    g.add(new AppFrameWidget().setId(TBGlobals.APP_FRAME));
     // Add gadget for persisting zoom factor
     g.addHidden(TBGlobals.EDITOR_ZOOM, 1f);
     g.addHidden(TBGlobals.CURRENT_SCRIPT_INDEX, 0);
