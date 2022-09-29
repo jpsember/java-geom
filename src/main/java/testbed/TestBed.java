@@ -72,16 +72,15 @@ public abstract class TestBed extends GeomApp {
       c.openTab(AUXTAB_TRACE);
       {
         c.tooltip("if true, enables algorithm tracing");
-        c.addToggleButton(TRACEENABLED, "Enabled", true);
-        c.tooltip("plots trace text");
-        c.addToggleButton(TRACEPLOT, "Messages", true);
+        c.label("Enabled").defaultVal(true).addToggleButton(TRACEENABLED);
+        c.tooltip("plots trace text").label("Messages").defaultVal(true).addToggleButton(TRACEPLOT);
 
         {
           c.columns(".x").open("multicolumn subsection");
 
-          c.addLabel("Step:") //
+          c.label("Step:").addLabel() //
               .tooltip("Highlight individual steps in algorithm") //
-              .min(0).max(500).stepSize(1).defaultVal(0).addSlider(TRACESTEP);
+              .min(0).max(500).defaultVal(0).addSlider(TRACESTEP);
 
           c.close("multicolumn subsection");
         }
@@ -92,7 +91,7 @@ public abstract class TestBed extends GeomApp {
     if (alert("another tab")) {
       c.openTab("Beta");
       c.tooltip("an example of a second tab");
-      c.addToggleButton("beta_checkbox", "Hello", true);
+      c.label("Hello").defaultVal(true).addToggleButton("beta_checkbox");
       c.closeTab();
     }
     c.closeTabSet();

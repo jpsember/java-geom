@@ -49,7 +49,7 @@ class InfoPanel extends JPanel {
     m.columns(".x");
     m.open("InfoPanel");
     {
-      m.addLabel("Script:");
+      m.label("Script:").addLabel();
       m.monospaced().large().addText(SCRIPT_NAME);
       m.skip().monospaced().addText(MESSAGE);
     }

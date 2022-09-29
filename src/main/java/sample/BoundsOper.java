@@ -28,14 +28,15 @@ public class BoundsOper implements TestBedOperation {
 
     c.openTab("Bounds");
     {
-      c.addLabel("Calculate minimum bounding box of objects");
+      c.label("Calculate minimum bounding box of objects").addLabel();
 
       c.columns(".x");
       c.open("random params");
       {
-        c.addLabel("Seed:");
+        c.label("Seed:").addLabel();
+        c.withDisplay();
         c.max(100).addSlider(SEED);
-        c.addLabel("Count:");
+        c.label("Count:").addLabel();
         c.max(100).defaultVal(12).addSlider(COUNT);
       }
       c.close("random params");
