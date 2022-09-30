@@ -117,7 +117,7 @@ public class BoundsOper implements TestBedOperation {
   @Override
   public void paintView() {
     if (mFinalBounds != null) {
-      pushStroke(STRK_RUBBERBAND);
+      stroke(STRK_RUBBERBAND);
       color(GREEN,0.2);
       drawRect(mFinalBounds);
     }

@@ -36,6 +36,7 @@ public class SampleMain extends TestBed {
   public void addControls(WidgetManager c) {
     c.open("SampleMain controls");
     c.label("This is where app-wide controls get added").addLabel();
+    c.label("Hello").addButton("sample_button_id");
     c.close("SampleMain controls");
   }
 
