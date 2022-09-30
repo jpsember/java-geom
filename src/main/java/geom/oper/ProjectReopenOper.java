@@ -22,18 +22,29 @@
  * SOFTWARE.
  * 
  **/
-package geom;
+package geom.oper;
 
-import org.junit.Test;
+import static geom.GeomTools.*;
 
+import js.guiapp.UserOperation;
 import static js.base.Tools.*;
-import js.testutil.MyTestCase;
 
-public class GeomTest extends MyTestCase {
+import java.io.File;
 
-  @Test
-  public void example() {
-    todo("Add some unit tests.");
+public class ProjectReopenOper extends UserOperation {
+
+  @Override
+  public boolean shouldBeEnabled() {
+    return geomApp().currentProject().defined();
+  }
+
+  @Override
+  public void start() {
+    loadTools();
+
+    File dir = geomApp().currentProject().directory();
+    geomApp().closeProject();
+    geomApp().openProject(dir);
   }
 
 }

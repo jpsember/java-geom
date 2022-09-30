@@ -149,6 +149,8 @@ public final class ScriptWrapper extends BaseObject {
     if (isNone())
       return;
 
+    todo("if script file has been updated since we loaded it, don't flush, and issue warning instead");
+
     Script script = data();
     if (ScriptUtil.isUseful(script)) {
       String content = DataUtil.toString(script);

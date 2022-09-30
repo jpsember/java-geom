@@ -24,7 +24,7 @@
  **/
 package geom.oper;
 
-import static  geom.GeomTools.*;
+import static geom.GeomTools.*;
 
 import js.guiapp.UserOperation;
 
@@ -32,12 +32,12 @@ public class ProjectCloseOper extends UserOperation {
 
   @Override
   public boolean shouldBeEnabled() {
-    return  geomApp().currentProject().defined();
+    return geomApp().currentProject().defined();
   }
 
   @Override
   public void start() {
-     geomApp().closeProject();
+    geomApp().closeProject();
   }
 
 }
