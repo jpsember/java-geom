@@ -35,8 +35,6 @@ public abstract class TestBed extends GeomApp {
     if (!widgets().active())
       return;
 
-    if (alert("button events not being received"))
-      pr("userEventManagerListener, event:", event);
     try {
       // Don't propagate action if we aren't initialized and displaying a script
       if (scriptManager().currentScript().defined())

@@ -36,8 +36,18 @@ public class SampleMain extends TestBed {
   public void addControls(WidgetManager c) {
     c.open("SampleMain controls");
     c.label("This is where app-wide controls get added").addLabel();
-    c.label("Hello").addButton("sample_button_id");
+
+    c.listener(this::buttonListener).label("Hello").addButton(".hello_id");
+
     c.close("SampleMain controls");
   }
+
+  private void buttonListener(String id) {
+    pr("Button pressed:", id);
+    mPressCount++;
+    widgetManager().sets(id, "presses: " + mPressCount);
+  }
+
+  private int mPressCount;
 
 }
