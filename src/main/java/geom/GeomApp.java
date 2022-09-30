@@ -103,7 +103,7 @@ public abstract class GeomApp extends GUIApp {
     widgets().setActive(false);
 
     mCurrentProject = Project.DEFAULT_INSTANCE;
-    removeUIElements();
+    contentPane().removeAll();
     recentProjects().setCurrentFile(null);
     scriptManager().replaceCurrentScriptWith(ScriptWrapper.DEFAULT_INSTANCE);
     discardMenuBar();
@@ -181,10 +181,6 @@ public abstract class GeomApp extends GUIApp {
 
   private Project mCurrentProject = Project.DEFAULT_INSTANCE;
 
-  private void removeUIElements() {
-    contentPane().removeAll();
-  }
-
   @Override
   public final /* final for now */ String getAlertText() {
     if (!currentProject().defined())
@@ -211,9 +207,8 @@ public abstract class GeomApp extends GUIApp {
   @Override
   public final void populateMenuBar(MenuBarWrapper m) {
     addProjectMenu(m);
-    if (currentProject().definedAndNonEmpty()) {
+    if (currentProject().definedAndNonEmpty())
       populateMenuBarForProject(m);
-    }
   }
 
   /**
@@ -302,7 +297,7 @@ public abstract class GeomApp extends GUIApp {
     command = command.build();
     undoManager().record(command);
     scriptManager().setState(command.newState());
-    
+
     // If there's a single selected element, render its information to the InfoPanel
 
     String infoMsg = null;
@@ -361,11 +356,6 @@ public abstract class GeomApp extends GUIApp {
   public void constructEditorPanel() {
     mEditorPanel = new EditorPanel();
   }
-
-  // TODO: consider moving these?
-  public static final int REPAINT_EDITOR = (1 << 0);
-  public static final int REPAINT_INFO = (1 << 1);
-  public static final int REPAINT_ALL = ~0;
 
   @Override
   public final /* for now */ void startedGUI() {

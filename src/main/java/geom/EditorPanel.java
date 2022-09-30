@@ -27,7 +27,6 @@ import js.geometry.FRect;
 import js.geometry.IPoint;
 import js.geometry.Matrix;
 import js.graphics.Paint;
-import js.guiapp.GUIApp;
 import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserEventSource;
@@ -225,7 +224,7 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
 
     UserEvent event = new UserEvent(type, this, viewPoint, modifierFlags, null);
 
-    if (GUIApp.guiAppConfig().devMode()) {
+    if (geomApp().guiAppConfig().devMode()) {
       // Note: this doesn't display stack traces in Eclipse in a way that supports clicking
       try {
         UserEventManager.sharedInstance().processUserEvent(event);
