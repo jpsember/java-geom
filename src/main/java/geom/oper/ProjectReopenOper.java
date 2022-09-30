@@ -41,7 +41,6 @@ public class ProjectReopenOper extends UserOperation {
   @Override
   public void start() {
     loadTools();
-
     File dir = geomApp().currentProject().directory();
     geomApp().closeProject();
     geomApp().openProject(dir);
