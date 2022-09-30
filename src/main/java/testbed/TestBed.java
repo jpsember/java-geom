@@ -69,7 +69,7 @@ public abstract class TestBed extends GeomApp {
 
     c.openTabSet(AUXTABSET);
     {
-      c.openTab(AUXTAB_TRACE);
+      c.openTab(AUXTAB_TRACE + ":Alg");
       {
         c.tooltip("if true, enables algorithm tracing");
         c.label("Enabled").defaultVal(true).addToggleButton(TRACEENABLED);
@@ -88,8 +88,9 @@ public abstract class TestBed extends GeomApp {
       c.closeTab();
     }
 
-    if (alert("another tab")) {
-      c.openTab("Beta");
+    // For demonstration purposes, open another tab
+    {
+      c.openTab("beta:Beta");
       c.tooltip("an example of a second tab");
       c.label("Hello").defaultVal(true).addToggleButton("beta_checkbox");
       c.closeTab();
@@ -99,7 +100,7 @@ public abstract class TestBed extends GeomApp {
 
   @Override
   public void populateFrame(JPanel parentPanel) {
-    sOperList = arrayList();
+    mOperList = arrayList();
 
     constructEditorPanel();
     constructControlPanel();
@@ -119,7 +120,7 @@ public abstract class TestBed extends GeomApp {
     addOperCtrls(c);
     c.close("ControlPanel");
     c.finish();
-    
+
     parentPanel.add(controlPanel(), BorderLayout.LINE_END);
   }
 
@@ -133,10 +134,10 @@ public abstract class TestBed extends GeomApp {
     JOptionPane.showMessageDialog(null, msg, "Error", JOptionPane.ERROR_MESSAGE);
   }
 
-  private static void addOperCtrls(WidgetManager c) {
-    if (sOperList.size() > 0) {
+  private void addOperCtrls(WidgetManager c) {
+    if (!mOperList.isEmpty()) {
       c.openTabSet(OPER);
-      for (TestBedOperation oper : sOperList)
+      for (TestBedOperation oper : mOperList)
         oper.addControls(c);
       c.closeTabSet();
     } else {
@@ -145,20 +146,18 @@ public abstract class TestBed extends GeomApp {
     }
   }
 
-  public static void addOper(TestBedOperation oper) {
-    sOperList.add(oper);
+  public void addOper(TestBedOperation oper) {
+    mOperList.add(oper);
   }
 
-  public static int operNum() {
-    return widgets().vi(OPER);
-  }
-
-  public static TestBedOperation oper() {
-    return oper(widgets().vi(OPER));
-  }
-
-  public static TestBedOperation oper(int n) {
-    return sOperList.get(n);
+  public TestBedOperation oper() {
+    String operId = widgets().vs(OPER);
+    TestBedOperation oper = null;
+    for (TestBedOperation op : mOperList)
+      if (op.operId().equals(operId))
+        oper = op;
+    checkState(oper != null, "oper not found for id:", operId);
+    return oper;
   }
 
   public boolean plotTraceMessages() {
@@ -186,7 +185,7 @@ public abstract class TestBed extends GeomApp {
     addItem("alg_step_reset", "Reset step", AlgorithmStepper.buildResetOper());
   }
 
-  private static List<TestBedOperation> sOperList;
+  private List<TestBedOperation> mOperList;
 
   public JPanel controlPanel() {
     return mMainControlPanel;

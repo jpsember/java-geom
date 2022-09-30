@@ -108,6 +108,7 @@ public abstract class GeomApp extends GUIApp {
     scriptManager().replaceCurrentScriptWith(ScriptWrapper.DEFAULT_INSTANCE);
     discardMenuBar();
     updateTitle();
+    performRepaint(REPAINT_ALL);
   }
 
   public final void openProject(File file) {

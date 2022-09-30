@@ -9,6 +9,11 @@ import js.widget.WidgetManager;
 public interface TestBedOperation {
 
   /**
+   * Get the id of this operation's (TabbedPaneWidget) widget 
+   */
+  public String operId();
+  
+  /**
    * Add controls for this operation. Each operation exists in its own tab, so
    * the controls should consist of:
    * 

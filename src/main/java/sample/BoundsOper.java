@@ -21,12 +21,21 @@ import testbed.*;
 
 public class BoundsOper implements TestBedOperation {
 
+  private static final String OPER_ID = "oper_bounds";
+
   private static final String SEED = "bo_seed";
   private static final String COUNT = "bo_count";
 
+  @Override
+  public String operId() {
+    return OPER_ID;
+  }
+
   public void addControls(WidgetManager c) {
 
-    c.openTab("Bounds");
+    // To demonstrate that the oper id can be different than its UI label, make them distinct:
+    //
+    c.openTab(OPER_ID + ":Bounds");
     {
       c.label("Calculate minimum bounding box of objects").addLabel();
 
@@ -41,20 +50,18 @@ public class BoundsOper implements TestBedOperation {
       }
       c.close("random params");
 
-      
       c.columns(".x");
       c.open("listener experiment");
-      c.pushListener((x)->pr("outer listener, id:",x));
+      c.pushListener((x) -> pr("outer listener, id:", x));
       {
         c.label("Slider1:").addLabel();
-        c.max(100).listener((x)-> pr("slider1 listener",x)).addSlider("exp_slider_1");
+        c.max(100).listener((x) -> pr("slider1 listener", x)).addSlider("exp_slider_1");
         c.label("Slider2:").addLabel();
-        c.max(100).listener((x)-> pr("slider2 listener",x)).defaultVal(12).addSlider("exp_slider_2");
+        c.max(100).listener((x) -> pr("slider2 listener", x)).defaultVal(12).addSlider("exp_slider_2");
         c.label("Slider3:").addLabel();
         c.max(100).defaultVal(12).addSlider("exp_slider_3");
       }
       c.popListener();
-      
       c.close();
     }
     c.closeTab();
@@ -134,4 +141,5 @@ public class BoundsOper implements TestBedOperation {
   }
 
   private IRect mBounds;
+
 }
