@@ -173,6 +173,7 @@ public abstract class TestBed extends GeomApp {
   @Override
   public void paintStop() {
     AlgorithmStepper.sharedInstance().renderAlgorithmResults();
+    oper().paintView();
     Render.setGraphics(null);
   }
 

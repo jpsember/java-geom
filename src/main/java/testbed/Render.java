@@ -294,18 +294,51 @@ public final class Render {
 
   /**
    * Set color
-   * 
-   * @param c
    */
-  public static void setColor(Color c) {
+  public static void color(Color c) {
     g.setColor(c);
   }
 
   /**
+   * Set color by Colors id
+   */
+  public static void color(int id) {
+    color(id, 0.5);
+  }
+
+  /**
+   * Set color by Colors id and shade
+   */
+  public static void color(int id, double shade) {
+    color(Colors.get(id, shade));
+  }
+
+  /**
+   * Save current color on stack, set to new
+   */
+  public static void pushColor(Color c) {
+    checkArgument(c != null);
+    pushElem(g.getColor());
+    pushElem(ST_COLOR);
+    color(c);
+  }
+
+  /**
+   * Save current color on stack, set to new by Colors id and shade
+   */
+  public static void pushColor(int id) {
+    pushColor(id, 0.5);
+  }
+
+  /**
+   * Save current color on stack, set to new by Colors id and shade
+   */
+  public static void pushColor(int id, double shade) {
+    pushColor(Colors.get(id, shade));
+  }
+
+  /**
    * Pop a number of state attributes
-   * 
-   * @param count
-   *          number to pop
    */
   public static void pop(int count) {
     for (int i = 0; i < count; i++)
@@ -374,16 +407,6 @@ public final class Render {
   }
 
   /**
-   * Save current color on stack, set to new
-   */
-  public static void pushColor(Color c) {
-    checkArgument(c != null);
-    pushElem(g.getColor());
-    pushElem(ST_COLOR);
-    setColor(c);
-  }
-
-  /**
    * Draw a line segment
    */
   public static void drawLine(FPoint p0, FPoint p1) {
@@ -413,6 +436,14 @@ public final class Render {
     g.draw(wl);
   }
 
+  public static void stroke(Stroke s) {
+    g.setStroke(s);
+  }
+
+  public static void stroke(int s) {
+    stroke(sStrokes[s]);
+  }
+
   /**
    * Save current stroke on stack, set to new
    */
@@ -424,7 +455,7 @@ public final class Render {
     if (stroke == null)
       badArg("null stroke");
     pushElem(g.getStroke());
-    g.setStroke(stroke);
+    stroke(stroke);
     pushElem(ST_STROKE);
   }
 

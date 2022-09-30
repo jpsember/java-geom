@@ -2,6 +2,8 @@ package sample;
 
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
+import static testbed.Colors.*;
+import static testbed.Render.*;
 
 import java.util.List;
 import java.util.Random;
@@ -83,11 +85,12 @@ public class BoundsOper implements TestBedOperation {
     }
 
     mBounds = null;
+    mFinalBounds = null;
 
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
 
     // This is an 'unguarded' call to s.msg():
-    s.msg("algorithm step 1");
+    s.msg("starting algorithm");
 
     // We don't need to call s.update(), but we can do so, as an optimization, if we 
     // wish to avoid unnecessary calls to s.msg() (i.e., so we avoid constructing an 
@@ -108,12 +111,16 @@ public class BoundsOper implements TestBedOperation {
       }
     }
 
-    s.msg("algorithm step 2");
-    todo("have ability for rendering stuff after algorithm steps have concluded (even if interrupted)");
+    mFinalBounds = mBounds;
   }
 
   @Override
   public void paintView() {
+    if (mFinalBounds != null) {
+      pushStroke(STRK_RUBBERBAND);
+      color(GREEN,0.2);
+      drawRect(mFinalBounds);
+    }
   }
 
   private void generate() {
@@ -141,5 +148,6 @@ public class BoundsOper implements TestBedOperation {
   }
 
   private IRect mBounds;
+  private IRect mFinalBounds;
 
 }
