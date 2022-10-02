@@ -53,11 +53,10 @@ import js.geometry.Matrix;
 import js.graphics.Paint;
 import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
-import js.guiapp.UserEventSource;
 import js.guiapp.UserOperation;
 import static geom.GeomTools.*;
 
-public class EditorPanel extends JPanel implements UserEventSource, MouseListener, MouseMotionListener {
+public class EditorPanel extends JPanel implements MouseListener, MouseMotionListener {
 
   public EditorPanel() {
     setBackground(new Color(185, 201, 179));
@@ -188,15 +187,6 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
   }
 
   // ------------------------------------------------------------------
-  // UserEventSource interface
-  // ------------------------------------------------------------------
-
-  @Override
-  public IPoint viewToWorld(IPoint viewPt) {
-    return mViewToWorldTransform.apply(viewPt);
-  }
-
-  // ------------------------------------------------------------------
   // Mouse-related interfaces
   // ------------------------------------------------------------------
 
@@ -246,7 +236,8 @@ public class EditorPanel extends JPanel implements UserEventSource, MouseListene
     if (evt.isShiftDown())
       modifierFlags |= UserEvent.FLAG_SHIFT;
 
-    UserEvent event = new UserEvent(type, this, viewPoint, modifierFlags, null);
+    UserEvent event = new UserEvent(type, mViewToWorldTransform.apply(viewPoint), viewPoint, modifierFlags,
+        null);
 
     if (geomApp().guiAppConfig().devMode()) {
       // Note: this doesn't display stack traces in Eclipse in a way that supports clicking
