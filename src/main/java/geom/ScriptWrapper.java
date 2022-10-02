@@ -24,11 +24,11 @@
  **/
 package geom;
 
-import static js.base.Tools.*;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
+
+import static js.base.Tools.*;
 
 import js.base.BaseObject;
 import js.base.DateTimeTools;
@@ -43,6 +43,7 @@ import js.graphics.ScriptUtil;
 import js.graphics.gen.ImageStats;
 import js.graphics.gen.MonoImage;
 import js.graphics.gen.Script;
+import static geom.GeomTools.*;
 
 /**
  * An enhanced wrapper for a Script object, that supports additional features
@@ -170,7 +171,7 @@ public final class ScriptWrapper extends BaseObject {
           // discard script data so it gets reread from disk
           mScriptData = null;
           // Trigger a full repaint of app (assumes we are in the Swing thread!)
-          GeomApp.sharedInstance().repaintPanels(GeomApp.REPAINT_ALL);
+          geomApp().repaintPanels(GeomApp.REPAINT_ALL);
           return;
         }
       }

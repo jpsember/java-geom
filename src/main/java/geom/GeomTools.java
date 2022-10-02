@@ -24,17 +24,17 @@
  **/
 package geom;
 
-import js.guiapp.GUIApp;
+import js.app.App;
 import js.widget.WidgetManager;
 
 public final class GeomTools {
 
   public static GeomApp geomApp() {
-    return GUIApp.sharedInstance();
+    return App.sharedInstance();
   }
 
   public static WidgetManager widgets() {
-    return GUIApp.sharedInstance().widgetManager();
+    return geomApp().widgetManager();
   }
 
   public static ScriptManager scriptManager() {
