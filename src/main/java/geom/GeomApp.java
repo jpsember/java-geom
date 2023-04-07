@@ -44,6 +44,7 @@ import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
 import js.widget.WidgetManager;
+import testbed.AlgorithmStepper;
 
 import static geom.GeomTools.*;
 
@@ -332,10 +333,25 @@ public abstract class GeomApp extends GUIApp {
       infoMsg = elem.infoMessage();
     }
     setInfoMessage(nullToEmpty(infoMsg));
+    performPostCommandActions(command.description());
   }
 
   public void perform(CommandOper oper) {
     UserEventManager.sharedInstance().perform(oper);
+    performPostCommandActions(oper);
+  }
+
+  /**
+   * Perform logic after a command. Default implementation does nothing.
+   * 
+   * Used to re-run the current algorithm (if one is active)
+   */
+  public void performPostCommandActions(Object... messages) {
+    if (verbose())
+      log("performPostCommandActions:", BasePrinter.toString(messages));
+    AlgorithmStepper alg = AlgorithmStepper.sharedInstance();
+    if (alg.active())
+      performRepaint(GeomApp.REPAINT_ALL);
   }
 
   /**
