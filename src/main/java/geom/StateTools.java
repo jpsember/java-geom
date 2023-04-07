@@ -37,6 +37,15 @@ import js.data.IntArray;
  */
 public final class StateTools {
 
+  public static void validate(ScriptEditState s) {
+    int nElements = s.elements().size();
+    for (int index : s.selectedElements()) {
+      if (index < 0 || index >= nElements)
+        badArg("validation failure with ScriptEditState; num elements:", nElements, "selected:",
+            s.selectedElements());
+    }
+  }
+
   /**
    * Set a command's description to an expression involving zero or more
    * elements

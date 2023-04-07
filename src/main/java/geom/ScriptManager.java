@@ -65,6 +65,7 @@ public class ScriptManager {
   }
 
   public void setState(ScriptEditState state) {
+    StateTools.validate(state);
     mState = state.build();
     if (mScript.defined()) {
       // We have to construct an array of ScriptElements, since we can't

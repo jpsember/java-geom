@@ -166,7 +166,8 @@ public class BoundsOper implements TestBedOperation {
 
     Command.Builder b = Command.newBuilder();
     ScriptEditState editState = scriptManager().state();
-    b.newState(editState.toBuilder().elements(elemList));
+    // We must discard any selected elements, as they may no longer exist
+    b.newState(editState.toBuilder().elements(elemList).selectedElements(null));
     geomApp().perform(b);
     geomApp().performRepaint(GeomApp.REPAINT_EDITOR);
   }
