@@ -53,7 +53,7 @@ public final class Project extends BaseObject {
     mDirectory = directory;
     mProjectFile = isDefault() ? null : AppDefaults.projectFileForProject(directory);
   }
- 
+
   /**
    * Read the ProjectState
    * 

@@ -447,18 +447,18 @@ public abstract class GeomApp extends GUIApp {
     if (!currentProject().defined())
       return;
 
-    mTaskTicker++;
     scriptManager().flushScript();
-    if ((mTaskTicker & 0x3) == 0) {
+
+    // Save any changes to current project, including window bounds
+    {
       if (currentProject().defined())
         flushProject();
       else
         alert("wtf? current project was not defined");
+
       AppDefaults.sharedInstance().flush();
     }
   }
-
-  private int mTaskTicker;
 
   @Override
   public void initWidgets() {
