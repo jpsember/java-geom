@@ -25,6 +25,7 @@
 package sample;
 
 import js.app.App;
+import js.file.Files;
 import js.json.JSMap;
 import js.widget.WidgetManager;
 import testbed.*;
@@ -42,8 +43,7 @@ public class SampleMain extends TestBed {
   private SampleMain() {
     guiAppConfig() //
         .appName("Sample") //
-        .keyboardShortcutRegistry(JSMap.fromResource(this.getClass(), "key_shortcut_defaults.json")) //;
-    ;
+        .keyboardShortcutRegistry(new JSMap(Files.readString(this.getClass(), "key_shortcut_defaults.json")));
   }
 
   @Override

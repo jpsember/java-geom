@@ -28,7 +28,6 @@ import static js.base.Tools.*;
 
 import java.awt.Graphics2D;
 import java.io.File;
-import java.util.List;
 
 import geom.gen.Command;
 import geom.gen.ProjectState;
@@ -83,11 +82,6 @@ public abstract class GeomApp extends GUIApp {
       mStartProjectFile = new File(cmdLineArgs().nextArg());
       log(DASHES, "set start project:", INDENT, mStartProjectFile, VERT_SP);
     }
-  }
-
-  @Override
-  public List<Object> getOptionalArgDescriptions() {
-    return arrayList("[<project directory>]");
   }
 
   private File mStartProjectFile = Files.DEFAULT;

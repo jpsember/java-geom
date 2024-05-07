@@ -5,4 +5,3 @@ target
 bin
 .settings
 _mainconfig_.txt
-src/main/java/geom/gen

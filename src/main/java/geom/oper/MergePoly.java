@@ -129,7 +129,7 @@ public class MergePoly extends BaseObject {
       i++;
       float dist = MyMath.distanceBetween(target, v);
       if (best == null || best.second > dist)
-        best = new Pair<>(i, dist);
+        best = pair(i, dist);
     }
     return best;
   }
