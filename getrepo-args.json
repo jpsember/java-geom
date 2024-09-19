@@ -13,6 +13,10 @@
     {
       "repo_name":"jpsember/java-gui",  "commit_hash":"863a142", "version":"3.0",
     },
+    {
+      "repo_name":"jpsember/java-geom",  "commit_hash":"863a142", "version":"3.0",
+    },
+
   ]
 
 }
