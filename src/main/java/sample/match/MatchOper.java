@@ -22,12 +22,10 @@
  * SOFTWARE.
  * 
  **/
-package sample;
+package sample.match;
 
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
-import static testbed.Colors.*;
-import static testbed.Render.*;
 
 import java.util.List;
 import java.util.Random;
@@ -38,7 +36,6 @@ import geom.elem.EditablePointElement;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
 import js.geometry.IPoint;
-import js.geometry.IRect;
 import js.graphics.PointElement;
 import js.graphics.ScriptElement;
 import js.guiapp.UserEvent;
@@ -85,9 +82,9 @@ public class MatchOper implements TestBedOperation {
         c.label("Slider1:").addLabel();
         c.max(100).listener((x) -> pr("slider1 listener", x)).addSlider(OPREF + "slider_1");
         c.label("Slider2:").addLabel();
-        c.max(100).listener((x) -> pr("slider2 listener", x)).defaultVal(12).addSlider(OPREF +"slider_2");
+        c.max(100).listener((x) -> pr("slider2 listener", x)).defaultVal(12).addSlider(OPREF + "slider_2");
         c.label("Slider3:").addLabel();
-        c.max(100).defaultVal(12).addSlider(OPREF +"slider_3");
+        c.max(100).defaultVal(12).addSlider(OPREF + "slider_3");
       }
       c.popListener();
       c.close();
@@ -102,7 +99,7 @@ public class MatchOper implements TestBedOperation {
 
   public void runAlgorithm() {
 
-    // Construct algorithm input: a list of points 
+    // Construct algorithm input: a list of polylines
 
     List<IPoint> points = arrayList();
     for (ScriptElement elem : scriptManager().state().elements()) {
@@ -110,8 +107,8 @@ public class MatchOper implements TestBedOperation {
         points.add(elem.location());
     }
 
-    mBounds = null;
-    mFinalBounds = null;
+//    mBounds = null;
+//    mFinalBounds = null;
 
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
 
@@ -127,26 +124,28 @@ public class MatchOper implements TestBedOperation {
     if (s.update())
       s.msg("guarded update call");
 
-    for (IPoint pt : points) {
-      if (mBounds == null) {
-        mBounds = new IRect(pt.x, pt.y, 0, 0);
-        s.msg("initial point", pt, mBounds);
-      } else {
-        mBounds = mBounds.including(pt);
-        s.msg("next point", pt, mBounds);
-      }
-    }
-
-    mFinalBounds = mBounds;
+    //    for (IPoint pt : points) {
+    //      if (mBounds == null) {
+    //        mBounds = new IRect(pt.x, pt.y, 0, 0);
+    //        s.msg("initial point", pt, mBounds);
+    //      } else {
+    //        mBounds = mBounds.including(pt);
+    //        s.msg("next point", pt, mBounds);
+    //      }
+    //    }
+    //
+    //    mFinalBounds = mBounds;
   }
 
   @Override
   public void paintView() {
-    if (mFinalBounds != null) {
-      stroke(STRK_RUBBERBAND);
-      color(GREEN, 0.2);
-      drawRect(mFinalBounds);
-    }
+    dset().paintView();
+
+    //    if (mFinalBounds != null) {
+    //      stroke(STRK_RUBBERBAND);
+    //      color(GREEN, 0.2);
+    //      drawRect(mFinalBounds);
+    //    }
   }
 
   private void generate() {
@@ -174,7 +173,13 @@ public class MatchOper implements TestBedOperation {
     geomApp().performRepaint(GeomApp.REPAINT_EDITOR);
   }
 
-  private IRect mBounds;
-  private IRect mFinalBounds;
+  private Dataset dset() {
+    if (mDataset != null)
+      return mDataset;
+    mDataset = new Dataset();
+    mDataset.setVerbose();
+    return mDataset;
+  }
 
+  private Dataset mDataset;
 }

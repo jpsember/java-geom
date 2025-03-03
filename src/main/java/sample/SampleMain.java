@@ -28,6 +28,7 @@ import js.app.App;
 import js.file.Files;
 import js.json.JSMap;
 import js.widget.WidgetManager;
+import sample.match.MatchOper;
 import testbed.*;
 
 import static js.base.Tools.*;
