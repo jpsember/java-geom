@@ -60,6 +60,7 @@ public class SampleMain extends TestBed {
 
   @Override
   public void addOperations() {
+    addOper(new MatchOper());
     addOper(new BoundsOper());
   }
 
