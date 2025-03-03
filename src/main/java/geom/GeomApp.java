@@ -290,6 +290,8 @@ public abstract class GeomApp extends GUIApp {
     addItem("box_add", "Add Box", new RectAddOper());
     addItem("pt_add", "Add Point", new PointAddOper());
     addItem("polygon_add", "Add Polygon", PolygonEditOper.buildAddOper());
+    addItem("curve_add", "Add Curve", PolygonEditOper.buildAddCurveOper());
+    
   }
 
   public void addViewMenu(MenuBarWrapper m) {

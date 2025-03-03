@@ -136,8 +136,29 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
    * it is to be inserted at
    */
   public EditablePolygonElement withInsertVertex(int position, IPoint vertexOrNull) {
+
+    boolean db = false && alert("logging");
+
     EditablePolygonElement p = new EditablePolygonElement(properties(), polygon(), curveMode());
-    p.mInsertVertex = vertexOrNull;
+
+    IPoint vt = vertexOrNull;
+
+    // If insert vertex exists, polygon is open, and insert vertex is close to the first vertex, snap to that one.
+    //
+    if (db)
+      alert("trying new snap logic");
+    checkState(polygon().isOpen() == p.polygon().isOpen());
+
+    if (polygon().isOpen() && vt != null) {
+      var snap = PolygonEditOper.snapToFirst(polygon(), vt);
+      if (snap) {
+        vt = polygon().vertex(0);
+        if (db)
+          pr("...snapping");
+      }
+    }
+
+    p.mInsertVertex = vt;
     p.mInsertPosition = position;
     return p;
   }
@@ -215,7 +236,7 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
         start = pt;
         if (DEBUG_POLYEDIT && alert("!highlighting first vertex")) {
           panel.apply(Paint.newBuilder().color(Color.BLUE).width(0.8f * scale));
-          panel.renderDisc(pt, 10);
+          panel.renderDisc(pt, 5*scale);
         }
       }
       if (last != null) {

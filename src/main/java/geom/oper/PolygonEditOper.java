@@ -82,10 +82,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
       mVertexIndex = 0;
       setState(mCurveMode ? STATE_STARTING_CURVE : STATE_UP);
 
-      boolean open = mCurveMode;
-      if (false && alert("always open; need to debug editing open non-curve poly"))
-        open = true;
-
+      boolean open = true;
       Polygon template = Polygon.DEFAULT_INSTANCE.withOpen(open);
 
       EditablePolygonElement polygon = new EditablePolygonElement(null, template, mCurveMode);
@@ -132,11 +129,22 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
       }
 
       EditablePolygonElement p = activePolygon();
+
       IPoint pos = applyMouseOffset(event.getWorldLocation());
-      log("adding point at index", mVertexIndex, pos);
-      p = p.withAddPoint(mVertexIndex, pos);
+
+      boolean endOperation = false;
+      if (snapToFirst(p.polygon(), pos)) {
+        p = p.withPolygon(p.polygon().withOpen(false));
+        endOperation = true;
+      } else {
+        log("adding point at index", mVertexIndex, pos);
+        p = p.withAddPoint(mVertexIndex, pos);
+      }
       writeActivePolygon(p);
-      setState(STATE_ADJUST);
+      if (endOperation)
+        event.setOperation(null);
+      else
+        setState(STATE_ADJUST);
     }
       break;
 
@@ -164,9 +172,12 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
         event.clearOperation();
         break;
       } else {
+
+        var ap = activePolygon().polygon();
+
         mVertexIndex = (mVertexIndex + 1);
-        if (activePolygon().polygon().isClosed())
-          mVertexIndex = mVertexIndex % activePolygon().polygon().numVertices();
+        if (ap.isClosed())
+          mVertexIndex = mVertexIndex % ap.numVertices();
         log("vertex index incr'd to", mVertexIndex);
       }
       setState(STATE_UP);
@@ -348,6 +359,44 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
     StateTools.addNewElement(mCommand, closedPolygon);
     mCommand.mergeDisabled(true);
     geomApp().perform(mCommand);
+  }
+
+  /**
+   * Determine if a polygon vertex should be snapped to the first vertex to
+   * close an open polygon
+   */
+  public static boolean snapToFirst(Polygon polygon, IPoint pt) {
+    final float SNAP_VERTEX_DISTANCE = 16;
+    final boolean db = true && alert("logging snapToFirst");
+    boolean snap = false;
+    do {
+
+      if (polygon.isClosed())
+        break;
+
+      if (polygon.numVertices() < 3)
+        break;
+
+      var firstLoc = polygon.vertex(0);
+      var firstLocF = firstLoc.toFPoint();
+      var currLocF = pt.toFPoint();
+      var dist = MyMath.distanceBetween(firstLocF, currLocF);
+
+      var zoom = geomApp().zoomFactor();
+      var zoomAdjustedDist = dist * zoom;
+
+      if (db)
+        pr("snapToFirst, dist from first:", dist, "zoom:", zoom, "adj dist:", zoomAdjustedDist);
+      if (zoomAdjustedDist < SNAP_VERTEX_DISTANCE) {
+        snap = true;
+        if (db)
+          pr("...snapping");
+      }
+
+    } while (false);
+    if (db)
+      pr("snapToFirst:", snap);
+    return snap;
   }
 
   // ------------------------------------------------------------------
