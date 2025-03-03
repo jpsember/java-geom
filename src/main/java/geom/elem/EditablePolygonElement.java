@@ -150,11 +150,11 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
     checkState(polygon().isOpen() == p.polygon().isOpen());
 
     if (polygon().isOpen() && vt != null) {
-      var snap = PolygonEditOper.snapToFirst(polygon(), vt);
-      if (snap) {
-        vt = polygon().vertex(0);
+      var snap = PolygonEditOper.snapToOtherEndpoint(polygon(), position, vt);
+      if (snap != null) {
+        vt = snap;
         if (db)
-          pr("...snapping");
+          pr("...snapping to:",vt,"position:",position);
       }
     }
 
@@ -236,7 +236,7 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
         start = pt;
         if (DEBUG_POLYEDIT && alert("!highlighting first vertex")) {
           panel.apply(Paint.newBuilder().color(Color.BLUE).width(0.8f * scale));
-          panel.renderDisc(pt, 5*scale);
+          panel.renderDisc(pt, 5 * scale);
         }
       }
       if (last != null) {

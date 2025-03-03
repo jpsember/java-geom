@@ -117,10 +117,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
   }
 
   private void processPolygonUserEvent(UserEvent event) {
-    
-    todo("why does dragging first vertex snap to a grid?");
-    todo("why does dragging first vertex not do snap behaviour?");
-    
+    // alertVerbose();
     if (event.getCode() != UserEvent.CODE_MOVE)
       log("processPolyUserEvent", INDENT, this, CR, event);
     switch (event.getCode()) {
@@ -137,7 +134,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
       IPoint pos = applyMouseOffset(event.getWorldLocation());
 
       boolean endOperation = false;
-      if (snapToFirst(p.polygon(), pos)) {
+      if (snapToOtherEndpoint(p.polygon(), mVertexIndex, pos) != null) {
         p = p.withPolygon(p.polygon().withOpen(false));
         endOperation = true;
       } else {
@@ -159,9 +156,13 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
       EditablePolygonElement p = activePolygon();
 
       IPoint pt = applyMouseOffset(event.getWorldLocation());
-      if (snapToFirst(p.polygon(), pt))
-        pt = p.polygon().vertex(0);
-      
+      log("applied mouse offset to event:", event.getWorldLocation(), "now:", pt);
+      var snapTo = snapToOtherEndpoint(p.polygon(), mVertexIndex, pt);
+      if (snapTo != null) {
+        log("...snapped to opposite endpoint");
+        pt = snapTo;
+      }
+
       p = p.withSetPoint(mVertexIndex, pt);
       writeActivePolygon(p);
     }
@@ -369,13 +370,14 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
   }
 
   /**
-   * Determine if a polygon vertex should be snapped to the first vertex to
-   * close an open polygon
+   * Determine if an open polygon vertex should be snapped to one of its
+   * endpoints to close it
    */
-  public static boolean snapToFirst(Polygon polygon, IPoint pt) {
+  public static IPoint snapToOtherEndpoint(Polygon polygon, int index, IPoint pt) {
     final float SNAP_VERTEX_DISTANCE = 16;
-    final boolean db = false && alert("logging snapToFirst");
-    boolean snap = false;
+    final boolean db = false && alert("logging snapToOtherEndpoint");
+
+    IPoint snapTo = null;
     do {
 
       if (polygon.isClosed())
@@ -384,26 +386,30 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
       if (polygon.numVertices() < 3)
         break;
 
-      var firstLoc = polygon.vertex(0);
-      var firstLocF = firstLoc.toFPoint();
+      var otherInd = polygon.numVertices() - 1 - index;
+      if (!(index == 0 || otherInd == 0))
+        break;
+
+      var otherLoc = polygon.vertex(otherInd);
+      var otherLocF = otherLoc.toFPoint();
       var currLocF = pt.toFPoint();
-      var dist = MyMath.distanceBetween(firstLocF, currLocF);
+      var dist = MyMath.distanceBetween(otherLocF, currLocF);
 
       var zoom = geomApp().zoomFactor();
       var zoomAdjustedDist = dist * zoom;
 
       if (db)
-        pr("snapToFirst, dist from first:", dist, "zoom:", zoom, "adj dist:", zoomAdjustedDist);
+        pr("snapToOtherEndpoint, dist from first:", dist, "zoom:", zoom, "adj dist:", zoomAdjustedDist);
       if (zoomAdjustedDist < SNAP_VERTEX_DISTANCE) {
-        snap = true;
+        snapTo = otherLoc;
         if (db)
           pr("...snapping");
       }
 
     } while (false);
     if (db)
-      pr("snapToFirst:", snap);
-    return snap;
+      pr("snapToOtherEndpoint:", snapTo);
+    return snapTo;
   }
 
   // ------------------------------------------------------------------
