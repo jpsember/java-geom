@@ -27,7 +27,11 @@ package geom;
 import js.app.App;
 import js.widget.WidgetManager;
 
+import static js.base.Tools.*;
+
 public final class GeomTools {
+
+  public static final boolean DEBUG_POLYEDIT = alert("!DEBUG_POLYEDIT is true");
 
   public static GeomApp geomApp() {
     return App.sharedInstance();

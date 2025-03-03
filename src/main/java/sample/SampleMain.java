@@ -32,10 +32,17 @@ import testbed.*;
 
 import static js.base.Tools.*;
 
+import java.io.File;
+
 public class SampleMain extends TestBed {
 
   public static void main(String[] args) {
     loadTools();
+
+    {
+      var f = new File(Files.homeDirectory(), ".geom_sample_project_directory");
+      Files.S.setProjectDirectory(f);
+    }
     App app = new SampleMain();
     app.startApplication(args);
   }

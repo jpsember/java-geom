@@ -50,6 +50,8 @@ import js.graphics.gen.ElementProperties;
 import js.guiapp.UserEvent;
 import js.guiapp.UserOperation;
 
+import static geom.GeomTools.*;
+
 public final class EditablePolygonElement extends PolygonElement implements EditorElement {
 
   public static final boolean SMOOTHING = false
@@ -209,8 +211,13 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
     IPoint start = null;
     IPoint last = null;
     for (IPoint pt : polygon().vertices()) {
-      if (start == null)
+      if (start == null) {
         start = pt;
+        if (DEBUG_POLYEDIT && alert("!highlighting first vertex")) {
+          panel.apply(Paint.newBuilder().color(Color.BLUE).width(0.8f * scale));
+          panel.renderDisc(pt, 10);
+        }
+      }
       if (last != null) {
         if (last == pt1 && pt == pt2) {
           panel.apply(Paint.newBuilder().color(Color.RED).width(0.8f * scale));
