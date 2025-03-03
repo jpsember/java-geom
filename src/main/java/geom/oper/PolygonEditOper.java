@@ -117,6 +117,10 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
   }
 
   private void processPolygonUserEvent(UserEvent event) {
+    
+    todo("why does dragging first vertex snap to a grid?");
+    todo("why does dragging first vertex not do snap behaviour?");
+    
     if (event.getCode() != UserEvent.CODE_MOVE)
       log("processPolyUserEvent", INDENT, this, CR, event);
     switch (event.getCode()) {
@@ -155,6 +159,9 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
       EditablePolygonElement p = activePolygon();
 
       IPoint pt = applyMouseOffset(event.getWorldLocation());
+      if (snapToFirst(p.polygon(), pt))
+        pt = p.polygon().vertex(0);
+      
       p = p.withSetPoint(mVertexIndex, pt);
       writeActivePolygon(p);
     }
@@ -367,7 +374,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
    */
   public static boolean snapToFirst(Polygon polygon, IPoint pt) {
     final float SNAP_VERTEX_DISTANCE = 16;
-    final boolean db = true && alert("logging snapToFirst");
+    final boolean db = false && alert("logging snapToFirst");
     boolean snap = false;
     do {
 
