@@ -12,6 +12,7 @@ import js.parsing.DFA;
 import js.parsing.Scanner;
 import testbed.Render;
 
+import static geom.GeomTools.*;
 import static js.base.Tools.*;
 
 import java.io.File;
@@ -58,30 +59,29 @@ public class Dataset extends BaseObject {
   }
 
   private Matrix calcTransform() {
-    var g = Render.graphics();
-    
-    // Get the view bounds
-    var r = new IRect(g.getClipBounds());
-    var viewBounds = new FRect(r);
-    
-    
+
+    // Get the program's page size (the virtual canvas size)
+    var pageSize = geomApp().pageSize();
+
     // Get the bounds of the geometry
     var gb = mGeometryBounds;
-    pr("gb:",gb);
     // The scale factor makes sure all boundary appears
-    var scale = Math.min(viewBounds.width / gb.width, viewBounds.height / gb.height);
+    var scale = Math.min(pageSize.x / gb.width, pageSize.y / gb.height);
 
-    pr("scale:",scale);
-    
-    
     // Transform so 0,0 is center of geometry
     var m1 = Matrix.getTranslate(gb.midPoint().scaledBy(-1));
+    pr("translate so 0,0 is center of geom:", INDENT, m1);
     // Scale from geom->view
     var m2 = Matrix.getScale(scale);
+    pr("scale from geom->view:", INDENT, m2);
     // Transform back so 0,0 is top left of geometry
-    var m3 = Matrix.getTranslate(new FPoint(viewBounds.width, viewBounds.height).scaledBy(.5f));
+    pr("pageSize:", pageSize);
+    var m3 = Matrix.getTranslate(new FPoint(pageSize.x / 2, pageSize.y / 2));
+    pr("transform so 0,0 is top left of geom:", INDENT, m3);
 
     Matrix mCombined = Matrix.preMultiply(m1, m2, m3);
+    pr("combined:", mCombined);
+
     mGeometryToView = mCombined;
     return mCombined;
   }

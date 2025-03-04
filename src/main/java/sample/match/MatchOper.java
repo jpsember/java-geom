@@ -148,27 +148,27 @@ public class MatchOper implements TestBedOperation {
 
     var m = ds.geomToViewTransform();
 
-    color(GREEN, 0.8);
+    color(GREEN, 0.2);
     stroke(STRK_THIN);
 
     var g = graphics();
-    var oldTfm = g.getTransform();
-    g.transform(m.toAffineTransform());
+    //    var oldTfm = g.getTransform();
+    //    g.transform(m.toAffineTransform());
 
-    int count = 0;
     for (var n : ds.nodes()) {
-      if (++count > 20) break;
+      //if (++count > 20) break;
       FPoint prev = null;
       for (var pt : n.vertices()) {
+        pt = m.apply(pt);
         if (prev != null) {
           drawLine(prev, pt);
-          pr("drawline", prev, "=>", pt);
+          //          pr("drawline", prev, "=>", pt);
         }
         prev = pt;
-        var h = m.apply(pt.x, pt.y);
-        pr("geom->view tfm for:",pt.x,pt.y,"is:",h);
+        //        var h = m.apply(pt.x, pt.y);
+        //        pr("geom->view tfm for:",pt.x,pt.y,"is:",h);
       }
-      g.setTransform(oldTfm);
+      //  g.setTransform(oldTfm);
     }
 
     pr("tfm:", m);
