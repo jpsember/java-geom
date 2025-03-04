@@ -26,6 +26,7 @@ package sample;
 
 import js.app.App;
 import js.file.Files;
+import js.graphics.ScriptUtil;
 import js.json.JSMap;
 import js.widget.WidgetManager;
 import sample.match.MatchOper;
@@ -61,6 +62,7 @@ public class SampleMain extends TestBed {
 
   @Override
   public void addOperations() {
+    ScriptUtil.sAllowEmptyScripts = true;
     addOper(new MatchOper());
     addOper(new BoundsOper());
   }

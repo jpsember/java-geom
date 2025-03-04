@@ -4,13 +4,10 @@ import js.base.BaseObject;
 import js.file.Files;
 import js.geometry.FPoint;
 import js.geometry.FRect;
-import js.geometry.IRect;
 import js.geometry.Matrix;
-import js.geometry.MyMath;
 import js.json.JSMap;
 import js.parsing.DFA;
 import js.parsing.Scanner;
-import testbed.Render;
 
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
@@ -54,36 +51,34 @@ public class Dataset extends BaseObject {
     return mNodes;
   }
 
-  public Matrix geomToViewTransform() {
-    return mGeometryToView;
+  public Matrix geomToPageTransform() {
+    return mGeometryToPage;
   }
 
-  private Matrix calcTransform() {
+  private void calcTransform() {
 
-    // Get the program's page size (the virtual canvas size)
+    // Get the program's page size (the virtual canvas size;
+    // this is NOT the same as the graphics clipping rectangle size)
+    //
     var pageSize = geomApp().pageSize();
 
     // Get the bounds of the geometry
     var gb = mGeometryBounds;
+
     // The scale factor makes sure all boundary appears
-    var scale = Math.min(pageSize.x / gb.width, pageSize.y / gb.height);
+
+    // Add some margin (in page space)
+    var marginSize = 30;
+    var scale = Math.min((pageSize.x - marginSize * 2) / gb.width, (pageSize.y - marginSize * 2) / gb.height);
 
     // Transform so 0,0 is center of geometry
     var m1 = Matrix.getTranslate(gb.midPoint().scaledBy(-1));
-    pr("translate so 0,0 is center of geom:", INDENT, m1);
     // Scale from geom->view
     var m2 = Matrix.getScale(scale);
-    pr("scale from geom->view:", INDENT, m2);
     // Transform back so 0,0 is top left of geometry
-    pr("pageSize:", pageSize);
     var m3 = Matrix.getTranslate(new FPoint(pageSize.x / 2, pageSize.y / 2));
-    pr("transform so 0,0 is top left of geom:", INDENT, m3);
 
-    Matrix mCombined = Matrix.preMultiply(m1, m2, m3);
-    pr("combined:", mCombined);
-
-    mGeometryToView = mCombined;
-    return mCombined;
+    mGeometryToPage = Matrix.preMultiply(m1, m2, m3);
   }
 
   private void load(File f) {
@@ -179,6 +174,6 @@ public class Dataset extends BaseObject {
   private List<Node> mNodes;
   private DFA mCsvDfa, mLinestringDfa;
   private FRect mGeometryBounds;
-  private Matrix mGeometryToView;
+  private Matrix mGeometryToPage;
 
 }

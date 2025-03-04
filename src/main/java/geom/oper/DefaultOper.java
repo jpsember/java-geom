@@ -35,6 +35,8 @@ import js.guiapp.UserOperation;
 import geom.SlotList;
 import geom.gen.ScriptEditState;
 import js.data.IntArray;
+import js.geometry.FPoint;
+import js.geometry.IPoint;
 
 import static geom.GeomTools.*;
 
@@ -42,7 +44,6 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
 
   public DefaultOper() {
     loadTools();
-    //alertVerbose();
   }
 
   @Override
@@ -75,12 +76,21 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
     case UserEvent.CODE_DOWN:
       log("DOWN");
       mInitialDownEvent = event;
+      mIsPan = event.isAlt();
       mIsDrag = false;
+      if (pan()) {
+        startPan(event);
+        break;
+      }
       constructPickSet(event);
       break;
 
     case UserEvent.CODE_DRAG:
       log("DRAG");
+      if (pan()) {
+        continuePan(event);
+        break;
+      }
       if (!mIsDrag) {
         mIsDrag = true;
         doStartDrag(event);
@@ -90,6 +100,10 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
 
     case UserEvent.CODE_UP:
       log("UP");
+      if (pan()) {
+        finishPan();
+        break;
+      }
       if (!mIsDrag)
         doClick(event);
       else
@@ -97,6 +111,43 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
       break;
     }
   }
+
+  // ------------------------------------------------------------------
+  // Panning
+  // ------------------------------------------------------------------
+
+  private boolean mIsPan;
+  private IPoint mOriginalPan;
+
+  private boolean pan() {
+    return mIsPan;
+  }
+
+  private void startPan(UserEvent event) {
+    alertVerbose();
+
+    mOriginalPan = geomApp().panOffset();
+  }
+
+  private void continuePan(UserEvent event) {
+
+    var zoom = geomApp().zoomFactor();
+    var pan = geomApp().panOffset();
+
+    var wlocOrig = mInitialDownEvent.getWorldLocation();
+    var wloc = event.getWorldLocation();
+
+    var worldOffset = IPoint.difference(wloc, wlocOrig);
+    pr("pan, wloc:", wloc, "offset:", worldOffset);
+
+    var newPanOffset = IPoint.sum(mOriginalPan, worldOffset);
+    geomApp().setPanOffset(newPanOffset);
+  }
+
+  private void finishPan() {
+  }
+
+  // ------------------------------------------------------------------
 
   private void constructPickSet(UserEvent event) {
     ScriptEditState state = scriptManager().state();
@@ -279,6 +330,7 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
 
   private UserEvent mInitialDownEvent;
   private boolean mIsDrag;
+
   private IntArray mPickSet;
   private IntArray mPickSetSelected;
 }

@@ -35,6 +35,7 @@ import geom.gen.ScriptEditState;
 import geom.oper.*;
 import js.base.BasePrinter;
 import js.file.Files;
+import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.guiapp.GUIApp;
 import js.guiapp.MenuBarWrapper;
@@ -57,6 +58,8 @@ public abstract class GeomApp extends GUIApp {
    */
   public static final String //
   EDITOR_ZOOM = "ed_zoom", //
+      EDITOR_PAN_X = "ed_pan_x", // 
+      EDITOR_PAN_Y = "ed_pan_y", //
       CURRENT_SCRIPT_INDEX = "script_index", //
       SCRIPT_NAME = "script_name", //
       MESSAGE = "message", //
@@ -291,7 +294,7 @@ public abstract class GeomApp extends GUIApp {
     addItem("pt_add", "Add Point", new PointAddOper());
     addItem("polygon_add", "Add Polygon", PolygonEditOper.buildAddOper());
     addItem("curve_add", "Add Curve", PolygonEditOper.buildAddCurveOper());
-    
+
   }
 
   public void addViewMenu(MenuBarWrapper m) {
@@ -382,6 +385,15 @@ public abstract class GeomApp extends GUIApp {
     widgets().setf(EDITOR_ZOOM, zoom);
   }
 
+  public final IPoint panOffset() {
+    return new IPoint(widgets().vi(EDITOR_PAN_X), widgets().vi(EDITOR_PAN_Y));
+  }
+
+  public final void setPanOffset(IPoint offset) {
+    widgets().seti(EDITOR_PAN_X, offset.x);
+    widgets().seti(EDITOR_PAN_Y, offset.y);
+  }
+
   public final int paddingPixels() {
     return (int) (20 / zoomFactor());
   }
@@ -463,6 +475,8 @@ public abstract class GeomApp extends GUIApp {
     // Add widget for persisting frame bounds
     w.add(new AppFrameWidget().setId(APP_FRAME));
     w.addHidden(EDITOR_ZOOM, 1f);
+    w.addHidden(EDITOR_PAN_X, 0f);
+    w.addHidden(EDITOR_PAN_Y, 0f);
     w.addHidden(CURRENT_SCRIPT_INDEX, 0);
   }
 

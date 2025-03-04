@@ -87,7 +87,14 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
     {
       FPoint fpt = new FPoint(getWidth(), getHeight());
       float zoom = zoomFactor();
-      FPoint trans = new FPoint((fpt.x - imageSize.x * zoom) / 2, (fpt.y - imageSize.y * zoom) / 2);
+
+      // The translation takes into account the page size,
+      // and the pan offset
+
+      var pageCenter = imageSize.scaledBy(.5f);
+      var worldPan = geomApp().panOffset();
+      var worldFocus = IPoint.sum(pageCenter, worldPan).toFPoint().scaledBy(zoom);
+      FPoint trans = new FPoint(fpt.x / 2 - worldFocus.x, fpt.y / 2 - worldFocus.y);
       t = Matrix.getTranslate(trans);
       t = Matrix.multiply(t, Matrix.getScale(zoom));
     }

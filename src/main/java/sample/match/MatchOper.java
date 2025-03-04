@@ -109,9 +109,6 @@ public class MatchOper implements TestBedOperation {
         points.add(elem.location());
     }
 
-    //    mBounds = null;
-    //    mFinalBounds = null;
-
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
 
     // This is an 'unguarded' call to s.msg():
@@ -125,18 +122,6 @@ public class MatchOper implements TestBedOperation {
     //
     if (s.update())
       s.msg("guarded update call");
-
-    //    for (IPoint pt : points) {
-    //      if (mBounds == null) {
-    //        mBounds = new IRect(pt.x, pt.y, 0, 0);
-    //        s.msg("initial point", pt, mBounds);
-    //      } else {
-    //        mBounds = mBounds.including(pt);
-    //        s.msg("next point", pt, mBounds);
-    //      }
-    //    }
-    //
-    //    mFinalBounds = mBounds;
   }
 
   @Override
@@ -146,38 +131,22 @@ public class MatchOper implements TestBedOperation {
 
     ds.prepareRender();
 
-    var m = ds.geomToViewTransform();
+    var m = ds.geomToPageTransform();
 
     color(GREEN, 0.2);
     stroke(STRK_THIN);
 
-    var g = graphics();
-    //    var oldTfm = g.getTransform();
-    //    g.transform(m.toAffineTransform());
-
     for (var n : ds.nodes()) {
-      //if (++count > 20) break;
       FPoint prev = null;
       for (var pt : n.vertices()) {
         pt = m.apply(pt);
         if (prev != null) {
           drawLine(prev, pt);
-          //          pr("drawline", prev, "=>", pt);
         }
         prev = pt;
-        //        var h = m.apply(pt.x, pt.y);
-        //        pr("geom->view tfm for:",pt.x,pt.y,"is:",h);
       }
-      //  g.setTransform(oldTfm);
     }
 
-    pr("tfm:", m);
-
-    //    if (mFinalBounds != null) {
-    //      stroke(STRK_RUBBERBAND);
-    //      color(GREEN, 0.2);
-    //      drawRect(mFinalBounds);
-    //    }
   }
 
   private void generate() {
