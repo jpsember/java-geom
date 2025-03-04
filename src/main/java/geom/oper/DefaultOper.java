@@ -35,16 +35,10 @@ import js.guiapp.UserOperation;
 import geom.SlotList;
 import geom.gen.ScriptEditState;
 import js.data.IntArray;
-import js.geometry.IPoint;
-import js.geometry.IRect;
 
 import static geom.GeomTools.*;
 
 public final class DefaultOper extends UserOperation implements UserEvent.Listener {
-
-  public DefaultOper() {
-    loadTools();
-  }
 
   @Override
   public void start() {
@@ -75,22 +69,18 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
     switch (event.getCode()) {
     case UserEvent.CODE_DOWN:
       log("DOWN");
-      mInitialDownEvent = event;
-      mIsPan = event.isAlt();
-      mIsDrag = false;
-      if (pan()) {
-        startPan(event);
-        break;
+      if (event.isAlt()) {
+        event.setOperation(PanOper.build(event));
+        return;
       }
+
+      mInitialDownEvent = event;
+      mIsDrag = false;
       constructPickSet(event);
       break;
 
     case UserEvent.CODE_DRAG:
       log("DRAG");
-      if (pan()) {
-        continuePan(event);
-        break;
-      }
       if (!mIsDrag) {
         mIsDrag = true;
         doStartDrag(event);
@@ -100,10 +90,6 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
 
     case UserEvent.CODE_UP:
       log("UP");
-      if (pan()) {
-        finishPan();
-        break;
-      }
       if (!mIsDrag)
         doClick(event);
       else
@@ -111,49 +97,6 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
       break;
     }
   }
-
-  // ------------------------------------------------------------------
-  // Panning
-  // ------------------------------------------------------------------
-
-  private boolean mIsPan;
-  private IPoint mOriginalPan;
-
-  private boolean pan() {
-    return mIsPan;
-  }
-
-  private void startPan(UserEvent event) {
-    todo("!consider making this a separate operation?");
-    mOriginalPan = geomApp().panOffset();
-  }
-
-  private void continuePan(UserEvent event) {
-
-    // We calculate the pan based on view coordinates, since they are unaffected
-    // by the pan value (which will be constantly changing)
-
-    var zoom = geomApp().zoomFactor();
-
-    // If the user drags the mouse to the right, we want the pan to move to the *left*
-    var viewOffset = IPoint.difference(event.getViewLocation(), mInitialDownEvent.getViewLocation())
-        .scaledBy(-1);
-    var worldOffset = viewOffset.scaledBy(1 / zoom);
-    var pan = IPoint.sum(mOriginalPan, worldOffset);
-
-    boolean clamp = false && alert("!clamping pan values");
-    if (clamp) {
-      final int PAN_MAX = 2000;
-      pan.clampTo(new IRect(-PAN_MAX, -PAN_MAX, PAN_MAX, PAN_MAX));
-    }
-
-    geomApp().setPanOffset(pan);
-  }
-
-  private void finishPan() {
-  }
-
-  // ------------------------------------------------------------------
 
   private void constructPickSet(UserEvent event) {
     ScriptEditState state = scriptManager().state();
@@ -336,7 +279,6 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
 
   private UserEvent mInitialDownEvent;
   private boolean mIsDrag;
-
   private IntArray mPickSet;
   private IntArray mPickSetSelected;
 }

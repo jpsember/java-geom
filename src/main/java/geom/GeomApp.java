@@ -301,6 +301,7 @@ public abstract class GeomApp extends GUIApp {
     addItem("zoom_in", "Zoom In", ZoomOper.buildIn());
     addItem("zoom_out", "Zoom Out", ZoomOper.buildOut());
     addItem("zoom_reset", "Zoom Reset", ZoomOper.buildReset());
+    addItem("pan_reset","Pan Reset",PanOper.buildReset());
   }
 
   // ------------------------------------------------------------------
