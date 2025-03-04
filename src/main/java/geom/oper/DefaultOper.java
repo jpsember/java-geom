@@ -35,8 +35,8 @@ import js.guiapp.UserOperation;
 import geom.SlotList;
 import geom.gen.ScriptEditState;
 import js.data.IntArray;
-import js.geometry.FPoint;
 import js.geometry.IPoint;
+import js.geometry.IRect;
 
 import static geom.GeomTools.*;
 
@@ -124,24 +124,30 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
   }
 
   private void startPan(UserEvent event) {
-    alertVerbose();
-
+    todo("!consider making this a separate operation?");
     mOriginalPan = geomApp().panOffset();
   }
 
   private void continuePan(UserEvent event) {
 
+    // We calculate the pan based on view coordinates, since they are unaffected
+    // by the pan value (which will be constantly changing)
+
     var zoom = geomApp().zoomFactor();
-    var pan = geomApp().panOffset();
 
-    var wlocOrig = mInitialDownEvent.getWorldLocation();
-    var wloc = event.getWorldLocation();
+    // If the user drags the mouse to the right, we want the pan to move to the *left*
+    var viewOffset = IPoint.difference(event.getViewLocation(), mInitialDownEvent.getViewLocation())
+        .scaledBy(-1);
+    var worldOffset = viewOffset.scaledBy(1 / zoom);
+    var pan = IPoint.sum(mOriginalPan, worldOffset);
 
-    var worldOffset = IPoint.difference(wloc, wlocOrig);
-    pr("pan, wloc:", wloc, "offset:", worldOffset);
+    boolean clamp = false && alert("!clamping pan values");
+    if (clamp) {
+      final int PAN_MAX = 2000;
+      pan.clampTo(new IRect(-PAN_MAX, -PAN_MAX, PAN_MAX, PAN_MAX));
+    }
 
-    var newPanOffset = IPoint.sum(mOriginalPan, worldOffset);
-    geomApp().setPanOffset(newPanOffset);
+    geomApp().setPanOffset(pan);
   }
 
   private void finishPan() {

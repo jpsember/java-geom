@@ -35,7 +35,6 @@ import geom.gen.ScriptEditState;
 import geom.oper.*;
 import js.base.BasePrinter;
 import js.file.Files;
-import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.guiapp.GUIApp;
 import js.guiapp.MenuBarWrapper;
