@@ -1,0 +1,5 @@
+fields {
+  string id;
+  string description;
+  *FPoint vertices;
+}

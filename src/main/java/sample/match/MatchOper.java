@@ -26,7 +26,8 @@ package sample.match;
 
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
-
+import static testbed.Colors.*;
+import static testbed.Render.*;
 import java.util.List;
 import java.util.Random;
 
@@ -35,6 +36,7 @@ import geom.GeomApp;
 import geom.elem.EditablePointElement;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
+import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.graphics.PointElement;
 import js.graphics.ScriptElement;
@@ -107,8 +109,8 @@ public class MatchOper implements TestBedOperation {
         points.add(elem.location());
     }
 
-//    mBounds = null;
-//    mFinalBounds = null;
+    //    mBounds = null;
+    //    mFinalBounds = null;
 
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
 
@@ -139,7 +141,37 @@ public class MatchOper implements TestBedOperation {
 
   @Override
   public void paintView() {
-    dset().paintView();
+
+    var ds = dset();
+
+    ds.prepareRender();
+
+    var m = ds.geomToViewTransform();
+
+    color(GREEN, 0.8);
+    stroke(STRK_THIN);
+
+    var g = graphics();
+    var oldTfm = g.getTransform();
+    g.transform(m.toAffineTransform());
+
+    int count = 0;
+    for (var n : ds.nodes()) {
+      if (++count > 20) break;
+      FPoint prev = null;
+      for (var pt : n.vertices()) {
+        if (prev != null) {
+          drawLine(prev, pt);
+          pr("drawline", prev, "=>", pt);
+        }
+        prev = pt;
+        var h = m.apply(pt.x, pt.y);
+        pr("geom->view tfm for:",pt.x,pt.y,"is:",h);
+      }
+      g.setTransform(oldTfm);
+    }
+
+    pr("tfm:", m);
 
     //    if (mFinalBounds != null) {
     //      stroke(STRK_RUBBERBAND);
@@ -176,8 +208,10 @@ public class MatchOper implements TestBedOperation {
   private Dataset dset() {
     if (mDataset != null)
       return mDataset;
-    mDataset = new Dataset();
-    mDataset.setVerbose();
+    var d = new Dataset();
+    d.setVerbose();
+    d.prepare();
+    mDataset = d;
     return mDataset;
   }
 
