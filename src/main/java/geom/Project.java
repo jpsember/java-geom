@@ -217,7 +217,6 @@ public final class Project extends BaseObject {
    */
   public ScriptWrapper script() {
     int index = scriptIndex();
-    //    int index = gadg().vi(TBGlobals.CURRENT_SCRIPT_INDEX);
     int count = scriptCount();
     if (index < 0 || index >= count)
       return ScriptWrapper.DEFAULT_INSTANCE;
