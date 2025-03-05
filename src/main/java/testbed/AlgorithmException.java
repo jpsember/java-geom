@@ -25,15 +25,14 @@
 package testbed;
 
 import js.base.BasePrinter;
-import js.geometry.IPoint;
-import js.geometry.IRect;
+import js.base.Pair;
 import js.graphics.AbstractScriptElement;
-import js.graphics.PointElement;
-import js.graphics.RectElement;
 
 import static js.base.Tools.*;
 
 import java.util.List;
+
+import geom.AlgRenderable;
 
 /**
  * Exception thrown during algorithm tracing operation
@@ -58,7 +57,7 @@ public final class AlgorithmException extends RuntimeException {
     return mMessage;
   }
 
-  public List<AbstractScriptElement> plotables() {
+  public List<Pair<AlgRenderable, Object>> plotables() {
     parse();
     return mPlotables;
   }
@@ -72,19 +71,21 @@ public final class AlgorithmException extends RuntimeException {
     List<Object> stringables = arrayList();
     mPlotables = arrayList();
     for (Object obj : mMessages) {
-      AbstractScriptElement se = null;
+      AlgRenderable se = null;
       if (obj != null) {
-        if (obj instanceof AbstractScriptElement) {
-          se = (AbstractScriptElement) obj;
-        } else if (obj instanceof IPoint) {
-          se = new PointElement(null, (IPoint) obj);
-        } else if (obj instanceof IRect) {
-          se = new RectElement(null, (IRect) obj);
-        } else if (!(obj instanceof String))
-          todo("convert IRect, IPoint, etc to appropriate objects;", obj.getClass().getName());
+        if (obj instanceof AlgRenderable) {
+          se = (AlgRenderable) obj;
+        } else {
+          se = AlgorithmStepper.sharedInstance().mRenderableMap.get(obj.getClass());
+          if (se == null) {
+            if (obj instanceof AbstractScriptElement) {
+              se = AlgorithmStepper.scriptElementRenderer();
+            }
+          }
+        }
       }
       if (se != null)
-        mPlotables.add(se);
+        mPlotables.add(pair(se, obj));
       else
         stringables.add(obj);
     }
@@ -94,7 +95,7 @@ public final class AlgorithmException extends RuntimeException {
   }
 
   private Object[] mMessages;
-  private List<AbstractScriptElement> mPlotables;
+  private List<Pair<AlgRenderable, Object>> mPlotables;
   private boolean mError;
   private String mMessage;
 

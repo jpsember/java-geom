@@ -25,6 +25,7 @@
 package testbed;
 
 import js.geometry.FPoint;
+import js.geometry.IPoint;
 import js.geometry.IRect;
 import js.geometry.MyMath;
 
@@ -434,6 +435,13 @@ public final class Render {
    * Draw a line segment
    */
   public static void drawLine(FPoint p0, FPoint p1) {
+    drawLine(p0.x, p0.y, p1.x, p1.y);
+  }
+
+  /**
+   * Draw a line segment
+   */
+  public static void drawLine(IPoint p0, IPoint p1) {
     drawLine(p0.x, p0.y, p1.x, p1.y);
   }
 

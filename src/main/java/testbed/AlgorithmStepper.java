@@ -24,27 +24,36 @@
  **/
 package testbed;
 
-import js.geometry.IRect;
-import js.graphics.AbstractScriptElement;
-import js.guiapp.UserOperation;
-import js.widget.WidgetManager;
-
 import static geom.GeomTools.*;
-
-import java.awt.*;
-import java.awt.geom.*;
-
 import static js.base.Tools.*;
+import static testbed.Colors.*;
 import static testbed.Render.*;
 import static testbed.TestBed.*;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.util.Map;
+
+import geom.AlgRenderable;
+import js.geometry.IPoint;
+import js.geometry.IRect;
+import js.geometry.Polygon;
+import js.graphics.AbstractScriptElement;
+import js.graphics.PointElement;
+import js.graphics.RectElement;
+import js.guiapp.UserOperation;
+import js.widget.WidgetManager;
 
 public class AlgorithmStepper {
 
   public static AlgorithmStepper sharedInstance() {
+    if (sAlgorithmStepper == null)
+      sAlgorithmStepper = new AlgorithmStepper();
     return sAlgorithmStepper;
   }
 
-  private static AlgorithmStepper sAlgorithmStepper = new AlgorithmStepper();
+  private static AlgorithmStepper sAlgorithmStepper;
 
   public void disable() {
     mDisabled++;
@@ -112,9 +121,6 @@ public class AlgorithmStepper {
     return mLastException;
   }
 
-  private void renderElem(AbstractScriptElement elem) {
-  }
-
   /**
    * Display items shown during algorithm, including any added by trace message.
    * 
@@ -125,10 +131,8 @@ public class AlgorithmStepper {
 
     pushColor(Color.red);
     pushStroke(STRK_NORMAL);
-    for (AbstractScriptElement elem : tr.plotables()) {
-      renderElem(elem);
-      IRect bounds = elem.bounds().withInset((int) (-5 * getScale()));
-      drawRect(bounds);
+    for (var plotable : tr.plotables()) {
+      plotable.first.render(plotable.second);
     }
     pop(2);
 
@@ -226,6 +230,63 @@ public class AlgorithmStepper {
     return new AlgStepOper(0);
   }
 
+  public void addRenderable(Class klass, AlgRenderable renderer) {
+    mRenderableMap.put(klass, renderer);
+  }
+
+  private static AlgRenderable sAbstractScriptElementRenderer = (item) -> {
+    var elem = (AbstractScriptElement) item;
+    IRect bounds = elem.bounds().withInset((int) (-5 * getScale()));
+    drawRect(bounds);
+  };
+
+  public static AlgRenderable scriptElementRenderer() {
+    return sAbstractScriptElementRenderer;
+  }
+
+  private AlgorithmStepper() {
+    final var r = sAbstractScriptElementRenderer;
+    mRenderableMap = hashMap();
+    addRenderable(IPoint.class, (item) -> r.render(new PointElement(null, (IPoint) item)));
+    addRenderable(IRect.class, (item) -> r.render(new RectElement(null, (IRect) item)));
+    addRenderable(Polygon.class, (item) -> renderPoly((Polygon) item));
+  }
+
+  public static void renderPoly(Polygon p) {
+    // A lot of this is duplicated from EditablePolygonElement
+
+    // We want the line width to be constant, independent of the zoom factor
+    float scale = 1.0f / geomApp().zoomFactor();
+
+    final float radius = 4f * scale;
+    pushStroke(STRK_NORMAL);
+    pushColor(RED, radius);
+
+    // Determine vertices, if any, involved in vertex being inserted
+
+    IPoint start = null;
+    IPoint last = null;
+    for (IPoint pt : p.vertices()) {
+      fillCircle(pt.toFPoint(), radius);
+      if (start == null) {
+        start = pt;
+      }
+      if (last != null) {
+        renderPolySeg(last, pt);
+      }
+      last = pt;
+    }
+
+    if (p.numVertices() > 1 && p.isClosed()) {
+      renderPolySeg(last, start);
+    }
+    pop(2);
+  }
+
+  private static void renderPolySeg(IPoint p1, IPoint p2) {
+    drawLine(p1, p2);
+  }
+
   private int mStepToStopAt;
   private int mStep;
   private Boolean mStepDecision;
@@ -237,4 +298,5 @@ public class AlgorithmStepper {
   // event that interrupted last algorithm run
   private AlgorithmException mLastException;
 
+  Map<Class, AlgRenderable> mRenderableMap;
 }
