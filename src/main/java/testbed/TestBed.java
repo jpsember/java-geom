@@ -192,19 +192,16 @@ public abstract class TestBed extends GeomApp {
   @Override
   public void paintStart(Graphics2D graphics) {
     Render.setGraphics(graphics);
-    pr("...paintStart");
     AlgorithmStepper.sharedInstance().runAlgorithm(oper());
   }
 
   @Override
   public void paintBackground(Graphics2D graphics) {
-    pr("...paintBackground");
     oper().paintBackground();
   }
 
   @Override
   public void paintStop() {
-    pr("...paintStop");
     AlgorithmStepper.sharedInstance().renderAlgorithmResults();
     oper().paintView();
     Render.setGraphics(null);

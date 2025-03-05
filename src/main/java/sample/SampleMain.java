@@ -29,7 +29,6 @@ import js.file.Files;
 import js.graphics.ScriptUtil;
 import js.json.JSMap;
 import js.widget.WidgetManager;
-import sample.match.MatchOper;
 import testbed.*;
 
 import static js.base.Tools.*;
@@ -40,7 +39,7 @@ public class SampleMain extends TestBed {
 
   public static void main(String[] args) {
     loadTools();
-
+    Files.setAlternateResourceDir(new File("/Users/home/github_projects/java-geom/src/main/resources"));
     {
       var f = new File(Files.homeDirectory(), ".geom_sample_project_directory");
       Files.S.setProjectDirectory(f);
@@ -63,7 +62,6 @@ public class SampleMain extends TestBed {
   @Override
   public void addOperations() {
     ScriptUtil.sAllowEmptyScripts = true;
-    addOper(new MatchOper());
     addOper(new BoundsOper());
   }
 
