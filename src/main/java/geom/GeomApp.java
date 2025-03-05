@@ -106,6 +106,12 @@ public abstract class GeomApp extends GUIApp {
   /**
    * Called from EditorPanel; default implementation does nothing
    */
+  public void paintBackground(Graphics2D graphics) {
+  }
+
+  /**
+   * Called from EditorPanel; default implementation does nothing
+   */
   public void paintStop() {
   }
 
@@ -130,6 +136,7 @@ public abstract class GeomApp extends GUIApp {
     discardMenuBar();
     updateTitle();
     performRepaint(REPAINT_ALL);
+    notifyProjectListener();
   }
 
   public final void openProject(File file) {
@@ -160,6 +167,8 @@ public abstract class GeomApp extends GUIApp {
     // and to make sure the keyboard shortcuts work (something to do with focus?)
     //
     performRepaint(REPAINT_ALL);
+
+    notifyProjectListener();
   }
 
   public final void openAppropriateProject() {
@@ -301,7 +310,7 @@ public abstract class GeomApp extends GUIApp {
     addItem("zoom_in", "Zoom In", ZoomOper.buildIn());
     addItem("zoom_out", "Zoom Out", ZoomOper.buildOut());
     addItem("zoom_reset", "Zoom Reset", ZoomOper.buildReset());
-    addItem("pan_reset","Pan Reset",PanOper.buildReset());
+    addItem("pan_reset", "Pan Reset", PanOper.buildReset());
   }
 
   // ------------------------------------------------------------------
@@ -487,4 +496,24 @@ public abstract class GeomApp extends GUIApp {
   }
 
   private int mPendingRepaintFlags;
+  private ProjectListener mProjectListener;
+
+  public void setProjectListener(ProjectListener listener) {
+    mProjectListener = listener;
+  }
+
+  private void notifyProjectListener() {
+    if (mProjectListener != null)
+      mProjectListener.projectActivated(mCurrentProject);
+  }
+
+  public void setRenderPageFrame(boolean f) {
+    mRenderPageFrame = f;
+  }
+
+  boolean renderPageFrame() {
+    return mRenderPageFrame;
+  }
+
+  private boolean mRenderPageFrame = true;
 }

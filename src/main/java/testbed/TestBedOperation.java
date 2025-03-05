@@ -33,10 +33,10 @@ import js.widget.WidgetManager;
 public interface TestBedOperation {
 
   /**
-   * Get the id of this operation's (TabbedPaneWidget) widget 
+   * Get the id of this operation's (TabbedPaneWidget) widget
    */
-  public String operId();
-  
+  String operId();
+
   /**
    * Add controls for this operation. Each operation exists in its own tab, so
    * the controls should consist of:
@@ -48,12 +48,12 @@ public interface TestBedOperation {
    *   w.closeTab();
    * </pre>
    */
-  public void addControls(WidgetManager w);
+  void addControls(WidgetManager w);
 
   /**
    * Process a UserEvent
    */
-  public void processUserEvent(UserEvent event);
+  void processUserEvent(UserEvent event);
 
   /**
    * Execute an algorithm. If no algorithm is to be run, this method can do
@@ -76,12 +76,21 @@ public interface TestBedOperation {
    * <pre>
    * 
    */
-  public void runAlgorithm();
+  void runAlgorithm();
+
+  /**
+   * Paint view for operation. This is called before paintView() (which should
+   * be renamed paintForeground?)
+   * 
+   * Default implementation does nothing
+   */
+  default void paintBackground() {
+  }
 
   /**
    * Paint view for operation. This is called after runAlgorithm(), which may
    * have been interrupted by an algorithm trace.
    */
-  public void paintView();
+  void paintView();
 
 }

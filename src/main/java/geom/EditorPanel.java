@@ -81,7 +81,7 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
     requestFocus();
   }
 
-  private void determineTransform(IPoint imageSize) {
+  private void determineTransform(IPoint pageSize) {
 
     Matrix t;
     {
@@ -91,7 +91,7 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
       // The translation takes into account the page size,
       // and the pan offset
 
-      var pageCenter = imageSize.scaledBy(.5f);
+      var pageCenter = pageSize.scaledBy(.5f);
       var worldPan = geomApp().panOffset();
       var worldFocus = IPoint.sum(pageCenter, worldPan).toFPoint().scaledBy(zoom);
       FPoint trans = new FPoint(fpt.x / 2 - worldFocus.x, fpt.y / 2 - worldFocus.y);
@@ -153,15 +153,19 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
     if (script.hasImage()) {
       g.drawImage(script.image(), 0, 0, null);
     } else {
-      int gray = 192;
-      g.setColor(new Color(gray, gray, gray));
-      g.fillRect(0, 0, pageSize.x, pageSize.y);
-      g.setColor(Color.black);
-      g.drawRect(0, 0, pageSize.x, pageSize.y);
+      if (geomApp().renderPageFrame()) {
+        int gray = 192;
+        g.setColor(new Color(gray, gray, gray));
+        g.fillRect(0, 0, pageSize.x, pageSize.y);
+        g.setColor(Color.black);
+        g.drawRect(0, 0, pageSize.x, pageSize.y);
+      }
     }
 
+    geomApp().paintBackground(g);
+    
     UserOperation op = UserEventManager.sharedInstance().getOperation();
-
+    
     // If no filter is specified, render nominally, but with selected items as selected.
     // Otherwise, non-selected items are rendered disabled.
 

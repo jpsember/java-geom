@@ -206,12 +206,10 @@ public final class ScriptWrapper extends BaseObject {
    */
   public IPoint pageSize() {
     if (!hasImage()) {
-      return DEFAULT_PAGE_SIZE;
+      return new IPoint(1200, 900);
     }
     return ImgUtil.size(image());
   }
-
-  private static final IPoint DEFAULT_PAGE_SIZE = new IPoint(1200, 900);
 
   public ScriptWrapper assertNotNone() {
     if (isNone())
