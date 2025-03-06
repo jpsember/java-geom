@@ -33,7 +33,6 @@ import java.util.List;
 import geom.EditorPanel;
 import geom.EditorElement;
 import geom.GeomApp;
-import geom.EditorElement.RenderState;
 import geom.oper.PolygonEditOper;
 import js.geometry.FPoint;
 import js.geometry.FRect;
@@ -44,7 +43,6 @@ import js.geometry.MyMath;
 import js.geometry.Polygon;
 import js.graphics.Paint;
 import js.graphics.PolygonElement;
-import js.graphics.PolygonSmoother;
 import js.graphics.ScriptElement;
 import js.graphics.ScriptUtil;
 import js.graphics.gen.ElementProperties;
@@ -54,9 +52,6 @@ import js.guiapp.UserOperation;
 import static geom.GeomTools.*;
 
 public final class EditablePolygonElement extends PolygonElement implements EditorElement {
-
-  public static final boolean SMOOTHING = false
-      && alert("Special handling while developing Catmull-Rom spline algorithm");
 
   public static final EditablePolygonElement DEFAULT_INSTANCE = new EditablePolygonElement(
       PolygonElement.DEFAULT_INSTANCE.properties(), PolygonElement.DEFAULT_INSTANCE.polygon(), false);
@@ -276,33 +271,8 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
       panel.renderCategory(this, bounds, appearance);
       panel.popFocus();
     }
-
-    if (SMOOTHING) {
-      if (ScriptUtil.categoryOrZero(this) == 1) {
-        if (polygon().isClosed() && polygon().isWellDefined()) {
-          if (sSmoother == null) {
-            sSmoother = new PolygonSmoother();
-            sSmoother //
-                .withTau(0.5f) // (This is the default)
-                .withStepSize(3) //
-                .withInsetDistance(40) //
-            ;
-          }
-          Polygon sm = sSmoother.withPolygon(polygon()).result();
-          last = sm.lastVertex();
-          for (IPoint pt : sm.vertices()) {
-            renderLine(panel, scale, last, pt, false);
-            last = pt;
-          }
-        }
-      }
-    }
-
     panel.renderHandle(this, appearance);
-
   }
-
-  private static PolygonSmoother sSmoother;
 
   private void renderLine(EditorPanel panel, float scale, IPoint i1, IPoint i2, boolean withArrows) {
     FPoint p1 = i1.toFPoint();

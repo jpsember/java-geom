@@ -39,9 +39,6 @@ import java.awt.geom.*;
 import java.util.List;
 
 import static js.base.Tools.*;
-import static testbed.Colors.*;
-import static testbed.Render.*;
-import static testbed.Render.pop;
 import static geom.GeomTools.*;
 
 public final class Render {
