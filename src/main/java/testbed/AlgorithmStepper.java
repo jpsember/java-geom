@@ -36,6 +36,7 @@ import java.awt.geom.AffineTransform;
 import java.util.Map;
 
 import geom.AlgRenderable;
+import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.geometry.IRect;
 import js.geometry.Polygon;
@@ -247,44 +248,17 @@ public class AlgorithmStepper {
   private AlgorithmStepper() {
     final var r = sAbstractScriptElementRenderer;
     mRenderableMap = hashMap();
+    addRenderable(FPoint.class, (item) -> r.render(new PointElement(null, ((FPoint) item).toIPoint())));
     addRenderable(IPoint.class, (item) -> r.render(new PointElement(null, (IPoint) item)));
     addRenderable(IRect.class, (item) -> r.render(new RectElement(null, (IRect) item)));
     addRenderable(Polygon.class, (item) -> renderPoly((Polygon) item));
   }
 
   public static void renderPoly(Polygon p) {
-    // A lot of this is duplicated from EditablePolygonElement
-
-    // We want the line width to be constant, independent of the zoom factor
-    float scale = 1.0f / geomApp().zoomFactor();
-
-    final float radius = 4f * scale;
     pushStroke(STRK_NORMAL);
-    pushColor(RED, radius);
-
-    // Determine vertices, if any, involved in vertex being inserted
-
-    IPoint start = null;
-    IPoint last = null;
-    for (IPoint pt : p.vertices()) {
-      fillCircle(pt.toFPoint(), radius);
-      if (start == null) {
-        start = pt;
-      }
-      if (last != null) {
-        renderPolySeg(last, pt);
-      }
-      last = pt;
-    }
-
-    if (p.numVertices() > 1 && p.isClosed()) {
-      renderPolySeg(last, start);
-    }
+    pushColor(RED, 0.4);
+    renderPoly(p);
     pop(2);
-  }
-
-  private static void renderPolySeg(IPoint p1, IPoint p2) {
-    drawLine(p1, p2);
   }
 
   private int mStepToStopAt;

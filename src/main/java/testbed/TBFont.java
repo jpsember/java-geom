@@ -35,7 +35,7 @@ class TBFont {
 
   public static void prepare() {
     if (sFonts == null) {
-      String[] script = { "Monospaced p 12", "Monospaced p 16", "Monospaced b 20", "Times i 16", };
+      String[] script = { "Monospaced p 8", "Monospaced p 12", "Monospaced b 14", "Times i 16", };
       sFonts = new TBFont[script.length];
       for (int i = 0; i < script.length; i++)
         sFonts[i] = parse(script[i]);

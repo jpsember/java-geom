@@ -28,6 +28,7 @@ import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.geometry.IRect;
 import js.geometry.MyMath;
+import js.geometry.Polygon;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -38,6 +39,9 @@ import java.awt.geom.*;
 import java.util.List;
 
 import static js.base.Tools.*;
+import static testbed.Colors.*;
+import static testbed.Render.*;
+import static testbed.Render.pop;
 import static geom.GeomTools.*;
 
 public final class Render {
@@ -244,12 +248,12 @@ public final class Render {
 
     TBFont f = TBFont.get(sCurrentFontIndex);
 
-    float fsize = (float) f.charWidth();
+    float fsize = (float) f.charWidth() * 1.5f;
     float ascent = f.metrics().getAscent();
     float descent = f.metrics().getDescent();
 
     float textW = maxStrLen * fsize;
-    float rowH = (ascent + descent) * .8f;
+    float rowH = (ascent + descent) * 1.1f;
     float textH = rowH * (strings.size() + .2f);
 
     float textX = (float) (x - textW * .5f);
@@ -466,6 +470,33 @@ public final class Render {
     Line2D.Double wl = new Line2D.Double();
     wl.setLine(x0, y0, x1, y1);
     g.draw(wl);
+  }
+
+  public static void drawPoly(Polygon p) {
+
+    // We want the circle radius t be constant, independent of the zoom factor
+    float scale = 1.0f / geomApp().zoomFactor();
+
+    final float radius = 4f * scale;
+
+    // Determine vertices, if any, involved in vertex being inserted
+
+    IPoint start = null;
+    IPoint last = null;
+    for (IPoint pt : p.vertices()) {
+      fillCircle(pt.toFPoint(), radius);
+      if (start == null) {
+        start = pt;
+      }
+      if (last != null) {
+        drawLine(last, pt);
+      }
+      last = pt;
+    }
+
+    if (p.numVertices() > 1 && p.isClosed()) {
+      drawLine(last, start);
+    }
   }
 
   public static void stroke(Stroke s) {

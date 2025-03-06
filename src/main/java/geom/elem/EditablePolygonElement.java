@@ -33,6 +33,7 @@ import java.util.List;
 import geom.EditorPanel;
 import geom.EditorElement;
 import geom.GeomApp;
+import geom.EditorElement.Render;
 import geom.oper.PolygonEditOper;
 import js.geometry.FPoint;
 import js.geometry.FRect;
@@ -154,7 +155,7 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
       if (snap != null) {
         vt = snap;
         if (db)
-          pr("...snapping to:",vt,"position:",position);
+          pr("...snapping to:", vt, "position:", position);
       }
     }
 
@@ -217,6 +218,17 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
 
     panel.apply(paint.toBuilder().width(paint.width() * scale));
 
+    if (appearance == Render.SELECTED) {
+//      FRect bounds = panel.pushFocusOn(bounds().toRect());
+     var bounds = bounds();
+      var scaledRadius = HANDLE_RADIUS * scale;
+      var b2 = new FRect(bounds.midX() - scaledRadius  , bounds.endY(), scaledRadius*2, scaledRadius*2);
+      todo("!Render name collision is annoying");
+      todo("!Expand grabble bounds for selected polys");
+      panel.renderFrame(b2);
+    }
+    
+    
     // Determine vertices, if any, involved in vertex being inserted
 
     IPoint pt1 = null;

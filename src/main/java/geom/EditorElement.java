@@ -38,6 +38,8 @@ import js.geometry.Matrix;
  */
 public interface EditorElement extends ScriptElement {
 
+  public static final int HANDLE_RADIUS = 10;
+  
   // ------------------------------------------------------------------
   // AbstractData implementation
   // ------------------------------------------------------------------
