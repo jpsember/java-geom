@@ -24,6 +24,7 @@
  **/
 package geom;
 
+import static geom.GeomTools.*;
 import static js.base.Tools.*;
 
 import js.graphics.ScriptElement;
@@ -32,6 +33,7 @@ import js.guiapp.UserEvent;
 import js.guiapp.UserOperation;
 import js.geometry.IPoint;
 import js.geometry.Matrix;
+import js.geometry.MyMath;
 
 /**
  * A type of ScriptElement with special capabilities supporting editing
@@ -39,7 +41,8 @@ import js.geometry.Matrix;
 public interface EditorElement extends ScriptElement {
 
   public static final int HANDLE_RADIUS = 10;
-  
+  public static final int HANDLE_PADDING = 7;
+
   // ------------------------------------------------------------------
   // AbstractData implementation
   // ------------------------------------------------------------------
@@ -59,18 +62,36 @@ public interface EditorElement extends ScriptElement {
   /**
    * Determine if boundary of element contains point
    */
-  default boolean contains(int paddingPixels, IPoint pt) {
+  default boolean contains(int paddingPixels, IPoint pt, boolean isSelected) {
     throw notSupported();
   }
 
-  /**
-   * Determine if object can be grabbed at a particular point. Default
-   * implementation returns true the object contains() the point.
-   */
-  default boolean isGrabPoint(int paddingPixels, IPoint pt) {
-    return contains(paddingPixels, pt);
+  default boolean handleContains(int paddingPixels, IPoint pt, boolean isSelected) {
+    boolean result = false;
+    do {
+      if (!isSelected)
+        break;
+      if (DEBUG_HANDLE)
+        pr("handleContains?");
+      var b = bounds();
+      var handleX = b.midX();
+      var zf = 1f / geomApp().zoomFactor();
+      var rad = HANDLE_RADIUS * zf;
+      var offset = HANDLE_PADDING * zf;
+      var handleY = (int) (b.endY() + rad + offset);
+      var dist = MyMath.distanceBetween(new IPoint(handleX, handleY), pt);
+      if (dist <= rad)
+        result = true;
+    } while (false);
+    return result;
   }
 
+  default void renderHandle(RenderState appearance) {
+    if (appearance != RenderState.SELECTED) return;
+    
+    
+  }
+  
   /**
    * Determine if an event is occurring at a part of an object that should
    * trigger an operation. If so, return the operation; else, null
@@ -83,11 +104,11 @@ public interface EditorElement extends ScriptElement {
     throw notSupported();
   }
 
-  public enum Render {
+  enum RenderState {
     NOMINAL, SELECTED, DISABLED,
   }
 
-  default void render(EditorPanel editorPanel, Render appearance) {
+  default void render(EditorPanel editorPanel, RenderState appearance) {
     throw notSupported("render unsupported for element:", getClass().getSimpleName());
   }
 
@@ -105,8 +126,8 @@ public interface EditorElement extends ScriptElement {
   EditorElement withProperties(ElementProperties properties);
 
   /**
-   * Get an optonal informational message about the element for displaying in an editor.
-   * Default returns null
+   * Get an optional informational message about the element for displaying in an
+   * editor. Default returns null
    */
   default String infoMessage() {
     return null;

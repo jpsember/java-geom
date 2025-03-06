@@ -105,13 +105,18 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
 
     int paddingPixels = geomApp().paddingPixels();
 
+    var selectedElements = IntArray.with(state.selectedElements());
     int slot = INIT_INDEX;
     for (EditorElement element : state.elements()) {
       slot++;
-      if (!element.contains(paddingPixels, event.getWorldLocation()))
+
+      boolean isSelected = selectedElements.contains(slot);
+      if (!element.contains(paddingPixels, event.getWorldLocation(), isSelected))
         continue;
+      if (DEBUG_HANDLE)
+        pr("constructPickSet, adding:", slot, element.tag());
       b1.add(slot);
-      if (IntArray.with(state.selectedElements()).contains(slot))
+      if (isSelected)
         b2.add(slot);
     }
     mPickSet = b1.build();

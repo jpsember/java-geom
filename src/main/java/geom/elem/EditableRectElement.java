@@ -77,7 +77,7 @@ public class EditableRectElement extends RectElement implements EditorElement {
   }
 
   @Override
-  public boolean contains(int paddingPixels, IPoint pt) {
+  public boolean contains(int paddingPixels, IPoint pt, boolean isSelected) {
     IRect paddedBounds = bounds().withInset(-paddingPixels);
     return paddedBounds.contains(pt);
   }
@@ -103,7 +103,7 @@ public class EditableRectElement extends RectElement implements EditorElement {
   private static final int[] sSegmentScript = { 0, 1, 2, 3, 4, 5 };
 
   @Override
-  public void render(EditorPanel panel, Render appearance) {
+  public void render(EditorPanel panel, RenderState appearance) {
     FRect bounds = panel.pushFocusOn(bounds().toRect());
 
     // Draw thick colored frame, with a half pixel overlap with the black single-pixel frames
@@ -127,7 +127,7 @@ public class EditableRectElement extends RectElement implements EditorElement {
     }
     panel.apply(paint).renderFrame(r);
 
-    if (appearance == Render.SELECTED) {
+    if (appearance == RenderState.SELECTED) {
       panel.apply(BLACK_LINE);
       // Draw a single pixel black frame (which, if the colored frame was drawn, will lie within it)
       panel.renderFrame(bounds);

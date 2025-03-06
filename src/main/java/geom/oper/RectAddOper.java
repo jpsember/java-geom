@@ -32,7 +32,7 @@ import java.awt.geom.Path2D;
 
 import geom.EditorPanel;
 import geom.EditorElement;
-import geom.EditorElement.Render;
+import geom.EditorElement.RenderState;
 import geom.StateTools;
 import geom.elem.EditableRectElement;
 import geom.gen.Command;
@@ -216,7 +216,7 @@ public class RectAddOper extends UserOperation implements UserEvent.Listener {
     // Use the normal box rendering method to draw the guide rectangle;
     // it is less confusing for the user
     EditorElement temporaryBox = constructNewObject(guide);
-    temporaryBox.render(p, Render.SELECTED);
+    temporaryBox.render(p, RenderState.SELECTED);
   }
 
   private StateMachine addState() {

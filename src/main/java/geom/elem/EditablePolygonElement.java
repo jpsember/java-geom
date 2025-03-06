@@ -33,7 +33,7 @@ import java.util.List;
 import geom.EditorPanel;
 import geom.EditorElement;
 import geom.GeomApp;
-import geom.EditorElement.Render;
+import geom.EditorElement.RenderState;
 import geom.oper.PolygonEditOper;
 import js.geometry.FPoint;
 import js.geometry.FRect;
@@ -73,7 +73,13 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
   }
 
   @Override
-  public boolean contains(int paddingPixels, IPoint pt) {
+  public boolean contains(int paddingPixels, IPoint pt, boolean isSelected) {
+    if (DEBUG_HANDLE)
+      pr("contains poly?", isSelected);
+    if (handleContains(paddingPixels, pt, isSelected)) {
+      return true;
+    }
+
     IRect paddedBounds = bounds().withInset(-paddingPixels);
     return paddedBounds.contains(pt);
   }
@@ -195,7 +201,7 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
   }
 
   @Override
-  public void render(EditorPanel panel, Render appearance) {
+  public void render(EditorPanel panel, RenderState appearance) {
 
     // We want the line width to be constant, independent of the zoom factor
     float scale = 1.0f / panel.zoomFactor();
@@ -218,17 +224,6 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
 
     panel.apply(paint.toBuilder().width(paint.width() * scale));
 
-    if (appearance == Render.SELECTED) {
-//      FRect bounds = panel.pushFocusOn(bounds().toRect());
-     var bounds = bounds();
-      var scaledRadius = HANDLE_RADIUS * scale;
-      var b2 = new FRect(bounds.midX() - scaledRadius  , bounds.endY(), scaledRadius*2, scaledRadius*2);
-      todo("!Render name collision is annoying");
-      todo("!Expand grabble bounds for selected polys");
-      panel.renderFrame(b2);
-    }
-    
-    
     // Determine vertices, if any, involved in vertex being inserted
 
     IPoint pt1 = null;
@@ -256,13 +251,13 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
           panel.apply(Paint.newBuilder().color(Color.RED).width(0.8f * scale));
           panel.renderLine(last, pt);
         } else
-          renderLine(panel, scale, last, pt, appearance == Render.SELECTED);
+          renderLine(panel, scale, last, pt, appearance == RenderState.SELECTED);
       }
       last = pt;
     }
 
     if (polygon().isClosed() && start != null && last != null) {
-      renderLine(panel, scale, last, start, appearance == Render.SELECTED);
+      renderLine(panel, scale, last, start, appearance == RenderState.SELECTED);
     }
     if (mInsertVertex != null) {
       if (pt1 != null)
@@ -272,7 +267,7 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
       panel.renderDisc(mInsertVertex, VERTEX_RADIUS * scale);
     }
 
-    if (appearance == Render.SELECTED && !curveMode())
+    if (appearance == RenderState.SELECTED && !curveMode())
       for (IPoint pt : polygon().vertices())
         panel.renderDisc(pt, VERTEX_RADIUS * scale);
 
@@ -302,6 +297,9 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
         }
       }
     }
+
+    panel.renderHandle(this, appearance);
+
   }
 
   private static PolygonSmoother sSmoother;

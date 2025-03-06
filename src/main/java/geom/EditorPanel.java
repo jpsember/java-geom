@@ -43,7 +43,7 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import geom.EditorElement.Render;
+import geom.EditorElement.RenderState;
 import geom.gen.ScriptEditState;
 import js.data.IntArray;
 import js.geometry.FPoint;
@@ -177,14 +177,14 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
       for (EditorElement element : state.elements()) {
         slot++;
         boolean selected = IntArray.with(state.selectedElements()).contains(slot);
-        Render appearance;
+        RenderState appearance;
         if (displayedSlots == null)
-          appearance = selected ? Render.SELECTED : Render.NOMINAL;
+          appearance = selected ? RenderState.SELECTED : RenderState.NOMINAL;
         else {
-          appearance = Render.DISABLED;
+          appearance = RenderState.DISABLED;
           if (filterCursor != displayedSlots.size()) {
             if (displayedSlots.get(filterCursor) == slot) {
-              appearance = Render.SELECTED;
+              appearance = RenderState.SELECTED;
               filterCursor++;
             }
           }
@@ -343,19 +343,31 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
       mGraphics.draw(shape);
   }
 
-  public void renderCategory(EditorElement element, FRect bounds, Render appearance) {
+  public void renderCategory(EditorElement element, FRect bounds, RenderState appearance) {
     if (element.properties().category() == null)
       return;
     String categoryString = "" + element.properties().category();
     final float TITLE_OFFSET = 16;
 
-    if (appearance == Render.SELECTED) {
+    if (appearance == RenderState.SELECTED) {
       apply(CATEGORY_TEXT_BGND);
       renderFrame(new FRect(bounds.midX() - 8, bounds.y - 60, 48, 54));
     }
 
-    apply(appearance == Render.SELECTED ? CATEGORY_TEXT_SELECTED : CATEGORY_TEXT);
+    apply(appearance == RenderState.SELECTED ? CATEGORY_TEXT_SELECTED : CATEGORY_TEXT);
     renderText(categoryString, bounds.midX(), bounds.y - TITLE_OFFSET);
+  }
+
+  public void renderHandle(EditorElement element, RenderState appearance) {
+    if (appearance != RenderState.SELECTED)
+      return;
+    float scale = 1.0f / zoomFactor();
+    var bounds = element.bounds();
+    var rad = EditorElement.HANDLE_RADIUS * scale;
+    var loc = rad + EditorElement.HANDLE_PADDING * scale;
+    apply(Paint.newBuilder().color(Color.RED).width(0.5f * scale));
+    todo("!confusing mismatch between render state (paints etc) here vs within algorithm render");
+    renderDisc(new FPoint(bounds.midX(), bounds.endY() + loc), rad);
   }
 
   private void assertRendering() {
