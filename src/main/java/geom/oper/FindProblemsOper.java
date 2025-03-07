@@ -57,7 +57,7 @@ public final class FindProblemsOper extends UserOperation {
         addProb("no image");
       }
 
-      Script sc = w.data();
+      Script sc = w.script();
       List<PolygonElement> polys = ScriptUtil.polygonElements(sc);
       if (polys.size() != 1) {
         addProb("unexpected polygon count:", polys.size());

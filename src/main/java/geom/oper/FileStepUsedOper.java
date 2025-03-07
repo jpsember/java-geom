@@ -63,7 +63,7 @@ public final class FileStepUsedOper extends UserOperation {
       currScript = updatedIndex;
       // If script is useful, stop
       ScriptWrapper w = project.script(currScript);
-      if (w.data().items().isEmpty())
+      if (w.script().items().isEmpty())
         continue;
       mNextFileIndex = updatedIndex;
     }

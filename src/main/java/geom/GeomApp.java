@@ -46,6 +46,7 @@ import js.widget.WidgetManager;
 import testbed.AlgorithmStepper;
 
 import static geom.GeomTools.*;
+import static js.graphics.ScriptUtil.*;
 
 /**
  * A GUIApp that supports editing of geometric objects
@@ -200,6 +201,7 @@ public abstract class GeomApp extends GUIApp {
   public void switchToScript(int index) {
     scriptManager().flushScript();
     if (currentProject().scriptIndex() != index) {
+      D20("switchToScript:", index, "from", currentProject().scriptIndex());
       currentProject().setScriptIndex(index);
       scriptManager().replaceCurrentScriptWith(currentProject().script());
     }
@@ -404,8 +406,9 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public final int paddingPixels() {
-    if (DEBUG_HANDLE) return 2;
-    
+    if (DEBUG_HANDLE)
+      return 2;
+
     return (int) (20 / zoomFactor());
   }
 

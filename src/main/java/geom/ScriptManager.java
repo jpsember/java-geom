@@ -34,6 +34,7 @@ import js.graphics.gen.Script;
 
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
+import static js.graphics.ScriptUtil.*;
 
 public class ScriptManager {
 
@@ -72,9 +73,9 @@ public class ScriptManager {
       // just pass an array of EditorElements (even though each element implements ScriptElement)
       List<ScriptElement> elements = new ArrayList<>(mState.elements());
       Script.Builder b = Script.newBuilder();
-      b.usage(mScript.data().usage());
+      b.usage(mScript.script().usage());
       b.items(elements);
-      mScript.setData(b.build());
+      mScript.setScript(b.build());
     }
   }
 
@@ -86,7 +87,12 @@ public class ScriptManager {
     mScript.flush();
   }
 
+  @Deprecated
   public void replaceCurrentScriptWith(ScriptWrapper newScript) {
+    todo("This is troublesome.");
+    
+    D20(VERT_SP, "replaceCurrentScript");
+    todo("read/write controls to scripts");
     if (newScript == mScript)
       return;
 
@@ -94,13 +100,14 @@ public class ScriptManager {
     ScriptEditState oldState = mState;
     mScript = newScript;
     if (mScript.isNone() || mScript.isAnonymous()) {
+      D20("script is none or anon");
       return;
     }
 
     // Parse the ScriptElement objects, constructing an appropriate
     // EditorElement for each
     List<EditorElement> editorElements = arrayList();
-    for (ScriptElement element : newScript.data().items()) {
+    for (ScriptElement element : newScript.script().items()) {
       // It is possible that elements are null, if they were unable to be parsed
       if (element == null)
         continue;
@@ -117,6 +124,11 @@ public class ScriptManager {
       }
       editorElements.add(validatedElement);
     }
+
+    D20("updating ui; new script widgets:", INDENT, newScript.script().widgets());
+    D20("updating ui, pan_x:", newScript.script().widgets().optUnsafe("ed_pan_x"));
+
+    ScriptWrapper.updateUIWithScriptWidgets(newScript.script());
 
     setState(ScriptEditState.newBuilder() //
         .elements(editorElements)//
