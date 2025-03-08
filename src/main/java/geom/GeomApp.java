@@ -202,7 +202,6 @@ public abstract class GeomApp extends GUIApp {
   public void switchToScript(int index) {
     D20("switchToScript from", currentProject().scriptIndex(), "to", index);
     if (currentProject().scriptIndex() != index) {
-      todo("perhaps it's not flushing the current script before switching?");
       scriptManager().flushScript();
       currentProject().setScriptIndex(index);
       scriptManager().loadProjectScript();

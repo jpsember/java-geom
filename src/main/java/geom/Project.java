@@ -209,7 +209,6 @@ public final class Project extends BaseObject {
   }
 
   public void setScriptIndex(int index) {
-    alert("the current script is stored in the widgets, which might lead to trouble");
     widgets().setf(CURRENT_SCRIPT_INDEX, index);
   }
 

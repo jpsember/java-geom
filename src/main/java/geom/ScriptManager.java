@@ -103,7 +103,8 @@ public class ScriptManager {
     D20(VERT_SP, "loadProjectScript; current project:", cp.name());
     var newScript = cp.script();
 
-    todo("read/write controls to scripts");
+    if (DEBUG_20)
+      todo("read/write controls to scripts");
     if (newScript == mScript) {
       D20("....project script is already the active script!!!!!!!!!!!!!!!!!!!!!!!!!!");
       return;
