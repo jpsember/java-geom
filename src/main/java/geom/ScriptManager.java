@@ -140,7 +140,7 @@ public class ScriptManager {
 
     D20("updating ui; new script widgets:", INDENT, D20Map(newScript.script().widgets()));
 
-    ScriptWrapper.updateUIWithScriptWidgets(newScript.script());
+    newScript.copyWidgetValuesFromScriptToUI();
 
     setState(ScriptEditState.newBuilder() //
         .elements(editorElements)//

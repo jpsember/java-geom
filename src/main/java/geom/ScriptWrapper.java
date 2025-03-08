@@ -160,7 +160,7 @@ public final class ScriptWrapper extends BaseObject {
 
     if (ScriptUtil.isUseful(script) || alert("ALWAYS setting useful")) {
       D20("flush script, old widget map:", INDENT, D20Map(script.widgets()));
-      storeWidgetValuesWithinScript();
+      copyWidgetValuesFromUIToScript();
       script = script();
 
       D20("after updating widget map with new ui:", INDENT, D20Map(script.widgets()));
@@ -182,26 +182,22 @@ public final class ScriptWrapper extends BaseObject {
     }
   }
 
-  private void storeWidgetValuesWithinScript() {
-    D20("storeWidgetValuesWithinScript");
+  private void copyWidgetValuesFromUIToScript() {
+    D20("copyWidgetValuesFromUIToScript");
     var widgetMap = widgets().readWidgetValues();
     D20("widget map:", D20Map(widgetMap));
-
-    todo("don't persist certain values, ie with prefix?");
     var sb = script().toBuilder();
     sb.widgets(widgetMap);
     D20("set script to:", INDENT, D20Map(widgetMap));
 
-    // We have to persist the changes to the cached version
+    // We have to persist the changes to the cached version!
     setScript(sb.build());
   }
 
-  @Deprecated // This should be an instance method for script
-  public static void updateUIWithScriptWidgets(Script script) {
-    D20("updateUIWithScriptWidgets");
-    var wm = script.widgets();
+  public void copyWidgetValuesFromScriptToUI() {
+    D20("copyWidgetValuesFromScriptToUI");
+    var wm = script().widgets();
     widgets().setWidgetValues(wm);
-    todo("!Do I need to refresh the view?");
   }
 
   private File imageFile() {
@@ -251,27 +247,12 @@ public final class ScriptWrapper extends BaseObject {
 
   // ------------------------------------------------------------------
 
-  public String debugInfo() {
-    StringBuilder sb = new StringBuilder();
-    if (isNone())
-      sb.append("<none>");
-    else if (isAnonymous())
-      sb.append("<anonymous>");
-    else {
-      sb.append(file().getName());
-      sb.append(" items:");
-      sb.append(script().items().size());
-      if (script().metadata() != null) {
-        sb.append(" metadata:");
-        sb.append(script().metadata().toJson());
-      }
-    }
-    return sb.toString();
-  }
-
   private final File mScriptFile;
   // File containing script's image, or Files.DEFAULT if there is no image
   private File mImageFile;
+
+  // This is a cache of the script, so be sure to update it!  Got bit by a tough bug
+  // involving not updating this field.
   private Script mScriptData;
 
 }
