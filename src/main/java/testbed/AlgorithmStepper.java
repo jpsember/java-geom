@@ -255,9 +255,31 @@ public class AlgorithmStepper {
   }
 
   public static void renderPoly(Polygon p) {
+    // We want the line width to be constant, independent of the zoom factor
+    float scale = 1.0f / geomApp().zoomFactor();
+
+    final float radius = 4f * scale;
     pushStroke(STRK_NORMAL);
-    pushColor(RED, 0.4);
-    renderPoly(p);
+    pushColor(RED, radius);
+
+    // Determine vertices, if any, involved in vertex being inserted
+
+    IPoint start = null;
+    IPoint last = null;
+    for (IPoint pt : p.vertices()) {
+      fillCircle(pt.toFPoint(), radius);
+      if (start == null) {
+        start = pt;
+      }
+      if (last != null) {
+        drawLine(last, pt);
+      }
+      last = pt;
+    }
+
+    if (p.numVertices() > 1 && p.isClosed()) {
+      drawLine(last, start);
+    }
     pop(2);
   }
 
