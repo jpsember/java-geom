@@ -52,10 +52,13 @@ public class ScriptManager {
 
   public void closeFile() {
     flushScript();
-    replaceCurrentScriptWith(ScriptWrapper.DEFAULT_INSTANCE);
+    todo("closeFile");
+    die("we need to cleanly discard the current script... or?");
+    loadProjectScript(); // was ScriptWrapper.DEFAULT_INSTANCE
   }
 
   public void openFile(File scriptFile) {
+    todo("openFile");
   }
 
   /**
@@ -72,9 +75,14 @@ public class ScriptManager {
       // We have to construct an array of ScriptElements, since we can't
       // just pass an array of EditorElements (even though each element implements ScriptElement)
       List<ScriptElement> elements = new ArrayList<>(mState.elements());
-      Script.Builder b = Script.newBuilder();
+
+      // retain the existing widget map by constructing a builder from the existing script
+
+      Script.Builder b = mScript.script().toBuilder();
       b.usage(mScript.script().usage());
       b.items(elements);
+
+      // Where are the gui elements?
       mScript.setScript(b.build());
     }
   }
@@ -87,14 +95,19 @@ public class ScriptManager {
     mScript.flush();
   }
 
-  @Deprecated
-  public void replaceCurrentScriptWith(ScriptWrapper newScript) {
-    todo("This is troublesome.");
-    
-    D20(VERT_SP, "replaceCurrentScript");
+  /**
+   * Set the current script to the current project's script
+   */
+  public void loadProjectScript() {
+    var cp = geomApp().currentProject();
+    D20(VERT_SP, "loadProjectScript; current project:", cp.name());
+    var newScript = cp.script();
+
     todo("read/write controls to scripts");
-    if (newScript == mScript)
+    if (newScript == mScript) {
+      D20("....project script is already the active script!!!!!!!!!!!!!!!!!!!!!!!!!!");
       return;
+    }
 
     // Copy the clipboard from the current script, so we can copy or paste with the new script
     ScriptEditState oldState = mState;
@@ -125,7 +138,7 @@ public class ScriptManager {
       editorElements.add(validatedElement);
     }
 
-    D20("updating ui; new script widgets:", INDENT, newScript.script().widgets());
+    D20("updating ui; new script widgets:", INDENT, D20Map(newScript.script().widgets()));
     D20("updating ui, pan_x:", newScript.script().widgets().optUnsafe("ed_pan_x"));
 
     ScriptWrapper.updateUIWithScriptWidgets(newScript.script());

@@ -31,7 +31,6 @@ import java.util.List;
 import static js.base.Tools.*;
 
 import js.base.BaseObject;
-import js.base.DateTimeTools;
 import js.data.DataUtil;
 import js.file.Files;
 import js.geometry.IPoint;
@@ -54,8 +53,6 @@ import static js.graphics.ScriptUtil.*;
 public final class ScriptWrapper extends BaseObject {
 
   public static final ScriptWrapper DEFAULT_INSTANCE = new ScriptWrapper();
-
-  private static boolean DETECT_NEWER_VERSION = false; // This will need some further thinking
 
   private ScriptWrapper() {
     mScriptFile = Files.DEFAULT;
@@ -93,8 +90,6 @@ public final class ScriptWrapper extends BaseObject {
       if (isAnonymous())
         mScriptData = Script.DEFAULT_INSTANCE;
       else {
-        if (DETECT_NEWER_VERSION)
-          mLastWrittenTime = mScriptFile.lastModified();
         mScriptData = Files.parseAbstractDataOpt(Script.DEFAULT_INSTANCE, mScriptFile);
       }
     }
@@ -167,51 +162,18 @@ public final class ScriptWrapper extends BaseObject {
     if (isNone())
       return;
 
-    Script script = data();
+    Script script = script();
 
-    if (ScriptUtil.isUseful(script)) {
-
+    if (ScriptUtil.isUseful(script) || alert("ALWAYS setting useful")) {
+      D20("flushing script, old widget map:", D20Map(script.widgets()));
       script = storeWidgetValuesWithinScript(script);
-      //
-      //      // Insert the widget values into the script's metadata
-      //      {
-      //        D20("copying widget values from mgr to script for flushing");
-      //        ScriptMetadata.Builder mb;
-      //        var md = script.metadata();
-      //        if (md != null)
-      //          mb = md.toBuilder();
-      //        else
-      //          mb = ScriptMetadata.newBuilder();
-      //
-      //        var widgetMap = widgets().readWidgetValues();
-      //        D20("pan x is", widgetMap.optUnsafe("ed_pan_x"));
-      //
-      //        todo("don't persist certain values, ie with prefix?");
-      //        mb.userMap(widgetMap);
-      //
-      //        script = script.toBuilder().metadata(mb).build();
-      //        D20("script is now:", widgets().vi("ed_pan_x"));
-      //      }
+      D20("after updating widget map with new ui:", D20Map(script.widgets()));
 
       String content = DataUtil.toString(script);
-
-      if (DETECT_NEWER_VERSION) {
-        long modTime = file().lastModified();
-        if (modTime > mLastWrittenTime) {
-          pr("*** script has changed since we read it!");
-          pr("*** modified:", DateTimeTools.humanTimeString(modTime));
-          pr("*** replacing our copy with new contents");
-          mLastWrittenTime = modTime;
-          // discard script data so it gets reread from disk
-          mScriptData = null;
-          // Trigger a full repaint of app (assumes we are in the Swing thread!)
-          geomApp().repaintPanels(GeomApp.REPAINT_ALL);
-          return;
-        }
-      }
+      if (alert("!writing pretty printed"))
+        content = script.toJson().prettyPrint();
 
       if (Files.S.writeIfChanged(file(), content)) {
-        mLastWrittenTime = file().lastModified();
         if (verbose())
           log("flushed changes; new content:", INDENT, script);
       }
@@ -227,11 +189,13 @@ public final class ScriptWrapper extends BaseObject {
   public static Script storeWidgetValuesWithinScript(Script script) {
     D20("storeWidgetValuesWithinScript");
     var widgetMap = widgets().readWidgetValues();
-    D20("pan x is", widgetMap.optUnsafe("ed_pan_x"));
+    D20("widget map:", D20Map(widgetMap));
 
     todo("don't persist certain values, ie with prefix?");
     var sb = script.toBuilder();
     sb.widgets(widgetMap);
+    D20("set script to:", INDENT, D20Map(widgetMap));
+
     return sb;
   }
 
@@ -239,7 +203,7 @@ public final class ScriptWrapper extends BaseObject {
     D20("updateUIWithScriptWidgets");
     var wm = script.widgets();
     widgets().setWidgetValues(wm);
-    todo("Do I need to refresh the view?");
+    todo("!Do I need to refresh the view?");
   }
 
   private File imageFile() {
@@ -308,7 +272,6 @@ public final class ScriptWrapper extends BaseObject {
   }
 
   private final File mScriptFile;
-  private long mLastWrittenTime;
   // File containing script's image, or Files.DEFAULT if there is no image
   private File mImageFile;
   private Script mScriptData;

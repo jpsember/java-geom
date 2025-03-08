@@ -216,6 +216,8 @@ public final class Project extends BaseObject {
    * Get the current script
    */
   public ScriptWrapper script() {
+    if (isDefault())
+      return ScriptWrapper.DEFAULT_INSTANCE;
     int index = scriptIndex();
     int count = scriptCount();
     if (index < 0 || index >= count)

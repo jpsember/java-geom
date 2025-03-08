@@ -133,7 +133,7 @@ public abstract class GeomApp extends GUIApp {
     mCurrentProject = Project.DEFAULT_INSTANCE;
     contentPane().removeAll();
     recentProjects().setCurrentFile(null);
-    scriptManager().replaceCurrentScriptWith(ScriptWrapper.DEFAULT_INSTANCE);
+    scriptManager().loadProjectScript();
     discardMenuBar();
     updateTitle();
     performRepaint(REPAINT_ALL);
@@ -152,7 +152,7 @@ public abstract class GeomApp extends GUIApp {
     recentProjects().setCurrentFile(project.directory());
     AppDefaults.sharedInstance().edit().recentProjects(recentProjects().state());
     rebuildFrameContent();
-    scriptManager().replaceCurrentScriptWith(currentProject().script());
+    scriptManager().loadProjectScript();
 
     updateTitle();
     discardMenuBar();
@@ -203,7 +203,7 @@ public abstract class GeomApp extends GUIApp {
     if (currentProject().scriptIndex() != index) {
       D20("switchToScript:", index, "from", currentProject().scriptIndex());
       currentProject().setScriptIndex(index);
-      scriptManager().replaceCurrentScriptWith(currentProject().script());
+      scriptManager().loadProjectScript();
     }
   }
 
@@ -422,6 +422,11 @@ public abstract class GeomApp extends GUIApp {
 
   @Override
   public final /* for now */ void startedGUI() {
+    if (DEBUG_20) {
+      // let's crash if there's an uncaught exception in the swing thread 
+      exitAppIfException();
+    }
+
     ScriptManager.setSingleton(new ScriptManager());
     openAppropriateProject();
   }
