@@ -93,13 +93,7 @@ public final class ScriptWrapper extends BaseObject {
         mScriptData = Files.parseAbstractDataOpt(Script.DEFAULT_INSTANCE, mScriptFile);
       }
     }
-    //    D20("parsed script data:",INDENT,mScriptData);
     return mScriptData;
-  }
-
-  @Deprecated // use script()
-  public Script data() {
-    return script();
   }
 
   public void setScript(Script data) {
@@ -165,9 +159,11 @@ public final class ScriptWrapper extends BaseObject {
     Script script = script();
 
     if (ScriptUtil.isUseful(script) || alert("ALWAYS setting useful")) {
-      D20("flushing script, old widget map:", D20Map(script.widgets()));
-      script = storeWidgetValuesWithinScript(script);
-      D20("after updating widget map with new ui:", D20Map(script.widgets()));
+      D20("flush script, old widget map:", INDENT, D20Map(script.widgets()));
+      storeWidgetValuesWithinScript();
+      script = script();
+
+      D20("after updating widget map with new ui:", INDENT, D20Map(script.widgets()));
 
       String content = DataUtil.toString(script);
       if (alert("!writing pretty printed"))
@@ -186,19 +182,21 @@ public final class ScriptWrapper extends BaseObject {
     }
   }
 
-  public static Script storeWidgetValuesWithinScript(Script script) {
+  private void storeWidgetValuesWithinScript() {
     D20("storeWidgetValuesWithinScript");
     var widgetMap = widgets().readWidgetValues();
     D20("widget map:", D20Map(widgetMap));
 
     todo("don't persist certain values, ie with prefix?");
-    var sb = script.toBuilder();
+    var sb = script().toBuilder();
     sb.widgets(widgetMap);
     D20("set script to:", INDENT, D20Map(widgetMap));
 
-    return sb;
+    // We have to persist the changes to the cached version
+    setScript(sb.build());
   }
 
+  @Deprecated // This should be an instance method for script
   public static void updateUIWithScriptWidgets(Script script) {
     D20("updateUIWithScriptWidgets");
     var wm = script.widgets();
@@ -248,7 +246,7 @@ public final class ScriptWrapper extends BaseObject {
   public JSMap toJson() {
     if (isNone())
       return JSMap.DEFAULT_INSTANCE;
-    return data().toJson();
+    return script().toJson();
   }
 
   // ------------------------------------------------------------------

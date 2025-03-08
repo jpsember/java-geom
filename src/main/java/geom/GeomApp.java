@@ -36,6 +36,7 @@ import geom.oper.*;
 import js.base.BasePrinter;
 import js.file.Files;
 import js.geometry.IPoint;
+import js.graphics.ScriptUtil;
 import js.guiapp.GUIApp;
 import js.guiapp.MenuBarWrapper;
 import js.guiapp.RecentFiles;
@@ -60,9 +61,9 @@ public abstract class GeomApp extends GUIApp {
   EDITOR_ZOOM = "ed_zoom", //
       EDITOR_PAN_X = "ed_pan_x", // 
       EDITOR_PAN_Y = "ed_pan_y", //
-      CURRENT_SCRIPT_INDEX = "script_index", //
-      SCRIPT_NAME = "script_name", //
-      MESSAGE = "message", //
+      CURRENT_SCRIPT_INDEX = ".script_index", // we don't want this persisted to the script file
+      SCRIPT_NAME = ".script_name", // nor this?
+      MESSAGE = ".message", //
       APP_FRAME = "app_frame"; //
 
   @Override
@@ -199,9 +200,10 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public void switchToScript(int index) {
-    scriptManager().flushScript();
+    D20("switchToScript from", currentProject().scriptIndex(), "to", index);
     if (currentProject().scriptIndex() != index) {
-      D20("switchToScript:", index, "from", currentProject().scriptIndex());
+      todo("perhaps it's not flushing the current script before switching?");
+      scriptManager().flushScript();
       currentProject().setScriptIndex(index);
       scriptManager().loadProjectScript();
     }
@@ -474,7 +476,8 @@ public abstract class GeomApp extends GUIApp {
     if (!currentProject().defined())
       return;
 
-    scriptManager().flushScript();
+    if (!ScriptUtil.DEBUG_20)
+      scriptManager().flushScript();
 
     // Save any changes to current project, including window bounds
     {

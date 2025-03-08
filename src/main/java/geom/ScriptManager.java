@@ -139,7 +139,6 @@ public class ScriptManager {
     }
 
     D20("updating ui; new script widgets:", INDENT, D20Map(newScript.script().widgets()));
-    D20("updating ui, pan_x:", newScript.script().widgets().optUnsafe("ed_pan_x"));
 
     ScriptWrapper.updateUIWithScriptWidgets(newScript.script());
 
