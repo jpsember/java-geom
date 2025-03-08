@@ -37,6 +37,10 @@ public final class GeomTools {
   public static GeomApp geomApp() {
     return App.sharedInstance();
   }
+  
+  public static boolean devMode() {
+    return  geomApp().guiAppConfig().devMode();
+  }
 
   public static WidgetManager widgets() {
     return geomApp().widgetManager();

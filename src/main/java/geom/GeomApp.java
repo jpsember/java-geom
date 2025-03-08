@@ -36,7 +36,6 @@ import geom.oper.*;
 import js.base.BasePrinter;
 import js.file.Files;
 import js.geometry.IPoint;
-import js.graphics.ScriptUtil;
 import js.guiapp.GUIApp;
 import js.guiapp.MenuBarWrapper;
 import js.guiapp.RecentFiles;
@@ -47,7 +46,6 @@ import js.widget.WidgetManager;
 import testbed.AlgorithmStepper;
 
 import static geom.GeomTools.*;
-import static js.graphics.ScriptUtil.*;
 
 /**
  * A GUIApp that supports editing of geometric objects
@@ -200,7 +198,6 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public void switchToScript(int index) {
-    D20("switchToScript from", currentProject().scriptIndex(), "to", index);
     if (currentProject().scriptIndex() != index) {
       scriptManager().flushScript();
       currentProject().setScriptIndex(index);
@@ -423,7 +420,7 @@ public abstract class GeomApp extends GUIApp {
 
   @Override
   public final /* for now */ void startedGUI() {
-    if (DEBUG_20) {
+    if (devMode()) {
       // let's crash if there's an uncaught exception in the swing thread 
       exitAppIfException();
     }
@@ -475,8 +472,7 @@ public abstract class GeomApp extends GUIApp {
     if (!currentProject().defined())
       return;
 
-    if (!ScriptUtil.DEBUG_20)
-      scriptManager().flushScript();
+    scriptManager().flushScript();
 
     // Save any changes to current project, including window bounds
     {

@@ -44,7 +44,6 @@ import js.graphics.gen.MonoImage;
 import js.graphics.gen.Script;
 
 import static geom.GeomTools.*;
-import static js.graphics.ScriptUtil.*;
 
 /**
  * An enhanced wrapper for a Script object, that supports additional features
@@ -159,11 +158,8 @@ public final class ScriptWrapper extends BaseObject {
     Script script = script();
 
     if (ScriptUtil.isUseful(script) || alert("ALWAYS setting useful")) {
-      D20("flush script, old widget map:", INDENT, D20Map(script.widgets()));
       copyWidgetValuesFromUIToScript();
       script = script();
-
-      D20("after updating widget map with new ui:", INDENT, D20Map(script.widgets()));
 
       String content = DataUtil.toString(script);
       if (alert("!writing pretty printed"))
@@ -183,19 +179,14 @@ public final class ScriptWrapper extends BaseObject {
   }
 
   private void copyWidgetValuesFromUIToScript() {
-    D20("copyWidgetValuesFromUIToScript");
     var widgetMap = widgets().readWidgetValues();
-    D20("widget map:", D20Map(widgetMap));
     var sb = script().toBuilder();
     sb.widgets(widgetMap);
-    D20("set script to:", INDENT, D20Map(widgetMap));
-
     // We have to persist the changes to the cached version!
     setScript(sb.build());
   }
 
   public void copyWidgetValuesFromScriptToUI() {
-    D20("copyWidgetValuesFromScriptToUI");
     var wm = script().widgets();
     widgets().setWidgetValues(wm);
   }

@@ -55,7 +55,6 @@ import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
 import static geom.GeomTools.*;
-import static js.graphics.ScriptUtil.*;
 
 public class EditorPanel extends JPanel implements MouseListener, MouseMotionListener {
 
@@ -71,7 +70,6 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
     if (!script.isNone()) {
       mGraphics = (Graphics2D) g;
       mCurrentZoom = geomApp().zoomFactor();
-//      D20("set current zoom to:",mCurrentZoom);
       super.paintComponent(g);
       paintContents();
       mGraphics = null;
@@ -96,8 +94,6 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
       var pageCenter = pageSize.scaledBy(.5f);
       var worldPan = geomApp().panOffset();
       var worldFocus = IPoint.sum(pageCenter, worldPan).toFPoint().scaledBy(zoom);
-      
-      D20("det transform, pan:",worldPan,"zoom:",zoom);
       
       FPoint trans = new FPoint(fpt.x / 2 - worldFocus.x, fpt.y / 2 - worldFocus.y);
       t = Matrix.getTranslate(trans);
@@ -255,7 +251,7 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
     UserEvent event = new UserEvent(type, mViewToWorldTransform.apply(viewPoint), viewPoint, modifierFlags,
         null);
 
-    if (geomApp().guiAppConfig().devMode()) {
+    if (devMode()) {
       // Note: this doesn't display stack traces in Eclipse in a way that supports clicking
       try {
         UserEventManager.sharedInstance().processUserEvent(event);

@@ -34,7 +34,6 @@ import js.graphics.gen.Script;
 
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
-import static js.graphics.ScriptUtil.*;
 
 public class ScriptManager {
 
@@ -100,13 +99,10 @@ public class ScriptManager {
    */
   public void loadProjectScript() {
     var cp = geomApp().currentProject();
-    D20(VERT_SP, "loadProjectScript; current project:", cp.name());
     var newScript = cp.script();
 
-    if (DEBUG_20)
-      todo("read/write controls to scripts");
     if (newScript == mScript) {
-      D20("....project script is already the active script!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      badState("....project script is already the active script!!!!!!!!!!!!!!!!!!!!!!!!!!");
       return;
     }
 
@@ -114,7 +110,6 @@ public class ScriptManager {
     ScriptEditState oldState = mState;
     mScript = newScript;
     if (mScript.isNone() || mScript.isAnonymous()) {
-      D20("script is none or anon");
       return;
     }
 
@@ -138,8 +133,6 @@ public class ScriptManager {
       }
       editorElements.add(validatedElement);
     }
-
-    D20("updating ui; new script widgets:", INDENT, D20Map(newScript.script().widgets()));
 
     newScript.copyWidgetValuesFromScriptToUI();
 
