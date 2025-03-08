@@ -26,7 +26,6 @@ package testbed;
 
 import js.base.BasePrinter;
 import js.base.Pair;
-import js.graphics.AbstractScriptElement;
 
 import static js.base.Tools.*;
 
@@ -71,19 +70,7 @@ public final class AlgorithmException extends RuntimeException {
     List<Object> stringables = arrayList();
     mPlotables = arrayList();
     for (Object obj : mMessages) {
-      AlgRenderable se = null;
-      if (obj != null) {
-        if (obj instanceof AlgRenderable) {
-          se = (AlgRenderable) obj;
-        } else {
-          se = AlgorithmStepper.sharedInstance().mRenderableMap.get(obj.getClass());
-          if (se == null) {
-            if (obj instanceof AbstractScriptElement) {
-              se = AlgorithmStepper.scriptElementRenderer();
-            }
-          }
-        }
-      }
+      AlgRenderable se =  AlgorithmStepper.sharedInstance().findRendererForObject(obj);
       if (se != null)
         mPlotables.add(pair(se, obj));
       else

@@ -33,6 +33,7 @@ import static testbed.TestBed.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.List;
 import java.util.Map;
 
 import geom.AlgRenderable;
@@ -56,10 +57,12 @@ public class AlgorithmStepper {
 
   private static AlgorithmStepper sAlgorithmStepper;
 
+  @Deprecated
   public void disable() {
     mDisabled++;
   }
 
+  @Deprecated
   public void enable() {
     checkState(mDisabled != 0);
     mDisabled--;
@@ -78,6 +81,8 @@ public class AlgorithmStepper {
     WidgetManager g = widgets();
     mLastException = null;
     mRunning = g.exists(TRACEENABLED) && g.vb(TRACEENABLED);
+    mActiveStack.clear();
+    mActive = true;
     mDisabled = 0;
     mStep = 0;
     mStepDecision = null;
@@ -164,11 +169,25 @@ public class AlgorithmStepper {
     return mRunning && mDisabled == 0;
   }
 
+  public void pushActive(boolean f) {
+    if (mActiveStack.size() > 20)
+      badState("active stack overflow");
+    push(mActiveStack, mActive);
+    mActive = f;
+  }
+
+  public void popActive() {
+    checkState(!mActiveStack.isEmpty(), "active stack underflow");
+    mActive = pop(mActiveStack);
+  }
+
   /**
    * Determine if current step is the stopping point. If this returns false,
    * then the next call to msg() would have no effect
    */
   public boolean update() {
+    if (!mActive)
+      return false;
     auxUpdate();
     boolean result = mStepDecision;
 
@@ -188,7 +207,8 @@ public class AlgorithmStepper {
    * the stopping point
    */
   public void msg(Object... messageAndRenderElements) {
-
+    if (!mActive)
+      return;
     // If user hasn't called update() yet, do so
     boolean decision = auxUpdate();
 
@@ -283,6 +303,8 @@ public class AlgorithmStepper {
     pop(2);
   }
 
+  private List<Boolean> mActiveStack = arrayList();
+
   private int mStepToStopAt;
   private int mStep;
   private Boolean mStepDecision;
@@ -291,8 +313,27 @@ public class AlgorithmStepper {
   private boolean mRunning;
   // if > 0, algorithm tracing has been disabled
   private int mDisabled;
+  private boolean mActive;
   // event that interrupted last algorithm run
   private AlgorithmException mLastException;
 
   Map<Class, AlgRenderable> mRenderableMap;
+
+  public AlgRenderable findRendererForObject(Object obj) {
+    AlgRenderable se = null;
+    if (obj != null) {
+      if (obj instanceof AlgRenderable) {
+        se = (AlgRenderable) obj;
+      } else {
+        se = mRenderableMap.get(obj.getClass());
+        if (se == null) {
+          if (obj instanceof AbstractScriptElement) {
+            se = scriptElementRenderer();
+          }
+        }
+      }
+    }
+    return se;
+  }
+
 }
