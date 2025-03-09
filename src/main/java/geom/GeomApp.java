@@ -404,9 +404,6 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public final int paddingPixels() {
-    if (DEBUG_HANDLE)
-      return 2;
-
     return (int) (20 / zoomFactor());
   }
 

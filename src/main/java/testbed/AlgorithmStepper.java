@@ -33,6 +33,7 @@ import static testbed.TestBed.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,7 @@ import geom.AlgRenderable;
 import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.geometry.IRect;
+import js.geometry.MyMath;
 import js.geometry.Polygon;
 import js.graphics.AbstractScriptElement;
 import js.graphics.PointElement;
@@ -303,6 +305,45 @@ public class AlgorithmStepper {
     pop(2);
   }
 
+  public static void renderTheSegment(FPoint p1, FPoint p2) {
+    // We want the line width to be constant, independent of the zoom factor
+    float scale = 1.0f / geomApp().zoomFactor();
+
+    final float radius = 4f * scale;
+    pushStroke(STRK_NORMAL);
+    pushColor(RED, radius);
+
+    drawLine(p1, p2);
+
+    final float REQUIRED_LENGTH_FOR_ARROWS = 20;
+    final float ARROW_HEAD_LENGTH = 8;
+    final float ARROW_ANGLE = 30;
+
+    if (MyMath.distanceBetween(p1, p2) >= scale * REQUIRED_LENGTH_FOR_ARROWS) {
+      todo("this is duplicated code from EditablePolygonElement");
+
+      FPoint arrowLoc = FPoint.midPoint(p1, p2);
+      float angle = MyMath.polarAngle(p1, p2);
+      FPoint pa = MyMath.pointOnCircle(arrowLoc, angle - MyMath.M_DEG * (180 - ARROW_ANGLE),
+          scale * ARROW_HEAD_LENGTH);
+      FPoint pb = MyMath.pointOnCircle(arrowLoc, angle + MyMath.M_DEG * (180 - ARROW_ANGLE),
+          scale * ARROW_HEAD_LENGTH);
+      drawLine(pa, arrowLoc);
+      drawLine(arrowLoc, pb);
+    }
+
+    // ------------------------------------------------------------------
+    // Constants for rendering
+    // ------------------------------------------------------------------
+
+    // Determine vertices, if any, involved in vertex being inserted
+
+    fillCircle(p1, radius);
+    fillCircle(p2, radius);
+
+    pop(2);
+  }
+
   private List<Boolean> mActiveStack = arrayList();
 
   private int mStepToStopAt;
@@ -336,4 +377,50 @@ public class AlgorithmStepper {
     return se;
   }
 
+  public AlgRenderable render(Collection objects) {
+    return RenderableCollection.with(objects);
+  }
+
+  public AlgRenderable renderSegment(FPoint a0, FPoint a1) {
+    return RenderableSegment.with(a0, a1);
+  }
+
+  private static class RenderableCollection implements AlgRenderable {
+
+    public static RenderableCollection with(Collection objects) {
+      var c = new RenderableCollection();
+      c.mObjects = objects;
+      return c;
+    }
+
+    @Override
+    public void render(Object item) {
+      var s = AlgorithmStepper.sharedInstance();
+      for (var x : mObjects) {
+        var y = s.findRendererForObject(x);
+        if (y == null)
+          continue;
+        y.render(x);
+      }
+    }
+
+    private Collection<Object> mObjects;
+  }
+
+  private static class RenderableSegment implements AlgRenderable {
+
+    public static RenderableSegment with(FPoint a0, FPoint a1) {
+      var c = new RenderableSegment();
+      c.a0 = a0;
+      c.a1 = a1;
+      return c;
+    }
+
+    @Override
+    public void render(Object item) {
+      renderTheSegment(a0, a1);
+    }
+
+    private FPoint a0, a1;
+  }
 }

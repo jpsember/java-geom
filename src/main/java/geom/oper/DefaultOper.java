@@ -113,8 +113,6 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
       boolean isSelected = selectedElements.contains(slot);
       if (!element.contains(paddingPixels, event.getWorldLocation(), isSelected))
         continue;
-      if (DEBUG_HANDLE)
-        pr("constructPickSet, adding:", slot, element.tag());
       b1.add(slot);
       if (isSelected)
         b2.add(slot);
@@ -221,11 +219,17 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
     GeomApp ed = geomApp();
 
     if (!event.isShift()) {
-      UserOperation oper = findOperationForEditableObject();
+      UserOperation oper = null;
+
+      // If the Ctrl key is held down, we don't look for an edit operation.  This
+      // lets us move things around without e.g. unintentionally dragging a polygon vertex
+      if (!event.isCtrl())
+        oper = findOperationForEditableObject();
       if (oper != null) {
         event.setOperation(oper);
         return;
       }
+
       if (!pickSetSelected().isEmpty()) {
         oper = new MoveElementsOper(mInitialDownEvent);
         event.setOperation(oper);

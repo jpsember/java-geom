@@ -69,12 +69,6 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
 
   @Override
   public boolean contains(int paddingPixels, IPoint pt, boolean isSelected) {
-    if (DEBUG_HANDLE)
-      pr("contains poly?", isSelected);
-    if (handleContains(paddingPixels, pt, isSelected)) {
-      return true;
-    }
-
     IRect paddedBounds = bounds().withInset(-paddingPixels);
     return paddedBounds.contains(pt);
   }
@@ -271,7 +265,6 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
       panel.renderCategory(this, bounds, appearance);
       panel.popFocus();
     }
-    panel.renderHandle(this, appearance);
   }
 
   private void renderLine(EditorPanel panel, float scale, IPoint i1, IPoint i2, boolean withArrows) {

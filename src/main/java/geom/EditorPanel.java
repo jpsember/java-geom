@@ -94,7 +94,7 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
       var pageCenter = pageSize.scaledBy(.5f);
       var worldPan = geomApp().panOffset();
       var worldFocus = IPoint.sum(pageCenter, worldPan).toFPoint().scaledBy(zoom);
-      
+
       FPoint trans = new FPoint(fpt.x / 2 - worldFocus.x, fpt.y / 2 - worldFocus.y);
       t = Matrix.getTranslate(trans);
       t = Matrix.multiply(t, Matrix.getScale(zoom));
@@ -164,9 +164,9 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
     }
 
     geomApp().paintBackground(g);
-    
+
     UserOperation op = UserEventManager.sharedInstance().getOperation();
-    
+
     // If no filter is specified, render nominally, but with selected items as selected.
     // Otherwise, non-selected items are rendered disabled.
 
@@ -357,18 +357,6 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
 
     apply(appearance == RenderState.SELECTED ? CATEGORY_TEXT_SELECTED : CATEGORY_TEXT);
     renderText(categoryString, bounds.midX(), bounds.y - TITLE_OFFSET);
-  }
-
-  public void renderHandle(EditorElement element, RenderState appearance) {
-    if (appearance != RenderState.SELECTED)
-      return;
-    float scale = 1.0f / zoomFactor();
-    var bounds = element.bounds();
-    var rad = EditorElement.HANDLE_RADIUS * scale;
-    var loc = rad + EditorElement.HANDLE_PADDING * scale;
-    apply(Paint.newBuilder().color(Color.RED).width(0.5f * scale));
-    todo("!confusing mismatch between render state (paints etc) here vs within algorithm render");
-    renderDisc(new FPoint(bounds.midX(), bounds.endY() + loc), rad);
   }
 
   private void assertRendering() {
