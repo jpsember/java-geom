@@ -25,13 +25,12 @@
 package testbed;
 
 import js.base.BasePrinter;
-import js.base.Pair;
 
 import static js.base.Tools.*;
 
 import java.util.List;
 
-import geom.AlgRenderable;
+import geom.ParsedAlgItem;
 
 /**
  * Exception thrown during algorithm tracing operation
@@ -56,7 +55,7 @@ public final class AlgorithmException extends RuntimeException {
     return mMessage;
   }
 
-  public List<Pair<AlgRenderable, Object>> plotables() {
+  public List<ParsedAlgItem> plotables() {
     parse();
     return mPlotables;
   }
@@ -67,22 +66,22 @@ public final class AlgorithmException extends RuntimeException {
   private void parse() {
     if (mMessage != null)
       return;
-    List<Object> stringables = arrayList();
-    mPlotables = arrayList();
-    for (Object obj : mMessages) {
-      AlgRenderable se =  AlgorithmStepper.sharedInstance().findRendererForObject(obj);
-      if (se != null)
-        mPlotables.add(pair(se, obj));
-      else
-        stringables.add(obj);
+
+    mPlotables = AlgorithmStepper.sharedInstance().extractRenderables(mMessages);
+    
+    // Extract the items that didn't have renderables, for printing
+    List<Object> nonRenderables = arrayList();
+    for (var x : mPlotables) {
+      if (x.renderable == null)
+        nonRenderables.add(x.object);
     }
     BasePrinter prBuffer = new BasePrinter();
-    prBuffer.pr(stringables.toArray());
+    prBuffer.pr(nonRenderables.toArray());
     mMessage = prBuffer.toString();
   }
 
   private Object[] mMessages;
-  private List<Pair<AlgRenderable, Object>> mPlotables;
+  private List<ParsedAlgItem> mPlotables;
   private boolean mError;
   private String mMessage;
 

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import geom.AlgRenderable;
+import geom.ParsedAlgItem;
 import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.geometry.IRect;
@@ -84,6 +85,7 @@ public class AlgorithmStepper {
     mLastException = null;
     mRunning = g.exists(TRACEENABLED) && g.vb(TRACEENABLED);
     mActiveStack.clear();
+    mParseMap = hashMap();
     mActive = true;
     mDisabled = 0;
     mStep = 0;
@@ -137,10 +139,34 @@ public class AlgorithmStepper {
    */
   private void plotTrace(AlgorithmException tr) {
 
+    // Render things added via plot()
+    {
+      List<String> sortedKeys = arrayList();
+      sortedKeys.addAll(mParseMap.keySet());
+      sortedKeys.sort(String.CASE_INSENSITIVE_ORDER);
+
+      // This is the default color and stroke
+      pushColor(Color.blue);
+      pushStroke(STRK_THICK);
+      
+      todo("someone is overriding the color here");
+
+      for (var key : sortedKeys) {
+        var rlist = mParseMap.get(key);
+        for (var plotable : rlist) {
+          if (plotable.renderable == null)
+            continue;
+          plotable.renderable.render(plotable.object);
+        }
+      }
+      pop(2);
+    }
+
     pushColor(Color.red);
     pushStroke(STRK_NORMAL);
     for (var plotable : tr.plotables()) {
-      plotable.first.render(plotable.second);
+      if (plotable.renderable != null)
+        plotable.renderable.render(plotable.object);
     }
     pop(2);
 
@@ -181,6 +207,36 @@ public class AlgorithmStepper {
   public void popActive() {
     checkState(!mActiveStack.isEmpty(), "active stack underflow");
     mActive = pop(mActiveStack);
+  }
+
+  /**
+   * Add items to be plotted for the rest of the algorithm. These items persist
+   * until the algorithm ends, they are removed via plotRemove(), or are
+   * replaced by another call to plot()
+   */
+  public void plot(String key, Object... items) {
+    if (!mActive)
+      return;
+    List<ParsedAlgItem> parsedItems = extractRenderables(items);
+    mParseMap.put(key, parsedItems);
+  }
+
+  public void plotRemove(String key) {
+    if (!mActive)
+      return;
+    mParseMap.remove(key);
+  }
+
+  public List<ParsedAlgItem> extractRenderables(Object[] items) {
+    List<ParsedAlgItem> output = arrayList();
+    for (Object obj : items) {
+      AlgRenderable se = findRendererForObject(obj);
+      var parse = new ParsedAlgItem();
+      parse.object = obj;
+      parse.renderable = se;
+      output.add(parse);
+    }
+    return output;
   }
 
   /**
@@ -281,9 +337,13 @@ public class AlgorithmStepper {
     float scale = 1.0f / geomApp().zoomFactor();
 
     final float radius = 4f * scale;
+    
+    todo("the float sliders aren't persisting as I cursor back and forth between scripts");
+    todo("the render appearance should be configurable somehow");
+    if (false) {
     pushStroke(STRK_NORMAL);
     pushColor(RED, radius);
-
+    }
     // Determine vertices, if any, involved in vertex being inserted
 
     IPoint start = null;
@@ -302,7 +362,9 @@ public class AlgorithmStepper {
     if (p.numVertices() > 1 && p.isClosed()) {
       drawLine(last, start);
     }
+    if (false) {
     pop(2);
+    }
   }
 
   public static void renderTheSegment(FPoint p1, FPoint p2) {
@@ -359,6 +421,8 @@ public class AlgorithmStepper {
   private AlgorithmException mLastException;
 
   Map<Class, AlgRenderable> mRenderableMap;
+
+  private Map<String, List<ParsedAlgItem>> mParseMap;
 
   public AlgRenderable findRendererForObject(Object obj) {
     AlgRenderable se = null;
