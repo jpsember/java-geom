@@ -2,7 +2,6 @@ package testbed;
 
 import static js.base.Tools.*;
 import static testbed.Render.*;
-import static testbed.Render.pop;
 
 import geom.AlgRenderable;
 

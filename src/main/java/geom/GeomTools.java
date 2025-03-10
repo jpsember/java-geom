@@ -26,9 +26,12 @@ package geom;
 
 import js.app.App;
 import js.widget.WidgetManager;
+import testbed.ColorWrapper;
 import testbed.StrokeWrapper;
 
 import static js.base.Tools.*;
+
+import java.awt.Color;
 
 public final class GeomTools {
 
@@ -37,9 +40,9 @@ public final class GeomTools {
   public static GeomApp geomApp() {
     return App.sharedInstance();
   }
-  
+
   public static boolean devMode() {
-    return  geomApp().guiAppConfig().devMode();
+    return geomApp().guiAppConfig().devMode();
   }
 
   public static WidgetManager widgets() {
@@ -50,7 +53,6 @@ public final class GeomTools {
     return ScriptManager.singleton();
   }
 
-  
   /**
    * Wrap an AlgRenderable within one that (temporarily) sets the stroke
    */
@@ -58,4 +60,12 @@ public final class GeomTools {
     return new StrokeWrapper(stroke, object);
   }
 
+  /**
+   * Wrap an AlgRenderable within one that (temporarily) sets the color
+   */
+  public static Object color(Color color, Object object) {
+    return new ColorWrapper(color, object);
+  }
+  
+  
 }
