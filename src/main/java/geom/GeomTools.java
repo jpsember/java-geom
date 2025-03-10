@@ -25,9 +25,11 @@
 package geom;
 
 import js.app.App;
+import js.geometry.FPoint;
 import js.widget.WidgetManager;
 import testbed.ColorWrapper;
 import testbed.Colors;
+import testbed.RenderableSegment;
 import testbed.StrokeWrapper;
 
 import static js.base.Tools.*;
@@ -73,10 +75,15 @@ public final class GeomTools {
   }
 
   public static Object color(int colorId, double shade, Object object) {
-    return new ColorWrapper(Colors.get(colorId, shade ), object);
+    return new ColorWrapper(Colors.get(colorId, shade), object);
   }
 
   public static Object alpha(double alpha, Object object) {
     return ColorWrapper.alphaWrapper(alpha, object);
   }
+  
+  public static AlgRenderable segment(FPoint a0, FPoint a1) {
+    return RenderableSegment.with(a0, a1);
+  }
+
 }

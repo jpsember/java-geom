@@ -141,7 +141,7 @@ public class AlgorithmStepper {
 
     // This is the default color and stroke
     pushColor(Color.red);
-    pushStroke(STRK_THICK);
+    pushStroke(STRK_NORMAL);
 
     // Render things added via plot()
     {
@@ -174,7 +174,7 @@ public class AlgorithmStepper {
         // Modify transform so we ignore the view's page location and scale factor
         Graphics2D g = graphics();
         AffineTransform savedTransform = g.getTransform();
-        float scl = 1.8f;
+        float scl = 1.4f;
         g.setTransform(AffineTransform.getScaleInstance(scl, scl));
         draw(msg, -20000, 20000, // it will clamp this into range on the bottom left
             TX_BGND | TX_FRAME | TX_CLAMP | 80);
@@ -376,8 +376,6 @@ public class AlgorithmStepper {
     float scale = 1.0f / geomApp().zoomFactor();
 
     final float radius = 4f * scale;
-    pushStroke(STRK_NORMAL);
-    pushColor(RED, radius);
 
     drawLine(p1, p2);
 
@@ -406,8 +404,6 @@ public class AlgorithmStepper {
 
     fillCircle(p1, radius);
     fillCircle(p2, radius);
-
-    pop(2);
   }
 
   private List<Boolean> mActiveStack = arrayList();
@@ -449,10 +445,6 @@ public class AlgorithmStepper {
     return RenderableCollection.with(objects);
   }
 
-  public AlgRenderable renderSegment(FPoint a0, FPoint a1) {
-    return RenderableSegment.with(a0, a1);
-  }
-
   private static class RenderableCollection implements AlgRenderable {
 
     public static RenderableCollection with(Collection objects) {
@@ -473,23 +465,6 @@ public class AlgorithmStepper {
     }
 
     private Collection<Object> mObjects;
-  }
-
-  private static class RenderableSegment implements AlgRenderable {
-
-    public static RenderableSegment with(FPoint a0, FPoint a1) {
-      var c = new RenderableSegment();
-      c.a0 = a0;
-      c.a1 = a1;
-      return c;
-    }
-
-    @Override
-    public void render(Object item) {
-      renderTheSegment(a0, a1);
-    }
-
-    private FPoint a0, a1;
   }
 
   //  private static class RenderWrapper implements AlgRenderable {

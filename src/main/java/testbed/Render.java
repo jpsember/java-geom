@@ -232,6 +232,9 @@ public final class Render {
    */
   public static void draw(String str, double x, double y, int flags) {
 
+    // We want the stroke width to be independent of the zoom factor
+    pushStroke(new BasicStroke(3));
+
     int lineWidth = (flags & TX_LINEWIDTH);
 
     List<String> strings;
@@ -251,7 +254,8 @@ public final class Render {
 
     float textW = maxStrLen * fsize;
     float rowH = (ascent + descent) * 1.1f;
-    float textH = rowH * (strings.size() + .2f);
+    todo("!this is kind of hacky");
+    float textH = rowH * (strings.size() + .2f) - (fsize * .8f);
 
     float textX = (float) (x - textW * .5f);
     float textY = (float) (y - textH * .5f);
@@ -273,8 +277,9 @@ public final class Render {
         g.fill(textRect);
         pop();
       }
-      if ((flags & TX_FRAME) != 0)
+      if ((flags & TX_FRAME) != 0) {
         g.draw(textRect);
+      }
     }
     int rowNumber = INIT_INDEX;
     for (String s : strings) {
@@ -286,6 +291,8 @@ public final class Render {
       }
       g.drawString(s, (float) px, (float) (ry) - 1);
     }
+
+    pop(); // stroke
   }
 
   /**
