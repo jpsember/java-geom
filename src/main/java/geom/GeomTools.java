@@ -27,6 +27,7 @@ package geom;
 import js.app.App;
 import js.widget.WidgetManager;
 import testbed.ColorWrapper;
+import testbed.Colors;
 import testbed.StrokeWrapper;
 
 import static js.base.Tools.*;
@@ -66,6 +67,16 @@ public final class GeomTools {
   public static Object color(Color color, Object object) {
     return new ColorWrapper(color, object);
   }
-  
-  
+
+  public static Object color(int colorId, Object object) {
+    return new ColorWrapper(Colors.get(colorId), object);
+  }
+
+  public static Object color(int colorId, double shade, Object object) {
+    return new ColorWrapper(Colors.get(colorId, shade ), object);
+  }
+
+  public static Object alpha(double alpha, Object object) {
+    return ColorWrapper.alphaWrapper(alpha, object);
+  }
 }

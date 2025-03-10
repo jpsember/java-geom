@@ -42,7 +42,6 @@ public final class Colors {
       ORANGE = 7, YELLOW = 8, GREEN = 9, MAGENTA = 10, CYAN = 11, BLUE = 12, BROWN = 13, PURPLE = 14,
       DARKGREEN = 15, DEFAULT_COLORS = 16;
 
-
   private static final int SHADE_LEVELS = 64;
 
   /**
@@ -53,12 +52,31 @@ public final class Colors {
   }
 
   /**
-   * Get color, indexed by id and a shade 0..1
+   * Get color, indexed by id, shade
    */
   public static Color get(int id, double shade) {
     int iLevel = MyMath.clamp((int) (shade * SHADE_LEVELS), 0, SHADE_LEVELS - 1);
     Color[] set = getColorSet(id);
     return set[iLevel];
+  }
+
+  /**
+   * Get color, indexed by id, shade, and alpha value
+   */
+  @Deprecated
+  public static Color get(int id, double shade, double alpha) {
+    int iLevel = MyMath.clamp((int) (shade * SHADE_LEVELS), 0, SHADE_LEVELS - 1);
+    Color[] set = getColorSet(id);
+    var c = set[iLevel];
+    var iAlpha = MyMath.clamp((int) (alpha * 255.0), 0, 255);
+    var ch = new Color(c.getRed(), c.getGreen(), c.getBlue(), iAlpha);
+    pr("Color.get id:", id, "shade:", shade, "alpha:", alpha, "iAlpha:", iAlpha, "returning:", ch,
+        "with alpha:", ch.getAlpha());
+    return ch;
+  }
+
+  public static String debug(Color c) {
+    return String.format("Color[r:%3d g:%3d b:%3d a:%3d]", c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
   }
 
   private static void add(Color[] set, int shade, double r, double g, double b) {

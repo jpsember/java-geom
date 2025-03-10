@@ -139,17 +139,15 @@ public class AlgorithmStepper {
    */
   private void plotTrace(AlgorithmException tr) {
 
+    // This is the default color and stroke
+    pushColor(Color.red);
+    pushStroke(STRK_THICK);
+
     // Render things added via plot()
     {
       List<String> sortedKeys = arrayList();
       sortedKeys.addAll(mParseMap.keySet());
       sortedKeys.sort(String.CASE_INSENSITIVE_ORDER);
-
-      // This is the default color and stroke
-      pushColor(Color.blue);
-      pushStroke(STRK_THICK);
-
-      todo("someone is overriding the color here");
 
       for (var key : sortedKeys) {
         var rlist = mParseMap.get(key);
@@ -159,15 +157,14 @@ public class AlgorithmStepper {
           plotable.renderer.render(plotable.object);
         }
       }
-      pop(2);
+
     }
 
-    pushColor(Color.red);
-    pushStroke(STRK_NORMAL);
     for (var plotable : tr.plotables()) {
       if (plotable.renderer != null)
         plotable.renderer.render(plotable.object);
     }
+    
     pop(2);
 
     if (widgets().vb(TRACEPLOT)) {
@@ -346,7 +343,6 @@ public class AlgorithmStepper {
 
     final float radius = 4f * scale;
 
-    todo("the float sliders aren't persisting as I cursor back and forth between scripts");
     todo("the render appearance should be configurable somehow");
     if (false) {
       pushStroke(STRK_NORMAL);
@@ -495,7 +491,6 @@ public class AlgorithmStepper {
 
     private FPoint a0, a1;
   }
-
 
   //  private static class RenderWrapper implements AlgRenderable {
   //    RenderWrapper(AlgRenderable r) {
