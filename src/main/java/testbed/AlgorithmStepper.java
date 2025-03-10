@@ -148,15 +148,15 @@ public class AlgorithmStepper {
       // This is the default color and stroke
       pushColor(Color.blue);
       pushStroke(STRK_THICK);
-      
+
       todo("someone is overriding the color here");
 
       for (var key : sortedKeys) {
         var rlist = mParseMap.get(key);
         for (var plotable : rlist) {
-          if (plotable.renderable == null)
+          if (plotable.renderer == null)
             continue;
-          plotable.renderable.render(plotable.object);
+          plotable.renderer.render(plotable.object);
         }
       }
       pop(2);
@@ -165,8 +165,8 @@ public class AlgorithmStepper {
     pushColor(Color.red);
     pushStroke(STRK_NORMAL);
     for (var plotable : tr.plotables()) {
-      if (plotable.renderable != null)
-        plotable.renderable.render(plotable.object);
+      if (plotable.renderer != null)
+        plotable.renderer.render(plotable.object);
     }
     pop(2);
 
@@ -233,10 +233,18 @@ public class AlgorithmStepper {
       AlgRenderable se = findRendererForObject(obj);
       var parse = new ParsedAlgItem();
       parse.object = obj;
-      parse.renderable = se;
+      parse.renderer = se;
       output.add(parse);
     }
     return output;
+  }
+
+  void parseAndRender(Object obj) {
+    var se = findRendererForObject(obj);
+    if (se == null) {
+      badArg("No render found for:", obj);
+    }
+    se.render(obj);
   }
 
   /**
@@ -337,12 +345,12 @@ public class AlgorithmStepper {
     float scale = 1.0f / geomApp().zoomFactor();
 
     final float radius = 4f * scale;
-    
+
     todo("the float sliders aren't persisting as I cursor back and forth between scripts");
     todo("the render appearance should be configurable somehow");
     if (false) {
-    pushStroke(STRK_NORMAL);
-    pushColor(RED, radius);
+      pushStroke(STRK_NORMAL);
+      pushColor(RED, radius);
     }
     // Determine vertices, if any, involved in vertex being inserted
 
@@ -363,7 +371,7 @@ public class AlgorithmStepper {
       drawLine(last, start);
     }
     if (false) {
-    pop(2);
+      pop(2);
     }
   }
 
@@ -487,4 +495,17 @@ public class AlgorithmStepper {
 
     private FPoint a0, a1;
   }
+
+
+  //  private static class RenderWrapper implements AlgRenderable {
+  //    RenderWrapper(AlgRenderable r) {
+  //    mR = r;}
+  //    @Override
+  //    public void render(Object item) {
+  //     
+  //    }
+  //    private AlgRenderable mR;
+  //  }
+  //  
+
 }

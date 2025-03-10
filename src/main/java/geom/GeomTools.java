@@ -26,6 +26,7 @@ package geom;
 
 import js.app.App;
 import js.widget.WidgetManager;
+import testbed.StrokeWrapper;
 
 import static js.base.Tools.*;
 
@@ -47,6 +48,14 @@ public final class GeomTools {
 
   public static ScriptManager scriptManager() {
     return ScriptManager.singleton();
+  }
+
+  
+  /**
+   * Wrap an AlgRenderable within one that (temporarily) sets the stroke
+   */
+  public static Object stroke(int stroke, Object object) {
+    return new StrokeWrapper(stroke, object);
   }
 
 }

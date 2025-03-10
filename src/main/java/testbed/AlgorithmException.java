@@ -72,7 +72,7 @@ public final class AlgorithmException extends RuntimeException {
     // Extract the items that didn't have renderables, for printing
     List<Object> nonRenderables = arrayList();
     for (var x : mPlotables) {
-      if (x.renderable == null)
+      if (x.renderer == null)
         nonRenderables.add(x.object);
     }
     BasePrinter prBuffer = new BasePrinter();
