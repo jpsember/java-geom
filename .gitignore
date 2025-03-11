@@ -7,3 +7,10 @@ bin
 _mainconfig_.txt
 
 sample_project
+
+
+# Files marked for later removal, or temporary omission
+#
+_OLD_*
+_SKIP_*
+

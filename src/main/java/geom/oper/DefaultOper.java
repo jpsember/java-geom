@@ -67,34 +67,34 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
     }
 
     switch (event.getCode()) {
-    case UserEvent.CODE_DOWN:
-      log("DOWN");
-      if (event.isAlt()) {
-        event.setOperation(PanOper.build(event));
-        return;
-      }
+      case UserEvent.CODE_DOWN:
+        log("DOWN");
+        if (event.isAlt()) {
+          event.setOperation(PanOper.build(event));
+          return;
+        }
 
-      mInitialDownEvent = event;
-      mIsDrag = false;
-      constructPickSet(event);
-      break;
+        mInitialDownEvent = event;
+        mIsDrag = false;
+        constructPickSet(event);
+        break;
 
-    case UserEvent.CODE_DRAG:
-      log("DRAG");
-      if (!mIsDrag) {
-        mIsDrag = true;
-        doStartDrag(event);
-      }
-      doContinueDrag(event);
-      break;
+      case UserEvent.CODE_DRAG:
+        log("DRAG");
+        if (!mIsDrag) {
+          mIsDrag = true;
+          doStartDrag(event);
+        }
+        doContinueDrag(event);
+        break;
 
-    case UserEvent.CODE_UP:
-      log("UP");
-      if (!mIsDrag)
-        doClick(event);
-      else
-        doFinishDrag();
-      break;
+      case UserEvent.CODE_UP:
+        log("UP");
+        if (!mIsDrag)
+          doClick(event);
+        else
+          doFinishDrag();
+        break;
     }
   }
 
@@ -241,7 +241,8 @@ public final class DefaultOper extends UserOperation implements UserEvent.Listen
 
         int slot = last(pickSet());
         EditorElement obj = scriptManager().state().elements().get(slot);
-        oper = obj.isEditingSelectedObject(ed, slot, mInitialDownEvent);
+        if (!event.isCtrl())
+          oper = obj.isEditingSelectedObject(ed, slot, mInitialDownEvent);
         if (oper == null) {
           IntArray selItem = IntArray.with(slot);
           geomApp().perform(new SetSelectedElementsOper(selItem));

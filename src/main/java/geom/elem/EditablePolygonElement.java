@@ -239,7 +239,6 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
       if (last != null) {
         if (last == pt1 && pt == pt2) {
           panel.apply(Paint.newBuilder().color(Color.RED).width(0.8f * scale));
-          pr("When is this actually called?", INDENT, ST);
           //panel.renderLine(last, pt);
           drawDirectedLineSegment(last, pt, appearance == RenderState.SELECTED);
         } else
