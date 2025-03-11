@@ -26,6 +26,7 @@ package geom;
 
 import static js.base.Tools.*;
 
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -54,8 +55,10 @@ import js.graphics.Paint;
 import js.guiapp.UserEvent;
 import js.guiapp.UserEventManager;
 import js.guiapp.UserOperation;
-import static geom.GeomTools.*;
+import testbed.Render;
 
+import static geom.GeomTools.*;
+import static testbed.Render.*;
 public class EditorPanel extends JPanel implements MouseListener, MouseMotionListener {
 
   public EditorPanel() {
@@ -72,7 +75,7 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
       mCurrentZoom = geomApp().zoomFactor();
       super.paintComponent(g);
       paintContents();
-      mGraphics = null;
+       mGraphics = null;
       mCurrentZoom = null;
     }
 
@@ -167,6 +170,12 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
 
     UserOperation op = UserEventManager.sharedInstance().getOperation();
 
+    
+    // Save the current font (and any other stateful Graphics stuff) so
+    // that we can pop them after rendering the elements, to restore the old value
+    
+    pushFont(FNT_MEDIUM);
+    
     // If no filter is specified, render nominally, but with selected items as selected.
     // Otherwise, non-selected items are rendered disabled.
 
@@ -193,6 +202,8 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
         element.render(this, appearance);
       }
     }
+    pop();
+    
     op.paint();
 
     geomApp().paintStop();

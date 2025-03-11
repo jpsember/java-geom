@@ -29,7 +29,10 @@ import js.geometry.FPoint;
 import js.widget.WidgetManager;
 import testbed.ColorWrapper;
 import testbed.Colors;
+import testbed.FontWrapper;
+import testbed.Render;
 import testbed.RenderableSegment;
+import testbed.RenderableText;
 import testbed.StrokeWrapper;
 
 import static js.base.Tools.*;
@@ -74,6 +77,10 @@ public final class GeomTools {
     return new ColorWrapper(Colors.get(colorId), object);
   }
 
+  public static Object font(int fontSize, Object object) {
+    return new FontWrapper(fontSize, object);
+  }
+
   public static Object color(int colorId, double shade, Object object) {
     return new ColorWrapper(Colors.get(colorId, shade), object);
   }
@@ -81,9 +88,22 @@ public final class GeomTools {
   public static Object alpha(double alpha, Object object) {
     return ColorWrapper.alphaWrapper(alpha, object);
   }
-  
+
   public static AlgRenderable segment(FPoint a0, FPoint a1) {
     return RenderableSegment.with(a0, a1);
+  }
+
+  public static RenderableText text(String text) {
+    return RenderableText.with(text);
+  }
+
+  public static Object textAt(FPoint loc, String text) {
+    return RenderableText.with(text).at(loc);
+  }
+
+  public static void sf(String msg) {
+    var f = Render.graphics().getFont();
+    pr("setFont", msg, TAB(30), f.getName(), f.getSize());
   }
 
 }

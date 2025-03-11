@@ -76,6 +76,8 @@ public final class Render {
     sScaleFactor = 2f / z;
     prepareForRender();
     setFont(FNT_MEDIUM);
+
+    sf("Render.setGraphics");
   }
 
   /**
@@ -140,8 +142,12 @@ public final class Render {
    * Set font to FNT_xxx
    */
   public static void setFont(int font) {
+    alert("alg trace message sometimes in wrong font");
+    //pr("setting font from:",sCurrentFontIndex,"to:",font);
     sCurrentFontIndex = font;
-    g.setFont(TBFont.getFont(sCurrentFontIndex));
+    var f = TBFont.getFont(sCurrentFontIndex);
+    g.setFont(f);
+    sf("Render.setFont");
   }
 
   /**
@@ -415,12 +421,12 @@ public final class Render {
     } else if (tag == ST_FONT_INDEX) {
       popElem();
       Integer val = popElem();
+      pr("popped font index:", val);
       if (val != null)
         setFont(val.intValue());
     } else if (tag == ST_FONT) {
       popElem();
-      sCurrentFontIndex = popElem();
-      g.setFont(popElem());
+      setFont(popElem());
     } else
       badArg("unsupported stack element:", tag);
   }

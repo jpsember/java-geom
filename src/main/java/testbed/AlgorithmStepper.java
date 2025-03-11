@@ -164,7 +164,7 @@ public class AlgorithmStepper {
       if (plotable.renderer != null)
         plotable.renderer.render(plotable.object);
     }
-    
+
     pop(2);
 
     if (widgets().vb(TRACEPLOT)) {
@@ -176,8 +176,11 @@ public class AlgorithmStepper {
         AffineTransform savedTransform = g.getTransform();
         float scl = 1.4f;
         g.setTransform(AffineTransform.getScaleInstance(scl, scl));
+        todo("the font is sometimes unexpected here");
+       // pushFont(FNT_LARGE);
         draw(msg, -20000, 20000, // it will clamp this into range on the bottom left
             TX_BGND | TX_FRAME | TX_CLAMP | 80);
+       // pop();
         g.setTransform(savedTransform);
         pop();
       }
@@ -215,6 +218,7 @@ public class AlgorithmStepper {
     if (!mActive)
       return;
     List<ParsedAlgItem> parsedItems = extractRenderables(items);
+    //    pr("storing plot key:",key,"=>",parsedItems);
     mParseMap.put(key, parsedItems);
   }
 
