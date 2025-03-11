@@ -69,18 +69,12 @@ public class RenderableText implements AlgRenderable {
     return this;
   }
 
-  //  public RenderableText fontSize(double fontSize) {
-  //    mFontSize = fontSize;
-  //    return this;
-  //  }
-
   public RenderableText clamp() {
     mTextFlags |= TX_CLAMP;
     return this;
   }
 
   private int mTextFlags = 80;
-  //  private double mFontSize = 1.0;
   private String mText;
   private FPoint mLocation;
   private int mHorzShiftViewPix;

@@ -17,9 +17,9 @@ public class FontWrapper implements AlgRenderable {
 
   @Override
   public void render(Object item) {
-     pushFont(mFontIndex);
+    pushFont(mFontIndex);
     AlgorithmStepper.sharedInstance().parseAndRender(mWrappedObject);
-     pop();
+    pop();
   }
 
   private Object mWrappedObject;

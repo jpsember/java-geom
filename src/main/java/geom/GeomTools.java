@@ -101,9 +101,4 @@ public final class GeomTools {
     return RenderableText.with(text).at(loc);
   }
 
-  public static void sf(String msg) {
-    var f = Render.graphics().getFont();
-    pr("setFont", msg, TAB(30), f.getName(), f.getSize());
-  }
-
 }

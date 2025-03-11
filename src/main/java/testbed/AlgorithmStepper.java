@@ -176,11 +176,8 @@ public class AlgorithmStepper {
         AffineTransform savedTransform = g.getTransform();
         float scl = 1.4f;
         g.setTransform(AffineTransform.getScaleInstance(scl, scl));
-        todo("the font is sometimes unexpected here");
-       // pushFont(FNT_LARGE);
         draw(msg, -20000, 20000, // it will clamp this into range on the bottom left
             TX_BGND | TX_FRAME | TX_CLAMP | 80);
-       // pop();
         g.setTransform(savedTransform);
         pop();
       }
@@ -218,7 +215,6 @@ public class AlgorithmStepper {
     if (!mActive)
       return;
     List<ParsedAlgItem> parsedItems = extractRenderables(items);
-    //    pr("storing plot key:",key,"=>",parsedItems);
     mParseMap.put(key, parsedItems);
   }
 
@@ -347,11 +343,6 @@ public class AlgorithmStepper {
 
     final float radius = 4f * scale;
 
-    todo("the render appearance should be configurable somehow");
-    if (false) {
-      pushStroke(STRK_NORMAL);
-      pushColor(RED, radius);
-    }
     // Determine vertices, if any, involved in vertex being inserted
 
     IPoint start = null;
@@ -369,9 +360,6 @@ public class AlgorithmStepper {
 
     if (p.numVertices() > 1 && p.isClosed()) {
       drawLine(last, start);
-    }
-    if (false) {
-      pop(2);
     }
   }
 
