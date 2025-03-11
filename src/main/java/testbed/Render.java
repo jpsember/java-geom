@@ -454,6 +454,50 @@ public final class Render {
   }
 
   /**
+   * Draw a directed line segment, with arrows
+   */
+  public static void drawDirectedLineSegment(IPoint p1, IPoint p2, boolean withArrows) {
+    drawDirectedLineSegment(p1.toFPoint(), p2.toFPoint(), withArrows);
+  }
+
+  /**
+   * Draw a directed line segment, with arrows
+   */
+  public static void drawDirectedLineSegment(FPoint p1, FPoint p2, boolean withArrows) {
+
+    todo("!The 'independent of zoom factor' should be a render state flag");
+
+    // We want the line width to be constant, independent of the zoom factor
+    float scale = 1.0f / geomApp().zoomFactor();
+
+    final float radius = 4f * scale;
+
+    drawLine(p1, p2);
+
+    if (!withArrows)
+      return;
+
+    final float REQUIRED_LENGTH_FOR_ARROWS = 20;
+    final float ARROW_HEAD_LENGTH = 8;
+    final float ARROW_ANGLE = 30;
+
+    if (MyMath.distanceBetween(p1, p2) >= scale * REQUIRED_LENGTH_FOR_ARROWS) {
+
+      FPoint arrowLoc = FPoint.midPoint(p1, p2);
+      float angle = MyMath.polarAngle(p1, p2);
+      FPoint pa = MyMath.pointOnCircle(arrowLoc, angle - MyMath.M_DEG * (180 - ARROW_ANGLE),
+          scale * ARROW_HEAD_LENGTH);
+      FPoint pb = MyMath.pointOnCircle(arrowLoc, angle + MyMath.M_DEG * (180 - ARROW_ANGLE),
+          scale * ARROW_HEAD_LENGTH);
+      drawLine(pa, arrowLoc);
+      drawLine(arrowLoc, pb);
+    }
+
+    fillCircle(p1, radius);
+    fillCircle(p2, radius);
+  }
+
+  /**
    * Draw a pixel as a filled square
    */
   public static void drawPixel(double x, double y, double pixelSize) {

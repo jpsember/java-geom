@@ -26,7 +26,6 @@ package testbed;
 
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
-import static testbed.Colors.*;
 import static testbed.Render.*;
 import static testbed.TestBed.*;
 
@@ -42,7 +41,6 @@ import geom.ParsedAlgItem;
 import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.geometry.IRect;
-import js.geometry.MyMath;
 import js.geometry.Polygon;
 import js.graphics.AbstractScriptElement;
 import js.graphics.PointElement;
@@ -60,12 +58,10 @@ public class AlgorithmStepper {
 
   private static AlgorithmStepper sAlgorithmStepper;
 
-  @Deprecated
   public void disable() {
     mDisabled++;
   }
 
-  @Deprecated
   public void enable() {
     checkState(mDisabled != 0);
     mDisabled--;
@@ -363,41 +359,6 @@ public class AlgorithmStepper {
     }
   }
 
-  public static void renderTheSegment(FPoint p1, FPoint p2) {
-    // We want the line width to be constant, independent of the zoom factor
-    float scale = 1.0f / geomApp().zoomFactor();
-
-    final float radius = 4f * scale;
-
-    drawLine(p1, p2);
-
-    final float REQUIRED_LENGTH_FOR_ARROWS = 20;
-    final float ARROW_HEAD_LENGTH = 8;
-    final float ARROW_ANGLE = 30;
-
-    if (MyMath.distanceBetween(p1, p2) >= scale * REQUIRED_LENGTH_FOR_ARROWS) {
-      todo("this is duplicated code from EditablePolygonElement");
-
-      FPoint arrowLoc = FPoint.midPoint(p1, p2);
-      float angle = MyMath.polarAngle(p1, p2);
-      FPoint pa = MyMath.pointOnCircle(arrowLoc, angle - MyMath.M_DEG * (180 - ARROW_ANGLE),
-          scale * ARROW_HEAD_LENGTH);
-      FPoint pb = MyMath.pointOnCircle(arrowLoc, angle + MyMath.M_DEG * (180 - ARROW_ANGLE),
-          scale * ARROW_HEAD_LENGTH);
-      drawLine(pa, arrowLoc);
-      drawLine(arrowLoc, pb);
-    }
-
-    // ------------------------------------------------------------------
-    // Constants for rendering
-    // ------------------------------------------------------------------
-
-    // Determine vertices, if any, involved in vertex being inserted
-
-    fillCircle(p1, radius);
-    fillCircle(p2, radius);
-  }
-
   private List<Boolean> mActiveStack = arrayList();
 
   private int mStepToStopAt;
@@ -458,16 +419,5 @@ public class AlgorithmStepper {
 
     private Collection<Object> mObjects;
   }
-
-  //  private static class RenderWrapper implements AlgRenderable {
-  //    RenderWrapper(AlgRenderable r) {
-  //    mR = r;}
-  //    @Override
-  //    public void render(Object item) {
-  //     
-  //    }
-  //    private AlgRenderable mR;
-  //  }
-  //  
 
 }

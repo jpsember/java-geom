@@ -30,7 +30,6 @@ import js.widget.WidgetManager;
 import testbed.ColorWrapper;
 import testbed.Colors;
 import testbed.FontWrapper;
-import testbed.Render;
 import testbed.RenderableSegment;
 import testbed.RenderableText;
 import testbed.StrokeWrapper;

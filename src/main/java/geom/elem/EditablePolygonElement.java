@@ -34,7 +34,6 @@ import geom.EditorPanel;
 import geom.EditorElement;
 import geom.GeomApp;
 import geom.oper.PolygonEditOper;
-import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.IPoint;
 import js.geometry.IRect;
@@ -50,6 +49,7 @@ import js.guiapp.UserEvent;
 import js.guiapp.UserOperation;
 
 import static geom.GeomTools.*;
+import static testbed.Render.*;
 
 public final class EditablePolygonElement extends PolygonElement implements EditorElement {
 
@@ -225,6 +225,7 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
       }
     }
 
+    todo("snapping vertex to first doesn't actually make polygon closed");
     IPoint start = null;
     IPoint last = null;
     for (IPoint pt : polygon().vertices()) {
@@ -238,21 +239,23 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
       if (last != null) {
         if (last == pt1 && pt == pt2) {
           panel.apply(Paint.newBuilder().color(Color.RED).width(0.8f * scale));
-          panel.renderLine(last, pt);
+          pr("When is this actually called?", INDENT, ST);
+          //panel.renderLine(last, pt);
+          drawDirectedLineSegment(last, pt, appearance == RenderState.SELECTED);
         } else
-          renderLine(panel, scale, last, pt, appearance == RenderState.SELECTED);
+          drawDirectedLineSegment(last, pt, appearance == RenderState.SELECTED);
       }
       last = pt;
     }
 
     if (polygon().isClosed() && start != null && last != null) {
-      renderLine(panel, scale, last, start, appearance == RenderState.SELECTED);
+      drawDirectedLineSegment(last, start, appearance == RenderState.SELECTED);
     }
     if (mInsertVertex != null) {
       if (pt1 != null)
-        renderLine(panel, scale, pt1, mInsertVertex, false);
+        drawDirectedLineSegment(pt1, mInsertVertex, false);
       if (pt2 != null)
-        renderLine(panel, scale, mInsertVertex, pt2, false);
+        drawDirectedLineSegment(mInsertVertex, pt2, false);
       panel.renderDisc(mInsertVertex, VERTEX_RADIUS * scale);
     }
 
@@ -267,34 +270,11 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
     }
   }
 
-  private void renderLine(EditorPanel panel, float scale, IPoint i1, IPoint i2, boolean withArrows) {
-    FPoint p1 = i1.toFPoint();
-    FPoint p2 = i2.toFPoint();
-    panel.renderLine(p1, p2);
-    if (curveMode() || !withArrows)
-      return;
-
-    if (MyMath.distanceBetween(p1, p2) < scale * REQUIRED_LENGTH_FOR_ARROWS)
-      return;
-
-    FPoint arrowLoc = FPoint.midPoint(p1, p2);
-    float angle = MyMath.polarAngle(p1, p2);
-    FPoint pa = MyMath.pointOnCircle(arrowLoc, angle - MyMath.M_DEG * (180 - ARROW_ANGLE),
-        scale * ARROW_HEAD_LENGTH);
-    FPoint pb = MyMath.pointOnCircle(arrowLoc, angle + MyMath.M_DEG * (180 - ARROW_ANGLE),
-        scale * ARROW_HEAD_LENGTH);
-    panel.renderLine(pa, arrowLoc);
-    panel.renderLine(arrowLoc, pb);
-  }
-
   // ------------------------------------------------------------------
   // Constants for rendering
   // ------------------------------------------------------------------
 
   private static final float VERTEX_RADIUS = 2.5f;
-  private static final float REQUIRED_LENGTH_FOR_ARROWS = 20;
-  private static final float ARROW_HEAD_LENGTH = 5;
-  private static final float ARROW_ANGLE = 30;
 
   private static final Paint PAINT_NOMINAL = Paint.newBuilder().width(4).color(119, 52, 235).build();
   private static final Paint PAINT_DISABLED = Paint.newBuilder().width(3).color(119, 52, 235, 64).build();

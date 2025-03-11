@@ -288,24 +288,30 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
   private Paint mActivePaint = Paint.DEFAULT_INSTANCE;
 
   public EditorPanel apply(Paint pb) {
+    todo("!Refactor to use Render state stack");
     assertRendering();
     mActivePaint = pb.apply(mGraphics);
     return this;
   }
 
   public void renderLine(FPoint p1, FPoint p2) {
+    todo("!Refactor to use Render class");
     mGraphics.drawLine(p1.ix(), p1.iy(), p2.ix(), p2.iy());
   }
 
+  @Deprecated // Use Render methods
   public void renderLine(IPoint p1, IPoint p2) {
+    todo("!Refactor to use Render class");
     mGraphics.drawLine(p1.x, p1.y, p2.x, p2.y);
   }
 
   public void renderLine(float x0, float y0, float x1, float y1) {
+    todo("!Refactor to use Render class");
     renderLine(new FPoint(x0, y0), new FPoint(x1, y1));
   }
 
   public EditorPanel renderFrame(FRect rect) {
+    todo("!Refactor to use Render class");
     return renderFrame(rect, 0);
   }
 
@@ -339,9 +345,11 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
   }
 
   public void renderDisc(IPoint location, float radius) {
+    todo("!Refactor to use Render class");
     renderDisc(location.toFPoint(), radius);
   }
 
+  @Deprecated // Use Render methods
   public void renderDisc(FPoint location, float radius) {
     render(new Ellipse2D.Float(location.x - radius, location.y - radius, radius * 2, radius * 2));
   }

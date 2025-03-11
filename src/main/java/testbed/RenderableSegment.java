@@ -2,6 +2,7 @@ package testbed;
 
 import geom.AlgRenderable;
 import js.geometry.FPoint;
+import static testbed.Render.*;
 
 public class RenderableSegment implements AlgRenderable {
 
@@ -14,7 +15,7 @@ public class RenderableSegment implements AlgRenderable {
 
   @Override
   public void render(Object item) {
-    AlgorithmStepper.renderTheSegment(a0, a1);
+    drawDirectedLineSegment(a0, a1, true);
   }
 
   private FPoint a0, a1;
