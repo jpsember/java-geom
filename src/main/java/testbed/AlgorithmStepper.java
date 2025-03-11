@@ -220,6 +220,19 @@ public class AlgorithmStepper {
     mParseMap.remove(key);
   }
 
+  public void plotRemovePrefix(String key) {
+    if (!mActive)
+      return;
+    List<String> rem = arrayList();
+    for (var x : mParseMap.keySet()) {
+      if (x.startsWith(key)) {
+        rem.add(x);
+      }
+    }
+    for (var x : rem)
+      mParseMap.remove(x);
+  }
+
   public List<ParsedAlgItem> extractRenderables(Object[] items) {
     List<ParsedAlgItem> output = arrayList();
     for (Object obj : items) {
@@ -392,32 +405,6 @@ public class AlgorithmStepper {
       }
     }
     return se;
-  }
-
-  public AlgRenderable render(Collection objects) {
-    return RenderableCollection.with(objects);
-  }
-
-  private static class RenderableCollection implements AlgRenderable {
-
-    public static RenderableCollection with(Collection objects) {
-      var c = new RenderableCollection();
-      c.mObjects = objects;
-      return c;
-    }
-
-    @Override
-    public void render(Object item) {
-      var s = AlgorithmStepper.sharedInstance();
-      for (var x : mObjects) {
-        var y = s.findRendererForObject(x);
-        if (y == null)
-          continue;
-        y.render(x);
-      }
-    }
-
-    private Collection<Object> mObjects;
   }
 
 }

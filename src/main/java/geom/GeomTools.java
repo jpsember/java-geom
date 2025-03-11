@@ -26,7 +26,9 @@ package geom;
 
 import js.app.App;
 import js.geometry.FPoint;
+import js.geometry.IPoint;
 import js.widget.WidgetManager;
+import testbed.AlgorithmStepper;
 import testbed.ColorWrapper;
 import testbed.Colors;
 import testbed.FontWrapper;
@@ -37,6 +39,7 @@ import testbed.StrokeWrapper;
 import static js.base.Tools.*;
 
 import java.awt.Color;
+import java.util.Collection;
 
 public final class GeomTools {
 
@@ -100,4 +103,34 @@ public final class GeomTools {
     return RenderableText.with(text).at(loc);
   }
 
+  public static Object textAt(IPoint loc, String text) {
+    return RenderableText.with(text).at(loc.toFPoint());
+  }
+
+  public static AlgRenderable render(Collection objects) {
+    todo("rename this method");
+    return RenderableCollection.with(objects);
+  }
+
+  private static class RenderableCollection implements AlgRenderable {
+
+    public static RenderableCollection with(Collection objects) {
+      var c = new RenderableCollection();
+      c.mObjects = objects;
+      return c;
+    }
+
+    @Override
+    public void render(Object item) {
+      var s = AlgorithmStepper.sharedInstance();
+      for (var x : mObjects) {
+        var y = s.findRendererForObject(x);
+        if (y == null)
+          continue;
+        y.render(x);
+      }
+    }
+
+    private Collection<Object> mObjects;
+  }
 }
