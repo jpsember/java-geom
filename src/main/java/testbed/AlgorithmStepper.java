@@ -32,7 +32,6 @@ import static testbed.TestBed.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -95,26 +94,25 @@ public class AlgorithmStepper {
     AlgorithmException event = null;
     try {
       alg.runAlgorithm();
+
     } catch (AlgorithmException traceEvent) {
       event = traceEvent;
     } finally {
       mRunning = false;
     }
 
-    //    if (event != null) {
-    //      // if error, save editor buffer for user recall
-    //      if (event.error) {
-    //        if (Editor.initialized())
-    //          Editor.storeErrorItems();
-    //      }
-    //    }
     mLastException = event;
     return (event == null);
   }
 
   public void renderAlgorithmResults() {
+    plotPlotables();
     if (mLastException != null) {
       plotTrace(mLastException);
+    } else {
+      // Show plottables map, to see what was left behind?
+      if (false)
+        pr("plottables:", INDENT, mParseMap.keySet());
     }
   }
 
@@ -125,6 +123,32 @@ public class AlgorithmStepper {
    */
   public AlgorithmException lastEvent() {
     return mLastException;
+  }
+
+  private void plotPlotables() {
+    todo("rename this, and plot~ stuff");
+    //This is the default color and stroke
+    pushColor(Color.red);
+    pushStroke(STRK_NORMAL);
+
+    // Render things added via plot()
+    {
+      List<String> sortedKeys = arrayList();
+      sortedKeys.addAll(mParseMap.keySet());
+      sortedKeys.sort(String.CASE_INSENSITIVE_ORDER);
+
+      for (var key : sortedKeys) {
+        var rlist = mParseMap.get(key);
+        for (var plotable : rlist) {
+          if (plotable.renderer == null)
+            continue;
+          plotable.renderer.render(plotable.object);
+        }
+      }
+
+    }
+
+    pop(2);
   }
 
   /**
