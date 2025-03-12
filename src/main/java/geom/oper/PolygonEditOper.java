@@ -1,18 +1,18 @@
 /**
  * MIT License
- * 
+ *
  * Copyright (c) 2021 Jeff Sember
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
  **/
 package geom.oper;
 
@@ -34,6 +33,7 @@ import js.guiapp.UserOperation;
 import js.json.JSMap;
 
 import java.awt.Cursor;
+import java.util.ArrayList;
 import java.util.List;
 
 import geom.EditorElement;
@@ -122,82 +122,102 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
       log("processPolyUserEvent", INDENT, this, CR, event);
     switch (event.getCode()) {
 
-    case UserEvent.CODE_DOWN: {
-      if (event.isRight()) {
-        geomApp().perform(mCommand);
-        event.clearOperation();
-        break;
-      }
+      case UserEvent.CODE_DOWN: {
+        if (event.isRight()) {
+          geomApp().perform(mCommand);
+          event.clearOperation();
+          break;
+        }
 
-      EditablePolygonElement p = activePolygon();
+        EditablePolygonElement p = activePolygon();
 
-      IPoint pos = applyMouseOffset(event.getWorldLocation());
+        IPoint pos = applyMouseOffset(event.getWorldLocation());
 
-      boolean endOperation = false;
-      if (snapToOtherEndpoint(p.polygon(), mVertexIndex, pos) != null) {
-        p = p.withPolygon(p.polygon().withOpen(false));
-        endOperation = true;
-      } else {
-        log("adding point at index", mVertexIndex, pos);
-        p = p.withAddPoint(mVertexIndex, pos);
-      }
-      writeActivePolygon(p);
-      if (endOperation)
-        event.setOperation(null);
-      else
-        setState(STATE_ADJUST);
-    }
-      break;
-
-    case UserEvent.CODE_DRAG: {
-      if (mState != STATE_ADJUST)
-        break;
-
-      EditablePolygonElement p = activePolygon();
-
-      IPoint pt = applyMouseOffset(event.getWorldLocation());
-      log("applied mouse offset to event:", event.getWorldLocation(), "now:", pt);
-      var snapTo = snapToOtherEndpoint(p.polygon(), mVertexIndex, pt);
-      if (snapTo != null) {
-        log("...snapped to opposite endpoint");
-        pt = snapTo;
-      }
-
-      p = p.withSetPoint(mVertexIndex, pt);
-      writeActivePolygon(p);
-    }
-      break;
-
-    case UserEvent.CODE_UP: {
-      if (mState != STATE_ADJUST)
-        break;
-      checkState(activePolygon().polygon().numVertices() > 0, "edit object has no vertices");
-
-      if (event.isRight()) {
-        // Delete the vertex 
-        EditablePolygonElement p = activePolygon().withDeletedPoint(mVertexIndex);
+        boolean endOperation = false;
+        if (snapToOtherEndpoint(p.polygon(), mVertexIndex, pos) != null) {
+          if (DEBUG_POLYEDIT)
+            pr("snapToOtherEndpoint returned vert, ending oper");
+          p = p.withPolygon(p.polygon().withOpen(false));
+          endOperation = true;
+        } else {
+          log("adding point at index", mVertexIndex, pos);
+          p = p.withAddPoint(mVertexIndex, pos);
+        }
         writeActivePolygon(p);
-        event.clearOperation();
-        break;
-      } else {
-
-        var ap = activePolygon().polygon();
-
-        mVertexIndex = (mVertexIndex + 1);
-        if (ap.isClosed())
-          mVertexIndex = mVertexIndex % ap.numVertices();
-        log("vertex index incr'd to", mVertexIndex);
+        if (endOperation)
+          event.setOperation(null);
+        else
+          setState(STATE_ADJUST);
       }
-      setState(STATE_UP);
-    }
       break;
 
-    case UserEvent.CODE_MOVE: {
-      EditablePolygonElement p = activePolygon();
-      p = p.withInsertVertex(mVertexIndex, applyMouseOffset(event.getWorldLocation()));
-      writeActivePolygon(p);
-      geomApp().perform(mCommand);
-    }
+      case UserEvent.CODE_DRAG: {
+        if (mState != STATE_ADJUST)
+          break;
+
+        EditablePolygonElement p = activePolygon();
+
+        IPoint pt = applyMouseOffset(event.getWorldLocation());
+        log("applied mouse offset to event:", event.getWorldLocation(), "now:", pt);
+        var snapTo = snapToOtherEndpoint(p.polygon(), mVertexIndex, pt);
+        if (snapTo != null) {
+          if (DEBUG_POLYEDIT)
+            pr("snapToOtherEndpoint snapping to opposite endpoint");
+          log("...snapped to opposite endpoint");
+          pt = snapTo;
+        }
+
+        p = p.withSetPoint(mVertexIndex, pt);
+        writeActivePolygon(p);
+      }
+      break;
+
+      case UserEvent.CODE_UP: {
+        if (mState != STATE_ADJUST)
+          break;
+
+        if (DEBUG_POLYEDIT) pr("user event UP, must check if we snapped vertex");
+
+        checkState(activePolygon().polygon().numVertices() > 0, "edit object has no vertices");
+
+        if (event.isRight()) {
+          // Delete the vertex
+          EditablePolygonElement p = activePolygon().withDeletedPoint(mVertexIndex);
+          writeActivePolygon(p);
+          event.clearOperation();
+          break;
+        } else {
+
+          var ap = activePolygon().polygon();
+          if (DEBUG_POLYEDIT) pr("ap closed:", ap.isClosed());
+
+          if (ap.isOpen() && ap.numVertices() >= 3) {
+            // If first and last vertices are the same, make it a closed polygon
+            if (ap.vertex(0).equals(ap.vertexMod(-1))) {
+              // Delete the vertex
+              EditablePolygonElement p = activePolygon().withDeletedPoint(ap.numVertices() - 1);
+              p = p.withPolygon(p.polygon().withOpen(false));
+              writeActivePolygon(p);
+              event.clearOperation();
+              break;
+            }
+          }
+
+          mVertexIndex = (mVertexIndex + 1);
+          if (ap.isClosed())
+            mVertexIndex = mVertexIndex % ap.numVertices();
+          log("vertex index incr'd to", mVertexIndex);
+        }
+        setState(STATE_UP);
+      }
+      break;
+
+      case UserEvent.CODE_MOVE: {
+        EditablePolygonElement p = activePolygon();
+        p = p.withInsertVertex(mVertexIndex, applyMouseOffset(event.getWorldLocation()));
+        writeActivePolygon(p);
+        geomApp().perform(mCommand);
+      }
       break;
     }
   }
@@ -207,33 +227,33 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
 
     switch (event.getCode()) {
 
-    case UserEvent.CODE_DOWN: {
-      if (mState == STATE_STARTING_CURVE && !event.isRight()) {
-        setState(STATE_ADJUST);
-      } else {
-        geomApp().perform(mCommand);
-        event.clearOperation();
+      case UserEvent.CODE_DOWN: {
+        if (mState == STATE_STARTING_CURVE && !event.isRight()) {
+          setState(STATE_ADJUST);
+        } else {
+          geomApp().perform(mCommand);
+          event.clearOperation();
+        }
       }
-    }
       break;
 
-    case UserEvent.CODE_MOVE: {
-      if (mState != STATE_ADJUST)
-        break;
+      case UserEvent.CODE_MOVE: {
+        if (mState != STATE_ADJUST)
+          break;
 
-      EditablePolygonElement p = activePolygon();
+        EditablePolygonElement p = activePolygon();
 
-      IPoint pt = applyMouseOffset(event.getWorldLocation());
+        IPoint pt = applyMouseOffset(event.getWorldLocation());
 
-      if (p.polygon().numVertices() == 0) {
-        p = p.withAddPoint(0, pt);
-      } else {
-        IPoint prevPt = p.polygon().lastVertex();
-        if (MyMath.distanceBetween(prevPt, pt) > MIN_CURVE_MOVEMENT_DISTANCE)
-          p = p.withAddPoint(p.polygon().numVertices(), pt);
+        if (p.polygon().numVertices() == 0) {
+          p = p.withAddPoint(0, pt);
+        } else {
+          IPoint prevPt = p.polygon().lastVertex();
+          if (MyMath.distanceBetween(prevPt, pt) > MIN_CURVE_MOVEMENT_DISTANCE)
+            p = p.withAddPoint(p.polygon().numVertices(), pt);
+        }
+        writeActivePolygon(p);
       }
-      writeActivePolygon(p);
-    }
       break;
     }
   }
@@ -377,18 +397,24 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
     final float SNAP_VERTEX_DISTANCE = 16;
     final boolean db = false && alert("logging snapToOtherEndpoint");
 
+    if (db) pr("snapToOtherEndpoint, index", index, "pt:", pt, "numVert:", polygon.numVertices());
     IPoint snapTo = null;
     do {
 
       if (polygon.isClosed())
         break;
-
       if (polygon.numVertices() < 3)
         break;
 
-      var otherInd = polygon.numVertices() - 1 - index;
-      if (!(index == 0 || otherInd == 0))
+      int otherInd;
+      if (index == 0) {
+        otherInd = polygon.numVertices() - 1;
+      } else if (index == polygon.numVertices()) {
+        otherInd = 0;
+      } else
         break;
+
+      if (db) pr("otherIndex:", otherInd);
 
       var otherLoc = polygon.vertex(otherInd);
       var otherLocF = otherLoc.toFPoint();
@@ -408,7 +434,7 @@ public class PolygonEditOper extends UserOperation implements UserEvent.Listener
 
     } while (false);
     if (db)
-      pr("snapToOtherEndpoint:", snapTo);
+      pr("returning:", snapTo);
     return snapTo;
   }
 

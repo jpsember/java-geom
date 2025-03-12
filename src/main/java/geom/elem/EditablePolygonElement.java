@@ -1,18 +1,18 @@
 /**
  * MIT License
- * 
+ *
  * Copyright (c) 2021 Jeff Sember
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
  **/
 package geom.elem;
 
@@ -149,8 +148,8 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
       var snap = PolygonEditOper.snapToOtherEndpoint(polygon(), position, vt);
       if (snap != null) {
         vt = snap;
-        if (db)
-          pr("...snapping to:", vt, "position:", position);
+        if (DEBUG_POLYEDIT)
+          pr("withInsertVertex, snap to other endpoint:", vt);
       }
     }
 
@@ -197,18 +196,18 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
 
     Paint paint;
     switch (appearance) {
-    default:
-      throw notSupported();
-    case DISABLED:
-      paint = PAINT_DISABLED;
-      break;
-    case NOMINAL:
-      // todo("set color based on flavor(?)");
-      paint = PAINT_NOMINAL;
-      break;
-    case SELECTED:
-      paint = PAINT_SELECTED;
-      break;
+      default:
+        throw notSupported();
+      case DISABLED:
+        paint = PAINT_DISABLED;
+        break;
+      case NOMINAL:
+        // todo("set color based on flavor(?)");
+        paint = PAINT_NOMINAL;
+        break;
+      case SELECTED:
+        paint = PAINT_SELECTED;
+        break;
     }
 
     panel.apply(paint.toBuilder().width(paint.width() * scale));
@@ -225,7 +224,6 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
       }
     }
 
-    todo("snapping vertex to first doesn't actually make polygon closed");
     IPoint start = null;
     IPoint last = null;
     for (IPoint pt : polygon().vertices()) {
