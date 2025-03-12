@@ -1,18 +1,18 @@
 /**
  * MIT License
- * 
+ *
  * Copyright (c) 2021 Jeff Sember
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,15 +20,10 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
  **/
 package testbed;
 
-import js.geometry.FPoint;
-import js.geometry.IPoint;
-import js.geometry.IRect;
-import js.geometry.MyMath;
-import js.geometry.Polygon;
+import js.geometry.*;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -54,9 +49,9 @@ public final class Render {
    * Text plotting flags
    */
   public static final int //
-  // do multiline text with no line > n chars wide?
-  TX_LINEWIDTH = 0x00ff
-  // clear background?
+      // do multiline text with no line > n chars wide?
+      TX_LINEWIDTH = 0x00ff
+      // clear background?
       , TX_BGND = 0x0100
       // draw frame around text?
       , TX_FRAME = 0x0200
@@ -98,25 +93,25 @@ public final class Render {
   public static void mark(FPoint pt, int markType, double scale) {
     double pad = getScale() * scale * .4;
     switch (markType) {
-    case MARK_X:
-      drawLine(pt.x - pad, pt.y - pad, pt.x + pad, pt.y + pad);
-      drawLine(pt.x - pad, pt.y + pad, pt.x + pad, pt.y - pad);
-      break;
-    default:
-    case MARK_DISC:
-      fillCircle(pt, pad * 1.5);
-      break;
-    case MARK_CIRCLE:
-      drawCircle(pt, pad * 1.5);
-      break;
-    case MARK_SQUARE:
-      drawRect(pt.x - pad, pt.y - pad, pad * 2, pad * 2);
-      break;
-    case MARK_FSQUARE:
-      fillRect(pt.x - pad, pt.y - pad, pad * 2, pad * 2);
-      break;
-    case MARK_NONE:
-      break;
+      case MARK_X:
+        drawLine(pt.x - pad, pt.y - pad, pt.x + pad, pt.y + pad);
+        drawLine(pt.x - pad, pt.y + pad, pt.x + pad, pt.y - pad);
+        break;
+      default:
+      case MARK_DISC:
+        fillCircle(pt, pad * 1.5);
+        break;
+      case MARK_CIRCLE:
+        drawCircle(pt, pad * 1.5);
+        break;
+      case MARK_SQUARE:
+        drawRect(pt.x - pad, pt.y - pad, pad * 2, pad * 2);
+        break;
+      case MARK_FSQUARE:
+        fillRect(pt.x - pad, pt.y - pad, pad * 2, pad * 2);
+        break;
+      case MARK_NONE:
+        break;
     }
   }
 
@@ -147,9 +142,8 @@ public final class Render {
 
   /**
    * Save current font on stack, set to new
-   * 
-   * @param font
-   *          new font (FNT_xx)
+   *
+   * @param font new font (FNT_xx)
    */
   public static void pushFont(int font) {
     if (font >= 0) {
@@ -163,11 +157,10 @@ public final class Render {
 
   /**
    * Draw a string (with flags set to zero)
-   * 
+   *
    * @param str
    * @param x
-   * @param y
-   *          view coordinates
+   * @param y   view coordinates
    */
   public static void draw(String str, double x, double y) {
     draw(str, x, y, 0);
@@ -212,24 +205,21 @@ public final class Render {
 
   /**
    * Draw a string
-   * 
-   * @param str
-   *          string to draw
+   *
+   * @param str   string to draw
    * @param x
-   * @param y
-   *          view coordinates
-   * @param flags
-   *          Flags controlling string's appearance. These include:
-   * 
-   *          <pre>
-      TX_LINEWIDTH  if not zero, plots string in multiple rows, breaking at 
-                     word boundaries (if possible) so no row has length 
-                     greater than this value
-      TX_BGND       if set, clears background of string
-      TX_FRAME      if set, draws a frame around the string
-      TX_CLAMP      if set, clamps coordinates into range of view so entire
-                     string is guaranteed to be visible
-   *          </pre>
+   * @param y     view coordinates
+   * @param flags Flags controlling string's appearance. These include:
+   *
+   *              <pre>
+   *                                                     TX_LINEWIDTH  if not zero, plots string in multiple rows, breaking at
+   *                                                     word boundaries (if possible) so no row has length
+   *                                                     greater than this value
+   *                                                     TX_BGND       if set, clears background of string
+   *                                                     TX_FRAME      if set, draws a frame around the string
+   *                                                     TX_CLAMP      if set, clamps coordinates into range of view so entire
+   *                                                     string is guaranteed to be visible
+   *                                                              </pre>
    */
   public static void draw(String str, double x, double y, int flags) {
 
@@ -296,34 +286,26 @@ public final class Render {
     pop(); // stroke
   }
 
-  /**
-   * Draw a circle
-   * 
-   * @param origin
-   *          origin of circle
-   * @param radius
-   *          radius of circle
-   */
-  public static void drawCircle(FPoint origin, double radius) {
+  public static void drawCircle(Point2 originPt, double radius) {
+    var origin = originPt.asFPoint();
     g.draw(
         new Arc2D.Double(origin.x - radius, origin.y - radius, 2 * radius, 2 * radius, 0, 360, Arc2D.CHORD));
   }
+
+  public static void fillCircle(Point2 originPt, double radius) {
+    var origin = originPt.asFPoint();
+    g.fill(
+        new Arc2D.Double(origin.x - radius, origin.y - radius, 2 * radius, 2 * radius, 0, 360, Arc2D.CHORD));
+  }
+
 
   public static void drawRect(IRect r) {
     g.drawRect(r.x, r.y, r.width, r.height);
   }
 
-  /**
-   * Draw a filled circle (disc)
-   * 
-   * @param origin
-   *          origin of circle
-   * @param radius
-   *          radius of circle
-   */
-  public static void fillCircle(FPoint origin, double radius) {
-    g.fill(
-        new Arc2D.Double(origin.x - radius, origin.y - radius, 2 * radius, 2 * radius, 0, 360, Arc2D.CHORD));
+
+  public static void fillCircle(IPoint origin, double radius) {
+    fillCircle(origin.toFPoint(), radius);
   }
 
   /**
@@ -442,28 +424,15 @@ public final class Render {
   /**
    * Draw a line segment
    */
-  public static void drawLine(FPoint p0, FPoint p1) {
-    drawLine(p0.x, p0.y, p1.x, p1.y);
+  public static void drawLine(Point2 p0, Point2 p1) {
+    drawLine(p0.getX(), p0.getY(), p1.getX(), p1.getY());
   }
 
-  /**
-   * Draw a line segment
-   */
-  public static void drawLine(IPoint p0, IPoint p1) {
-    drawLine(p0.x, p0.y, p1.x, p1.y);
-  }
 
   /**
    * Draw a directed line segment, with arrows
    */
-  public static void drawDirectedLineSegment(IPoint p1, IPoint p2, boolean withArrows) {
-    drawDirectedLineSegment(p1.toFPoint(), p2.toFPoint(), withArrows);
-  }
-
-  /**
-   * Draw a directed line segment, with arrows
-   */
-  public static void drawDirectedLineSegment(FPoint p1, FPoint p2, boolean withArrows) {
+  public static void drawDirectedLineSegment(Point2 p1, Point2 p2, boolean withArrows) {
 
     todo("!The 'independent of zoom factor' should be a render state flag");
 

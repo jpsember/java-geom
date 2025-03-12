@@ -114,7 +114,7 @@ public abstract class TestBed extends GeomApp {
     }
 
     // For demonstration purposes, open another tab
-    {
+   if (false) {
       c.openTab("beta:Beta");
       c.tooltip("an example of a second tab");
       c.label("Hello").defaultVal(true).addToggleButton("beta_checkbox");

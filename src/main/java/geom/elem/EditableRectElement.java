@@ -1,18 +1,18 @@
 /**
  * MIT License
- * 
+ *
  * Copyright (c) 2021 Jeff Sember
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
  **/
 package geom.elem;
 
@@ -47,6 +46,8 @@ import js.graphics.ScriptElement;
 import js.graphics.gen.ElementProperties;
 import js.guiapp.UserEvent;
 import js.guiapp.UserOperation;
+
+import static testbed.Render.*;
 
 public class EditableRectElement extends RectElement implements EditorElement {
 
@@ -100,7 +101,7 @@ public class EditableRectElement extends RectElement implements EditorElement {
 
   private static final FPoint[] sDiscPoints = new FPoint[6];
   private static final FPoint[] sViewPoints = new FPoint[sDiscPoints.length];
-  private static final int[] sSegmentScript = { 0, 1, 2, 3, 4, 5 };
+  private static final int[] sSegmentScript = {0, 1, 2, 3, 4, 5};
 
   @Override
   public void render(EditorPanel panel, RenderState appearance) {
@@ -113,17 +114,17 @@ public class EditableRectElement extends RectElement implements EditorElement {
 
     Paint paint;
     switch (appearance) {
-    default:
-      throw notSupported();
-    case DISABLED:
-      paint = getDisabledPaint();
-      break;
-    case NOMINAL:
-      paint = getNominalPaint();
-      break;
-    case SELECTED:
-      paint = PAINT_SELECTED;
-      break;
+      default:
+        throw notSupported();
+      case DISABLED:
+        paint = getDisabledPaint();
+        break;
+      case NOMINAL:
+        paint = getNominalPaint();
+        break;
+      case SELECTED:
+        paint = PAINT_SELECTED;
+        break;
     }
     panel.apply(paint).renderFrame(r);
 
@@ -171,7 +172,7 @@ public class EditableRectElement extends RectElement implements EditorElement {
             panel.apply(pass == 0 ? DISC_GUIDE_BGND : DISC_GUIDE);
             int[] script = sSegmentScript;
             for (int i = 0; i < script.length; i += 2)
-              panel.renderLine(sViewPoints[script[i]], sViewPoints[script[i + 1]]);
+              drawLine(sViewPoints[script[i]], sViewPoints[script[i + 1]]);
           }
         }
       }

@@ -265,7 +265,7 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
       try {
         UserEventManager.sharedInstance().processUserEvent(event);
       } catch (Throwable t) {
-        haltProgram(t);
+        throw haltProgram(t);
       }
     } else
       UserEventManager.sharedInstance().processUserEvent(event);
@@ -294,32 +294,20 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
     return this;
   }
 
-  public void renderLine(FPoint p1, FPoint p2) {
-    todo("!Refactor to use Render class");
-    mGraphics.drawLine(p1.ix(), p1.iy(), p2.ix(), p2.iy());
-  }
-
-  @Deprecated // Use Render methods
-  public void renderLine(IPoint p1, IPoint p2) {
-    todo("!Refactor to use Render class");
-    mGraphics.drawLine(p1.x, p1.y, p2.x, p2.y);
-  }
-
-  public void renderLine(float x0, float y0, float x1, float y1) {
-    todo("!Refactor to use Render class");
-    renderLine(new FPoint(x0, y0), new FPoint(x1, y1));
-  }
-
+  @Deprecated
   public EditorPanel renderFrame(FRect rect) {
-    todo("!Refactor to use Render class");
+    todo("!<1Refactor to use Render class");
     return renderFrame(rect, 0);
   }
 
+  @Deprecated
   public EditorPanel renderText(String text, float x, float y) {
+    alert("!<1renderText is deprecated");
     mGraphics.drawString(text, x, y);
     return this;
   }
 
+  @Deprecated
   public EditorPanel renderFrame(FRect rect, float radius) {
     if (mActivePaint.isFill()) {
       RectangularShape r;
@@ -344,13 +332,16 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
     return this;
   }
 
+  @Deprecated
   public void renderDisc(IPoint location, float radius) {
+    alert("!<1this renderDisc is deprecated");
     todo("!Refactor to use Render class");
     renderDisc(location.toFPoint(), radius);
   }
 
   @Deprecated // Use Render methods
   public void renderDisc(FPoint location, float radius) {
+    alert("!<1renderDisc is deprecated");
     render(new Ellipse2D.Float(location.x - radius, location.y - radius, radius * 2, radius * 2));
   }
 

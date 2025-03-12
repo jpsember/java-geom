@@ -46,6 +46,7 @@ import js.graphics.ScriptUtil;
 import js.graphics.gen.ElementProperties;
 import js.guiapp.UserEvent;
 import js.guiapp.UserOperation;
+import testbed.Render;
 
 import static geom.GeomTools.*;
 import static testbed.Render.*;
@@ -253,7 +254,8 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
         drawDirectedLineSegment(pt1, mInsertVertex, false);
       if (pt2 != null)
         drawDirectedLineSegment(mInsertVertex, pt2, false);
-      panel.renderDisc(mInsertVertex, VERTEX_RADIUS * scale);
+
+      fillCircle(mInsertVertex, VERTEX_RADIUS * scale);
     }
 
     if (appearance == RenderState.SELECTED && !curveMode())
