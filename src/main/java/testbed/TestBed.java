@@ -97,7 +97,7 @@ public abstract class TestBed extends GeomApp {
       c.openTab(AUXTAB_TRACE + ":Alg");
       {
         c.tooltip("if true, enables algorithm tracing");
-        c.label("Enabled").defaultVal(true).addToggleButton(TRACEENABLED);
+        c.label("Step Enabled").defaultVal(true).addToggleButton(TRACEENABLED);
         c.tooltip("plots trace text").label("Messages").defaultVal(true).addToggleButton(TRACEPLOT);
 
         {

@@ -126,7 +126,7 @@ public class AlgorithmStepper {
   }
 
   private void plotPlotables() {
-    todo("rename this, and plot~ stuff");
+    todo("!rename this, and plot~ stuff");
     //This is the default color and stroke
     pushColor(Color.red);
     pushStroke(STRK_NORMAL);

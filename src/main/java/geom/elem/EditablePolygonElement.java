@@ -211,6 +211,7 @@ public final class EditablePolygonElement extends PolygonElement implements Edit
         break;
     }
 
+    todo("!can we have Render support paints?");
     panel.apply(paint.toBuilder().width(paint.width() * scale));
 
     // Determine vertices, if any, involved in vertex being inserted
