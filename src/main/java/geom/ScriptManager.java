@@ -60,7 +60,6 @@ public class ScriptManager extends BaseObject {
 
   public void openFile(File scriptFile) {
     assertFileBased();
-    //pr("openFile:", scriptFile);
     setCurrentScript(new ScriptWrapper(scriptFile));
   }
 
@@ -96,14 +95,6 @@ public class ScriptManager extends BaseObject {
 
   public void flushScript() {
     mCurrentScript.flush();
-  }
-
-  public void clearScript() {
-    // Copy the clipboard from the current script, so we can copy or paste with the new script
-    mCurrentScript = ScriptWrapper.DEFAULT_INSTANCE;
-    if (mCurrentScript.isNone() || mCurrentScript.isAnonymous()) {
-      return;
-    }
   }
 
   /**
@@ -177,6 +168,7 @@ public class ScriptManager extends BaseObject {
   };
 
   public int scriptCount() {
+    todo("Maybe simpler to think of project as an 'auto loaded' list of scripts?");
     ensureDefined();
     return mScripts.size();
   }
@@ -186,6 +178,7 @@ public class ScriptManager extends BaseObject {
       badState("Illegal method for default project");
   }
 
+  @Deprecated // Can we just use isProjectDefined...?
   public boolean isDefaultProject() {
     return isProjectBased() && currentProject().isDefault();
   }
@@ -194,7 +187,7 @@ public class ScriptManager extends BaseObject {
     return !currentProject().isDefault();
   }
 
-  public void setScriptIndex(int index) {
+  private void setScriptIndex(int index) {
     df("setScriptIndex", index);
     todo("are we sure we are flushing previous one?");
 
@@ -224,24 +217,25 @@ public class ScriptManager extends BaseObject {
     }
   }
 
+  @Deprecated // Would be better to consolidate isDefaultProject, etc
   public boolean definedAndNonEmpty() {
     if (isProjectBased())
       return isProjectDefined() && scriptCount() != 0;
     return scriptCount() != 0;
   }
 
-  /**
-   * Get the current script
-   */
-  public ScriptWrapper script() {
-    if (isDefaultProject())
-      return ScriptWrapper.DEFAULT_INSTANCE;
-    int index = scriptIndex();
-    int count = scriptCount();
-    if (index < 0 || index >= count)
-      return ScriptWrapper.DEFAULT_INSTANCE;
-    return mScripts.get(index);
-  }
+//  /**
+//   * Get the current script
+//   */
+//  public ScriptWrapper script() {
+//    if (isDefaultProject())
+//      return ScriptWrapper.DEFAULT_INSTANCE;
+//    int index = scriptIndex();
+//    int count = scriptCount();
+//    if (index < 0 || index >= count)
+//      return ScriptWrapper.DEFAULT_INSTANCE;
+//    return mScripts.get(index);
+//  }
 
   public ScriptWrapper script(int scriptIndex) {
     return mScripts.get(scriptIndex);
@@ -249,16 +243,16 @@ public class ScriptManager extends BaseObject {
 
 
   public int scriptIndex() {
-    todo("!should script index be a script filename instead?");
     var path = new File(widgets().vs(GeomApp.CURRENT_SCRIPT_FILE));
     int index = findScript(path);
     var count = scriptCount();
     if (index < 0) {
-      var insertPos = -index - 1;
+      todo("what if there are no scripts?");
+      checkState(count > 0);
+      index = -index - 1;
       if (index >= count)
         index = count - 1;
     }
-    df("scriptIndex, path:", path, "count:", count, "index:", index);
     return index;
   }
 
@@ -267,7 +261,7 @@ public class ScriptManager extends BaseObject {
    *
    * Returns index, if found, else (-insert_position) - 1 if not
    */
-  public int findScript(File path) {
+  private /*for now*/ int findScript(File path) {
     // Create a dummy script wrapper that contains the file we're searching for
     var x = new ScriptWrapper(path);
     var slot = Collections.binarySearch(mScripts, x, SCRIPT_FILE_COMPARATOR);
@@ -286,17 +280,17 @@ public class ScriptManager extends BaseObject {
     setScriptIndex(scriptIndex);
   }
 
-  /**
-   * Create a new, empty script and make it the active one
-   */
-  public void newScript(File path) {
-    int newIndex = mScripts.size();
-    df("newScript, #scripts:", mScripts.size());
-    todo("add support for not-yet-defined file for script wrapper");
-    todo("Will it handle a not-yet-existing file?");
-    mScripts.add(new ScriptWrapper(path));
-    switchToScript(newIndex);
-  }
+//  /**
+//   * Create a new, empty script and make it the active one
+//   */
+//  public void newScript(File path) {
+//    int newIndex = mScripts.size();
+//    df("newScript, #scripts:", mScripts.size());
+//    todo("add support for not-yet-defined file for script wrapper");
+//    todo("Will it handle a not-yet-existing file?");
+//    mScripts.add(new ScriptWrapper(path));
+//    switchToScript(newIndex);
+//  }
 
 
   public void switchToScript(File file) {

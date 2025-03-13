@@ -72,12 +72,6 @@ public final class ScriptWrapper extends BaseObject {
     return defined() && Files.empty(mScriptFile);
   }
 
-  @Deprecated
-  public static ScriptWrapper buildUntitled() {
-    ScriptWrapper w = new ScriptWrapper(Files.DEFAULT);
-    return w;
-  }
-
   /**
    * Read the Script from the file, if it hasn't already been read
    */
