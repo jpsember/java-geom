@@ -74,7 +74,7 @@ public abstract class GeomApp extends GUIApp {
     } else {
       todo("If file-based app, get current file instead");
       if (sm.currentProject().isDefined()) {
-        File dir = currentProject().directory();
+        File dir = sm.currentProject().directory();
         return dir.getName();
       }
     }
@@ -128,19 +128,16 @@ public abstract class GeomApp extends GUIApp {
   // Current project
   // ------------------------------------------------------------------
 
-  public final Project currentProject() {
-    assertProjectBased();
-    return mCurrentProject;
-  }
-
   public final void closeProject() {
     assertProjectBased();
-    if (currentProject().isDefault())
+    var sm = scriptManager();
+    if (sm.currentProject().isDefault())
       return;
-    flushProject();
+   sm. flushProject();
     widgets().setActive(false);
 
-    mCurrentProject = Project.DEFAULT_INSTANCE;
+    sm.setCurrentProject(
+     Project.DEFAULT_INSTANCE);
     contentPane().removeAll();
     recentProjects().setCurrentFile(null);
     scriptManager().loadProjectScript();
@@ -151,6 +148,8 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public final void openProject(File file) {
+    var sm = scriptManager();
+
     assertProjectBased();
     closeProject();
 
@@ -159,7 +158,8 @@ public abstract class GeomApp extends GUIApp {
     // If there are recent projects, use their state as the default for this one in case it is a new project
 
     project.open(recentProjects().getMostRecentFile());
-    mCurrentProject = project;
+    sm.setCurrentProject(project);
+
     recentProjects().setCurrentFile(project.directory());
     AppDefaults.sharedInstance().edit().recentFiles(recentProjects().state());
     rebuildFrameContent();
@@ -171,7 +171,7 @@ public abstract class GeomApp extends GUIApp {
     // Now that widgets have been built, restore their state
     {
       WidgetManager g = widgets();
-      g.setWidgetValues(projectState().widgetStateMap());
+      g.setWidgetValues(sm.projectState().widgetStateMap());
       g.setActive(true);
     }
 
@@ -230,13 +230,7 @@ public abstract class GeomApp extends GUIApp {
     scriptManager().openFile(desiredFile);
   }
 
-  public final void flushProject() {
-    todo("Not supported flushProject for file-based");
-    if (!currentProject().isDefined())
-      return;
-    projectState().widgetStateMap(widgets().readWidgetValues());
-    currentProject().flush();
-  }
+
 
 //  @Deprecated // call scriptManager().switchToScript
 //  public void switchToScript(int index) {
@@ -250,12 +244,6 @@ public abstract class GeomApp extends GUIApp {
 //    }
 //  }
 
-  public ProjectState.Builder projectState() {
-    todo("Not supported projectState for file-based");
-    return currentProject().state();
-  }
-
-  private Project mCurrentProject = Project.DEFAULT_INSTANCE;
 
   @Override
   public final /* final for now */ String getAlertText() {
@@ -343,6 +331,7 @@ public abstract class GeomApp extends GUIApp {
     if (isFileBased()) {
       addItem("new_file", "New", new NewFileOper());
       addItem("open_file", "Open", new OpenFileOper());
+      addItem("close_file", "Close", new CloseFileOper());
 
       m.addSeparator();
 
@@ -599,7 +588,7 @@ public abstract class GeomApp extends GUIApp {
       // Save any changes to current project, including window bounds
       {
         checkState(m.isProjectDefined());
-        flushProject();
+        m.flushProject();
       }
     } else {
 
@@ -637,7 +626,7 @@ public abstract class GeomApp extends GUIApp {
 
   private void notifyProjectListener() {
     if (mProjectListener != null)
-      mProjectListener.projectActivated(mCurrentProject);
+      mProjectListener.projectActivated(scriptManager().currentProject());
   }
 
   public void setRenderPageFrame(boolean f) {

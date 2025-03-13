@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import geom.gen.ProjectState;
 import geom.gen.ScriptEditState;
 import js.base.BaseObject;
 import js.file.Files;
@@ -204,9 +205,15 @@ public class ScriptManager extends BaseObject {
   }
 
   public Project currentProject() {
-    todo("!move currentProject() out of geomApp and into ScriptManager?");
-    return geomApp().currentProject();
+    assertProjectBased();
+    return mCurrentProject;
   }
+
+  public ProjectState.Builder projectState() {
+    todo("Not supported projectState for file-based");
+    return currentProject().state();
+  }
+
 
   public void switchToScript(int index) {
     df("switchToScript", index, "from", scriptIndex());
@@ -317,11 +324,23 @@ public class ScriptManager extends BaseObject {
       setScriptIndex(slot);
       todo("do we need to tell it to read the script from disk?");
     }
-  }
 
+  }
+  public   void flushProject() {
+    todo("Not supported flushProject for file-based");
+    if (!currentProject().isDefined())
+      return;
+    projectState().widgetStateMap(widgets().readWidgetValues());
+    currentProject().flush();
+  }
 
   private ScriptEditState mState = ScriptEditState.DEFAULT_INSTANCE;
   private ScriptWrapper mCurrentScript = ScriptWrapper.DEFAULT_INSTANCE;
   private ArrayList<ScriptWrapper> mScripts = arrayList();
 
+  private Project mCurrentProject = Project.DEFAULT_INSTANCE;
+
+  public void setCurrentProject(Project project) {
+    mCurrentProject = project;
+  }
 }
