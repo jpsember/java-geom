@@ -55,7 +55,10 @@ public class ScriptManager extends BaseObject {
   private static ScriptManager sSingleton;
 
   public void closeFile() {
+    var i = scriptIndex();
+    checkState(i >= 0);
     flushScript();
+    mScripts.remove(i);
     mCurrentScript = ScriptWrapper.DEFAULT_INSTANCE;
   }
 
@@ -300,33 +303,34 @@ public class ScriptManager extends BaseObject {
 //  }
 
 
-  public void switchToScript(File file) {
+  public void switchToScript(File file, boolean createIfNotExist) {
     alertVerbose();
     log("switchToScript", file);
-    checkArgument(Files.nonEmpty(file), "switchToScript with null or empty file");
-
-    if (!alert("not necessary?")) {
-      // If file matches current script, do nothing
-      var currentScript = widgets().vs(GeomApp.CURRENT_SCRIPT_FILE);
-      if (currentScript.equals(file.toString())) return;
-    }
+//    checkArgument(Files.nonEmpty(file), "switchToScript with null or empty file");
 
     var slot = findScript(file);
     log("find script slot:", slot);
     if (slot >= 0) {
       flushScript();
       setScriptIndex(slot);
+      log("...switched to existing slot");
     } else {
-      var script = new ScriptWrapper(file);
       slot = -1 - slot;
-      log("created new ScriptWrapper for file, inserting to slot", slot);
-      mScripts.add(slot, script);
+      if (createIfNotExist) {
+        Files.assertNonEmpty(file, "can't create empty filename");
+        var script = new ScriptWrapper(file);
+        log("created new ScriptWrapper for file, inserting to slot", slot);
+        mScripts.add(slot, script);
+      } else {
+        slot = MyMath.clamp(slot, -1, scriptCount() - 1);
+      }
       setScriptIndex(slot);
       todo("do we need to tell it to read the script from disk?");
     }
 
   }
-  public   void flushProject() {
+
+  public void flushProject() {
     todo("Not supported flushProject for file-based");
     if (!currentProject().isDefined())
       return;

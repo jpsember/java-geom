@@ -46,7 +46,6 @@ public class OpenFileOper extends UserOperation {
     if (Files.empty(file))
       return;
 
-    scriptManager().closeFile();
-    scriptManager().openFile(file);
+    scriptManager().switchToScript(file, true);
   }
 }

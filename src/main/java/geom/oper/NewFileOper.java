@@ -41,7 +41,6 @@ public class NewFileOper extends UserOperation {
     alertVerbose();
     log("start");
     var f = SwingUtils.displaySaveFileChooser(new File("/Users/jeff/js/match/sample_project/charlie.json"), "Name of new script");
-
     log("save file chooser returned:", INDENT, Files.infoMap(f));
     if (f == null) return;
 
@@ -50,6 +49,6 @@ public class NewFileOper extends UserOperation {
     log("with extension:", f);
 
     var sm = scriptManager();
-    sm.switchToScript(f);
+    sm.switchToScript(f, true);
   }
 }

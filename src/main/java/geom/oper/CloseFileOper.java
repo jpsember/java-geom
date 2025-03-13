@@ -38,12 +38,19 @@ public class CloseFileOper extends UserOperation {
 
   @Override
   public boolean shouldBeEnabled() {
+    loadTools();
+    alertVerbose();
     return scriptManager().currentScript().defined();
   }
 
   @Override
   public void start() {
-    loadTools();
+    log("executing");
+    var sm = scriptManager();
+    var current = sm.currentScript().file();
+    log("closeFile");
     scriptManager().closeFile();
+    log(VERT_SP, "switchToScript:", current);
+    scriptManager().switchToScript(current, false);
   }
 }
