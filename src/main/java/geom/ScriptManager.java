@@ -363,7 +363,7 @@ public class ScriptManager extends BaseObject {
     for (var s : mScripts) {
       lst.add(s.file());
     }
-    b.edit().activeScript(currentScript().file());
+    b.edit().currentScript(currentScript().file());
     df("updated app defaults, now:", INDENT, b.read());
   }
 }

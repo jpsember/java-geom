@@ -58,10 +58,6 @@ class InfoPanel extends JPanel {
 
   public void refresh() {
 
-    if (isFileBased()) {
-      todo("refresh InfoPanel for File-based projects");
-      return;
-    }
     ScriptWrapper script = scriptManager().currentScript();
 
     String scriptDisplay = "";

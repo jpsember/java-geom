@@ -214,7 +214,7 @@ public abstract class GeomApp extends GUIApp {
       if (!f.exists()) continue;
       m.switchToScript(f, true);
     }
-    var curr = def.read().activeScript();
+    var curr = def.read().currentScript();
     if (Files.nonEmpty(curr) && curr.exists())
       m.switchToScript(curr, true);
 

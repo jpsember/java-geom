@@ -24,8 +24,8 @@ public class GeomAppDefaults implements AbstractData {
     return mOpenScripts;
   }
 
-  public File activeScript() {
-    return mActiveScript;
+  public File currentScript() {
+    return mCurrentScript;
   }
 
   @Override
@@ -36,7 +36,7 @@ public class GeomAppDefaults implements AbstractData {
   protected static final String _0 = "recent_files";
   protected static final String _1 = "dev_features";
   protected static final String _2 = "open_scripts";
-  protected static final String _3 = "active_script";
+  protected static final String _3 = "current_script";
 
   @Override
   public String toString() {
@@ -54,7 +54,7 @@ public class GeomAppDefaults implements AbstractData {
         j.add(x.toString());
       m.put(_2, j);
     }
-    m.putUnsafe(_3, mActiveScript.toString());
+    m.putUnsafe(_3, mCurrentScript.toString());
     return m;
   }
 
@@ -86,10 +86,10 @@ public class GeomAppDefaults implements AbstractData {
       mOpenScripts = DataUtil.immutableCopyOf(result);
     }
     {
-      mActiveScript = Files.DEFAULT;
+      mCurrentScript = Files.DEFAULT;
       String x = m.opt(_3, (String) null);
       if (x != null) {
-        mActiveScript = new File(x);
+        mCurrentScript = new File(x);
       }
     }
   }
@@ -113,7 +113,7 @@ public class GeomAppDefaults implements AbstractData {
       return false;
     if (!(mOpenScripts.equals(other.mOpenScripts)))
       return false;
-    if (!(mActiveScript.equals(other.mActiveScript)))
+    if (!(mCurrentScript.equals(other.mCurrentScript)))
       return false;
     return true;
   }
@@ -128,7 +128,7 @@ public class GeomAppDefaults implements AbstractData {
       for (File x : mOpenScripts)
         if (x != null)
           r = r * 37 + x.hashCode();
-      r = r * 37 + mActiveScript.hashCode();
+      r = r * 37 + mCurrentScript.hashCode();
       m__hashcode = r;
     }
     return r;
@@ -137,7 +137,7 @@ public class GeomAppDefaults implements AbstractData {
   protected RecentFilesList mRecentFiles;
   protected boolean mDevFeatures;
   protected List<File> mOpenScripts;
-  protected File mActiveScript;
+  protected File mCurrentScript;
   protected int m__hashcode;
 
   public static final class Builder extends GeomAppDefaults {
@@ -146,7 +146,7 @@ public class GeomAppDefaults implements AbstractData {
       mRecentFiles = m.mRecentFiles;
       mDevFeatures = m.mDevFeatures;
       mOpenScripts = DataUtil.mutableCopyOf(m.mOpenScripts);
-      mActiveScript = m.mActiveScript;
+      mCurrentScript = m.mCurrentScript;
     }
 
     @Override
@@ -166,7 +166,7 @@ public class GeomAppDefaults implements AbstractData {
       r.mRecentFiles = mRecentFiles;
       r.mDevFeatures = mDevFeatures;
       r.mOpenScripts = DataUtil.immutableCopyOf(mOpenScripts);
-      r.mActiveScript = mActiveScript;
+      r.mCurrentScript = mCurrentScript;
       return r;
     }
 
@@ -185,8 +185,8 @@ public class GeomAppDefaults implements AbstractData {
       return this;
     }
 
-    public Builder activeScript(File x) {
-      mActiveScript = (x == null) ? Files.DEFAULT : x;
+    public Builder currentScript(File x) {
+      mCurrentScript = (x == null) ? Files.DEFAULT : x;
       return this;
     }
 
@@ -197,7 +197,7 @@ public class GeomAppDefaults implements AbstractData {
   private GeomAppDefaults() {
     mRecentFiles = RecentFilesList.DEFAULT_INSTANCE;
     mOpenScripts = DataUtil.emptyList();
-    mActiveScript = Files.DEFAULT;
+    mCurrentScript = Files.DEFAULT;
   }
 
 }
