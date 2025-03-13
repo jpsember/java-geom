@@ -290,20 +290,7 @@ public class ScriptManager extends BaseObject {
     setScriptIndex(scriptIndex);
   }
 
-//  /**
-//   * Create a new, empty script and make it the active one
-//   */
-//  public void newScript(File path) {
-//    int newIndex = mScripts.size();
-//    df("newScript, #scripts:", mScripts.size());
-//    todo("add support for not-yet-defined file for script wrapper");
-//    todo("Will it handle a not-yet-existing file?");
-//    mScripts.add(new ScriptWrapper(path));
-//    switchToScript(newIndex);
-//  }
-
-
-  public void switchToScript(File file, boolean createIfNotExist) {
+  public void switchToScript(File file, boolean loadIfNotOpen) {
     alertVerbose();
     log("switchToScript", file);
 //    checkArgument(Files.nonEmpty(file), "switchToScript with null or empty file");
@@ -316,7 +303,7 @@ public class ScriptManager extends BaseObject {
       log("...switched to existing slot");
     } else {
       slot = -1 - slot;
-      if (createIfNotExist) {
+      if (loadIfNotOpen) {
         Files.assertNonEmpty(file, "can't create empty filename");
         var script = new ScriptWrapper(file);
         log("created new ScriptWrapper for file, inserting to slot", slot);

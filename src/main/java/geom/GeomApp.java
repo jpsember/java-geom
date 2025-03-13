@@ -334,6 +334,7 @@ public abstract class GeomApp extends GUIApp {
       addItem("close_file", "Close", new CloseFileOper());
 
       m.addSeparator();
+      addItem("open_next_file", "Open Next", new OpenNextScriptOper());
 
       UserOperation prevOper = new FileStepOper(-1);
       UserOperation nextOper = new FileStepOper(1);
