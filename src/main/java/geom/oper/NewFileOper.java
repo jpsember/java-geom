@@ -40,7 +40,9 @@ public class NewFileOper extends UserOperation {
   public void start() {
     alertVerbose();
     log("start");
-    var f = SwingUtils.displaySaveFileChooser(new File("/Users/jeff/js/match/sample_project/charlie.json"), "Name of new script");
+    var f = SwingUtils.displaySaveFileChooser(new File("/Users/jeff/js/match/sample_project/charlie.json"), "Name of new script",
+        filterForExtension(Files.EXT_JSON, "Script files")
+    );
     log("save file chooser returned:", INDENT, Files.infoMap(f));
     if (f == null) return;
 

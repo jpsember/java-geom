@@ -133,11 +133,11 @@ public abstract class GeomApp extends GUIApp {
     var sm = scriptManager();
     if (sm.currentProject().isDefault())
       return;
-   sm. flushProject();
+    sm.flushProject();
     widgets().setActive(false);
 
     sm.setCurrentProject(
-     Project.DEFAULT_INSTANCE);
+        Project.DEFAULT_INSTANCE);
     contentPane().removeAll();
     recentProjects().setCurrentFile(null);
     scriptManager().loadProjectScript();
@@ -157,8 +157,8 @@ public abstract class GeomApp extends GUIApp {
 
     // If there are recent projects, use their state as the default for this one in case it is a new project
 
-    project.open(recentProjects().getMostRecentFile());
     sm.setCurrentProject(project);
+    project.open(recentProjects().getMostRecentFile());
 
     recentProjects().setCurrentFile(project.directory());
     AppDefaults.sharedInstance().edit().recentFiles(recentProjects().state());
@@ -208,15 +208,23 @@ public abstract class GeomApp extends GUIApp {
     recentFiles().restore(def.read().recentFiles());
     def.edit().recentFiles(recentFiles().state());
 
-    File desiredFile = mStartFileOrProject;
+    // Restore previously opened scripts
+    var m = scriptManager();
+    for (var f : def.read().openScripts()) {
+      if (!f.exists()) continue;
+      m.switchToScript(f, true);
+    }
+    var curr = def.read().activeScript();
+    if (Files.nonEmpty(curr) && curr.exists())
+      m.switchToScript(curr, true);
 
+
+    File desiredFile = mStartFileOrProject;
 
     pr("mStartFileOrProject:", Files.infoMap(mStartFileOrProject));
 
     if (Files.empty(desiredFile))
       desiredFile = recentFiles().getMostRecentFile();
-//    if (Files.empty(desiredFile))
-//      desiredFile = Files.currentDirectory();
 
     if (Files.empty(desiredFile)) {
       todo("maybe create an empty file?");
@@ -229,21 +237,6 @@ public abstract class GeomApp extends GUIApp {
     desiredFile = Files.absolute(desiredFile);
     scriptManager().openFile(desiredFile);
   }
-
-
-
-//  @Deprecated // call scriptManager().switchToScript
-//  public void switchToScript(int index) {
-//    scriptManager().switchToScript(index);
-//    todo("Not supported switchToScript for file-based");
-//
-//    if (currentProject().scriptIndex() != index) {
-//      scriptManager().flushScript();
-//      currentProject().setScriptIndex(index);
-//      scriptManager().loadProjectScript();
-//    }
-//  }
-
 
   @Override
   public final /* final for now */ String getAlertText() {
@@ -303,14 +296,8 @@ public abstract class GeomApp extends GUIApp {
     addViewMenu(m);
   }
 
-  @Deprecated // Renamed to addAdditionalMenus
-  public void populateMenuBarForProject(MenuBarWrapper m) {
-    addAdditionalMenus(m);
-  }
 
   public void addProjectMenu(MenuBarWrapper m) {
-    todo("Not supported addProjectMenu for file-based");
-
     m.addMenu("Project");
     addItem("project_open", "Open", new ProjectOpenOper());
     addItem("project_close", "Close", new ProjectCloseOper());
@@ -333,8 +320,12 @@ public abstract class GeomApp extends GUIApp {
       addItem("open_file", "Open", new OpenFileOper());
       addItem("close_file", "Close", new CloseFileOper());
 
-      m.addSeparator();
       addItem("open_next_file", "Open Next", new OpenNextScriptOper());
+      m.addSeparator();
+      addItem("open_set", "Open Set", new LoadScriptSetOper());
+      addItem("save_set", "Save Set", new SaveScriptSetOper());
+      m.addSeparator();
+
 
       UserOperation prevOper = new FileStepOper(-1);
       UserOperation nextOper = new FileStepOper(1);
@@ -509,10 +500,7 @@ public abstract class GeomApp extends GUIApp {
       openAppropriateProject();
     else {
       openAppropriateFile();
-
-
       rebuildFrameContent();
-      todo("load the script for the current file");
 
       updateTitle();
       discardMenuBar();
@@ -532,10 +520,6 @@ public abstract class GeomApp extends GUIApp {
       // and to make sure the keyboard shortcuts work (something to do with focus?)
       //
       performRepaint(REPAINT_ALL);
-
-//      notifyProjectListener();
-
-
     }
   }
 
@@ -580,11 +564,12 @@ public abstract class GeomApp extends GUIApp {
   @Override
   public final void swingBackgroundTask() {
 
+    var m = scriptManager();
+
     if (isProjectBased()) {
-      var m = scriptManager();
       if (!m.isProjectDefined())
         return;
-      scriptManager().flushScript();
+      m.flushScript();
 
       // Save any changes to current project, including window bounds
       {
@@ -592,10 +577,8 @@ public abstract class GeomApp extends GUIApp {
         m.flushProject();
       }
     } else {
-
-      todo("analog for flushScript()");
-      todo("analog for flushProject");
-
+      m.flushScript();
+      m.updateAppDefaults();
     }
     AppDefaults.sharedInstance().flush();
   }
@@ -603,6 +586,9 @@ public abstract class GeomApp extends GUIApp {
   @Override
   public void initWidgets() {
     super.initWidgets();
+    todo("move string constants to GeomTools");
+    todo("store current open set of scripts in widgets");
+
     WidgetManager w = widgets();
     // Add widget for persisting frame bounds
     w.add(new AppFrameWidget().setId(APP_FRAME));

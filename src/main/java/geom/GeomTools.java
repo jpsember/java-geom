@@ -24,6 +24,7 @@
 package geom;
 
 import js.app.App;
+import js.file.Files;
 import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.gui.gen.GuiAppConfig;
@@ -36,9 +37,12 @@ import testbed.RenderableSegment;
 import testbed.RenderableText;
 import testbed.StrokeWrapper;
 
+import javax.swing.filechooser.FileFilter;
+
 import static js.base.Tools.*;
 
 import java.awt.Color;
+import java.io.File;
 import java.util.Collection;
 
 public final class GeomTools {
@@ -47,9 +51,11 @@ public final class GeomTools {
 
   public static final boolean DEBUG_FILEBASED = true && alert("!DEBUG_FILEBASED is true");
 
+  public static final String SCRIPT_SET_EXTENSION = "script_set";
+
   public static void df(Object... objects) {
     if (!DEBUG_FILEBASED) return;
-    objects = insertStringToFront(">>DBFILEBASED<<:",objects);
+    objects = insertStringToFront(">>DBFILEBASED<<:", objects);
     pr(objects);
   }
 
@@ -161,5 +167,20 @@ public final class GeomTools {
     }
 
     private Collection<Object> mObjects;
+  }
+
+  public static FileFilter filterForExtension(String ext, String description) {
+    return new FileFilter() {
+
+      @Override
+      public boolean accept(File f) {
+        return Files.getExtension(f).equals(ext);
+      }
+
+      @Override
+      public String getDescription() {
+        return description;
+      }
+    };
   }
 }

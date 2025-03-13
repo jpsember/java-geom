@@ -27,6 +27,7 @@ import static js.base.Tools.*;
 
 import java.io.File;
 
+import geom.GeomTools;
 import js.file.Files;
 import js.guiapp.SwingUtils;
 import js.guiapp.UserOperation;
@@ -42,7 +43,8 @@ public class OpenFileOper extends UserOperation {
 
     defaultDirectory = Files.ifEmpty(defaultDirectory, Files.currentDirectory());
 
-    File file = SwingUtils.displayOpenFileChooser(defaultDirectory, "Open Script");
+    File file = SwingUtils.displayOpenFileChooser(defaultDirectory, "Open Script",
+        filterForExtension(Files.EXT_JSON, "Script files"));
     if (Files.empty(file))
       return;
 

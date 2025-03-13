@@ -1,7 +1,13 @@
 package geom.gen;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import js.data.AbstractData;
+import js.data.DataUtil;
+import js.file.Files;
 import js.gui.gen.RecentFilesList;
+import js.json.JSList;
 import js.json.JSMap;
 
 public class GeomAppDefaults implements AbstractData {
@@ -14,6 +20,14 @@ public class GeomAppDefaults implements AbstractData {
     return mDevFeatures;
   }
 
+  public List<File> openScripts() {
+    return mOpenScripts;
+  }
+
+  public File activeScript() {
+    return mActiveScript;
+  }
+
   @Override
   public Builder toBuilder() {
     return new Builder(this);
@@ -21,6 +35,8 @@ public class GeomAppDefaults implements AbstractData {
 
   protected static final String _0 = "recent_files";
   protected static final String _1 = "dev_features";
+  protected static final String _2 = "open_scripts";
+  protected static final String _3 = "active_script";
 
   @Override
   public String toString() {
@@ -32,6 +48,13 @@ public class GeomAppDefaults implements AbstractData {
     JSMap m = new JSMap();
     m.putUnsafe(_0, mRecentFiles.toJson());
     m.putUnsafe(_1, mDevFeatures);
+    {
+      JSList j = new JSList();
+      for (File x : mOpenScripts)
+        j.add(x.toString());
+      m.put(_2, j);
+    }
+    m.putUnsafe(_3, mActiveScript.toString());
     return m;
   }
 
@@ -54,6 +77,21 @@ public class GeomAppDefaults implements AbstractData {
       }
     }
     mDevFeatures = m.opt(_1, false);
+    {
+      List<File> result = new ArrayList<>();
+      JSList j = m.optJSList(_2);
+      if (j != null) {
+        result = DataUtil.parseFileListFrom(j);
+      }
+      mOpenScripts = DataUtil.immutableCopyOf(result);
+    }
+    {
+      mActiveScript = Files.DEFAULT;
+      String x = m.opt(_3, (String) null);
+      if (x != null) {
+        mActiveScript = new File(x);
+      }
+    }
   }
 
   public static Builder newBuilder() {
@@ -73,6 +111,10 @@ public class GeomAppDefaults implements AbstractData {
       return false;
     if (!(mDevFeatures == other.mDevFeatures))
       return false;
+    if (!(mOpenScripts.equals(other.mOpenScripts)))
+      return false;
+    if (!(mActiveScript.equals(other.mActiveScript)))
+      return false;
     return true;
   }
 
@@ -83,6 +125,10 @@ public class GeomAppDefaults implements AbstractData {
       r = 1;
       r = r * 37 + mRecentFiles.hashCode();
       r = r * 37 + (mDevFeatures ? 1 : 0);
+      for (File x : mOpenScripts)
+        if (x != null)
+          r = r * 37 + x.hashCode();
+      r = r * 37 + mActiveScript.hashCode();
       m__hashcode = r;
     }
     return r;
@@ -90,6 +136,8 @@ public class GeomAppDefaults implements AbstractData {
 
   protected RecentFilesList mRecentFiles;
   protected boolean mDevFeatures;
+  protected List<File> mOpenScripts;
+  protected File mActiveScript;
   protected int m__hashcode;
 
   public static final class Builder extends GeomAppDefaults {
@@ -97,6 +145,8 @@ public class GeomAppDefaults implements AbstractData {
     private Builder(GeomAppDefaults m) {
       mRecentFiles = m.mRecentFiles;
       mDevFeatures = m.mDevFeatures;
+      mOpenScripts = DataUtil.mutableCopyOf(m.mOpenScripts);
+      mActiveScript = m.mActiveScript;
     }
 
     @Override
@@ -115,6 +165,8 @@ public class GeomAppDefaults implements AbstractData {
       GeomAppDefaults r = new GeomAppDefaults();
       r.mRecentFiles = mRecentFiles;
       r.mDevFeatures = mDevFeatures;
+      r.mOpenScripts = DataUtil.immutableCopyOf(mOpenScripts);
+      r.mActiveScript = mActiveScript;
       return r;
     }
 
@@ -128,12 +180,24 @@ public class GeomAppDefaults implements AbstractData {
       return this;
     }
 
+    public Builder openScripts(List<File> x) {
+      mOpenScripts = DataUtil.mutableCopyOf((x == null) ? DataUtil.emptyList() : x);
+      return this;
+    }
+
+    public Builder activeScript(File x) {
+      mActiveScript = (x == null) ? Files.DEFAULT : x;
+      return this;
+    }
+
   }
 
   public static final GeomAppDefaults DEFAULT_INSTANCE = new GeomAppDefaults();
 
   private GeomAppDefaults() {
     mRecentFiles = RecentFilesList.DEFAULT_INSTANCE;
+    mOpenScripts = DataUtil.emptyList();
+    mActiveScript = Files.DEFAULT;
   }
 
 }

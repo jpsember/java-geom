@@ -107,6 +107,15 @@ public class ScriptManager extends BaseObject {
   public void loadProjectScript() {
     df("loadProjectScript");
 
+    // Not exactly sure what this is about...
+    if (
+        isProjectBased()) {
+      if (isProjectDefined()) {
+        setCurrentScript(ScriptWrapper.DEFAULT_INSTANCE);
+        return;
+      }
+    }
+
     int i = scriptIndex();
     df(" scrIndex:", i);
     if (i >= 0)
@@ -223,7 +232,7 @@ public class ScriptManager extends BaseObject {
     if (scriptIndex() != index) {
       flushScript();
       setScriptIndex(index);
-      scriptManager().loadProjectScript();
+      loadProjectScript();
     }
   }
 
@@ -258,7 +267,6 @@ public class ScriptManager extends BaseObject {
     var count = scriptCount();
     if (index < 0) {
       todo("what if there are no scripts?");
-      checkState(count > 0);
       index = -index - 1;
       if (index >= count)
         index = count - 1;
@@ -333,5 +341,29 @@ public class ScriptManager extends BaseObject {
 
   public void setCurrentProject(Project project) {
     mCurrentProject = project;
+  }
+
+  public void closeAllFiles() {
+    flushScript();
+    for (var i = scriptCount() - 1; i >= 0; i--) {
+      setScriptIndex(i);
+      flushScript();
+    }
+    mScripts.clear();
+    mCurrentScript = ScriptWrapper.DEFAULT_INSTANCE;
+  }
+
+  public void updateAppDefaults() {
+    checkState(!isProjectBased());
+    if (!definedAndNonEmpty()) return;
+
+    var b = AppDefaults.sharedInstance();
+    var lst = b.edit().openScripts();
+    lst.clear();
+    for (var s : mScripts) {
+      lst.add(s.file());
+    }
+    b.edit().activeScript(currentScript().file());
+    df("updated app defaults, now:", INDENT, b.read());
   }
 }

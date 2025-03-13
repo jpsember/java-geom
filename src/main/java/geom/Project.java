@@ -30,14 +30,12 @@ import geom.gen.ProjectState;
 import js.base.BaseObject;
 import js.data.DataUtil;
 import js.file.Files;
-import js.geometry.MyMath;
 import js.json.*;
 import js.graphics.ScriptUtil;
 import js.graphics.gen.ScriptFileEntry;
 
 import static js.base.Tools.*;
 import static geom.GeomTools.*;
-import static geom.GeomApp.*;
 
 /**
  * Now refactoring to keep track of scripts for a file-based app, vs project-based.
@@ -46,27 +44,23 @@ public final class Project extends BaseObject {
 
   public static final Project DEFAULT_INSTANCE = new Project();
 
-  public boolean isDefault() {return this == DEFAULT_INSTANCE;}
-  public boolean isDefined() {return !isDefault();}
+  public boolean isDefault() {
+    return this == DEFAULT_INSTANCE;
+  }
+
+  public boolean isDefined() {
+    return !isDefault();
+  }
 
   private Project() {
-    todo("!rename Project class to ScriptXXX?");
     mDirectory = null;
     mProjectFile = null;
   }
 
-
-  @Deprecated // Move to ScriptManager
-  public static Project fileBased() {
-    df("constructing fileBased project");
-    var p = new Project();
-    p.mFileBased = true;
-    return p;
-  }
-
   public Project(File directory) {
+    df("constructing project, dir:", Files.infoMap(directory));
     mDirectory = directory;
-    mProjectFile = scriptManager().isDefaultProject() ? null : AppDefaults.projectFileForProject(directory);
+    mProjectFile = AppDefaults.projectFileForProject(directory);
   }
 
   /**
@@ -80,7 +74,7 @@ public final class Project extends BaseObject {
 
     {
       File stateFile = mProjectFile;
-      if (stateFile.exists()) {
+      if (Files.nonEmpty(stateFile) && stateFile.exists()) {
         log("parsing state from existing state file:", stateFile);
         try {
           JSMap m = JSMap.fromFileIfExists(stateFile);
@@ -124,31 +118,18 @@ public final class Project extends BaseObject {
   }
 
   public void open(File projectForDefaultStateOrNull) {
-    ensureDefined();
+    df("Project.open:", Files.infoMap(projectForDefaultStateOrNull));
+//    ensureDefined();
     log("Project.open, dir:", directory(), INDENT, "projectForDefaultStateOrNull:",
         projectForDefaultStateOrNull);
 
-    mProjectState = readProjectState(projectForDefaultStateOrNull).toBuilder();
-    buildScriptList();
+    if (Files.nonEmpty(projectForDefaultStateOrNull) && projectForDefaultStateOrNull.exists()) {
+      mProjectState = readProjectState(projectForDefaultStateOrNull).toBuilder();
+      buildScriptList();
 
-    scriptManager().validateScriptIndex();
+      scriptManager().validateScriptIndex();
+    }
   }
-
-//  @Deprecated // Move to ScriptManager?
-//  public boolean definedAndNonEmpty() {
-//    return defined() && scriptCount() != 0;
-//  }
-//
-//  @Deprecated // Move to ScriptManager?
-//  public boolean defined() {
-//    return !isDefault();
-//  }
-//
-//  @Deprecated // Move to ScriptManager?
-//  public boolean isDefault() {
-//    assertProjectBased();
-//    return mDirectory == null;
-//  }
 
   public File directory() {
     return mDirectory;
@@ -174,7 +155,7 @@ public final class Project extends BaseObject {
       scripts.add(new ScriptWrapper(scriptFile));
     }
     scriptManager().setScripts(scripts);
-   }
+  }
 
   // ------------------------------------------------------------------
   // Project state
@@ -186,6 +167,9 @@ public final class Project extends BaseObject {
   }
 
   public void flush() {
+    if (isDefault())
+      return;
+
     String newContent = DataUtil.toString(state());
     if (Files.S.writeIfChanged(mProjectFile, newContent)) {
       if (verbose())
@@ -194,17 +178,7 @@ public final class Project extends BaseObject {
   }
 
   private ProjectState.Builder mProjectState = ProjectState.newBuilder();
-
-  // ------------------------------------------------------------------
-  // Scripts
-  // ------------------------------------------------------------------
-
-
-  // ------------------------------------------------------------------
-
   private final File mDirectory;
   private final File mProjectFile;
-  private boolean mFileBased;
-//  private List<ScriptWrapper> mScripts;
 
 }
