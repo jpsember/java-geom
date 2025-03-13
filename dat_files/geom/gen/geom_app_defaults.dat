@@ -1,4 +1,4 @@
 fields {
-  js.gui.gen.RecentFilesList recent_projects;
+  js.gui.gen.RecentFilesList recent_files;
   bool dev_features;
 }

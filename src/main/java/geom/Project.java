@@ -1,18 +1,18 @@
 /**
  * MIT License
- * 
+ *
  * Copyright (c) 2021 Jeff Sember
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
  **/
 package geom;
 
@@ -40,13 +39,26 @@ import static js.base.Tools.*;
 import static geom.GeomTools.*;
 import static geom.GeomApp.*;
 
+/**
+ * Now refactoring to keep track of scripts for a file-based app, vs project-based.
+ */
 public final class Project extends BaseObject {
 
   public static final Project DEFAULT_INSTANCE = new Project();
 
   private Project() {
+    todo("!rename Project class to ScriptXXX?");
     mDirectory = null;
     mProjectFile = null;
+  }
+
+
+  @Deprecated // Move to ScriptManager
+  public static Project fileBased() {
+    df("constructing fileBased project");
+    var p = new Project();
+    p.mFileBased = true;
+    return p;
   }
 
   public Project(File directory) {
@@ -56,10 +68,9 @@ public final class Project extends BaseObject {
 
   /**
    * Read the ProjectState
-   * 
-   * @param projectForDefaultStateOrNull
-   *          If there is no state file yet for this project, and this is not
-   *          null and it exists, use this project state as the default
+   *
+   * @param projectForDefaultStateOrNull If there is no state file yet for this project, and this is not
+   *                                     null and it exists, use this project state as the default
    */
   private ProjectState readProjectState(File projectForDefaultStateOrNull) {
     ProjectState projectState = null;
@@ -89,16 +100,13 @@ public final class Project extends BaseObject {
         if (verbose())
           log("looking for template state in:", Files.infoMap(projectForDefaultStateOrNull));
         if (stateFile.exists()) {
-          if (false) {
+
+          try {
             projectState = Files.parseAbstractDataOpt(ProjectState.DEFAULT_INSTANCE, stateFile).toBuilder();
-          } else {
-            try {
-              projectState = Files.parseAbstractDataOpt(ProjectState.DEFAULT_INSTANCE, stateFile).toBuilder();
-            } catch (Throwable t) {
-              pr("*** Problem parsing project state");
-              pr("*** File:", INDENT, Files.infoMap(stateFile));
-              pr("content:", INDENT, Files.readString(stateFile));
-            }
+          } catch (Throwable t) {
+            pr("*** Problem parsing project state");
+            pr("*** File:", INDENT, Files.infoMap(stateFile));
+            pr("content:", INDENT, Files.readString(stateFile));
           }
         }
       }
@@ -140,6 +148,7 @@ public final class Project extends BaseObject {
   }
 
   public boolean isDefault() {
+    assertProjectBased();
     return mDirectory == null;
   }
 
@@ -203,11 +212,13 @@ public final class Project extends BaseObject {
     return index;
   }
 
+  @Deprecated // Move to ScriptManager
   public int scriptCount() {
     ensureDefined();
     return mScripts.size();
   }
 
+  @Deprecated // Move to ScriptManager
   public void setScriptIndex(int index) {
     widgets().setf(CURRENT_SCRIPT_INDEX, index);
   }
@@ -215,6 +226,7 @@ public final class Project extends BaseObject {
   /**
    * Get the current script
    */
+  @Deprecated // Move to ScriptManager
   public ScriptWrapper script() {
     if (isDefault())
       return ScriptWrapper.DEFAULT_INSTANCE;
@@ -225,6 +237,7 @@ public final class Project extends BaseObject {
     return mScripts.get(index);
   }
 
+  @Deprecated // Move to ScriptManager
   public ScriptWrapper script(int scriptIndex) {
     return mScripts.get(scriptIndex);
   }
@@ -233,6 +246,7 @@ public final class Project extends BaseObject {
 
   private final File mDirectory;
   private final File mProjectFile;
+  private boolean mFileBased;
   private List<ScriptWrapper> mScripts;
 
 }

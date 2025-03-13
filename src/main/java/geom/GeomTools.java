@@ -20,13 +20,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- *
  **/
 package geom;
 
 import js.app.App;
 import js.geometry.FPoint;
 import js.geometry.IPoint;
+import js.gui.gen.GuiAppConfig;
 import js.widget.WidgetManager;
 import testbed.AlgorithmStepper;
 import testbed.ColorWrapper;
@@ -44,6 +44,36 @@ import java.util.Collection;
 public final class GeomTools {
 
   public static final boolean DEBUG_POLYEDIT = false && alert("!DEBUG_POLYEDIT is true");
+
+  public static final boolean DEBUG_FILEBASED = true && alert("!DEBUG_FILEBASED is true");
+
+  public static void df(Object... objects) {
+    if (!DEBUG_FILEBASED) return;
+    objects = insertStringToFront(">>DBFILEBASED<<:");
+    pr(objects);
+  }
+
+  public static boolean isProjectBased() {
+    return appConfig().projectBased();
+  }
+
+  public static boolean isFileBased() {
+    return !isProjectBased();
+  }
+
+  public static GuiAppConfig.Builder appConfig() {
+    return geomApp().guiAppConfig();
+  }
+
+  public static void assertProjectBased() {
+    if (!isProjectBased())
+      badState("not supported for a file-based app");
+  }
+
+  public static void assertFileBased() {
+    if (isProjectBased())
+      badState("not supported for a project-based app");
+  }
 
   public static GeomApp geomApp() {
     return App.sharedInstance();

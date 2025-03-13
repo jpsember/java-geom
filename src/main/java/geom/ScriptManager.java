@@ -1,18 +1,18 @@
 /**
  * MIT License
- * 
+ *
  * Copyright (c) 2021 Jeff Sember
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
  **/
 package geom;
 
@@ -51,13 +50,13 @@ public class ScriptManager {
 
   public void closeFile() {
     flushScript();
-    todo("closeFile");
-    die("we need to cleanly discard the current script... or?");
-    loadProjectScript(); // was ScriptWrapper.DEFAULT_INSTANCE
+    mScript = ScriptWrapper.DEFAULT_INSTANCE;
   }
 
   public void openFile(File scriptFile) {
-    todo("openFile");
+    assertFileBased();
+    //pr("openFile:", scriptFile);
+    setCurrentScript(new ScriptWrapper(scriptFile));
   }
 
   /**
@@ -94,6 +93,14 @@ public class ScriptManager {
     mScript.flush();
   }
 
+  public void clearScript() {
+    // Copy the clipboard from the current script, so we can copy or paste with the new script
+    mScript = ScriptWrapper.DEFAULT_INSTANCE;
+    if (mScript.isNone() || mScript.isAnonymous()) {
+      return;
+    }
+  }
+
   /**
    * Set the current script to the current project's script
    */
@@ -105,6 +112,11 @@ public class ScriptManager {
       badState("....project script is already the active script!!!!!!!!!!!!!!!!!!!!!!!!!!");
       return;
     }
+
+    setCurrentScript(newScript);
+  }
+
+  private void setCurrentScript(ScriptWrapper newScript) {
 
     // Copy the clipboard from the current script, so we can copy or paste with the new script
     ScriptEditState oldState = mState;

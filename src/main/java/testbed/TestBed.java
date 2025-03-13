@@ -208,8 +208,8 @@ public abstract class TestBed extends GeomApp {
   }
 
   @Override
-  public void populateMenuBarForProject(MenuBarWrapper m) {
-    super.populateMenuBarForProject(m);
+  public void addAdditionalMenus(MenuBarWrapper m) {
+    super.addAdditionalMenus(m);
     m.addMenu("Alg");
     addItem("alg_step_bwd", "Step backward", AlgorithmStepper.buildStepOper(-1));
     addItem("alg_step_fwd", "Step forward", AlgorithmStepper.buildStepOper(1));

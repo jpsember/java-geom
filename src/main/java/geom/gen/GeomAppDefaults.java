@@ -6,8 +6,8 @@ import js.json.JSMap;
 
 public class GeomAppDefaults implements AbstractData {
 
-  public RecentFilesList recentProjects() {
-    return mRecentProjects;
+  public RecentFilesList recentFiles() {
+    return mRecentFiles;
   }
 
   public boolean devFeatures() {
@@ -19,7 +19,7 @@ public class GeomAppDefaults implements AbstractData {
     return new Builder(this);
   }
 
-  protected static final String _0 = "recent_projects";
+  protected static final String _0 = "recent_files";
   protected static final String _1 = "dev_features";
 
   @Override
@@ -30,7 +30,7 @@ public class GeomAppDefaults implements AbstractData {
   @Override
   public JSMap toJson() {
     JSMap m = new JSMap();
-    m.putUnsafe(_0, mRecentProjects.toJson());
+    m.putUnsafe(_0, mRecentFiles.toJson());
     m.putUnsafe(_1, mDevFeatures);
     return m;
   }
@@ -47,10 +47,10 @@ public class GeomAppDefaults implements AbstractData {
 
   private GeomAppDefaults(JSMap m) {
     {
-      mRecentProjects = RecentFilesList.DEFAULT_INSTANCE;
+      mRecentFiles = RecentFilesList.DEFAULT_INSTANCE;
       Object x = m.optUnsafe(_0);
       if (x != null) {
-        mRecentProjects = RecentFilesList.DEFAULT_INSTANCE.parse(x);
+        mRecentFiles = RecentFilesList.DEFAULT_INSTANCE.parse(x);
       }
     }
     mDevFeatures = m.opt(_1, false);
@@ -69,7 +69,7 @@ public class GeomAppDefaults implements AbstractData {
     GeomAppDefaults other = (GeomAppDefaults) object;
     if (other.hashCode() != hashCode())
       return false;
-    if (!(mRecentProjects.equals(other.mRecentProjects)))
+    if (!(mRecentFiles.equals(other.mRecentFiles)))
       return false;
     if (!(mDevFeatures == other.mDevFeatures))
       return false;
@@ -81,21 +81,21 @@ public class GeomAppDefaults implements AbstractData {
     int r = m__hashcode;
     if (r == 0) {
       r = 1;
-      r = r * 37 + mRecentProjects.hashCode();
+      r = r * 37 + mRecentFiles.hashCode();
       r = r * 37 + (mDevFeatures ? 1 : 0);
       m__hashcode = r;
     }
     return r;
   }
 
-  protected RecentFilesList mRecentProjects;
+  protected RecentFilesList mRecentFiles;
   protected boolean mDevFeatures;
   protected int m__hashcode;
 
   public static final class Builder extends GeomAppDefaults {
 
     private Builder(GeomAppDefaults m) {
-      mRecentProjects = m.mRecentProjects;
+      mRecentFiles = m.mRecentFiles;
       mDevFeatures = m.mDevFeatures;
     }
 
@@ -113,13 +113,13 @@ public class GeomAppDefaults implements AbstractData {
     @Override
     public GeomAppDefaults build() {
       GeomAppDefaults r = new GeomAppDefaults();
-      r.mRecentProjects = mRecentProjects;
+      r.mRecentFiles = mRecentFiles;
       r.mDevFeatures = mDevFeatures;
       return r;
     }
 
-    public Builder recentProjects(RecentFilesList x) {
-      mRecentProjects = (x == null) ? RecentFilesList.DEFAULT_INSTANCE : x.build();
+    public Builder recentFiles(RecentFilesList x) {
+      mRecentFiles = (x == null) ? RecentFilesList.DEFAULT_INSTANCE : x.build();
       return this;
     }
 
@@ -133,7 +133,7 @@ public class GeomAppDefaults implements AbstractData {
   public static final GeomAppDefaults DEFAULT_INSTANCE = new GeomAppDefaults();
 
   private GeomAppDefaults() {
-    mRecentProjects = RecentFilesList.DEFAULT_INSTANCE;
+    mRecentFiles = RecentFilesList.DEFAULT_INSTANCE;
   }
 
 }

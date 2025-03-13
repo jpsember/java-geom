@@ -1,18 +1,18 @@
 /**
  * MIT License
- * 
+ *
  * Copyright (c) 2021 Jeff Sember
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,6 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- * 
  **/
 package geom;
 
@@ -56,7 +55,7 @@ public abstract class GeomApp extends GUIApp {
    * Widget ids
    */
   public static final String //
-  EDITOR_ZOOM = "ed_zoom", //
+      EDITOR_ZOOM = "ed_zoom", //
       EDITOR_PAN_X = "ed_pan_x", // 
       EDITOR_PAN_Y = "ed_pan_y", //
       CURRENT_SCRIPT_INDEX = ".script_index", // we don't want this persisted to the script file
@@ -66,9 +65,15 @@ public abstract class GeomApp extends GUIApp {
 
   @Override
   public final String getTitleText() {
-    if (currentProject().defined()) {
-      File dir = currentProject().directory();
-      return dir.getName();
+    if (isFileBased()) {
+      todo("get name of current script, if there is one");
+      return "TODO: name of current script";
+    } else {
+      todo("If file-based app, get current file instead");
+      if (currentProject().defined()) {
+        File dir = currentProject().directory();
+        return dir.getName();
+      }
     }
     return null;
   }
@@ -81,12 +86,13 @@ public abstract class GeomApp extends GUIApp {
   @Override
   public final void processOptionalArgs() {
     if (cmdLineArgs().hasNextArg()) {
-      mStartProjectFile = new File(cmdLineArgs().nextArg());
-      log(DASHES, "set start project:", INDENT, mStartProjectFile, VERT_SP);
+      var f = cmdLineArgs().nextArg();
+      mStartFileOrProject = new File(f);
+      log(DASHES, "set start file or dir:", INDENT, mStartFileOrProject, VERT_SP);
     }
   }
 
-  private File mStartProjectFile = Files.DEFAULT;
+  private File mStartFileOrProject = Files.DEFAULT;
 
   /**
    * Return true iff this project has support for images
@@ -120,10 +126,12 @@ public abstract class GeomApp extends GUIApp {
   // ------------------------------------------------------------------
 
   public final Project currentProject() {
+    assertProjectBased();
     return mCurrentProject;
   }
 
   public final void closeProject() {
+    assertProjectBased();
     if (currentProject().isDefault())
       return;
     flushProject();
@@ -140,6 +148,7 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public final void openProject(File file) {
+    assertProjectBased();
     closeProject();
 
     Project project = new Project(file);
@@ -149,7 +158,7 @@ public abstract class GeomApp extends GUIApp {
     project.open(recentProjects().getMostRecentFile());
     mCurrentProject = project;
     recentProjects().setCurrentFile(project.directory());
-    AppDefaults.sharedInstance().edit().recentProjects(recentProjects().state());
+    AppDefaults.sharedInstance().edit().recentFiles(recentProjects().state());
     rebuildFrameContent();
     scriptManager().loadProjectScript();
 
@@ -171,12 +180,12 @@ public abstract class GeomApp extends GUIApp {
     notifyProjectListener();
   }
 
-  public final void openAppropriateProject() {
+  private void openAppropriateProject() {
     AppDefaults def = AppDefaults.sharedInstance();
-    recentProjects().restore(def.read().recentProjects());
-    def.edit().recentProjects(recentProjects().state());
+    recentProjects().restore(def.read().recentFiles());
+    def.edit().recentFiles(recentProjects().state());
 
-    File desiredProjFile = mStartProjectFile;
+    File desiredProjFile = mStartFileOrProject;
     if (Files.empty(desiredProjFile))
       desiredProjFile = recentProjects().getMostRecentFile();
     if (Files.empty(desiredProjFile))
@@ -190,7 +199,36 @@ public abstract class GeomApp extends GUIApp {
     openProject(desiredProjFile);
   }
 
+  private void openAppropriateFile() {
+    AppDefaults def = AppDefaults.sharedInstance();
+
+    recentFiles().restore(def.read().recentFiles());
+    def.edit().recentFiles(recentFiles().state());
+
+    File desiredFile = mStartFileOrProject;
+
+
+    pr("mStartFileOrProject:", Files.infoMap(mStartFileOrProject));
+
+    if (Files.empty(desiredFile))
+      desiredFile = recentFiles().getMostRecentFile();
+//    if (Files.empty(desiredFile))
+//      desiredFile = Files.currentDirectory();
+
+    if (Files.empty(desiredFile)) {
+      todo("maybe create an empty file?");
+      return;
+    }
+    if (!desiredFile.exists()) {
+      pr("*** No such file:", desiredFile);
+      return;
+    }
+    desiredFile = Files.absolute(desiredFile);
+    scriptManager().openFile(desiredFile);
+  }
+
   public final void flushProject() {
+    todo("Not supported flushProject for file-based");
     if (!currentProject().defined())
       return;
     projectState().widgetStateMap(widgets().readWidgetValues());
@@ -198,6 +236,8 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public void switchToScript(int index) {
+    todo("Not supported switchToScript for file-based");
+
     if (currentProject().scriptIndex() != index) {
       scriptManager().flushScript();
       currentProject().setScriptIndex(index);
@@ -206,6 +246,7 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public ProjectState.Builder projectState() {
+    todo("Not supported projectState for file-based");
     return currentProject().state();
   }
 
@@ -213,22 +254,36 @@ public abstract class GeomApp extends GUIApp {
 
   @Override
   public final /* final for now */ String getAlertText() {
-    if (!currentProject().defined())
-      return "No project selected; open one from the Project menu";
-    if (!currentProject().definedAndNonEmpty())
-      return "This project is empty! Open another from the Project menu";
+    if (isProjectBased()) {
+      if (!currentProject().defined())
+        return "No project selected; open one from the Project menu";
+      if (!currentProject().definedAndNonEmpty())
+        return "This project is empty! Open another from the Project menu";
+    }
     return null;
   }
 
   public final RecentFiles recentProjects() {
-    if (mRecentProjects == null) {
-      mRecentProjects = new RecentFiles();
-      mRecentProjects.setDirectoryMode();
-    }
-    return mRecentProjects;
+    assertProjectBased();
+    return buildRecent();
   }
 
-  private RecentFiles mRecentProjects;
+  public final RecentFiles recentFiles() {
+    assertFileBased();
+    return buildRecent();
+  }
+
+  private RecentFiles buildRecent() {
+    if (mRecentFiles == null) {
+      mRecentFiles = new RecentFiles();
+      if (isProjectBased())
+        mRecentFiles.setDirectoryMode();
+    }
+    return mRecentFiles;
+  }
+
+
+  private RecentFiles mRecentFiles;
 
   // ------------------------------------------------------------------
   // Menu bar
@@ -236,21 +291,32 @@ public abstract class GeomApp extends GUIApp {
 
   @Override
   public final void populateMenuBar(MenuBarWrapper m) {
-    addProjectMenu(m);
-    if (currentProject().definedAndNonEmpty())
-      populateMenuBarForProject(m);
+    if (isProjectBased()) {
+      addProjectMenu(m);
+      if (currentProject().definedAndNonEmpty())
+        addAdditionalMenus(m);
+    } else {
+      addAdditionalMenus(m);
+    }
   }
 
   /**
-   * Add menus to for current open project. Not called if no project is open
+   * Add menus for current open project. Not called if no project is open
    */
-  public void populateMenuBarForProject(MenuBarWrapper m) {
+  public void addAdditionalMenus(MenuBarWrapper m) {
     addFileMenu(m);
     addEditMenu(m);
     addViewMenu(m);
   }
 
+  @Deprecated // Renamed to addAdditionalMenus
+  public void populateMenuBarForProject(MenuBarWrapper m) {
+    addAdditionalMenus(m);
+  }
+
   public void addProjectMenu(MenuBarWrapper m) {
+    todo("Not supported addProjectMenu for file-based");
+
     m.addMenu("Project");
     addItem("project_open", "Open", new ProjectOpenOper());
     addItem("project_close", "Close", new ProjectCloseOper());
@@ -267,20 +333,25 @@ public abstract class GeomApp extends GUIApp {
 
   public void addFileMenu(MenuBarWrapper m) {
     m.addMenu("File", null);
-    UserOperation prevOper = new FileStepOper(-1);
-    UserOperation nextOper = new FileStepOper(1);
-    UserOperation prevUsedOper = new FileStepUsedOper(-1);
-    UserOperation nextUsedOper = new FileStepUsedOper(1);
-    addItem("script_step_bwd", "Prev", prevOper);
-    addItem("script_step_fwd", "Next", nextOper);
-    addItem("script_step_bwd2", "Prev_", prevOper);
-    addItem("script_step_fwd2", "Next_", nextOper);
-    addItem("script_page_bwd", "Page Bwd", new FileStepOper(-1).withAccel());
-    addItem("script_page_fwd", "Page Fwd", new FileStepOper(1).withAccel());
-    addItem("script_used_prev", "Prev Used", prevUsedOper);
-    addItem("script_used_next", "Next Used", nextUsedOper);
-    addItem("script_jump_first", "First", new FileJumpOper(-1));
-    addItem("script_jump_last", "Last", new FileJumpOper(1));
+
+    if (isFileBased()) {
+      addItem("open_file", "Open", new OpenFileOper());
+    } else {
+      UserOperation prevOper = new FileStepOper(-1);
+      UserOperation nextOper = new FileStepOper(1);
+      UserOperation prevUsedOper = new FileStepUsedOper(-1);
+      UserOperation nextUsedOper = new FileStepUsedOper(1);
+      addItem("script_step_bwd", "Prev", prevOper);
+      addItem("script_step_fwd", "Next", nextOper);
+      addItem("script_step_bwd2", "Prev_", prevOper);
+      addItem("script_step_fwd2", "Next_", nextOper);
+      addItem("script_page_bwd", "Page Bwd", new FileStepOper(-1).withAccel());
+      addItem("script_page_fwd", "Page Fwd", new FileStepOper(1).withAccel());
+      addItem("script_used_prev", "Prev Used", prevUsedOper);
+      addItem("script_used_next", "Next Used", nextUsedOper);
+      addItem("script_jump_first", "First", new FileJumpOper(-1));
+      addItem("script_jump_last", "Last", new FileJumpOper(1));
+    }
   }
 
   public void addEditMenu(MenuBarWrapper m) {
@@ -351,7 +422,7 @@ public abstract class GeomApp extends GUIApp {
 
   /**
    * Perform logic after a command. Default implementation does nothing.
-   * 
+   *
    * Used to re-run the current algorithm (if one is active)
    */
   public void performPostCommandActions(Object... messages) {
@@ -423,7 +494,37 @@ public abstract class GeomApp extends GUIApp {
     }
 
     ScriptManager.setSingleton(new ScriptManager());
-    openAppropriateProject();
+    if (isProjectBased())
+      openAppropriateProject();
+    else {
+      openAppropriateFile();
+
+
+      rebuildFrameContent();
+      todo("load the script for the current file");
+
+      updateTitle();
+      discardMenuBar();
+
+      // restore widget states from the current script
+      {
+        WidgetManager g = widgets();
+        todo("get 'current script' somehow");
+//        var f = scriptManager().currentScript();
+        
+        //  g.setWidgetValues(projectState().widgetStateMap());
+        g.setActive(true);
+      }
+
+      // Make sure the UI is updated to represent this project's state,
+      // and to make sure the keyboard shortcuts work (something to do with focus?)
+      //
+      performRepaint(REPAINT_ALL);
+
+//      notifyProjectListener();
+
+
+    }
   }
 
   @Override
@@ -460,26 +561,30 @@ public abstract class GeomApp extends GUIApp {
 
   private InfoPanel mInfoPanel;
 
-  // ------------------------------------------------------------------
-  // Periodic background tasks (e.g. flushing changes to script)
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// Periodic background tasks (e.g. flushing changes to script)
+// ------------------------------------------------------------------
 
   @Override
-  public final /* for now */ void swingBackgroundTask() {
-    if (!currentProject().defined())
-      return;
+  public final void swingBackgroundTask() {
 
-    scriptManager().flushScript();
+    if (isProjectBased()) {
+      if (!currentProject().defined())
+        return;
+      scriptManager().flushScript();
 
-    // Save any changes to current project, including window bounds
-    {
-      if (currentProject().defined())
+      // Save any changes to current project, including window bounds
+      {
+        checkState(currentProject().defined());
         flushProject();
-      else
-        alert("wtf? current project was not defined");
+      }
+    } else {
 
-      AppDefaults.sharedInstance().flush();
+      todo("analog for flushScript()");
+      todo("analog for flushProject");
+
     }
+    AppDefaults.sharedInstance().flush();
   }
 
   @Override

@@ -62,6 +62,7 @@ public final class AppDefaults extends BaseObject {
    * Get project file
    */
   public static File projectFileForProject(File projectDirectory) {
+    todo("Not supported for file-based apps: projectFileForProject");
     File absProjDir = projectDirectory.getAbsoluteFile();
     File homeDir = Files.homeDirectory();
     File relativeToHome = Files.fileRelativeToDirectory(absProjDir, homeDir);
@@ -104,7 +105,7 @@ public final class AppDefaults extends BaseObject {
     if (mDefaults == null) {
       mDefaults = Files.parseAbstractDataOpt(GeomAppDefaults.DEFAULT_INSTANCE, file()).toBuilder();
       if (verbose())
-        log("Read ScreditDefaults from:", file(), INDENT, mDefaults);
+        log("Read GeomAppDefaults from:", file(), INDENT, mDefaults);
     }
     return mDefaults;
   }
