@@ -25,19 +25,21 @@ package geom;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import geom.gen.ScriptEditState;
+import js.base.BaseObject;
 import js.file.Files;
 import js.geometry.MyMath;
 import js.graphics.ScriptElement;
 import js.graphics.gen.Script;
 
-import static geom.GeomApp.CURRENT_SCRIPT_INDEX;
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
 
-public class ScriptManager {
+public class ScriptManager extends BaseObject {
 
   public static void setSingleton(ScriptManager manager) {
     sSingleton = manager;
@@ -53,7 +55,7 @@ public class ScriptManager {
 
   public void closeFile() {
     flushScript();
-    mScript = ScriptWrapper.DEFAULT_INSTANCE;
+    mCurrentScript = ScriptWrapper.DEFAULT_INSTANCE;
   }
 
   public void openFile(File scriptFile) {
@@ -72,34 +74,34 @@ public class ScriptManager {
   public void setState(ScriptEditState state) {
     StateTools.validate(state);
     mState = state.build();
-    if (mScript.defined()) {
+    if (mCurrentScript.defined()) {
       // We have to construct an array of ScriptElements, since we can't
       // just pass an array of EditorElements (even though each element implements ScriptElement)
       List<ScriptElement> elements = new ArrayList<>(mState.elements());
 
       // retain the existing widget map by constructing a builder from the existing script
 
-      Script.Builder b = mScript.script().toBuilder();
-      b.usage(mScript.script().usage());
+      Script.Builder b = mCurrentScript.script().toBuilder();
+      b.usage(mCurrentScript.script().usage());
       b.items(elements);
 
       // Where are the gui elements?
-      mScript.setScript(b.build());
+      mCurrentScript.setScript(b.build());
     }
   }
 
   public ScriptWrapper currentScript() {
-    return mScript;
+    return mCurrentScript;
   }
 
   public void flushScript() {
-    mScript.flush();
+    mCurrentScript.flush();
   }
 
   public void clearScript() {
     // Copy the clipboard from the current script, so we can copy or paste with the new script
-    mScript = ScriptWrapper.DEFAULT_INSTANCE;
-    if (mScript.isNone() || mScript.isAnonymous()) {
+    mCurrentScript = ScriptWrapper.DEFAULT_INSTANCE;
+    if (mCurrentScript.isNone() || mCurrentScript.isAnonymous()) {
       return;
     }
   }
@@ -108,15 +110,10 @@ public class ScriptManager {
    * Set the current script to the current project's script
    */
   public void loadProjectScript() {
-//    var cp = geomApp().currentProject();
-//    var newScript = cp.script();
-//
-//    if (newScript == mScript) {
-//      badState("....project script is already the active script!!!!!!!!!!!!!!!!!!!!!!!!!!");
-//      return;
-//    }
+    df("loadProjectScript");
 
     int i = scriptIndex();
+    df(" scrIndex:", i);
     if (i >= 0)
       setCurrentScript(script(i));
     else {
@@ -129,8 +126,8 @@ public class ScriptManager {
 
     // Copy the clipboard from the current script, so we can copy or paste with the new script
     ScriptEditState oldState = mState;
-    mScript = newScript;
-    if (mScript.isNone() || mScript.isAnonymous()) {
+    mCurrentScript = newScript;
+    if (mCurrentScript.isNone() || mCurrentScript.isAnonymous()) {
       return;
     }
 
@@ -166,13 +163,18 @@ public class ScriptManager {
     geomApp().discardUndoManager();
   }
 
-  private ScriptEditState mState = ScriptEditState.DEFAULT_INSTANCE;
-  private ScriptWrapper mScript = ScriptWrapper.DEFAULT_INSTANCE;
-
 
   public void setScripts(List<ScriptWrapper> scripts) {
-    mScripts = scripts;
+    // Sort the scripts by filename
+    var a = mScripts;
+    a.clear();
+    a.addAll(scripts);
+    a.sort(SCRIPT_FILE_COMPARATOR);
   }
+
+  private static final Comparator<ScriptWrapper> SCRIPT_FILE_COMPARATOR = (a, b) -> {
+    return String.CASE_INSENSITIVE_ORDER.compare(a.file().getPath(), b.file().getPath());
+  };
 
   public int scriptCount() {
     ensureDefined();
@@ -193,7 +195,19 @@ public class ScriptManager {
   }
 
   public void setScriptIndex(int index) {
-    widgets().setf(CURRENT_SCRIPT_INDEX, index);
+    df("setScriptIndex", index);
+    todo("are we sure we are flushing previous one?");
+
+    var scriptFile = Files.DEFAULT;
+    if (index >= 0) {
+      checkArgument(index < mScripts.size());
+      scriptFile = mScripts.get(index).file();
+    }
+    widgets().sets(GeomApp.CURRENT_SCRIPT_FILE, scriptFile.getPath());
+
+    setCurrentScript(mScripts.get(index));
+    todo("!have a listener or something to update the title?");
+    geomApp().updateTitle();
   }
 
   public Project currentProject() {
@@ -202,8 +216,7 @@ public class ScriptManager {
   }
 
   public void switchToScript(int index) {
-    todo("Not supported switchToScript for file-based");
-
+    df("switchToScript", index, "from", scriptIndex());
     if (scriptIndex() != index) {
       flushScript();
       setScriptIndex(index);
@@ -212,7 +225,9 @@ public class ScriptManager {
   }
 
   public boolean definedAndNonEmpty() {
-    return isProjectDefined() && scriptCount() != 0;
+    if (isProjectBased())
+      return isProjectDefined() && scriptCount() != 0;
+    return scriptCount() != 0;
   }
 
   /**
@@ -235,23 +250,37 @@ public class ScriptManager {
 
   public int scriptIndex() {
     todo("!should script index be a script filename instead?");
-    int index = widgets().vi(CURRENT_SCRIPT_INDEX);
-    int count = scriptCount();
-    if (index >= count) {
-      if (index > 0)
-        pr("scriptIndex", index, "exceeds count", count, "!!!!");
-      index = (count == 0) ? -1 : 0;
+    var path = new File(widgets().vs(GeomApp.CURRENT_SCRIPT_FILE));
+    int index = findScript(path);
+    var count = scriptCount();
+    if (index < 0) {
+      var insertPos = -index - 1;
+      if (index >= count)
+        index = count - 1;
     }
+    df("scriptIndex, path:", path, "count:", count, "index:", index);
     return index;
   }
 
+  /**
+   * Locate script by filename
+   *
+   * Returns index, if found, else (-insert_position) - 1 if not
+   */
+  public int findScript(File path) {
+    // Create a dummy script wrapper that contains the file we're searching for
+    var x = new ScriptWrapper(path);
+    var slot = Collections.binarySearch(mScripts, x, SCRIPT_FILE_COMPARATOR);
+    df("findScript:", path, "count:", mScripts.size(), "slot:", slot);
+    return slot;
+  }
 
   public void validateScriptIndex() {
     // Make sure script index is legal
     //
     int scriptIndex = scriptIndex();
     if (scriptCount() == 0)
-      scriptIndex = 0;
+      scriptIndex = -1;
     else
       scriptIndex = MyMath.clamp(scriptIndex, 0, scriptCount() - 1);
     setScriptIndex(scriptIndex);
@@ -260,13 +289,45 @@ public class ScriptManager {
   /**
    * Create a new, empty script and make it the active one
    */
-  public void newScript() {
+  public void newScript(File path) {
     int newIndex = mScripts.size();
+    df("newScript, #scripts:", mScripts.size());
     todo("add support for not-yet-defined file for script wrapper");
-    mScripts.add(new ScriptWrapper(Files.DEFAULT));
+    todo("Will it handle a not-yet-existing file?");
+    mScripts.add(new ScriptWrapper(path));
     switchToScript(newIndex);
   }
 
-  private List<ScriptWrapper> mScripts = arrayList();
+
+  public void switchToScript(File file) {
+    alertVerbose();
+    log("switchToScript", file);
+    checkArgument(Files.nonEmpty(file), "switchToScript with null or empty file");
+
+    if (!alert("not necessary?")) {
+      // If file matches current script, do nothing
+      var currentScript = widgets().vs(GeomApp.CURRENT_SCRIPT_FILE);
+      if (currentScript.equals(file.toString())) return;
+    }
+
+    var slot = findScript(file);
+    log("find script slot:", slot);
+    if (slot >= 0) {
+      flushScript();
+      setScriptIndex(slot);
+    } else {
+      var script = new ScriptWrapper(file);
+      slot = -1 - slot;
+      log("created new ScriptWrapper for file, inserting to slot", slot);
+      mScripts.add(slot, script);
+      setScriptIndex(slot);
+      todo("do we need to tell it to read the script from disk?");
+    }
+  }
+
+
+  private ScriptEditState mState = ScriptEditState.DEFAULT_INSTANCE;
+  private ScriptWrapper mCurrentScript = ScriptWrapper.DEFAULT_INSTANCE;
+  private ArrayList<ScriptWrapper> mScripts = arrayList();
 
 }

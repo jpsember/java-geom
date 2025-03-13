@@ -49,7 +49,7 @@ public final class GeomTools {
 
   public static void df(Object... objects) {
     if (!DEBUG_FILEBASED) return;
-    objects = insertStringToFront(">>DBFILEBASED<<:");
+    objects = insertStringToFront(">>DBFILEBASED<<:",objects);
     pr(objects);
   }
 

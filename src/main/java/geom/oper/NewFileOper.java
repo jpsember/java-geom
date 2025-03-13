@@ -27,6 +27,7 @@ import static js.base.Tools.*;
 
 import java.io.File;
 
+import geom.ScriptWrapper;
 import js.file.Files;
 import js.guiapp.SwingUtils;
 import js.guiapp.UserOperation;
@@ -37,8 +38,18 @@ public class NewFileOper extends UserOperation {
 
   @Override
   public void start() {
-    loadTools();
+    alertVerbose();
+    log("start");
+    var f = SwingUtils.displaySaveFileChooser(new File("/Users/jeff/js/match/sample_project/charlie.json"), "Name of new script");
 
-    scriptManager().newScript();
+    log("save file chooser returned:", INDENT, Files.infoMap(f));
+    if (f == null) return;
+
+
+    f = Files.addExtension(f, "json");
+    log("with extension:", f);
+
+    var sm = scriptManager();
+    sm.switchToScript(f);
   }
 }

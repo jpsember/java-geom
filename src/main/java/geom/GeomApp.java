@@ -58,19 +58,22 @@ public abstract class GeomApp extends GUIApp {
       EDITOR_ZOOM = "ed_zoom", //
       EDITOR_PAN_X = "ed_pan_x", // 
       EDITOR_PAN_Y = "ed_pan_y", //
-      CURRENT_SCRIPT_INDEX = ".script_index", // we don't want this persisted to the script file
+      CURRENT_SCRIPT_FILE = ".script_file",
       SCRIPT_NAME = ".script_name", // nor this?
       MESSAGE = ".message", //
       APP_FRAME = "app_frame"; //
 
   @Override
   public final String getTitleText() {
+    var sm = scriptManager();
     if (isFileBased()) {
-      todo("get name of current script, if there is one");
-      return "TODO: name of current script";
+      var cs = sm.currentScript();
+      if (!cs.isNone())
+        return cs.file().getName();
+      return "(no scripts open)";
     } else {
       todo("If file-based app, get current file instead");
-      if (scriptManager().currentProject().isDefined()) {
+      if (sm.currentProject().isDefined()) {
         File dir = currentProject().directory();
         return dir.getName();
       }
@@ -340,6 +343,20 @@ public abstract class GeomApp extends GUIApp {
     if (isFileBased()) {
       addItem("new_file", "New", new NewFileOper());
       addItem("open_file", "Open", new OpenFileOper());
+
+      m.addSeparator();
+
+      UserOperation prevOper = new FileStepOper(-1);
+      UserOperation nextOper = new FileStepOper(1);
+
+      addItem("script_step_bwd", "Prev", prevOper);
+      addItem("script_step_fwd", "Next", nextOper);
+      addItem("script_step_bwd2", "Prev_", prevOper);
+      addItem("script_step_fwd2", "Next_", nextOper);
+      addItem("script_page_bwd", "Page Bwd", new FileStepOper(-1).withAccel());
+      addItem("script_page_fwd", "Page Fwd", new FileStepOper(1).withAccel());
+      addItem("script_jump_first", "First", new FileJumpOper(-1));
+      addItem("script_jump_last", "Last", new FileJumpOper(1));
     } else {
       UserOperation prevOper = new FileStepOper(-1);
       UserOperation nextOper = new FileStepOper(1);
@@ -513,10 +530,11 @@ public abstract class GeomApp extends GUIApp {
       // restore widget states from the current script
       {
         WidgetManager g = widgets();
-        todo("get 'current script' somehow");
-//        var f = scriptManager().currentScript();
+        todo("restore widget values from current script");
 
-        //  g.setWidgetValues(projectState().widgetStateMap());
+        var sm = scriptManager();
+        sm.currentScript().copyWidgetValuesFromScriptToUI();
+
         g.setActive(true);
       }
 
@@ -601,7 +619,7 @@ public abstract class GeomApp extends GUIApp {
     w.addHidden(EDITOR_ZOOM, 1f);
     w.addHidden(EDITOR_PAN_X, 0f);
     w.addHidden(EDITOR_PAN_Y, 0f);
-    w.addHidden(CURRENT_SCRIPT_INDEX, 0);
+    w.addHidden(CURRENT_SCRIPT_FILE, Files.DEFAULT.getPath());
   }
 
   public void setInfoMessage(Object... messages) {
