@@ -28,9 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import geom.gen.ScriptEditState;
+import js.file.Files;
+import js.geometry.MyMath;
 import js.graphics.ScriptElement;
 import js.graphics.gen.Script;
 
+import static geom.GeomApp.CURRENT_SCRIPT_INDEX;
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
 
@@ -105,15 +108,21 @@ public class ScriptManager {
    * Set the current script to the current project's script
    */
   public void loadProjectScript() {
-    var cp = geomApp().currentProject();
-    var newScript = cp.script();
+//    var cp = geomApp().currentProject();
+//    var newScript = cp.script();
+//
+//    if (newScript == mScript) {
+//      badState("....project script is already the active script!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//      return;
+//    }
 
-    if (newScript == mScript) {
-      badState("....project script is already the active script!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      return;
+    int i = scriptIndex();
+    if (i >= 0)
+      setCurrentScript(script(i));
+    else {
+      todo("is this the correct thing to do?");
+      setCurrentScript(ScriptWrapper.DEFAULT_INSTANCE);
     }
-
-    setCurrentScript(newScript);
   }
 
   private void setCurrentScript(ScriptWrapper newScript) {
@@ -159,5 +168,105 @@ public class ScriptManager {
 
   private ScriptEditState mState = ScriptEditState.DEFAULT_INSTANCE;
   private ScriptWrapper mScript = ScriptWrapper.DEFAULT_INSTANCE;
+
+
+  public void setScripts(List<ScriptWrapper> scripts) {
+    mScripts = scripts;
+  }
+
+  public int scriptCount() {
+    ensureDefined();
+    return mScripts.size();
+  }
+
+  private void ensureDefined() {
+    if (isDefaultProject())
+      badState("Illegal method for default project");
+  }
+
+  public boolean isDefaultProject() {
+    return isProjectBased() && currentProject().isDefault();
+  }
+
+  public boolean isProjectDefined() {
+    return !currentProject().isDefault();
+  }
+
+  public void setScriptIndex(int index) {
+    widgets().setf(CURRENT_SCRIPT_INDEX, index);
+  }
+
+  public Project currentProject() {
+    todo("!move currentProject() out of geomApp and into ScriptManager?");
+    return geomApp().currentProject();
+  }
+
+  public void switchToScript(int index) {
+    todo("Not supported switchToScript for file-based");
+
+    if (scriptIndex() != index) {
+      flushScript();
+      setScriptIndex(index);
+      scriptManager().loadProjectScript();
+    }
+  }
+
+  public boolean definedAndNonEmpty() {
+    return isProjectDefined() && scriptCount() != 0;
+  }
+
+  /**
+   * Get the current script
+   */
+  public ScriptWrapper script() {
+    if (isDefaultProject())
+      return ScriptWrapper.DEFAULT_INSTANCE;
+    int index = scriptIndex();
+    int count = scriptCount();
+    if (index < 0 || index >= count)
+      return ScriptWrapper.DEFAULT_INSTANCE;
+    return mScripts.get(index);
+  }
+
+  public ScriptWrapper script(int scriptIndex) {
+    return mScripts.get(scriptIndex);
+  }
+
+
+  public int scriptIndex() {
+    todo("!should script index be a script filename instead?");
+    int index = widgets().vi(CURRENT_SCRIPT_INDEX);
+    int count = scriptCount();
+    if (index >= count) {
+      if (index > 0)
+        pr("scriptIndex", index, "exceeds count", count, "!!!!");
+      index = (count == 0) ? -1 : 0;
+    }
+    return index;
+  }
+
+
+  public void validateScriptIndex() {
+    // Make sure script index is legal
+    //
+    int scriptIndex = scriptIndex();
+    if (scriptCount() == 0)
+      scriptIndex = 0;
+    else
+      scriptIndex = MyMath.clamp(scriptIndex, 0, scriptCount() - 1);
+    setScriptIndex(scriptIndex);
+  }
+
+  /**
+   * Create a new, empty script and make it the active one
+   */
+  public void newScript() {
+    int newIndex = mScripts.size();
+    todo("add support for not-yet-defined file for script wrapper");
+    mScripts.add(new ScriptWrapper(Files.DEFAULT));
+    switchToScript(newIndex);
+  }
+
+  private List<ScriptWrapper> mScripts = arrayList();
 
 }

@@ -66,11 +66,11 @@ class InfoPanel extends JPanel {
 
     String scriptDisplay = "";
     if (!script.isNone()) {
-      Project project = geomApp().currentProject();
+      var sm = scriptManager();
       StringBuilder sb = new StringBuilder();
-      sb.append(project.scriptIndex());
+      sb.append(sm.scriptIndex());
       sb.append("/");
-      sb.append(project.scriptCount() - 1);
+      sb.append(sm.scriptCount() - 1);
       sb.append(" ");
       String nameOnly = script.name();
       sb.append(nameOnly);

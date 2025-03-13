@@ -46,6 +46,9 @@ public final class Project extends BaseObject {
 
   public static final Project DEFAULT_INSTANCE = new Project();
 
+  public boolean isDefault() {return this == DEFAULT_INSTANCE;}
+  public boolean isDefined() {return !isDefault();}
+
   private Project() {
     todo("!rename Project class to ScriptXXX?");
     mDirectory = null;
@@ -63,7 +66,7 @@ public final class Project extends BaseObject {
 
   public Project(File directory) {
     mDirectory = directory;
-    mProjectFile = isDefault() ? null : AppDefaults.projectFileForProject(directory);
+    mProjectFile = scriptManager().isDefaultProject() ? null : AppDefaults.projectFileForProject(directory);
   }
 
   /**
@@ -128,36 +131,31 @@ public final class Project extends BaseObject {
     mProjectState = readProjectState(projectForDefaultStateOrNull).toBuilder();
     buildScriptList();
 
-    // Make sure script index is legal
-    //
-    int scriptIndex = scriptIndex();
-    if (scriptCount() == 0)
-      scriptIndex = 0;
-    else
-      scriptIndex = MyMath.clamp(scriptIndex, 0, scriptCount() - 1);
-    log("correcting state script index from", scriptIndex(), "to", scriptIndex);
-    setScriptIndex(scriptIndex);
+    scriptManager().validateScriptIndex();
   }
 
-  public boolean definedAndNonEmpty() {
-    return defined() && scriptCount() != 0;
-  }
-
-  public boolean defined() {
-    return !isDefault();
-  }
-
-  public boolean isDefault() {
-    assertProjectBased();
-    return mDirectory == null;
-  }
+//  @Deprecated // Move to ScriptManager?
+//  public boolean definedAndNonEmpty() {
+//    return defined() && scriptCount() != 0;
+//  }
+//
+//  @Deprecated // Move to ScriptManager?
+//  public boolean defined() {
+//    return !isDefault();
+//  }
+//
+//  @Deprecated // Move to ScriptManager?
+//  public boolean isDefault() {
+//    assertProjectBased();
+//    return mDirectory == null;
+//  }
 
   public File directory() {
     return mDirectory;
   }
 
   private void ensureDefined() {
-    if (isDefault())
+    if (scriptManager().isDefaultProject())
       badState("Illegal method for default project");
   }
 
@@ -175,8 +173,8 @@ public final class Project extends BaseObject {
         log("reading script:", entry.scriptName());
       scripts.add(new ScriptWrapper(scriptFile));
     }
-    mScripts = scripts;
-  }
+    scriptManager().setScripts(scripts);
+   }
 
   // ------------------------------------------------------------------
   // Project state
@@ -201,52 +199,12 @@ public final class Project extends BaseObject {
   // Scripts
   // ------------------------------------------------------------------
 
-  public int scriptIndex() {
-    int index = widgets().vi(CURRENT_SCRIPT_INDEX);
-    int count = scriptCount();
-    if (index >= count) {
-      if (index > 0)
-        pr("scriptIndex", index, "exceeds count", count, "!!!!");
-      index = (count == 0) ? -1 : 0;
-    }
-    return index;
-  }
-
-  @Deprecated // Move to ScriptManager
-  public int scriptCount() {
-    ensureDefined();
-    return mScripts.size();
-  }
-
-  @Deprecated // Move to ScriptManager
-  public void setScriptIndex(int index) {
-    widgets().setf(CURRENT_SCRIPT_INDEX, index);
-  }
-
-  /**
-   * Get the current script
-   */
-  @Deprecated // Move to ScriptManager
-  public ScriptWrapper script() {
-    if (isDefault())
-      return ScriptWrapper.DEFAULT_INSTANCE;
-    int index = scriptIndex();
-    int count = scriptCount();
-    if (index < 0 || index >= count)
-      return ScriptWrapper.DEFAULT_INSTANCE;
-    return mScripts.get(index);
-  }
-
-  @Deprecated // Move to ScriptManager
-  public ScriptWrapper script(int scriptIndex) {
-    return mScripts.get(scriptIndex);
-  }
 
   // ------------------------------------------------------------------
 
   private final File mDirectory;
   private final File mProjectFile;
   private boolean mFileBased;
-  private List<ScriptWrapper> mScripts;
+//  private List<ScriptWrapper> mScripts;
 
 }

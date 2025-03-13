@@ -39,7 +39,6 @@ public class NewFileOper extends UserOperation {
   public void start() {
     loadTools();
 
-    scriptManager().closeFile();
-    scriptManager().openFile(file);
+    scriptManager().newScript();
   }
 }

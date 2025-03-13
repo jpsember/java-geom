@@ -70,7 +70,7 @@ public abstract class GeomApp extends GUIApp {
       return "TODO: name of current script";
     } else {
       todo("If file-based app, get current file instead");
-      if (currentProject().defined()) {
+      if (scriptManager().currentProject().isDefined()) {
         File dir = currentProject().directory();
         return dir.getName();
       }
@@ -229,21 +229,23 @@ public abstract class GeomApp extends GUIApp {
 
   public final void flushProject() {
     todo("Not supported flushProject for file-based");
-    if (!currentProject().defined())
+    if (!currentProject().isDefined())
       return;
     projectState().widgetStateMap(widgets().readWidgetValues());
     currentProject().flush();
   }
 
-  public void switchToScript(int index) {
-    todo("Not supported switchToScript for file-based");
-
-    if (currentProject().scriptIndex() != index) {
-      scriptManager().flushScript();
-      currentProject().setScriptIndex(index);
-      scriptManager().loadProjectScript();
-    }
-  }
+//  @Deprecated // call scriptManager().switchToScript
+//  public void switchToScript(int index) {
+//    scriptManager().switchToScript(index);
+//    todo("Not supported switchToScript for file-based");
+//
+//    if (currentProject().scriptIndex() != index) {
+//      scriptManager().flushScript();
+//      currentProject().setScriptIndex(index);
+//      scriptManager().loadProjectScript();
+//    }
+//  }
 
   public ProjectState.Builder projectState() {
     todo("Not supported projectState for file-based");
@@ -255,9 +257,10 @@ public abstract class GeomApp extends GUIApp {
   @Override
   public final /* final for now */ String getAlertText() {
     if (isProjectBased()) {
-      if (!currentProject().defined())
+      var m = scriptManager();
+      if (m.isDefaultProject())
         return "No project selected; open one from the Project menu";
-      if (!currentProject().definedAndNonEmpty())
+      if (!m.definedAndNonEmpty())
         return "This project is empty! Open another from the Project menu";
     }
     return null;
@@ -293,7 +296,7 @@ public abstract class GeomApp extends GUIApp {
   public final void populateMenuBar(MenuBarWrapper m) {
     if (isProjectBased()) {
       addProjectMenu(m);
-      if (currentProject().definedAndNonEmpty())
+      if (scriptManager().definedAndNonEmpty())
         addAdditionalMenus(m);
     } else {
       addAdditionalMenus(m);
@@ -335,6 +338,7 @@ public abstract class GeomApp extends GUIApp {
     m.addMenu("File", null);
 
     if (isFileBased()) {
+      addItem("new_file", "New", new NewFileOper());
       addItem("open_file", "Open", new OpenFileOper());
     } else {
       UserOperation prevOper = new FileStepOper(-1);
@@ -511,7 +515,7 @@ public abstract class GeomApp extends GUIApp {
         WidgetManager g = widgets();
         todo("get 'current script' somehow");
 //        var f = scriptManager().currentScript();
-        
+
         //  g.setWidgetValues(projectState().widgetStateMap());
         g.setActive(true);
       }
@@ -569,13 +573,14 @@ public abstract class GeomApp extends GUIApp {
   public final void swingBackgroundTask() {
 
     if (isProjectBased()) {
-      if (!currentProject().defined())
+      var m = scriptManager();
+      if (!m.isProjectDefined())
         return;
       scriptManager().flushScript();
 
       // Save any changes to current project, including window bounds
       {
-        checkState(currentProject().defined());
+        checkState(m.isProjectDefined());
         flushProject();
       }
     } else {
