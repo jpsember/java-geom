@@ -16,10 +16,8 @@ public class OpenNextScriptOper extends UserOperation {
 
   @Override
   public boolean shouldBeEnabled() {
-    loadTools();
-    alertVerbose();
     mNextScriptFile = determineNextScriptFile();
-    log("next script file:",INDENT,Files.infoMap(mNextScriptFile));
+    log("next script file:", INDENT, Files.infoMap(mNextScriptFile));
     return mNextScriptFile != null;
   }
 

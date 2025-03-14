@@ -26,10 +26,6 @@ package geom.oper;
 
 import static js.base.Tools.*;
 
-import java.io.File;
-
-import js.file.Files;
-import js.guiapp.SwingUtils;
 import js.guiapp.UserOperation;
 
 import static geom.GeomTools.*;
@@ -38,8 +34,6 @@ public class CloseFileOper extends UserOperation {
 
   @Override
   public boolean shouldBeEnabled() {
-    loadTools();
-    alertVerbose();
     return scriptManager().currentScript().defined();
   }
 

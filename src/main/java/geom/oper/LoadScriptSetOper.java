@@ -27,8 +27,6 @@ public class LoadScriptSetOper extends UserOperation {
     log("load file chooser returned:", INDENT, Files.infoMap(f));
     if (f == null) return;
 
-    todo("add filter for script files");
-
     var m = JSMap.from(f);
     var lst = m.getList("list");
 
