@@ -100,7 +100,6 @@ public final class AppDefaults extends BaseObject {
   }
 
   public GeomAppDefaults read() {
-    alertVerbose();
     log("read");
     // We may be reading this before we've started up the app, i.e. outside of the Swing thread
     if (mDefaults == null) {

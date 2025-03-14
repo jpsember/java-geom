@@ -51,17 +51,6 @@ import static geom.GeomTools.*;
  */
 public abstract class GeomApp extends GUIApp {
 
-  /**
-   * Widget ids
-   */
-  public static final String //
-      EDITOR_ZOOM = "ed_zoom", //
-      EDITOR_PAN_X = "ed_pan_x", // 
-      EDITOR_PAN_Y = "ed_pan_y", //
-      CURRENT_SCRIPT_FILE = ".script_file",
-      SCRIPT_NAME = ".script_name", // nor this?
-      MESSAGE = ".message", //
-      APP_FRAME = "app_frame"; //
 
   @Override
   public final String getTitleText() {
@@ -218,20 +207,15 @@ public abstract class GeomApp extends GUIApp {
     if (Files.nonEmpty(curr) && curr.exists())
       m.switchToScript(curr, true);
 
-
     File desiredFile = mStartFileOrProject;
-
-    pr("mStartFileOrProject:", Files.infoMap(mStartFileOrProject));
 
     if (Files.empty(desiredFile))
       desiredFile = recentFiles().getMostRecentFile();
 
     if (Files.empty(desiredFile)) {
-      todo("maybe create an empty file?");
       return;
     }
     if (!desiredFile.exists()) {
-      pr("*** No such file:", desiredFile);
       return;
     }
     desiredFile = Files.absolute(desiredFile);
@@ -323,7 +307,7 @@ public abstract class GeomApp extends GUIApp {
       addItem("open_next_file", "Open Next", new OpenNextScriptOper());
       m.addSeparator();
       addItem("open_set", "Open Set", new LoadScriptSetOper());
-      addItem("save_set", "Save Set", new SaveScriptSetOper());
+      addItem(null, "Save Set", new SaveScriptSetOper());
       m.addSeparator();
 
 
@@ -508,11 +492,8 @@ public abstract class GeomApp extends GUIApp {
       // restore widget states from the current script
       {
         WidgetManager g = widgets();
-        todo("restore widget values from current script");
-
         var sm = scriptManager();
         sm.currentScript().copyWidgetValuesFromScriptToUI();
-
         g.setActive(true);
       }
 
@@ -586,8 +567,6 @@ public abstract class GeomApp extends GUIApp {
   @Override
   public void initWidgets() {
     super.initWidgets();
-    todo("move string constants to GeomTools");
-    todo("store current open set of scripts in widgets");
 
     WidgetManager w = widgets();
     // Add widget for persisting frame bounds

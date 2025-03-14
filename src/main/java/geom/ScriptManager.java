@@ -181,7 +181,7 @@ public class ScriptManager extends BaseObject {
   };
 
   public int scriptCount() {
-    todo("Maybe simpler to think of project as an 'auto loaded' list of scripts?");
+    todo("!Maybe simpler to think of project as an 'auto loaded' list of scripts?");
     ensureDefined();
     return mScripts.size();
   }
@@ -202,14 +202,14 @@ public class ScriptManager extends BaseObject {
 
   private void setScriptIndex(int index) {
     df("setScriptIndex", index);
-    todo("are we sure we are flushing previous one?");
+    todo("!are we sure we are flushing previous one?");
 
     var scriptFile = Files.DEFAULT;
     if (index >= 0) {
       checkArgument(index < mScripts.size());
       scriptFile = mScripts.get(index).file();
     }
-    widgets().sets(GeomApp.CURRENT_SCRIPT_FILE, scriptFile.getPath());
+    widgets().sets(CURRENT_SCRIPT_FILE, scriptFile.getPath());
 
     setCurrentScript(mScripts.get(index));
     todo("!have a listener or something to update the title?");
@@ -262,11 +262,10 @@ public class ScriptManager extends BaseObject {
 
 
   public int scriptIndex() {
-    var path = new File(widgets().vs(GeomApp.CURRENT_SCRIPT_FILE));
+    var path = new File(widgets().vs(CURRENT_SCRIPT_FILE));
     int index = findScript(path);
     var count = scriptCount();
     if (index < 0) {
-      todo("what if there are no scripts?");
       index = -index - 1;
       if (index >= count)
         index = count - 1;
@@ -299,9 +298,8 @@ public class ScriptManager extends BaseObject {
   }
 
   public void switchToScript(File file, boolean loadIfNotOpen) {
-    alertVerbose();
+    //alertVerbose();
     log("switchToScript", file);
-//    checkArgument(Files.nonEmpty(file), "switchToScript with null or empty file");
 
     var slot = findScript(file);
     log("find script slot:", slot);
@@ -320,7 +318,6 @@ public class ScriptManager extends BaseObject {
         slot = MyMath.clamp(slot, -1, scriptCount() - 1);
       }
       setScriptIndex(slot);
-      todo("do we need to tell it to read the script from disk?");
     }
 
   }

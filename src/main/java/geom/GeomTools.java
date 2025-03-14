@@ -49,9 +49,23 @@ public final class GeomTools {
 
   public static final boolean DEBUG_POLYEDIT = false && alert("!DEBUG_POLYEDIT is true");
 
-  public static final boolean DEBUG_FILEBASED = true && alert("!DEBUG_FILEBASED is true");
+  public static final boolean DEBUG_FILEBASED = false && alert("!DEBUG_FILEBASED is true");
 
   public static final String SCRIPT_SET_EXTENSION = "script_set";
+
+
+  /**
+   * Widget ids
+   */
+  public static final String //
+      EDITOR_ZOOM = "ed_zoom", //
+      EDITOR_PAN_X = "ed_pan_x", //
+      EDITOR_PAN_Y = "ed_pan_y", //
+      CURRENT_SCRIPT_FILE = ".script_file",
+      SCRIPT_NAME = ".script_name", // nor this?
+      MESSAGE = ".message", //
+      APP_FRAME = "app_frame"; //
+
 
   public static void df(Object... objects) {
     if (!DEBUG_FILEBASED) return;
