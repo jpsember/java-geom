@@ -303,6 +303,9 @@ public final class Render {
     g.drawRect(r.x, r.y, r.width, r.height);
   }
 
+  public static void drawRect(FRect r) {
+    drawRect(r.x, r.y, r.width, r.height);
+  }
 
   public static void fillCircle(IPoint origin, double radius) {
     fillCircle(origin.toFPoint(), radius);

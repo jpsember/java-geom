@@ -37,10 +37,7 @@ import java.util.Map;
 
 import geom.AlgRenderable;
 import geom.ParsedAlgItem;
-import js.geometry.FPoint;
-import js.geometry.IPoint;
-import js.geometry.IRect;
-import js.geometry.Polygon;
+import js.geometry.*;
 import js.graphics.AbstractScriptElement;
 import js.graphics.PointElement;
 import js.graphics.RectElement;
@@ -367,6 +364,7 @@ public class AlgorithmStepper {
     addRenderable(FPoint.class, (item) -> r.render(new PointElement(null, ((FPoint) item).toIPoint())));
     addRenderable(IPoint.class, (item) -> r.render(new PointElement(null, (IPoint) item)));
     addRenderable(IRect.class, (item) -> r.render(new RectElement(null, (IRect) item)));
+    addRenderable(FRect.class, (item) -> r.render(new RectElement(null, ((FRect) item).toIRect())));
     addRenderable(Polygon.class, (item) -> renderPoly((Polygon) item));
   }
 
