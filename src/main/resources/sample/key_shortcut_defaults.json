@@ -15,7 +15,6 @@
 "project_reopen" : {  "code" : "o","flags" : "cms"},
 "project_find_problems" : {  "code" : "p","flags" : "cm"},
 
-
 "alg_step_bwd" : {"code" : "1", "flags" : "" },
 "alg_step_fwd" : {"code" : "2", "flags" : "" },
 "alg_step_reset" : {"code" : "3", "flags" : "" },
@@ -39,6 +38,7 @@
 "zoom_in" : {"code" : 61, "flags" : "c"},
 "zoom_out" : {"code" : 45, "flags" : "c"},
 "zoom_reset" : {"code" : 48, "flags" : "c"},
+"auto_zoom" : {"code": 46, "flags" : "c"},
 
 "box_add": {"code" : 32},
 "pt_add" : { "code" : 80 },

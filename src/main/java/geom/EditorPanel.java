@@ -84,23 +84,19 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
     requestFocus();
   }
 
-  private void determineTransform(IPoint pageSize) {
+  private void determineTransform(IPoint pageSize ) {
+
+    // The page size is the size of the current script's image (if it has one), or
+    // the constant (1200, 900) if not.
 
     Matrix t;
     {
       FPoint fpt = new FPoint(getWidth(), getHeight());
       float zoom = zoomFactor();
 
-      todo("There is a weird dependence upon pageSize, which has nothing to do with the editor bounds");
-      // The translation takes into account the page size,
-      // and the pan offset
-
       var pageCenter = pageSize.scaledBy(.5f);
       var worldPan = geomApp().panOffset();
       var worldFocus = IPoint.sum(pageCenter, worldPan).toFPoint().scaledBy(zoom);
-
-      pi("pageSize:",pageSize,"worldPan:",worldPan,"pageCenter:",pageCenter,"w,h:",fpt);
-
 
       FPoint trans = new FPoint(fpt.x / 2 - worldFocus.x, fpt.y / 2 - worldFocus.y);
       t = Matrix.getTranslate(trans);
