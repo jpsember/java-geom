@@ -47,6 +47,13 @@ import java.util.Collection;
 
 public final class GeomTools {
 
+  public static final boolean DEV_FRAME = true && alert("!DEV_FRAME is in effect");
+  public static final boolean DEBUG_INFERZOOM = true && alert("!DEBUG_INFERZOOM is true");
+
+  public static void pi(Object... messages) {
+    if (DEBUG_INFERZOOM) pr(insertStringToFront("INFERZOOM===>", messages));
+  }
+
   public static final boolean DEBUG_POLYEDIT = false && alert("!DEBUG_POLYEDIT is true");
 
   public static final boolean DEBUG_FILEBASED = false && alert("!DEBUG_FILEBASED is true");

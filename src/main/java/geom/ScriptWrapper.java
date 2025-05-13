@@ -83,6 +83,11 @@ public final class ScriptWrapper extends BaseObject {
         mScriptData = Script.DEFAULT_INSTANCE;
       else {
         mScriptData = Files.parseAbstractDataOpt(Script.DEFAULT_INSTANCE, mScriptFile);
+
+        if (DEBUG_INFERZOOM) {
+          pi("...discarding existing widgets");
+          mScriptData = mScriptData.toBuilder().widgets(null).build();
+        }
       }
     }
     return mScriptData;
@@ -180,6 +185,7 @@ public final class ScriptWrapper extends BaseObject {
   }
 
   public void copyWidgetValuesFromScriptToUI() {
+    todo("If no pan or zoom widget values are defined in the script, derive them; but wait until we've parsed the objects etc");
     var wm = script().widgets();
     widgets().setWidgetValues(wm);
   }

@@ -2,6 +2,7 @@ target
 .classpath
 .project
 .jsproject
+.idea
 bin
 .settings
 _mainconfig_.txt

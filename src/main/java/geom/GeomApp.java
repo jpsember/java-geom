@@ -35,6 +35,7 @@ import geom.oper.*;
 import js.base.BasePrinter;
 import js.file.Files;
 import js.geometry.IPoint;
+import js.geometry.IRect;
 import js.guiapp.GUIApp;
 import js.guiapp.MenuBarWrapper;
 import js.guiapp.RecentFiles;
@@ -604,4 +605,48 @@ public abstract class GeomApp extends GUIApp {
   }
 
   private boolean mRenderPageFrame = true;
+
+  public void adjustViewTransform(ScriptWrapper scriptWrapper) {
+    pi(VERT_SP, "adjustViewTransform, script:", scriptWrapper.file());
+    var script = scriptWrapper.script();
+    var wm = scriptWrapper.script().widgets();
+    if (wm.containsKey(EDITOR_ZOOM)) return;
+
+    pi("...doesn't contain ZOOM; initializing...");
+
+    pi("page size:", scriptWrapper.pageSize());
+    pi("editor panel allBounds:", getEditorPanel().getBounds());
+
+    // If the editor panel has a known size, use that; otherwise, base it on a default.
+    // For all I know, the editor panel's size is never known at this point...
+    var viewSize = new IRect(getEditorPanel().getBounds()).size();
+    if (viewSize.isZero()) {
+      viewSize = scriptWrapper.pageSize();
+    }
+    pi("derive transform based on size:", viewSize);
+
+    // Determine bounding box of all the elements
+    IRect allBounds = null;
+    for (var item : script.items()) {
+      var b = item.bounds();
+      if (allBounds == null) allBounds = b;
+      allBounds = allBounds.including(b);
+    }
+
+     if (allBounds == null) return;
+
+    var padded = allBounds.withInset(-20, -20);
+    pi("padded allBounds:", padded);
+    var pan = padded.midPoint();
+    pi("viewSize:",viewSize);
+    var zoom = Math.min(padded.width / (float) viewSize.x, padded.height / (float) viewSize.y);
+    pi("zoom:", zoom);
+    pi("pan:", pan);
+
+    var wm2 = wm.deepCopy();
+    wm2.put(EDITOR_ZOOM, zoom);
+    wm2.put(EDITOR_PAN_X, pan.x).put(EDITOR_PAN_Y, pan.y);
+    scriptWrapper.setScript(script.toBuilder().widgets(wm2));
+  }
+
 }

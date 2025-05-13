@@ -163,6 +163,9 @@ public class ScriptManager extends BaseObject {
         .clipboard(oldState.clipboard())//
     );
 
+if (false)
+    geomApp().adjustViewTransform(currentScript());
+
     // Discard undo manager, since it refers to a different script
     geomApp().discardUndoManager();
   }
