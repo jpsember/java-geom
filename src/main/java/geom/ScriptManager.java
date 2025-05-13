@@ -31,6 +31,7 @@ import java.util.List;
 
 import geom.gen.ProjectState;
 import geom.gen.ScriptEditState;
+import geom.oper.AutoZoomOper;
 import js.base.BaseObject;
 import js.file.Files;
 import js.geometry.MyMath;
@@ -163,13 +164,21 @@ public class ScriptManager extends BaseObject {
         .clipboard(oldState.clipboard())//
     );
 
-if (false)
-    geomApp().adjustViewTransform(currentScript());
-
     // Discard undo manager, since it refers to a different script
     geomApp().discardUndoManager();
   }
 
+  @Deprecated // does not work reliably
+  public void autoZoomOnCurrentScriptIfNec() {
+    // If the current script does not define a pan or zoom factor, call the AutoZoom operation
+    var wd = currentScript().script().widgets();
+    if (!wd.containsKey(EDITOR_PAN_X)) {
+      var oper = new AutoZoomOper();
+      var b = oper.shouldBeEnabled();
+      if (b)
+        oper.start();
+    }
+  }
 
   public void setScripts(List<ScriptWrapper> scripts) {
     // Sort the scripts by filename

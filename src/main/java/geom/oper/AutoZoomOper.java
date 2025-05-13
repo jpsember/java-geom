@@ -22,24 +22,16 @@ public class AutoZoomOper extends UserOperation {
 
     var ep = geomApp().getEditorPanel();
     var editorBounds = new IRect(ep.getBounds());
-
-    pi("editor bounds:", editorBounds);
-    pi("obj bounds:", objBounds);
-
+    if (editorBounds.isDegenerate()) return false;
 
     IPoint pageSize = geomApp().pageSize();
-    pi("page size:", pageSize);
 
     mTargetZoom = Math.min(editorBounds.width / (float) objBounds.width, editorBounds.height / (float) objBounds.height);
     mTargetPan = IPoint.difference(objBounds.midPoint(), pageSize.scaledBy(0.5f));
 
     var panCurrent = geomApp().panOffset();
     var zoomCurrent = geomApp().zoomFactor();
-
-    pr("current zoom:", zoomCurrent, "pan:", panCurrent);
-    pr("desired zoom:", mTargetZoom, "pan:", mTargetPan);
-
-    return !(panCurrent.equals(mTargetPan) && panCurrent.equals(mTargetZoom));
+    return !(panCurrent.equals(mTargetPan) && zoomCurrent == mTargetZoom);
   }
 
   @Override

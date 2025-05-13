@@ -68,8 +68,9 @@ public class EditorPanel extends JPanel implements MouseListener, MouseMotionLis
 
   @Override
   public void paintComponent(Graphics g) {
-
     ScriptWrapper script = scriptManager().currentScript();
+    //scriptManager().autoZoomOnCurrentScriptIfNec();
+
     if (!script.isNone()) {
       mGraphics = (Graphics2D) g;
       mCurrentZoom = geomApp().zoomFactor();

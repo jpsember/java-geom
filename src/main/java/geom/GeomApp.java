@@ -226,7 +226,7 @@ public abstract class GeomApp extends GUIApp {
   public final /* final for now */ String getAlertText() {
     if (isProjectBased()) {
       var m = scriptManager();
-      if (m.isDefaultProject())
+      if (!m.isProjectDefined())
         return "No project selected; open one from the Project menu";
       if (!m.definedAndNonEmpty())
         return "This project is empty! Open another from the Project menu";
@@ -449,7 +449,6 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public final void setZoomFactor(float zoom) {
-    pi("setZoom:", zoom);
     widgets().setf(EDITOR_ZOOM, zoom);
   }
 
@@ -458,7 +457,6 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public final void setPanOffset(IPoint offset) {
-    pi("setPan:", offset);
     widgets().seti(EDITOR_PAN_X, offset.x);
     widgets().seti(EDITOR_PAN_Y, offset.y);
   }
@@ -608,39 +606,8 @@ public abstract class GeomApp extends GUIApp {
 
   private boolean mRenderPageFrame = true;
 
+  @Deprecated
   public void adjustViewTransform(ScriptWrapper scriptWrapper) {
-    pi(VERT_SP, "adjustViewTransform, script:", scriptWrapper.file());
-    var script = scriptWrapper.script();
-    var wm = scriptWrapper.script().widgets();
-    if (wm.containsKey(EDITOR_ZOOM)) return;
-
-    pi("...doesn't contain ZOOM; initializing...");
-
-    pi("page size:", scriptWrapper.pageSize());
-    pi("editor panel allBounds:", getEditorPanel().getBounds());
-
-    // If the editor panel has a known size, use that; otherwise, base it on a default.
-    // For all I know, the editor panel's size is never known at this point...
-    var viewSize = new IRect(getEditorPanel().getBounds()).size();
-    if (viewSize.isZero()) {
-      viewSize = scriptWrapper.pageSize();
-    }
-    pi("derive transform based on size:", viewSize);
-
-    var objBounds = boundsOfObjects(script.items(), 20);
-    if (objBounds == null) return;
-
-    pi("padded allBounds:", objBounds);
-    var pan = objBounds.midPoint();
-    pi("viewSize:", viewSize);
-    var zoom = Math.min(objBounds.width / (float) viewSize.x, objBounds.height / (float) viewSize.y);
-    pi("zoom:", zoom);
-    pi("pan:", pan);
-
-    var wm2 = wm.deepCopy();
-    wm2.put(EDITOR_ZOOM, zoom);
-    wm2.put(EDITOR_PAN_X, pan.x).put(EDITOR_PAN_Y, pan.y);
-    scriptWrapper.setScript(script.toBuilder().widgets(wm2));
   }
 
 }
