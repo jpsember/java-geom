@@ -27,6 +27,8 @@ import js.app.App;
 import js.file.Files;
 import js.geometry.FPoint;
 import js.geometry.IPoint;
+import js.geometry.IRect;
+import js.graphics.ScriptElement;
 import js.gui.gen.GuiAppConfig;
 import js.widget.WidgetManager;
 import testbed.AlgorithmStepper;
@@ -203,5 +205,17 @@ public final class GeomTools {
         return description;
       }
     };
+  }
+
+  public static IRect boundsOfObjects(Collection<? extends ScriptElement> obj, int padding) {
+    IRect allBounds = null;
+    for (var item : obj) {
+      var b = item.bounds();
+      if (allBounds == null) allBounds = b;
+      allBounds = allBounds.including(b);
+    }
+    if (allBounds != null)
+      allBounds = allBounds.withInset(-padding);
+    return allBounds;
   }
 }

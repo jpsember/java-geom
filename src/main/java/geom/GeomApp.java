@@ -126,8 +126,7 @@ public abstract class GeomApp extends GUIApp {
     sm.flushProject();
     widgets().setActive(false);
 
-    sm.setCurrentProject(
-        Project.DEFAULT_INSTANCE);
+    sm.setCurrentProject(Project.DEFAULT_INSTANCE);
     contentPane().removeAll();
     recentProjects().setCurrentFile(null);
     scriptManager().loadProjectScript();
@@ -369,6 +368,7 @@ public abstract class GeomApp extends GUIApp {
     addItem("zoom_out", "Zoom Out", ZoomOper.buildOut());
     addItem("zoom_reset", "Zoom Reset", ZoomOper.buildReset());
     addItem("pan_reset", "Pan Reset", PanOper.buildReset());
+    addItem("auto_zoom", "Auto Zoom", new AutoZoomOper());
   }
 
   // ------------------------------------------------------------------
@@ -449,6 +449,7 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public final void setZoomFactor(float zoom) {
+    pi("setZoom:", zoom);
     widgets().setf(EDITOR_ZOOM, zoom);
   }
 
@@ -457,6 +458,7 @@ public abstract class GeomApp extends GUIApp {
   }
 
   public final void setPanOffset(IPoint offset) {
+    pi("setPan:", offset);
     widgets().seti(EDITOR_PAN_X, offset.x);
     widgets().seti(EDITOR_PAN_Y, offset.y);
   }
@@ -625,21 +627,13 @@ public abstract class GeomApp extends GUIApp {
     }
     pi("derive transform based on size:", viewSize);
 
-    // Determine bounding box of all the elements
-    IRect allBounds = null;
-    for (var item : script.items()) {
-      var b = item.bounds();
-      if (allBounds == null) allBounds = b;
-      allBounds = allBounds.including(b);
-    }
+    var objBounds = boundsOfObjects(script.items(), 20);
+    if (objBounds == null) return;
 
-     if (allBounds == null) return;
-
-    var padded = allBounds.withInset(-20, -20);
-    pi("padded allBounds:", padded);
-    var pan = padded.midPoint();
-    pi("viewSize:",viewSize);
-    var zoom = Math.min(padded.width / (float) viewSize.x, padded.height / (float) viewSize.y);
+    pi("padded allBounds:", objBounds);
+    var pan = objBounds.midPoint();
+    pi("viewSize:", viewSize);
+    var zoom = Math.min(objBounds.width / (float) viewSize.x, objBounds.height / (float) viewSize.y);
     pi("zoom:", zoom);
     pi("pan:", pan);
 
