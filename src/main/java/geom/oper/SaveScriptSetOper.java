@@ -24,7 +24,9 @@ public class SaveScriptSetOper extends UserOperation {
     var sm = scriptManager();
     var dir = sm.currentScript().file().getParentFile();
 
-    var f = SwingUtils.displaySaveFileChooser(dir, "Save set of scripts",filterForExtension(GeomTools.SCRIPT_SET_EXTENSION, "Script sets"));
+    var f = SwingUtils.displaySaveFileRequester(dir, "Save set of scripts",
+        SwingUtils.filenameFilterForExtension(GeomTools.SCRIPT_SET_EXTENSION, null)
+    );
     log("save file chooser returned:", INDENT, Files.infoMap(f));
     if (f == null) return;
 

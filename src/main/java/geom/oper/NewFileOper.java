@@ -27,6 +27,7 @@ import static js.base.Tools.*;
 
 import java.io.File;
 
+import geom.GeomTools;
 import geom.ScriptWrapper;
 import js.file.Files;
 import js.guiapp.SwingUtils;
@@ -40,12 +41,12 @@ public class NewFileOper extends UserOperation {
   public void start() {
     alertVerbose();
     log("start");
-    var f = SwingUtils.displaySaveFileChooser(new File("/Users/jeff/js/match/sample_project/charlie.json"), "Name of new script",
-        filterForExtension(Files.EXT_JSON, "Script files")
+    todo("!use directory of last loaded/saved script");
+    var f = SwingUtils.displaySaveFileRequester(null, "Name of new script",
+        SwingUtils.filenameFilterForExtension(Files.EXT_JSON, null)
     );
     log("save file chooser returned:", INDENT, Files.infoMap(f));
     if (f == null) return;
-
 
     f = Files.addExtension(f, "json");
     log("with extension:", f);
