@@ -66,7 +66,6 @@ public class ClusterOper implements TestBedOperation {
   public void addControls(WidgetManager c) {
     todo("!define constraints on radius of circle in relation to population, tile size");
 
-
     // To demonstrate that the oper id can be different than its UI label, make them distinct:
     //
     c.openTab(OPER_ID); //+ ":Bounds");
@@ -87,12 +86,15 @@ public class ClusterOper implements TestBedOperation {
         c.max(100).defaultVal(20).addSlider(NBR_RAD);
 
 
-        c.label("Tile size:").addLabel();
-        c.withDisplay();
-        c.max(120).min(10).addSlider(TILE_SIZE);
+//        c.label("Tile size:").addLabel();
+//        c.withDisplay();
+//        c.max(120).min(10).addSlider(TILE_SIZE);
 
         c.spanx();
         c.label("Render tiles").addToggleButton(RENDER_TILES);
+
+        c.label("Zoom:").addLabel();
+        c.max(300).addSlider(ZOOM);
       }
       c.close("random params");
 
@@ -127,12 +129,31 @@ public class ClusterOper implements TestBedOperation {
 
     s.msg("starting algorithm");
 
-
-    mPointGrid = new PointGrid(g.vi(TILE_SIZE));
-    for (var pt : input) {
-      mPointGrid.insert(pt);
+    float targZoom;
+    {
+      var app = geomApp();
+      var z = g.vi(ZOOM);
+      targZoom = interpolateBetweenScalars(0.8f, 9f, z / 300f);
+      //pr("zoom:", z, "current:", app.zoomFactor(), "targ:", targZoom);
+      app.setZoomFactor(targZoom);
     }
+    var ts = tileSizeForZoom(targZoom);
+    pr(ts);
 
+    // If there are no points yet, throw out cached grids
+    if (pointsAreNew()) {
+      mPointGrid = null;
+    }
+    if (mPointGrid == null) {
+      mPointGrid2 = null;
+      var tileSize = ts.tileSize;
+      pr("TileSizeParam:",INDENT,ts);
+      mPointGrid = new PointGrid(tileSize);
+      for (var pt : input) {
+        mPointGrid.insert(pt);
+      }
+
+    }
   }
 
   private static int widgetValueHash(String... ids) {
@@ -145,9 +166,11 @@ public class ClusterOper implements TestBedOperation {
   }
 
   private List<IPoint> constructInputPoints() {
-    var hash = widgetValueHash(SEED, COUNT, STICKYNESS, NBR_RAD, SEED);
+    mPointsAreNewFlag = false;
+    var hash = widgetValueHash(SEED, COUNT, STICKYNESS, NBR_RAD, SEED );
     if (mCachedPoints == null || hash != mCachedPointsHashCode) {
       mCachedPointsHashCode = hash;
+      mPointsAreNewFlag = true;
       List<IPoint> points = arrayList();
       for (ScriptElement elem : scriptManager().state().elements()) {
         if (elem.is(PointElement.DEFAULT_INSTANCE))
@@ -158,7 +181,12 @@ public class ClusterOper implements TestBedOperation {
     return mCachedPoints;
   }
 
+  private boolean pointsAreNew() {
+    return mPointsAreNewFlag;
+  }
+
   private List<IPoint> mCachedPoints;
+  private boolean mPointsAreNewFlag;
   private int mCachedPointsHashCode;
 
   @Override
@@ -218,5 +246,42 @@ public class ClusterOper implements TestBedOperation {
     geomApp().performRepaint(GeomApp.REPAINT_EDITOR);
   }
 
+
+  static class TileSizeParam {
+    float zoomFactor;
+    float idealTileSize;
+    int exponent;
+    float param;
+    int tileSize;
+
+    @Override
+    public String toString() {
+      var m = map();
+      m.put("zoom", zoomFactor);
+      m.put("exponent", exponent);
+      m.put("param", param);
+      m.put("tile_size", tileSize);
+      m.put("ideal_tile_size", idealTileSize);
+      return m.prettyPrint();
+    }
+  }
+
+  /**
+   * Determine ideal tile size for a zoom factor
+   */
+  private TileSizeParam tileSizeForZoom(float zoomFactor) {
+    var p = new TileSizeParam();
+    p.zoomFactor = zoomFactor;
+    p.idealTileSize = Math.max(1, 16f / p.zoomFactor);
+    var log2 = Math.log(p.idealTileSize) / Math.log(2);
+    checkState(log2 >= 0);
+    p.exponent = (int) Math.floor(log2);
+    p.param = (float) (log2 - p.exponent);
+    p.tileSize = (int) Math.pow(2f, p.exponent);
+    return p;
+  }
+
+
   private PointGrid mPointGrid;
+  private PointGrid mPointGrid2;
 }
