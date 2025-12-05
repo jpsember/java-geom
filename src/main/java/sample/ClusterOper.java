@@ -39,6 +39,7 @@ import testbed.AlgorithmStepper;
 import testbed.TestBedOperation;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static geom.GeomTools.*;
@@ -51,6 +52,7 @@ public class ClusterOper implements TestBedOperation {
   public static final boolean DEBUG_CLUSTER = false && alert("!DEBUG_CLUSTER is true");
 
   private static final String OPER_ID = "cluster";
+
 
 
   @Override
@@ -73,7 +75,7 @@ public class ClusterOper implements TestBedOperation {
       c.label("Calculate minimum bounding box of objects").addLabel();
 
       c.columns(".x");
-      c.open("random params");
+      c.open("cluster params");
       {
         c.label("Seed:").addLabel();
         c.withDisplay();
@@ -85,32 +87,14 @@ public class ClusterOper implements TestBedOperation {
         c.label("Radius:").addLabel();
         c.max(100).defaultVal(20).addSlider(NBR_RAD);
 
-
-//        c.label("Tile size:").addLabel();
-//        c.withDisplay();
-//        c.max(120).min(10).addSlider(TILE_SIZE);
-
         c.spanx();
         c.label("Render tiles").addToggleButton(RENDER_TILES);
 
         c.label("Zoom:").addLabel();
         c.max(300).addSlider(ZOOM);
       }
-      c.close("random params");
+      c.close("cluster params");
 
-      c.columns(".x");
-      c.open("listener experiment");
-      c.pushListener((x) -> p2("outer listener, id:", x));
-      {
-        c.label("Slider1:").addLabel();
-        c.max(100).listener((x) -> p2("slider1 listener", x)).addSlider("cl_slider_1");
-        c.label("Slider2:").addLabel();
-        c.max(100).listener((x) -> p2("slider2 listener", x)).defaultVal(12).addSlider("cl_slider_2");
-        c.label("Slider3:").addLabel();
-        c.max(100).defaultVal(12).addSlider("cl_slider_3");
-      }
-      c.popListener();
-      c.close();
     }
     c.closeTab();
   }
@@ -141,19 +125,43 @@ public class ClusterOper implements TestBedOperation {
     pr(ts);
 
     // If there are no points yet, throw out cached grids
-    if (pointsAreNew()) {
-      mPointGrid = null;
-    }
-    if (mPointGrid == null) {
-      mPointGrid2 = null;
-      var tileSize = ts.tileSize;
-      pr("TileSizeParam:",INDENT,ts);
-      mPointGrid = new PointGrid(tileSize);
-      for (var pt : input) {
-        mPointGrid.insert(pt);
-      }
 
+    if (pointsAreNew()) {
+      mPointGridCache = hashMap();
+//      mPointGrid = null;
     }
+
+    mParam = ts;
+    mGrid0 =
+    buildGrid(ts.tileSize);
+    mGrid1 =
+    buildGrid(ts.tileSize * 2);
+
+//
+//    if (mPointGrid == null) {
+//      mPointGrid2 = null;
+//      var tileSize = ts.tileSize;
+//      pr("TileSizeParam:",INDENT,ts);
+//      mPointGrid = new PointGrid(tileSize);
+//      for (var pt : input) {
+//        mPointGrid.insert(pt);
+//      }
+//
+//    }
+  }
+
+  private PointGrid buildGrid(int tileSize) {
+    if (mPointGridCache == null) mPointGridCache = hashMap();
+    var result = mPointGridCache.get(tileSize);
+    if (result == null) {
+      result = new PointGrid(tileSize);
+      var input = mCachedPoints;
+      for (var pt : input) {
+        result.insert(pt);
+      }
+      mPointGridCache.put(tileSize, result);
+    }
+    return result;
   }
 
   private static int widgetValueHash(String... ids) {
@@ -167,7 +175,7 @@ public class ClusterOper implements TestBedOperation {
 
   private List<IPoint> constructInputPoints() {
     mPointsAreNewFlag = false;
-    var hash = widgetValueHash(SEED, COUNT, STICKYNESS, NBR_RAD, SEED );
+    var hash = widgetValueHash(SEED, COUNT, STICKYNESS, NBR_RAD, SEED);
     if (mCachedPoints == null || hash != mCachedPointsHashCode) {
       mCachedPointsHashCode = hash;
       mPointsAreNewFlag = true;
@@ -191,9 +199,9 @@ public class ClusterOper implements TestBedOperation {
 
   @Override
   public void paintView() {
-    if (mPointGrid != null) {
-      mPointGrid.render();
-    }
+    if (mGrid0 != null)
+      mGrid0.render();
+    todo("interpolate for mGrid1");
   }
 
   private void generate() {
@@ -272,7 +280,7 @@ public class ClusterOper implements TestBedOperation {
   private TileSizeParam tileSizeForZoom(float zoomFactor) {
     var p = new TileSizeParam();
     p.zoomFactor = zoomFactor;
-    p.idealTileSize = Math.max(1, 16f / p.zoomFactor);
+    p.idealTileSize = Math.max(1, 30f / p.zoomFactor);
     var log2 = Math.log(p.idealTileSize) / Math.log(2);
     checkState(log2 >= 0);
     p.exponent = (int) Math.floor(log2);
@@ -281,7 +289,8 @@ public class ClusterOper implements TestBedOperation {
     return p;
   }
 
-
-  private PointGrid mPointGrid;
-  private PointGrid mPointGrid2;
+  private TileSizeParam mParam;
+  private PointGrid mGrid0;
+  private PointGrid mGrid1;
+  private Map<Integer, PointGrid> mPointGridCache;
 }

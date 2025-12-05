@@ -66,6 +66,9 @@ public class PointGrid extends BaseObject {
 
     WidgetManager g = widgets();
     var showTiles = g.vb(RENDER_TILES);
+pr("render, tilesize:",mTileSize);
+
+boolean first = true;
 
     for (var ent : mTileMap.entrySet()) {
       var key = ent.getKey();
@@ -76,6 +79,10 @@ public class PointGrid extends BaseObject {
         stroke(STRK_THIN);
         color(BLUE, 0.2);
         drawRect(tileLoc.x, tileLoc.y, mTileSize, mTileSize);
+        if (first) {
+          first = false;
+          pr("showing tile, tileLoc:",tileLoc,"size:",mTileSize);
+        }
       }
 
       if (tile.population() == 0) continue;
@@ -87,7 +94,7 @@ public class PointGrid extends BaseObject {
       color(RED, 0.8);
       stroke(STRK_NORMAL);
 
-      fillCircle(tile.meanLocation(), radius);
+    drawCircle(tile.meanLocation(), radius);
     }
   }
 
