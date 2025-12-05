@@ -1,0 +1,7 @@
+{ "additional_git_commit_args" : "",
+             "ignore_conflict" : false,
+               "issue_numbers" : true,
+                "message_only" : false,
+                   "no_verify" : false,
+                   "untracked" : false
+}

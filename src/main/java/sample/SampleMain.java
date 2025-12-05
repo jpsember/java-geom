@@ -62,7 +62,8 @@ public class SampleMain extends TestBed {
   @Override
   public void addOperations() {
     ScriptUtil.sAllowEmptyScripts = true;
-    addOper(new BoundsOper());
+//    addOper(new BoundsOper());
+    addOper(new ClusterOper());
   }
 
   @Override
