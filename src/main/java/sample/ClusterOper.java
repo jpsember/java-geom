@@ -73,7 +73,7 @@ public class ClusterOper implements TestBedOperation {
 
     // To demonstrate that the oper id can be different than its UI label, make them distinct:
     //
-    c.openTab(OPER_ID); //+ ":Bounds");
+    c.openTab(OPER_ID);
     {
       c.label("Calculate minimum bounding box of objects").addLabel();
 
@@ -123,7 +123,6 @@ public class ClusterOper implements TestBedOperation {
       var app = geomApp();
       var z = g.vi(ZOOM);
       targZoom = interpolateBetweenScalars(0.8f, 9f, z / 300f);
-      //pr("zoom:", z, "current:", app.zoomFactor(), "targ:", targZoom);
       app.setZoomFactor(targZoom);
     }
     var ts = tileSizeForZoom(targZoom);
@@ -197,7 +196,7 @@ public class ClusterOper implements TestBedOperation {
       Render.graphics().drawImage(mImage, 0, 0, null);
     }
     if (mGrid0 != null)
-      mGrid0.render(mParam.param,  mGrid1 );
+      mGrid0.render(mParam.param, mGrid1);
   }
 
   private void generate() {

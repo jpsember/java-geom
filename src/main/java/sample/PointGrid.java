@@ -10,7 +10,9 @@ import static testbed.Render.*;
 import static sample.ClusterGlobals.*;
 
 import js.base.BaseObject;
+import js.base.Pair;
 import js.geometry.IPoint;
+import js.geometry.IRect;
 import js.json.JSMap;
 import js.widget.WidgetManager;
 
@@ -54,6 +56,25 @@ public class PointGrid extends BaseObject {
     return result;
   }
 
+  /**
+   * Determine which tile contains a point from a higher resolution grid
+   *
+   * @param tileBounds bounds of tile in higher resolution grid
+   * @return if a match found, a pair containing the tile, and a flag that is true iff
+   * this (the lower resolution) tile's pointset lies within the higher resolution's tile
+   */
+  public Pair<Tile, Boolean> getMatchForHigherRes(IRect tileBounds) {
+    var auxKey = keyForPoint(tileBounds.location());
+    var auxTile = mTileMap.get(auxKey);
+    boolean quadrantFlag = false;
+
+    if (auxTile != null) {
+      if (auxTile.population() != 0 && tileBounds.contains(auxTile.meanLocation()))
+        quadrantFlag = true;
+      return pair(auxTile, quadrantFlag);
+    }
+    return null;
+  }
 
   double radiusForPop(int pop) {
     var radius = 1 / (1 + Math.exp(-pop * 0.3));
@@ -85,16 +106,16 @@ public class PointGrid extends BaseObject {
     Color tileBoundaryColor = new Color(0, 100, 0, 128);
     var interpolate = g.vb(INTERPOLATE);
     var renderTiles = g.vb(RENDER_TILES);
+    var tileDims = new IPoint(mTileSize, mTileSize);
 
     for (var ent : mTileMap.entrySet()) {
       var key = ent.getKey();
       var tile = ent.getValue();
-      var tileLoc = tileLocation(key);
-
+      var tileBounds = IRect.withLocAndSize(tileLocation(key), tileDims);
       if (renderTiles) {
         stroke(tileBoundaryStroke);
         color(tileBoundaryColor);
-        drawRect(tileLoc.x, tileLoc.y, mTileSize, mTileSize);
+        drawRect(tileBounds);
       }
 
       if (tile.population() == 0) continue;
@@ -109,21 +130,31 @@ public class PointGrid extends BaseObject {
 
       // If we're interpolating with a lower resolution grid, do so
       if (interpolate && auxGrid != null) {
-        var auxKey = auxGrid.keyForPoint(tileLoc);
-        var auxTile = auxGrid.mTileMap.get(auxKey);
+
+        var z = auxGrid.getMatchForHigherRes(tileBounds);
+        var auxTile = z.first;
         if (auxTile != null) {
+          var useColor = z.second;
           var radiusAux = auxGrid.radiusForPop(auxTile.population()) * zoomCompensation;
           radiusInterp = interpolateBetweenScalars((float) radius, (float) radiusAux, interpFactor);
           locationInterp = IPoint.interp(location, auxTile.meanLocation(), interpFactor);
 
           // if we're drawing the circles with some transparency, it is tricky to
           // transition smoothly from several overlapping discs at a higher resolution to
-          // a single disk at a lower resolution
-//todo...
+          // a single disk at a lower resolution.
+          //
+          // if the lower resolution's pointset center lies within this (higher resolution) tile,
+          // we want to blend to the full alpha value;
+          // otherwise, we want the alpha to blend to zero as it merges with the (lower resolution) version
 
-          var alpha = (int) (128 * (1 - interpFactor) + interpFactor * 64);
+          todo("but do we want to apply a fade to the two grids, based on the interpolation factor? since both are drawn?");
+          
+          var normalAlpha = 128;
+          var targetAlpha = useColor ? normalAlpha : 0;
 
-          color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+          var blendedAlpha = (int) interpolateBetweenScalars(normalAlpha, targetAlpha, interpFactor);
+
+          color = new Color(color.getRed(), color.getGreen(), color.getBlue(), blendedAlpha);
         }
       }
 
@@ -132,7 +163,7 @@ public class PointGrid extends BaseObject {
 
       fillCircle(locationInterp, radiusInterp);
 
-
+      todo("log which grid resolution is active");
     }
   }
 
