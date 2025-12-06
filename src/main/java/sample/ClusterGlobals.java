@@ -1,6 +1,7 @@
 package sample;
 
 public final class ClusterGlobals {
+  public static final String GENERATE = "c_generate";
   public static final String SEED = "c_seed";
   public static final String COUNT = "c_count";
   public static final String STICKYNESS = "c_stickyness";

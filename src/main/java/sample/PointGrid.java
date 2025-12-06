@@ -148,7 +148,9 @@ public class PointGrid extends BaseObject {
           // we want to blend to the full alpha value;
           // otherwise, we want the alpha to blend to zero as it merges with the (lower resolution) version
 
-          todo("but do we want to apply a fade to the two grids, based on the interpolation factor? since both are drawn?");
+          // Alpha factor should be
+          //
+          //    t = (smaller tile pop) / (larger tile pop)
 
           var normalAlpha = 128;
           var targetAlpha = useColor ? normalAlpha : 0;

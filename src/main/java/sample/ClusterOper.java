@@ -69,6 +69,8 @@ public class ClusterOper implements TestBedOperation {
   }
 
   public void addControls(WidgetManager c) {
+    todo("!can't easily save current script");
+    todo("!hand editing points doesn't discard cache or trigger redraw reliably");
     todo("!define constraints on radius of circle in relation to population, tile size");
 
     // To demonstrate that the oper id can be different than its UI label, make them distinct:
@@ -80,6 +82,9 @@ public class ClusterOper implements TestBedOperation {
       c.columns(".x");
       c.open("cluster params");
       {
+        c.spanx();
+        c.label("Generate").addToggleButton(GENERATE);
+
         c.label("Seed:").addLabel();
         c.withDisplay();
         c.max(100).addSlider(SEED);
@@ -105,8 +110,10 @@ public class ClusterOper implements TestBedOperation {
   }
 
   public void processUserEvent(UserEvent event) {
-    if (event.isWidget())
-      generate();
+    if (event.isWidget()) {
+      if (widgets().vb(GENERATE))
+        generate();
+    }
   }
 
   public void runAlgorithm() {
@@ -163,7 +170,7 @@ public class ClusterOper implements TestBedOperation {
   private List<IPoint> constructInputPoints() {
     mPointsAreNewFlag = false;
     var hash = widgetValueHash(SEED, COUNT, STICKYNESS, NBR_RAD, SEED);
-    if (mCachedPoints == null || hash != mCachedPointsHashCode) {
+    if (mCachedPoints == null || hash != mCachedPointsHashCode || !widgets().vb(GENERATE)) {
       mCachedPointsHashCode = hash;
       mPointsAreNewFlag = true;
       List<IPoint> points = arrayList();
