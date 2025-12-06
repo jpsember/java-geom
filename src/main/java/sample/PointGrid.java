@@ -5,12 +5,10 @@ import static js.base.Tools.*;
 import static geom.GeomTools.*;
 import static js.geometry.MyMath.clamp;
 import static js.geometry.MyMath.interpolateBetweenScalars;
-import static testbed.Colors.*;
 import static testbed.Render.*;
 import static sample.ClusterGlobals.*;
 
 import js.base.BaseObject;
-import js.base.Pair;
 import js.geometry.IPoint;
 import js.geometry.IRect;
 import js.json.JSMap;
@@ -57,23 +55,16 @@ public class PointGrid extends BaseObject {
   }
 
   /**
-   * Determine which tile contains a point from a higher resolution grid
+   * Determine which tile contains a smaller tile (from a higher resolution grid)
    *
-   * @param tileBounds bounds of tile in higher resolution grid
-   * @return if a match found, a pair containing the tile, and a flag that is true iff
-   * this (the lower resolution) tile's pointset lies within the higher resolution's tile
+   * @param smallerTileBounds bounds of smaller tile in higher resolution grid
+   * @return larger tile, or null
    */
-  public Pair<Tile, Boolean> getMatchForHigherRes(IRect tileBounds) {
-    var auxKey = keyForPoint(tileBounds.location());
-    var auxTile = mTileMap.get(auxKey);
-    boolean quadrantFlag = false;
-
-    if (auxTile != null) {
-      if (auxTile.population() != 0 && tileBounds.contains(auxTile.meanLocation()))
-        quadrantFlag = true;
-      return pair(auxTile, quadrantFlag);
-    }
-    return null;
+  public Tile tileContainingTileFromHigherRes(IRect smallerTileBounds) {
+    var auxKey = keyForPoint(smallerTileBounds.location());
+    var largerTile = mTileMap.get(auxKey);
+    checkState(largerTile.population() != 0);
+    return largerTile;
   }
 
   double radiusForPop(int pop) {
@@ -119,7 +110,7 @@ public class PointGrid extends BaseObject {
         drawRect(tileBounds);
       }
 
-      if (tile.population() == 0) continue;
+      checkState(tile.population() != 0);
 
       // Make radius level out asymptotically
       var pop = tile.population();
@@ -129,13 +120,11 @@ public class PointGrid extends BaseObject {
       var radiusInterp = radius;
       var locationInterp = location;
 
-      // If we're interpolating with a lower resolution grid, do so
+      // If we're interpolating with a coarser resolution grid (one with larger tiles), do so
       if (interpolate && auxGrid != null) {
-
-        var z = auxGrid.getMatchForHigherRes(tileBounds);
-        var auxTile = z.first;
+        var auxTile = auxGrid.tileContainingTileFromHigherRes(tileBounds);
         if (auxTile != null) {
-          var useColor = z.second;
+
           var radiusAux = auxGrid.radiusForPop(auxTile.population()) * zoomCompensation;
           radiusInterp = interpolateBetweenScalars((float) radius, (float) radiusAux, interpFactor);
           locationInterp = IPoint.interp(location, auxTile.meanLocation(), interpFactor);
@@ -151,11 +140,12 @@ public class PointGrid extends BaseObject {
           // Alpha factor should be
           //
           //    t = (smaller tile pop) / (larger tile pop)
+          float proportion = pop / (float)auxTile.population();
 
           var normalAlpha = 128;
-          var targetAlpha = useColor ? normalAlpha : 0;
 
-          var blendedAlpha = (int) interpolateBetweenScalars(normalAlpha, targetAlpha, interpFactor);
+          // This is correct, but I'm fuzzy as to why
+          var blendedAlpha = (int) interpolateBetweenScalars(normalAlpha, normalAlpha * proportion, interpFactor);
 
           discColor = new Color(discColor.getRed(), discColor.getGreen(), discColor.getBlue(), blendedAlpha);
         }
