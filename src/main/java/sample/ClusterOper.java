@@ -31,13 +31,18 @@ import geom.gen.ScriptEditState;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.IPoint;
+import js.graphics.ImgUtil;
 import js.graphics.PointElement;
 import js.graphics.ScriptElement;
 import js.guiapp.UserEvent;
 import js.widget.WidgetManager;
 import testbed.AlgorithmStepper;
+import testbed.Render;
 import testbed.TestBedOperation;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -106,7 +111,7 @@ public class ClusterOper implements TestBedOperation {
   public void runAlgorithm() {
     WidgetManager g = widgets();
 
-    var input = constructInputPoints();
+    constructInputPoints();
 
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
 
@@ -121,7 +126,6 @@ public class ClusterOper implements TestBedOperation {
       app.setZoomFactor(targZoom);
     }
     var ts = tileSizeForZoom(targZoom);
-//    pr(ts);
 
     // If there are no points yet, throw out cached grids
     if (pointsAreNew()) {
@@ -180,8 +184,15 @@ public class ClusterOper implements TestBedOperation {
   private boolean mPointsAreNewFlag;
   private int mCachedPointsHashCode;
 
+  private Image mImage;
+
   @Override
   public void paintView() {
+
+    if (mImage == null) {
+      mImage = ImgUtil.read(new File("background.jpg"));
+    }
+    Render.graphics().drawImage(mImage, 0,0, null);
     if (mGrid0 != null)
       mGrid0.render(mParam.param, mGrid1);
   }

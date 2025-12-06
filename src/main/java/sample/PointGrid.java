@@ -3,7 +3,6 @@ package sample;
 import static js.base.Tools.*;
 
 import static geom.GeomTools.*;
-import static js.base.Tools.*;
 import static js.geometry.MyMath.clamp;
 import static js.geometry.MyMath.interpolateBetweenScalars;
 import static testbed.Colors.*;
@@ -14,7 +13,6 @@ import js.base.BaseObject;
 import js.geometry.IPoint;
 import js.json.JSMap;
 import js.widget.WidgetManager;
-import testbed.Colors;
 
 import java.awt.*;
 import java.util.Map;
@@ -65,21 +63,26 @@ public class PointGrid extends BaseObject {
     return radius;
   }
 
+  private static Color[] sampleColors = {
+      new Color(255, 20, 20, 128),
+      new Color(150, 193, 242, 128),
+      new Color(217, 171, 109, 128),
+      new Color(245, 244, 119, 128),
+  };
+
   public void render(float interpFactor, PointGrid auxGrid) {
 
+    var color = sampleColors[0];
     WidgetManager g = widgets();
     var showTiles = g.vb(RENDER_TILES);
 
-    boolean first = true;
-
     // I am using the zoom feature to perform the scaling, but we need to
     // 'undo' the normal scaling that it does to keep things like the circle
-    // radii and stroke thickness remain *constant* throught zooming
+    // radii and stroke thickness remain *constant* throughout zooming
     float zoomCompensation = getScale();
     var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
     var tileBoundaryStroke = new BasicStroke(0.7f * zoomCompensation);
     Color tileBoundaryColor = new Color(255, 255, 255, 128);
-
 
     for (var ent : mTileMap.entrySet()) {
       var key = ent.getKey();
@@ -90,9 +93,6 @@ public class PointGrid extends BaseObject {
         stroke(tileBoundaryStroke);
         color(tileBoundaryColor);
         drawRect(tileLoc.x, tileLoc.y, mTileSize, mTileSize);
-//        if (first) {
-//          pr("showing tile, tileLoc:", tileLoc, "size:", mTileSize);
-//        }
       }
 
       if (tile.population() == 0) continue;
@@ -108,32 +108,28 @@ public class PointGrid extends BaseObject {
       // If we're interpolating with a lower resolution grid, do so
       if (auxGrid != null) {
         var auxKey = auxGrid.keyForPoint(tileLoc);
-//        if (first) {
-//          pr("key within aux grid:", auxKey);
-//        }
         var auxTile = auxGrid.mTileMap.get(auxKey);
         if (auxTile != null) {
-          if (first) {
-//            pr("interp:",interpFactor);
-            //  pr("ourTile:", INDENT, tile);
-            // pr("auxTile:", INDENT, auxTile);
-          }
-
           var radiusAux = auxGrid.radiusForPop(auxTile.population()) * zoomCompensation;
-
-          // Interpolate between them
           radiusInterp = interpolateBetweenScalars((float) radius, (float) radiusAux, interpFactor);
           locationInterp = IPoint.interp(location, auxTile.meanLocation(), interpFactor);
 
+          // if we're drawing the circles with some transparency, it is tricky to
+          // transition smoothly from several overlapping discs at a higher resolution to
+          // a single disk at a lower resolution
+todo...
+
+          var alpha = (int)(128 * (1-interpFactor) +  interpFactor  * 64);
+
+          color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
         }
       }
 
-      color(RED, 0.8);
+      color(color);
       stroke(pointSetStroke);
 
-      drawCircle(locationInterp, radiusInterp);
+      fillCircle(locationInterp, radiusInterp);
 
-      first = false;
 
     }
   }
