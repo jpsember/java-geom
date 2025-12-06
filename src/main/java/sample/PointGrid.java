@@ -92,18 +92,19 @@ public class PointGrid extends BaseObject {
   };
 
   public void render(float interpFactor, PointGrid auxGrid) {
-
-    var color = sampleColors[0];
     WidgetManager g = widgets();
-    var showTiles = g.vb(RENDER_TILES);
 
     // I am using the zoom feature to perform the scaling, but we need to
     // 'undo' the normal scaling that it does to keep things like the circle
     // radii and stroke thickness remain *constant* throughout zooming
     float zoomCompensation = getScale();
+
+    var discColor = sampleColors[0];
+
     var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
     var tileBoundaryStroke = new BasicStroke(0.7f * zoomCompensation);
     Color tileBoundaryColor = new Color(0, 100, 0, 128);
+
     var interpolate = g.vb(INTERPOLATE);
     var renderTiles = g.vb(RENDER_TILES);
     var tileDims = new IPoint(mTileSize, mTileSize);
@@ -148,23 +149,23 @@ public class PointGrid extends BaseObject {
           // otherwise, we want the alpha to blend to zero as it merges with the (lower resolution) version
 
           todo("but do we want to apply a fade to the two grids, based on the interpolation factor? since both are drawn?");
-          
+
           var normalAlpha = 128;
           var targetAlpha = useColor ? normalAlpha : 0;
 
           var blendedAlpha = (int) interpolateBetweenScalars(normalAlpha, targetAlpha, interpFactor);
 
-          color = new Color(color.getRed(), color.getGreen(), color.getBlue(), blendedAlpha);
+          discColor = new Color(discColor.getRed(), discColor.getGreen(), discColor.getBlue(), blendedAlpha);
         }
       }
 
-      color(color);
+      color(discColor);
       stroke(pointSetStroke);
 
       fillCircle(locationInterp, radiusInterp);
 
-      todo("log which grid resolution is active");
     }
+    todo("log which grid resolution is active");
   }
 
   public static class Tile {
