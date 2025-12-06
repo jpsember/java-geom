@@ -82,14 +82,16 @@ public class PointGrid extends BaseObject {
     float zoomCompensation = getScale();
     var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
     var tileBoundaryStroke = new BasicStroke(0.7f * zoomCompensation);
-    Color tileBoundaryColor = new Color(255, 255, 255, 128);
+    Color tileBoundaryColor = new Color(0, 100, 0, 128);
+    var interpolate = g.vb(INTERPOLATE);
+    var renderTiles = g.vb(RENDER_TILES);
 
     for (var ent : mTileMap.entrySet()) {
       var key = ent.getKey();
       var tile = ent.getValue();
       var tileLoc = tileLocation(key);
 
-      if (showTiles) {
+      if (renderTiles) {
         stroke(tileBoundaryStroke);
         color(tileBoundaryColor);
         drawRect(tileLoc.x, tileLoc.y, mTileSize, mTileSize);
@@ -106,7 +108,7 @@ public class PointGrid extends BaseObject {
       var locationInterp = location;
 
       // If we're interpolating with a lower resolution grid, do so
-      if (auxGrid != null) {
+      if (interpolate && auxGrid != null) {
         var auxKey = auxGrid.keyForPoint(tileLoc);
         var auxTile = auxGrid.mTileMap.get(auxKey);
         if (auxTile != null) {
@@ -117,9 +119,9 @@ public class PointGrid extends BaseObject {
           // if we're drawing the circles with some transparency, it is tricky to
           // transition smoothly from several overlapping discs at a higher resolution to
           // a single disk at a lower resolution
-todo...
+//todo...
 
-          var alpha = (int)(128 * (1-interpFactor) +  interpFactor  * 64);
+          var alpha = (int) (128 * (1 - interpFactor) + interpFactor * 64);
 
           color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
         }

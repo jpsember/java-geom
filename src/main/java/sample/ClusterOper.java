@@ -41,7 +41,6 @@ import testbed.Render;
 import testbed.TestBedOperation;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -91,8 +90,10 @@ public class ClusterOper implements TestBedOperation {
         c.label("Radius:").addLabel();
         c.max(100).defaultVal(20).addSlider(NBR_RAD);
 
+        c.label("Bgnd image").addToggleButton(RENDER_BGND_IMAGE);
+        c.label("Tiles").addToggleButton(RENDER_TILES);
         c.spanx();
-        c.label("Render tiles").addToggleButton(RENDER_TILES);
+        c.label("Interpolate").addToggleButton(INTERPOLATE);
 
         c.label("Zoom:").addLabel();
         c.max(300).addSlider(ZOOM);
@@ -188,13 +189,15 @@ public class ClusterOper implements TestBedOperation {
 
   @Override
   public void paintView() {
-
-    if (mImage == null) {
-      mImage = ImgUtil.read(new File("background.jpg"));
+    WidgetManager g = widgets();
+    if (g.vb(RENDER_BGND_IMAGE)) {
+      if (mImage == null) {
+        mImage = ImgUtil.read(new File("background.jpg"));
+      }
+      Render.graphics().drawImage(mImage, 0, 0, null);
     }
-    Render.graphics().drawImage(mImage, 0,0, null);
     if (mGrid0 != null)
-      mGrid0.render(mParam.param, mGrid1);
+      mGrid0.render(mParam.param,  mGrid1 );
   }
 
   private void generate() {
