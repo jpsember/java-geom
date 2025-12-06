@@ -54,7 +54,6 @@ public class ClusterOper implements TestBedOperation {
   private static final String OPER_ID = "cluster";
 
 
-
   @Override
   public String operId() {
     return OPER_ID;
@@ -122,32 +121,16 @@ public class ClusterOper implements TestBedOperation {
       app.setZoomFactor(targZoom);
     }
     var ts = tileSizeForZoom(targZoom);
-    pr(ts);
+//    pr(ts);
 
     // If there are no points yet, throw out cached grids
-
     if (pointsAreNew()) {
       mPointGridCache = hashMap();
-//      mPointGrid = null;
     }
 
     mParam = ts;
-    mGrid0 =
-    buildGrid(ts.tileSize);
-    mGrid1 =
-    buildGrid(ts.tileSize * 2);
-
-//
-//    if (mPointGrid == null) {
-//      mPointGrid2 = null;
-//      var tileSize = ts.tileSize;
-//      pr("TileSizeParam:",INDENT,ts);
-//      mPointGrid = new PointGrid(tileSize);
-//      for (var pt : input) {
-//        mPointGrid.insert(pt);
-//      }
-//
-//    }
+    mGrid0 = buildGrid(ts.tileSize);
+    mGrid1 = buildGrid(ts.tileSize * 2);
   }
 
   private PointGrid buildGrid(int tileSize) {
@@ -200,8 +183,7 @@ public class ClusterOper implements TestBedOperation {
   @Override
   public void paintView() {
     if (mGrid0 != null)
-      mGrid0.render();
-    todo("interpolate for mGrid1");
+      mGrid0.render(mParam.param, mGrid1);
   }
 
   private void generate() {
@@ -227,13 +209,12 @@ public class ClusterOper implements TestBedOperation {
 
       if (stickyOrigin != null && r.nextInt(stickyness) != 0) {
         todo("!why can't I call nextFloat(x)?");
-        var newLoc2 =
+        var nearbyPoint =
             pointOnCircle(stickyOrigin, r.nextFloat() * (360f * M_DEG), r.nextFloat() * stickyRadius);
-        if (!clip.contains(newLoc2)) {
+        if (!clip.contains(nearbyPoint)) {
           continue;
-          //  newLoc = newLoc2;
         }
-        newLoc = newLoc2;
+        newLoc = nearbyPoint;
       }
 
       if (newLoc == null) {
