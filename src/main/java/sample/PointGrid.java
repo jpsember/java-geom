@@ -14,6 +14,7 @@ import js.base.BaseObject;
 import js.geometry.IPoint;
 import js.json.JSMap;
 import js.widget.WidgetManager;
+import testbed.Colors;
 
 import java.awt.*;
 import java.util.Map;
@@ -61,7 +62,7 @@ public class PointGrid extends BaseObject {
 
     radius = (radius - 0.5) * 2 * 30;
     radius = clamp(radius, 1, 30);
-    return  radius;
+    return radius;
   }
 
   public void render(float interpFactor, PointGrid auxGrid) {
@@ -71,8 +72,14 @@ public class PointGrid extends BaseObject {
 
     boolean first = true;
 
+    // I am using the zoom feature to perform the scaling, but we need to
+    // 'undo' the normal scaling that it does to keep things like the circle
+    // radii and stroke thickness remain *constant* throught zooming
     float zoomCompensation = getScale();
-    var siteStroke = new BasicStroke( 1.5f * zoomCompensation);
+    var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
+    var tileBoundaryStroke = new BasicStroke(0.7f * zoomCompensation);
+    Color tileBoundaryColor = new Color(255, 255, 255, 128);
+
 
     for (var ent : mTileMap.entrySet()) {
       var key = ent.getKey();
@@ -80,12 +87,12 @@ public class PointGrid extends BaseObject {
       var tileLoc = tileLocation(key);
 
       if (showTiles) {
-        stroke(STRK_THIN);
-        color(BLUE, 0.2);
+        stroke(tileBoundaryStroke);
+        color(tileBoundaryColor);
         drawRect(tileLoc.x, tileLoc.y, mTileSize, mTileSize);
-        if (first) {
-          pr("showing tile, tileLoc:", tileLoc, "size:", mTileSize);
-        }
+//        if (first) {
+//          pr("showing tile, tileLoc:", tileLoc, "size:", mTileSize);
+//        }
       }
 
       if (tile.population() == 0) continue;
@@ -94,7 +101,6 @@ public class PointGrid extends BaseObject {
       var pop = tile.population();
       var radius = radiusForPop(pop) * zoomCompensation;
       var location = tile.meanLocation();
-
 
       var radiusInterp = radius;
       var locationInterp = location;
@@ -109,24 +115,21 @@ public class PointGrid extends BaseObject {
         if (auxTile != null) {
           if (first) {
 //            pr("interp:",interpFactor);
-          //  pr("ourTile:", INDENT, tile);
-           // pr("auxTile:", INDENT, auxTile);
+            //  pr("ourTile:", INDENT, tile);
+            // pr("auxTile:", INDENT, auxTile);
           }
 
-          var radiusAux = auxGrid.radiusForPop(auxTile.population());
-
+          var radiusAux = auxGrid.radiusForPop(auxTile.population()) * zoomCompensation;
 
           // Interpolate between them
-          radiusInterp = interpolateBetweenScalars((float)radius, (float)radiusAux,  interpFactor);
+          radiusInterp = interpolateBetweenScalars((float) radius, (float) radiusAux, interpFactor);
           locationInterp = IPoint.interp(location, auxTile.meanLocation(), interpFactor);
 
         }
       }
 
-      todo("The circle radius should adjust for the zoom factor");
       color(RED, 0.8);
-      stroke(siteStroke);
-
+      stroke(pointSetStroke);
 
       drawCircle(locationInterp, radiusInterp);
 
