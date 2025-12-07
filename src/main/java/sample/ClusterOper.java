@@ -97,9 +97,10 @@ public class ClusterOper implements TestBedOperation {
 
         c.label("Bgnd image").addToggleButton(RENDER_BGND_IMAGE);
         c.label("Tiles").addToggleButton(RENDER_TILES);
-        c.spanx();
+        c.label("Merge").addToggleButton(MERGE);
         c.label("Interpolate").addToggleButton(INTERPOLATE);
-
+        c.spanx();
+        c.label("Cache").addToggleButton(CACHE);
         c.label("Zoom:").addLabel();
         c.max(300).addSlider(ZOOM);
       }
@@ -141,6 +142,7 @@ public class ClusterOper implements TestBedOperation {
 
     mParam = ts;
     mGrid0 = buildGrid(ts.tileSize);
+    if (widgets().vb(MERGE))
     mGrid1 = buildGrid(ts.tileSize * 2);
   }
 
@@ -168,18 +170,24 @@ public class ClusterOper implements TestBedOperation {
   }
 
   private List<IPoint> constructInputPoints() {
+
     mPointsAreNewFlag = false;
     var hash = widgetValueHash(SEED, COUNT, STICKYNESS, NBR_RAD, SEED);
-    if (mCachedPoints == null || hash != mCachedPointsHashCode || !widgets().vb(GENERATE)) {
+
+    boolean cacheIsValid =
+        widgets().vb(CACHE) &&
+            mCachedPoints != null && hash == mCachedPointsHashCode && !widgets().vb(GENERATE);
+    if (!cacheIsValid) {
       mCachedPointsHashCode = hash;
       mPointsAreNewFlag = true;
       List<IPoint> points = arrayList();
       for (ScriptElement elem : scriptManager().state().elements()) {
         if (elem.is(PointElement.DEFAULT_INSTANCE))
           points.add(elem.location());
-        mCachedPoints = points;
       }
+      mCachedPoints = points;
     }
+    checkState(mCachedPoints != null);
     return mCachedPoints;
   }
 

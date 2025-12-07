@@ -30,7 +30,7 @@ public class PointGrid extends BaseObject {
 
     var tile = mTileMap.get(key);
     if (tile == null) {
-      tile = new Tile();
+      tile = new Tile(key);
       mTileMap.put(key, tile);
     }
     tile.insert(pt);
@@ -67,6 +67,14 @@ public class PointGrid extends BaseObject {
     return largerTile;
   }
 
+
+  public IRect tileBounds(Tile tile) {
+    var id = tile.id();
+    var x = (id & ((1 << TILE_KEY_LOW_BITS) - 1)) * mTileSize;
+    var y = (id >> TILE_KEY_LOW_BITS) * mTileSize;
+    return new IRect(x, y, mTileSize, mTileSize);
+  }
+
   double radiusForPop(int pop) {
     var radius = 1 / (1 + Math.exp(-pop * 0.3));
 
@@ -95,6 +103,8 @@ public class PointGrid extends BaseObject {
     var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
     var tileBoundaryStroke = new BasicStroke(0.7f * zoomCompensation);
     Color tileBoundaryColor = new Color(0, 100, 0, 128);
+    Color auxTileBoundaryColor = new Color(0, 80, 80, 128);
+    var auxTileBoundaryStroke = new BasicStroke(1.2f * zoomCompensation);
 
     var interpolate = g.vb(INTERPOLATE);
     var renderTiles = g.vb(RENDER_TILES);
@@ -108,6 +118,7 @@ public class PointGrid extends BaseObject {
         stroke(tileBoundaryStroke);
         color(tileBoundaryColor);
         drawRect(tileBounds);
+//        pr("drawing main tile bounds at:", tileBounds);
       }
 
       checkState(tile.population() != 0);
@@ -125,9 +136,21 @@ public class PointGrid extends BaseObject {
         var auxTile = auxGrid.tileContainingTileFromHigherRes(tileBounds);
         if (auxTile != null) {
 
+          if (renderTiles) {
+            var auxTileBounds = auxGrid.tileBounds(auxTile);
+            stroke(auxTileBoundaryStroke);
+            color(auxTileBoundaryColor);
+            drawRect(auxTileBounds);
+          }
+
           var radiusAux = auxGrid.radiusForPop(auxTile.population()) * zoomCompensation;
           radiusInterp = interpolateBetweenScalars((float) radius, (float) radiusAux, interpFactor);
           locationInterp = IPoint.interp(location, auxTile.meanLocation(), interpFactor);
+
+//          pr("interpolating, factor:", interpFactor);
+//          pr("our tile, pop:", tile.population(), tile.meanLocation());
+//          pr("Lrg tile, pop:", auxTile.population(), auxTile.meanLocation());
+//          pr("our tile bounds:", tileBounds);
 
           // if we're drawing the circles with some transparency, it is tricky to
           // transition smoothly from several overlapping discs at a higher resolution to
@@ -140,7 +163,7 @@ public class PointGrid extends BaseObject {
           // Alpha factor should be
           //
           //    t = (smaller tile pop) / (larger tile pop)
-          float proportion = pop / (float)auxTile.population();
+          float proportion = pop / (float) auxTile.population();
 
           var normalAlpha = 128;
 
@@ -155,17 +178,24 @@ public class PointGrid extends BaseObject {
       stroke(pointSetStroke);
 
       fillCircle(locationInterp, radiusInterp);
-
     }
-    todo("log which grid resolution is active");
   }
 
   public static class Tile {
+
+    public Tile(int id) {
+      mId = id;
+    }
 
     public void insert(IPoint pt) {
       mSumX += pt.x;
       mSumY += pt.y;
       mPopulation++;
+//      pr("tile", id(), "inserting #", mPopulation, pt, "mean now:", meanLocation());
+    }
+
+    public int id() {
+      return mId;
     }
 
     public IPoint meanLocation() {
@@ -179,7 +209,7 @@ public class PointGrid extends BaseObject {
 
     private int mPopulation;
     private int mSumX, mSumY;
-
+    private int mId;
 
     @Override
     public String toString() {

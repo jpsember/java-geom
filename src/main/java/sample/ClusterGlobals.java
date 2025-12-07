@@ -10,4 +10,5 @@ public final class ClusterGlobals {
   public static final String RENDER_BGND_IMAGE = "c_bgnd_image";
   public static final String ZOOM = "c_zoom";
   public static final String INTERPOLATE = "c_interpolate";
+  public static final String MERGE = "c_merge";  public static final String CACHE = "c_cache";
 }
