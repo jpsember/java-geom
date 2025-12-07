@@ -16,6 +16,7 @@ import js.json.JSMap;
 import js.widget.WidgetManager;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Map;
 
 public class PointGrid extends BaseObject {
@@ -92,7 +93,7 @@ public class PointGrid extends BaseObject {
       new Color(245, 244, 119, 128),
   };
 
-  public void render(float interpFactor, PointGrid auxGrid) {
+  public void render(float interpFactor, PointGrid auxGrid, List<RenderItem> renderItems) {
     WidgetManager g = widgets();
 
     // I am using the zoom feature to perform the scaling, but we need to
@@ -102,7 +103,6 @@ public class PointGrid extends BaseObject {
 
     var discColor = sampleColors[mColorCode];
 
-    var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
     var tileBoundaryStroke = new BasicStroke(0.7f * zoomCompensation);
     Color tileBoundaryColor = new Color(0, 100, 0, 128);
     Color auxTileBoundaryColor = new Color(0, 80, 80, 128);
@@ -171,10 +171,8 @@ public class PointGrid extends BaseObject {
         }
       }
 
-      color(discColor);
-      stroke(pointSetStroke);
+      renderItems.add(new RenderItem(locationInterp, radiusInterp, discColor));
 
-      fillCircle(locationInterp, radiusInterp);
     }
   }
 

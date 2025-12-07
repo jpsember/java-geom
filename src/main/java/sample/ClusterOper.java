@@ -50,6 +50,7 @@ import static geom.GeomTools.*;
 import static js.base.Tools.*;
 import static js.geometry.MyMath.*;
 import static sample.ClusterGlobals.*;
+import static testbed.Render.*;
 
 public class ClusterOper implements TestBedOperation {
 
@@ -145,33 +146,35 @@ public class ClusterOper implements TestBedOperation {
 
     mParam = ts;
     int nc = g.vi(NUM_COLORS);
-    for (int i = 0; i<nc; i++) {
-      mGridPairs.add( buildGridPair(ts.tileSize,i,nc));
+    for (int i = 0; i < nc; i++) {
+      mGridPairs.add(buildGridPair(ts.tileSize, i, nc));
     }
 
   }
 
   private GridPair buildGridPair(int tileSize, int colorCode, int maxColors) {
     var p = new GridPair();
-    p.mGrid0 = buildGrid(tileSize,   colorCode,maxColors);
+    p.mGrid0 = buildGrid(tileSize, colorCode, maxColors);
     if (widgets().vb(MERGE))
-      p.mGrid1 = buildGrid(tileSize * 2,  colorCode,maxColors);
+      p.mGrid1 = buildGrid(tileSize * 2, colorCode, maxColors);
     return p;
   }
 
   private static int gridCacheKey(int tileSize, int colorCode) {
     return (tileSize << 8) + colorCode;
   }
+
   private PointGrid buildGrid(int tileSize, int colorCode, int maxColors) {
     if (mPointGridCache == null) mPointGridCache = hashMap();
     var key = gridCacheKey(tileSize, colorCode);
 
     var result = mPointGridCache.get(key);
     if (result == null) {
-      result = new PointGrid(tileSize,colorCode);
+      result = new PointGrid(tileSize, colorCode);
       var input = mCachedPoints;
-      for (var pt : input) {
-        result.insert(pt);
+      for (var evt : input) {
+        if (evt.colorCode == colorCode)
+          result.insert(evt.location);
       }
       mPointGridCache.put(key, result);
     }
@@ -187,21 +190,26 @@ public class ClusterOper implements TestBedOperation {
     return sb.toString().hashCode();
   }
 
-  private List<IPoint> constructInputPoints() {
+  private List<PointEvent> constructInputPoints() {
 
+    var w = widgets();
     mPointsAreNewFlag = false;
     var hash = widgetValueHash(SEED, COUNT, STICKYNESS, NBR_RAD, SEED);
 
     boolean cacheIsValid =
-        widgets().vb(CACHE) &&
+        w.vb(CACHE) &&
             mCachedPoints != null && hash == mCachedPointsHashCode && !widgets().vb(GENERATE);
+    int numColors = w.vi(NUM_COLORS);
     if (!cacheIsValid) {
       mCachedPointsHashCode = hash;
       mPointsAreNewFlag = true;
-      List<IPoint> points = arrayList();
+      List<PointEvent> points = arrayList();
+      int cc  =0;
       for (ScriptElement elem : scriptManager().state().elements()) {
-        if (elem.is(PointElement.DEFAULT_INSTANCE))
-          points.add(elem.location());
+        if (elem.is(PointElement.DEFAULT_INSTANCE)) {
+          points.add(new PointEvent(elem.location(),cc));
+          cc = (cc+1) % numColors;
+        }
       }
       mCachedPoints = points;
     }
@@ -213,7 +221,7 @@ public class ClusterOper implements TestBedOperation {
     return mPointsAreNewFlag;
   }
 
-  private List<IPoint> mCachedPoints;
+  private List<PointEvent> mCachedPoints;
   private boolean mPointsAreNewFlag;
   private int mCachedPointsHashCode;
 
@@ -229,10 +237,20 @@ public class ClusterOper implements TestBedOperation {
       Render.graphics().drawImage(mImage, 0, 0, null);
     }
 
+
+    List<RenderItem> stack = arrayList();
     for (var p : mGridPairs) {
-      p.mGrid0.render(mParam.param, p.mGrid1);
+      p.mGrid0.render(mParam.param, p.mGrid1, stack);
     }
 
+
+    float zoomCompensation = getScale();
+    var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
+    stroke(pointSetStroke);
+    for (var ri : stack) {
+      color(ri.color);
+      fillCircle(ri.origin, ri.radius);
+    }
   }
 
   private void generate() {
@@ -320,8 +338,8 @@ public class ClusterOper implements TestBedOperation {
   }
 
   private TileSizeParam mParam;
-  private List< GridPair> mGridPairs = arrayList();
- private Map<Integer, PointGrid> mPointGridCache;
+  private List<GridPair> mGridPairs = arrayList();
+  private Map<Integer, PointGrid> mPointGridCache;
 
 
   private class GridPair {
