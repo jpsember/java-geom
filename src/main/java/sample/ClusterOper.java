@@ -103,6 +103,9 @@ public class ClusterOper implements TestBedOperation {
         c.label("Cache").addToggleButton(CACHE);
         c.label("Zoom:").addLabel();
         c.max(300).addSlider(ZOOM);
+        c.label("# Colors:").addLabel();
+        c.min(1).max(4).addSlider(NUM_COLORS);
+
       }
       c.close("cluster params");
 
@@ -141,21 +144,36 @@ public class ClusterOper implements TestBedOperation {
     }
 
     mParam = ts;
-    mGrid0 = buildGrid(ts.tileSize);
-    if (widgets().vb(MERGE))
-    mGrid1 = buildGrid(ts.tileSize * 2);
+    int nc = g.vi(NUM_COLORS);
+    for (int i = 0; i<nc; i++) {
+      mGridPairs.add( buildGridPair(ts.tileSize,i,nc));
+    }
+
   }
 
-  private PointGrid buildGrid(int tileSize) {
+  private GridPair buildGridPair(int tileSize, int colorCode, int maxColors) {
+    var p = new GridPair();
+    p.mGrid0 = buildGrid(tileSize,   colorCode,maxColors);
+    if (widgets().vb(MERGE))
+      p.mGrid1 = buildGrid(tileSize * 2,  colorCode,maxColors);
+    return p;
+  }
+
+  private static int gridCacheKey(int tileSize, int colorCode) {
+    return (tileSize << 8) + colorCode;
+  }
+  private PointGrid buildGrid(int tileSize, int colorCode, int maxColors) {
     if (mPointGridCache == null) mPointGridCache = hashMap();
-    var result = mPointGridCache.get(tileSize);
+    var key = gridCacheKey(tileSize, colorCode);
+
+    var result = mPointGridCache.get(key);
     if (result == null) {
-      result = new PointGrid(tileSize);
+      result = new PointGrid(tileSize,colorCode);
       var input = mCachedPoints;
       for (var pt : input) {
         result.insert(pt);
       }
-      mPointGridCache.put(tileSize, result);
+      mPointGridCache.put(key, result);
     }
     return result;
   }
@@ -210,8 +228,11 @@ public class ClusterOper implements TestBedOperation {
       }
       Render.graphics().drawImage(mImage, 0, 0, null);
     }
-    if (mGrid0 != null)
-      mGrid0.render(mParam.param, mGrid1);
+
+    for (var p : mGridPairs) {
+      p.mGrid0.render(mParam.param, p.mGrid1);
+    }
+
   }
 
   private void generate() {
@@ -299,7 +320,12 @@ public class ClusterOper implements TestBedOperation {
   }
 
   private TileSizeParam mParam;
-  private PointGrid mGrid0;
-  private PointGrid mGrid1;
-  private Map<Integer, PointGrid> mPointGridCache;
+  private List< GridPair> mGridPairs = arrayList();
+ private Map<Integer, PointGrid> mPointGridCache;
+
+
+  private class GridPair {
+    PointGrid mGrid0;
+    PointGrid mGrid1;
+  }
 }

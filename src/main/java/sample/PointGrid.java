@@ -20,10 +20,11 @@ import java.util.Map;
 
 public class PointGrid extends BaseObject {
 
-  public PointGrid(int tileSize) {
+  public PointGrid(int tileSize, int colorCode) {
     loadTools();
     mTileSize = tileSize;
     mTileMap = hashMap();
+    mColorCode = colorCode;
   }
 
   public void insert(IPoint pt) {
@@ -99,7 +100,7 @@ public class PointGrid extends BaseObject {
     // radii and stroke thickness remain *constant* throughout zooming
     float zoomCompensation = getScale();
 
-    var discColor = sampleColors[0];
+    var discColor = sampleColors[mColorCode];
 
     var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
     var tileBoundaryStroke = new BasicStroke(0.7f * zoomCompensation);
@@ -119,7 +120,6 @@ public class PointGrid extends BaseObject {
         stroke(tileBoundaryStroke);
         color(tileBoundaryColor);
         drawRect(tileBounds);
-//        pr("drawing main tile bounds at:", tileBounds);
       }
 
       checkState(tile.population() != 0);
@@ -148,10 +148,6 @@ public class PointGrid extends BaseObject {
           radiusInterp = interpolateBetweenScalars((float) radius, (float) radiusAux, interpFactor);
           locationInterp = FPoint.interpolate(location, auxTile.meanLocation(), interpFactor);
 
-//          pr("interpolating, factor:", interpFactor);
-//          pr("our tile, pop:", tile.population(), tile.meanLocation());
-//          pr("Lrg tile, pop:", auxTile.population(), auxTile.meanLocation());
-//          pr("our tile bounds:", tileBounds);
 
           // if we're drawing the circles with some transparency, it is tricky to
           // transition smoothly from several overlapping discs at a higher resolution to
@@ -226,6 +222,7 @@ public class PointGrid extends BaseObject {
     }
   }
 
+  private int mColorCode;
   private int mTileSize;
   private Map<Integer, Tile> mTileMap;
 }
