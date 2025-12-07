@@ -9,6 +9,7 @@ import static testbed.Render.*;
 import static sample.ClusterGlobals.*;
 
 import js.base.BaseObject;
+import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.geometry.IRect;
 import js.json.JSMap;
@@ -145,7 +146,7 @@ public class PointGrid extends BaseObject {
 
           var radiusAux = auxGrid.radiusForPop(auxTile.population()) * zoomCompensation;
           radiusInterp = interpolateBetweenScalars((float) radius, (float) radiusAux, interpFactor);
-          locationInterp = IPoint.interp(location, auxTile.meanLocation(), interpFactor);
+          locationInterp = FPoint.interpolate(location, auxTile.meanLocation(), interpFactor);
 
 //          pr("interpolating, factor:", interpFactor);
 //          pr("our tile, pop:", tile.population(), tile.meanLocation());
@@ -198,9 +199,10 @@ public class PointGrid extends BaseObject {
       return mId;
     }
 
-    public IPoint meanLocation() {
+    public FPoint meanLocation() {
       checkState(mPopulation != 0, "tile population is zero");
-      return new IPoint(mSumX / mPopulation, mSumY / mPopulation);
+      float scale = 1f / mPopulation;
+      return new FPoint(mSumX *scale, mSumY *scale);
     }
 
     public int population() {
@@ -208,7 +210,7 @@ public class PointGrid extends BaseObject {
     }
 
     private int mPopulation;
-    private int mSumX, mSumY;
+    private float mSumX, mSumY;
     private int mId;
 
     @Override
