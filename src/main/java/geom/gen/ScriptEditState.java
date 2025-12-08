@@ -1,6 +1,7 @@
 package geom.gen;
 
 import geom.EditorElement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import js.data.AbstractData;
@@ -170,7 +171,7 @@ public class ScriptEditState implements AbstractData {
     }
 
     public Builder elements(List<EditorElement> x) {
-      mElements = DataUtil.mutableCopyOf((x == null) ? DataUtil.emptyList() : x);
+      mElements = (x == null) ? new ArrayList(0) : x;
       return this;
     }
 
@@ -180,7 +181,7 @@ public class ScriptEditState implements AbstractData {
     }
 
     public Builder clipboard(List<EditorElement> x) {
-      mClipboard = DataUtil.mutableCopyOf((x == null) ? DataUtil.emptyList() : x);
+      mClipboard = (x == null) ? new ArrayList(0) : x;
       return this;
     }
 

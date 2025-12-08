@@ -8,6 +8,7 @@ import static js.geometry.MyMath.interpolateBetweenScalars;
 import static testbed.Render.*;
 import static sample.ClusterGlobals.*;
 
+import geom.gen.cluster.PointEvent;
 import js.base.BaseObject;
 import js.geometry.FPoint;
 import js.geometry.IPoint;
@@ -28,15 +29,15 @@ public class PointGrid extends BaseObject {
     mColorCode = colorCode;
   }
 
-  public void insert(IPoint pt) {
-    var key = keyForPoint(pt);
+  public void insert(PointEvent evt) {
+    var key = keyForPoint(evt.location().toIPoint());
 
     var tile = mTileMap.get(key);
     if (tile == null) {
       tile = new Tile(key);
       mTileMap.put(key, tile);
     }
-    tile.insert(pt);
+    tile.insert(evt);
   }
 
 
@@ -49,9 +50,10 @@ public class PointGrid extends BaseObject {
     return pt;
   }
 
-  private Integer keyForPoint(IPoint pt) {
-    var gx = Math.floorDiv(pt.x, mTileSize);
-    var gy = Math.floorDiv(pt.y, mTileSize);
+  private Integer keyForPoint(IPoint loc) {
+
+    var gx = Math.floorDiv(loc.x, mTileSize);
+    var gy = Math.floorDiv(loc.y, mTileSize);
     var result =
         (gy << TILE_KEY_LOW_BITS) + gx;
     return result;
@@ -182,7 +184,8 @@ public class PointGrid extends BaseObject {
       mId = id;
     }
 
-    public void insert(IPoint pt) {
+    public void insert(PointEvent evt) {
+      var pt = evt.location();
       mSumX += pt.x;
       mSumY += pt.y;
       mPopulation++;
@@ -196,7 +199,7 @@ public class PointGrid extends BaseObject {
     public FPoint meanLocation() {
       checkState(mPopulation != 0, "tile population is zero");
       float scale = 1f / mPopulation;
-      return new FPoint(mSumX *scale, mSumY *scale);
+      return new FPoint(mSumX * scale, mSumY * scale);
     }
 
     public int population() {

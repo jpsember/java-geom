@@ -3,7 +3,7 @@
 
 extern geom.EditorElement;
 
-fields {
+class {
   *EditorElement elements;
   *int selected_elements;
   *EditorElement clipboard;

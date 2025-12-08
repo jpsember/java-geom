@@ -83,7 +83,7 @@ public class GeomAppDefaults implements AbstractData {
       if (j != null) {
         result = DataUtil.parseFileListFrom(j);
       }
-      mOpenScripts = DataUtil.immutableCopyOf(result);
+      mOpenScripts = result;
     }
     {
       mCurrentScript = Files.DEFAULT;
@@ -181,7 +181,7 @@ public class GeomAppDefaults implements AbstractData {
     }
 
     public Builder openScripts(List<File> x) {
-      mOpenScripts = DataUtil.mutableCopyOf((x == null) ? DataUtil.emptyList() : x);
+      mOpenScripts = (x == null) ? new ArrayList(0) : x;
       return this;
     }
 

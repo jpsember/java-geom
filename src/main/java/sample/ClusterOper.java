@@ -28,6 +28,7 @@ import geom.GeomApp;
 import geom.elem.EditablePointElement;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
+import geom.gen.cluster.PointEvent;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.IPoint;
@@ -173,8 +174,8 @@ public class ClusterOper implements TestBedOperation {
       result = new PointGrid(tileSize, colorCode);
       var input = mCachedPoints;
       for (var evt : input) {
-        if (evt.colorCode == colorCode)
-          result.insert(evt.location);
+        if (evt.color() == colorCode)
+          result.insert(evt );
       }
       mPointGridCache.put(key, result);
     }
@@ -207,7 +208,9 @@ public class ClusterOper implements TestBedOperation {
       int cc  =0;
       for (ScriptElement elem : scriptManager().state().elements()) {
         if (elem.is(PointElement.DEFAULT_INSTANCE)) {
-          points.add(new PointEvent(elem.location(),cc));
+
+          points.add(
+              PointEvent.newBuilder().location(elem.location().toFPoint()).color(cc).build());
           cc = (cc+1) % numColors;
         }
       }

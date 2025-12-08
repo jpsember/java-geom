@@ -1,4 +1,4 @@
-fields {
+class {
   js.gui.gen.RecentFilesList recent_files;
   bool dev_features;
   *File open_scripts;

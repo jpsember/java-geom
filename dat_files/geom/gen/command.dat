@@ -1,6 +1,6 @@
 // Encapsulates a command that modifies the state of what is being edited.
 
-fields {
+class {
   string description;
   ScriptEditState new_state;
   bool merge_disabled;

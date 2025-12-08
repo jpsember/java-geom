@@ -1,4 +1,4 @@
-fields {
+class {
   int version = 1;
   int add_box_corner_index = 2;
   JSMap widget_state_map;
