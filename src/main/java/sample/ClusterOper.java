@@ -106,8 +106,8 @@ public class ClusterOper implements TestBedOperation {
         c.label("Zoom:").addLabel();
         c.max(300).addSlider(ZOOM);
         c.label("# Colors:").addLabel();
+        todo("!substituting spinner for slider fails");
         c.min(1).max(4).addSlider(NUM_COLORS);
-
       }
       c.close("cluster params");
 
@@ -124,6 +124,7 @@ public class ClusterOper implements TestBedOperation {
 
   public void runAlgorithm() {
     WidgetManager g = widgets();
+    mNumColors = g.vi(NUM_COLORS);
 
     constructInputPoints();
 
@@ -140,44 +141,21 @@ public class ClusterOper implements TestBedOperation {
     }
     var ts = tileSizeForZoom(targZoom);
 
-    // If there are no points yet, throw out cached grids
-    if (pointsAreNew()) {
-      mPointGridCache = hashMap();
-    }
-
     mParam = ts;
-    int nc = g.vi(NUM_COLORS);
-    for (int i = 0; i < nc; i++) {
-      mGridPairs.add(buildGridPair(ts.tileSize, i, nc));
-    }
 
-  }
-
-  private GridPair buildGridPair(int tileSize, int colorCode, int maxColors) {
-    var p = new GridPair();
-    p.mGrid0 = buildGrid(tileSize, colorCode, maxColors);
+    mGrid0 = buildGrid(ts.tileSize);
     if (widgets().vb(MERGE))
-      p.mGrid1 = buildGrid(tileSize * 2, colorCode, maxColors);
-    return p;
+      mGrid1 = buildGrid(ts.tileSize * 2);
   }
 
-  private static int gridCacheKey(int tileSize, int colorCode) {
-    return (tileSize << 8) + colorCode;
-  }
-
-  private PointGrid buildGrid(int tileSize, int colorCode, int maxColors) {
-    if (mPointGridCache == null) mPointGridCache = hashMap();
-    var key = gridCacheKey(tileSize, colorCode);
-
-    var result = mPointGridCache.get(key);
+  private PointGrid buildGrid(int tileSize) {
+    var result = mPointGridCache.get(tileSize);
     if (result == null) {
-      result = new PointGrid(tileSize, colorCode);
-      var input = mCachedPoints;
-      for (var evt : input) {
-        if (evt.color() == colorCode)
-          result.insert(evt );
+      result = new PointGrid(tileSize, mNumColors);
+      mPointGridCache.put(tileSize, result);
+      for (var evt : mCachedPoints) {
+        result.insert(evt);
       }
-      mPointGridCache.put(key, result);
     }
     return result;
   }
@@ -192,40 +170,36 @@ public class ClusterOper implements TestBedOperation {
   }
 
   private List<PointEvent> constructInputPoints() {
-
     var w = widgets();
-    mPointsAreNewFlag = false;
     var hash = widgetValueHash(SEED, COUNT, STICKYNESS, NBR_RAD, SEED);
-
     boolean cacheIsValid =
         w.vb(CACHE) &&
             mCachedPoints != null && hash == mCachedPointsHashCode && !widgets().vb(GENERATE);
-    int numColors = w.vi(NUM_COLORS);
-    if (!cacheIsValid) {
-      mCachedPointsHashCode = hash;
-      mPointsAreNewFlag = true;
-      List<PointEvent> points = arrayList();
-      int cc  =0;
-      for (ScriptElement elem : scriptManager().state().elements()) {
-        if (elem.is(PointElement.DEFAULT_INSTANCE)) {
+    if (cacheIsValid)
+      return mCachedPoints;
 
-          points.add(
-              PointEvent.newBuilder().location(elem.location().toFPoint()).color(cc).build());
-          cc = (cc+1) % numColors;
-        }
-      }
-      mCachedPoints = points;
+
+    mCachedPointsHashCode = hash;
+    mPointGridCache = hashMap();
+    List<PointEvent> points = arrayList();
+    mCachedPoints = points;
+    var rand = new Random(1965);
+
+    for (ScriptElement elem : scriptManager().state().elements()) {
+      if (!elem.is(PointElement.DEFAULT_INSTANCE))continue;
+
+      var b = PointEvent.newBuilder();
+      b.colorCode(rand.nextInt(mNumColors));
+      b.location(elem.location().toFPoint());
+      b.zLoc(rand.nextFloat());
+      points.add(b.build());
     }
-    checkState(mCachedPoints != null);
+
     return mCachedPoints;
   }
 
-  private boolean pointsAreNew() {
-    return mPointsAreNewFlag;
-  }
 
   private List<PointEvent> mCachedPoints;
-  private boolean mPointsAreNewFlag;
   private int mCachedPointsHashCode;
 
   private Image mImage;
@@ -240,12 +214,9 @@ public class ClusterOper implements TestBedOperation {
       Render.graphics().drawImage(mImage, 0, 0, null);
     }
 
-
     List<RenderItem> stack = arrayList();
-    for (var p : mGridPairs) {
-      p.mGrid0.render(mParam.param, p.mGrid1, stack);
-    }
-
+    checkState(mGrid0 != null);
+    mGrid0.render(mParam.param, mGrid1, stack);
 
     float zoomCompensation = getScale();
     var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
@@ -341,12 +312,8 @@ public class ClusterOper implements TestBedOperation {
   }
 
   private TileSizeParam mParam;
-  private List<GridPair> mGridPairs = arrayList();
-  private Map<Integer, PointGrid> mPointGridCache;
+  private PointGrid mGrid0, mGrid1;
+  private Map<Integer, PointGrid> mPointGridCache = hashMap();
+private int mNumColors;
 
-
-  private class GridPair {
-    PointGrid mGrid0;
-    PointGrid mGrid1;
-  }
 }

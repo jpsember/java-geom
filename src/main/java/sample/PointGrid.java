@@ -8,12 +8,13 @@ import static js.geometry.MyMath.interpolateBetweenScalars;
 import static testbed.Render.*;
 import static sample.ClusterGlobals.*;
 
+import geom.gen.cluster.EventList;
 import geom.gen.cluster.PointEvent;
+import geom.gen.cluster.Tile;
 import js.base.BaseObject;
 import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.geometry.IRect;
-import js.json.JSMap;
 import js.widget.WidgetManager;
 
 import java.awt.*;
@@ -22,41 +23,54 @@ import java.util.Map;
 
 public class PointGrid extends BaseObject {
 
-  public PointGrid(int tileSize, int colorCode) {
-    loadTools();
+  public PointGrid(int tileSize, int numColors) {
     mTileSize = tileSize;
     mTileMap = hashMap();
-    mColorCode = colorCode;
+    mNumColors = numColors;
   }
 
   public void insert(PointEvent evt) {
     var key = keyForPoint(evt.location().toIPoint());
-
     var tile = mTileMap.get(key);
     if (tile == null) {
-      tile = new Tile(key);
+      tile = Tile.newBuilder();
+      tile.bounds(tileBoundsFromKey(key));
       mTileMap.put(key, tile);
+
+      // Add an empty EventList for each potential color
+
+      for (int i = 0; i < mNumColors; i++) {
+        tile.events().add(EventList.newBuilder());
+      }
     }
-    tile.insert(evt);
+
+    // Add the point event to the appropriate color's list
+    var elb = (EventList.Builder) tile.events().get(evt.colorCode());
+
+    // have the z loc be the minimum of all events in this list
+    if (elb.population() == 0 || elb.zLoc() > evt.zLoc())
+      elb.zLoc(evt.zLoc());
+
+    elb.population(elb.population() + 1);
+    elb.sumX(elb.sumX() + evt.location().x);
+    elb.sumY(elb.sumY() + evt.location().y);
   }
 
 
   private static final int TILE_KEY_LOW_BITS = 20;
 
-  private IPoint tileLocation(int tileKey) {
+  private IRect tileBoundsFromKey(int tileKey) {
     var gx = tileKey & ((1 << TILE_KEY_LOW_BITS) - 1);
     var gy = tileKey >> TILE_KEY_LOW_BITS;
     var pt = new IPoint(gx * mTileSize, gy * mTileSize);
-    return pt;
+    return new IRect(pt.x, pt.y, mTileSize, mTileSize);
   }
 
   private Integer keyForPoint(IPoint loc) {
-
     var gx = Math.floorDiv(loc.x, mTileSize);
     var gy = Math.floorDiv(loc.y, mTileSize);
-    var result =
+    return
         (gy << TILE_KEY_LOW_BITS) + gx;
-    return result;
   }
 
   /**
@@ -65,19 +79,9 @@ public class PointGrid extends BaseObject {
    * @param smallerTileBounds bounds of smaller tile in higher resolution grid
    * @return larger tile, or null
    */
-  public Tile tileContainingTileFromHigherRes(IRect smallerTileBounds) {
+  public Tile.Builder tileContainingTileFromHigherRes(IRect smallerTileBounds) {
     var auxKey = keyForPoint(smallerTileBounds.location());
-    var largerTile = mTileMap.get(auxKey);
-    checkState(largerTile.population() != 0);
-    return largerTile;
-  }
-
-
-  public IRect tileBounds(Tile tile) {
-    var id = tile.id();
-    var x = (id & ((1 << TILE_KEY_LOW_BITS) - 1)) * mTileSize;
-    var y = (id >> TILE_KEY_LOW_BITS) * mTileSize;
-    return new IRect(x, y, mTileSize, mTileSize);
+    return mTileMap.get(auxKey);
   }
 
   double radiusForPop(int pop) {
@@ -88,11 +92,11 @@ public class PointGrid extends BaseObject {
     return radius;
   }
 
-  private static Color[] sampleColors = {
-      new Color(255, 20, 20, 128),
-      new Color(150, 193, 242, 128),
-      new Color(217, 171, 109, 128),
-      new Color(245, 244, 119, 128),
+  private final static Color[] sampleColors = {
+      new Color(255, 0, 0, 128),
+      new Color(0, 0, 255, 128),
+      new Color(0, 255, 0, 128),
+      new Color(181, 189, 49, 128),
   };
 
   public void render(float interpFactor, PointGrid auxGrid, List<RenderItem> renderItems) {
@@ -103,8 +107,6 @@ public class PointGrid extends BaseObject {
     // radii and stroke thickness remain *constant* throughout zooming
     float zoomCompensation = getScale();
 
-    var discColor = sampleColors[mColorCode];
-
     var tileBoundaryStroke = new BasicStroke(0.7f * zoomCompensation);
     Color tileBoundaryColor = new Color(0, 100, 0, 128);
     Color auxTileBoundaryColor = new Color(0, 80, 80, 128);
@@ -112,118 +114,87 @@ public class PointGrid extends BaseObject {
 
     var interpolate = g.vb(INTERPOLATE);
     var renderTiles = g.vb(RENDER_TILES);
-    var tileDims = new IPoint(mTileSize, mTileSize);
 
     for (var ent : mTileMap.entrySet()) {
-      var key = ent.getKey();
       var tile = ent.getValue();
-      var tileBounds = IRect.withLocAndSize(tileLocation(key), tileDims);
       if (renderTiles) {
         stroke(tileBoundaryStroke);
         color(tileBoundaryColor);
-        drawRect(tileBounds);
+        drawRect(tile.bounds());
       }
 
-      checkState(tile.population() != 0);
+      // Render each color's (nonempty) event list
+      var colorIndex = INIT_INDEX;
+      for (var evtList : tile.events()) {
+        colorIndex++;
 
-      // Make radius level out asymptotically
-      var pop = tile.population();
-      var radius = radiusForPop(pop) * zoomCompensation;
-      var location = tile.meanLocation();
 
-      var radiusInterp = radius;
-      var locationInterp = location;
+        if (evtList.population() == 0) continue;
 
-      // If we're interpolating with a coarser resolution grid (one with larger tiles), do so
-      if (interpolate && auxGrid != null) {
-        var auxTile = auxGrid.tileContainingTileFromHigherRes(tileBounds);
-        if (auxTile != null) {
+        var colorInterp = sampleColors[colorIndex];
 
-          if (renderTiles) {
-            var auxTileBounds = auxGrid.tileBounds(auxTile);
-            stroke(auxTileBoundaryStroke);
-            color(auxTileBoundaryColor);
-            drawRect(auxTileBounds);
+        // Make radius level out asymptotically
+        var pop = evtList.population();
+        var radius = radiusForPop(pop) * zoomCompensation;
+        var location = meanLocation(evtList);
+
+        var radiusInterp = radius;
+        var locationInterp = location;
+
+        // If we're interpolating with a coarser resolution grid (one with larger tiles), do so
+        if (interpolate && auxGrid != null) {
+          var auxTile = auxGrid.tileContainingTileFromHigherRes(tile.bounds());
+          if (auxTile != null) {
+
+            if (renderTiles) {
+              stroke(auxTileBoundaryStroke);
+              color(auxTileBoundaryColor);
+              drawRect(auxTile.bounds());
+            }
+
+            var auxEvtList = auxTile.events().get(colorIndex);
+            var auxPop = auxEvtList.population();
+            checkState(auxPop != 0);
+            var radiusAux = auxGrid.radiusForPop(auxPop) * zoomCompensation;
+            radiusInterp = interpolateBetweenScalars((float) radius, (float) radiusAux, interpFactor);
+            locationInterp = FPoint.interpolate(location, meanLocation(auxEvtList), interpFactor);
+
+
+            // if we're drawing the circles with some transparency, it is tricky to
+            // transition smoothly from several overlapping discs at a higher resolution to
+            // a single disk at a lower resolution.
+            //
+            // if the lower resolution's pointset center lies within this (higher resolution) tile,
+            // we want to blend to the full alpha value;
+            // otherwise, we want the alpha to blend to zero as it merges with the (lower resolution) version
+
+            // Alpha factor should be
+            //
+            //    t = (smaller tile pop) / (larger tile pop)
+            float proportion = pop / (float) auxPop;
+
+            var normalAlpha = 128;
+
+            // This is correct, but I'm fuzzy as to why
+            var blendedAlpha = (int) interpolateBetweenScalars(normalAlpha, normalAlpha * proportion, interpFactor);
+
+            colorInterp = new Color(colorInterp.getRed(), colorInterp.getGreen(), colorInterp.getBlue(), blendedAlpha);
           }
-
-          var radiusAux = auxGrid.radiusForPop(auxTile.population()) * zoomCompensation;
-          radiusInterp = interpolateBetweenScalars((float) radius, (float) radiusAux, interpFactor);
-          locationInterp = FPoint.interpolate(location, auxTile.meanLocation(), interpFactor);
-
-
-          // if we're drawing the circles with some transparency, it is tricky to
-          // transition smoothly from several overlapping discs at a higher resolution to
-          // a single disk at a lower resolution.
-          //
-          // if the lower resolution's pointset center lies within this (higher resolution) tile,
-          // we want to blend to the full alpha value;
-          // otherwise, we want the alpha to blend to zero as it merges with the (lower resolution) version
-
-          // Alpha factor should be
-          //
-          //    t = (smaller tile pop) / (larger tile pop)
-          float proportion = pop / (float) auxTile.population();
-
-          var normalAlpha = 128;
-
-          // This is correct, but I'm fuzzy as to why
-          var blendedAlpha = (int) interpolateBetweenScalars(normalAlpha, normalAlpha * proportion, interpFactor);
-
-          discColor = new Color(discColor.getRed(), discColor.getGreen(), discColor.getBlue(), blendedAlpha);
         }
+        renderItems.add(new RenderItem(locationInterp, radiusInterp, colorInterp));
       }
 
-      renderItems.add(new RenderItem(locationInterp, radiusInterp, discColor));
-
     }
   }
 
-  public static class Tile {
-
-    public Tile(int id) {
-      mId = id;
-    }
-
-    public void insert(PointEvent evt) {
-      var pt = evt.location();
-      mSumX += pt.x;
-      mSumY += pt.y;
-      mPopulation++;
-//      pr("tile", id(), "inserting #", mPopulation, pt, "mean now:", meanLocation());
-    }
-
-    public int id() {
-      return mId;
-    }
-
-    public FPoint meanLocation() {
-      checkState(mPopulation != 0, "tile population is zero");
-      float scale = 1f / mPopulation;
-      return new FPoint(mSumX * scale, mSumY * scale);
-    }
-
-    public int population() {
-      return mPopulation;
-    }
-
-    private int mPopulation;
-    private float mSumX, mSumY;
-    private int mId;
-
-    @Override
-    public String toString() {
-      return toJson().prettyPrint();
-    }
-
-    public JSMap toJson() {
-      var m = map();
-      m.put("pop", population());
-      m.put("mean_loc", meanLocation().toJson());
-      return m;
-    }
+  private static FPoint meanLocation(EventList events) {
+    checkArgument(events.population() != 0);
+    var s = 1f / events.population();
+    return new FPoint(events.sumX() * s, events.sumY() * s);
   }
 
-  private int mColorCode;
-  private int mTileSize;
-  private Map<Integer, Tile> mTileMap;
+
+  private final int mTileSize;
+  private final Map<Integer, Tile.Builder> mTileMap;
+  private final int mNumColors;
 }
