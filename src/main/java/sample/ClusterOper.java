@@ -85,7 +85,7 @@ public class ClusterOper implements TestBedOperation {
       c.open("cluster params");
       {
         c.spanx();
-        c.label("Generate").addToggleButton(GENERATE);
+        c.label("Generate").defaultVal(true).addToggleButton(GENERATE);
 
         c.label("Seed:").addLabel();
         c.withDisplay();
@@ -97,12 +97,12 @@ public class ClusterOper implements TestBedOperation {
         c.label("Radius:").addLabel();
         c.max(100).defaultVal(20).addSlider(NBR_RAD);
 
-        c.label("Bgnd image").addToggleButton(RENDER_BGND_IMAGE);
+        c.label("Bgnd image").defaultVal(true).addToggleButton(RENDER_BGND_IMAGE);
         c.label("Tiles").addToggleButton(RENDER_TILES);
-        c.label("Merge").addToggleButton(MERGE);
-        c.label("Interpolate").addToggleButton(INTERPOLATE);
-        c.spanx();
-        c.label("Cache").addToggleButton(CACHE);
+        c.label("Merge").defaultVal(true).addToggleButton(MERGE);
+        c.label("Interpolate").defaultVal(true).addToggleButton(INTERPOLATE);
+        c.label("Sort by z").defaultVal(true).addToggleButton(SORT_BY_Z);
+        c.label("Cache").defaultVal(true).addToggleButton(CACHE);
         c.label("Zoom:").addLabel();
         c.max(300).addSlider(ZOOM);
         c.label("# Colors:").addLabel();
@@ -221,6 +221,12 @@ public class ClusterOper implements TestBedOperation {
     float zoomCompensation = getScale();
     var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
     stroke(pointSetStroke);
+
+
+    // Sort stacked discs by z
+    if (g.vb(SORT_BY_Z))
+  stack.sort((o1, o2) -> Float.compare(o1.zSort, o2.zSort));
+
     for (var ri : stack) {
       color(ri.color);
       fillCircle(ri.origin, ri.radius);

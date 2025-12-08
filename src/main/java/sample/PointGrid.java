@@ -181,7 +181,7 @@ public class PointGrid extends BaseObject {
             colorInterp = new Color(colorInterp.getRed(), colorInterp.getGreen(), colorInterp.getBlue(), blendedAlpha);
           }
         }
-        renderItems.add(new RenderItem(locationInterp, radiusInterp, colorInterp));
+        renderItems.add(new RenderItem(locationInterp, radiusInterp, colorInterp, evtList.zLoc()));
       }
 
     }
