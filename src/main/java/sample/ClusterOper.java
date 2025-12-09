@@ -149,7 +149,6 @@ public class ClusterOper implements TestBedOperation {
 //    }
 
 
-
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
 
     s.msg("starting algorithm");
@@ -165,19 +164,18 @@ public class ClusterOper implements TestBedOperation {
     mParam = ts;
 
     mGrid0 = buildGrid(ts.tileSize);
-    if (widgets().vb(MERGE))
+    if (g.vb(MERGE))
       mGrid1 = buildGrid(ts.tileSize * 2);
   }
 
   private PointGrid buildGrid(int tileSize) {
     var result = mPointGridCache.get(tileSize);
-    if (result == null) {
+    if (result == null /* || alert("always rebuilding grid screws things up!")*/) {
       todo("I think cache validity depends upon # colors, maybe others");
       var ncol = widgets().vi(NUM_COLORS);
-      result = new PointGrid(tileSize, ncol);
-        for (var evt : mCachedPoints) {
-        result.insert(evt);
-      }
+      result = new PointGrid(tileSize, ncol, mCachedPoints);
+
+      pr("built grid for tile size:",tileSize,INDENT,result);
       if (widgets().vb(CACHE_GRID))
         mPointGridCache.put(tileSize, result);
 
@@ -192,7 +190,7 @@ public class ClusterOper implements TestBedOperation {
     // We use a random generator to determine PointEvent colors
     var rand = new Random(1965);
 
-    var  nc = widgets().vi(NUM_COLORS);
+    var nc = widgets().vi(NUM_COLORS);
 
     for (ScriptElement elem : scriptManager().state().elements()) {
       if (!elem.is(PointElement.DEFAULT_INSTANCE)) continue;
@@ -204,8 +202,7 @@ public class ClusterOper implements TestBedOperation {
     }
 
     var currentHashCode = points.hashCode();
-    if (mCachedPoints == null || currentHashCode != mCachedPointsHashCode) {
-      pr("points hash changed to:",currentHashCode,"...clearing grid cache");
+    if (mCachedPoints == null || currentHashCode != mCachedPointsHashCode ) {
       mCachedPointsHashCode = currentHashCode;
       mCachedPoints = points;
       clearGridCache();
@@ -337,13 +334,12 @@ public class ClusterOper implements TestBedOperation {
   }
 
   // Some sort of caching is tripping me up
-  
+
   private int mCachedPointsHashCode;
   private List<PointEvent> mCachedPoints;
   private BufferedImage mImage;
   private TileSizeParam mParam;
   private PointGrid mGrid0, mGrid1;
   private Map<Integer, PointGrid> mPointGridCache = hashMap();
-  private int mWidgetsHash;
 
 }

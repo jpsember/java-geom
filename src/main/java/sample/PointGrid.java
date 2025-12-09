@@ -15,24 +15,56 @@ import js.base.BaseObject;
 import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.geometry.IRect;
+import js.json.JSMap;
 import js.widget.WidgetManager;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class PointGrid extends BaseObject {
 
-  public PointGrid(int tileSize, int numColors) {
+  public PointGrid(int tileSize, int numColors, Collection<PointEvent> pts) {
     mTileSize = tileSize;
     mTileMap = hashMap();
     mNumColors = numColors;
+
+    // During construction, the tile map contains builders; after
+    // construction complete, replace with immutables
+
+    for (var p : pts) {
+      insert(p);
+    }
+
+    freeze();
   }
 
+  private void freeze() {
+    for (var key : mTileMap.keySet()) {
+      mTileMap.compute(key, (k, val) -> val.build());
+    }
+  }
+
+  @Override
+  public JSMap toJson() {
+    var m = super.toJson();
+    m.put("nc", mNumColors);
+    m.put("radius", mRadiusFactor);
+    m.put("tile size", mTileSize);
+    var z = map();
+    m.put("tiles", z);
+
+    for (var ent : mTileMap.entrySet()) {
+      z.put("#" + ent.getKey(), ent.getValue().toJson());
+    }
+
+    return m;
+  }
 
   public void insert(PointEvent evt) {
     var key = keyForPoint(evt.location().toIPoint());
-    var tile = mTileMap.get(key);
+    var tile = (Tile.Builder) mTileMap.get(key);
     if (tile == null) {
       tile = Tile.newBuilder();
       tile.bounds(tileBoundsFromKey(key));
@@ -80,13 +112,13 @@ public class PointGrid extends BaseObject {
    * @param smallerTileBounds bounds of smaller tile in higher resolution grid
    * @return larger tile, or null
    */
-  public Tile.Builder tileContainingTileFromHigherRes(IRect smallerTileBounds) {
+  public Tile tileContainingTileFromHigherRes(IRect smallerTileBounds) {
     var auxKey = keyForPoint(smallerTileBounds.location());
     return mTileMap.get(auxKey);
   }
 
   private double radiusForPop(int pop) {
-    var radius = 1 / (1 + Math.exp(-pop *  mRadiusFactor  ));
+    var radius = 1 / (1 + Math.exp(-pop * mRadiusFactor));
 
     radius = (radius - 0.5) * 2 * 30;
     radius = clamp(radius, 1, 30);
@@ -101,7 +133,7 @@ public class PointGrid extends BaseObject {
       new Color(181, 189, 49, 128),
   };
 
-  public void render(float interpFactor, PointGrid auxGrid, List<RenderItem> renderItems ) {
+  public void render(float interpFactor, PointGrid auxGrid, List<RenderItem> renderItems) {
     WidgetManager g = widgets();
 
     mRadiusFactor = 0.01f + g.vi(RADIUS_FACTOR) / 500f;
@@ -165,7 +197,7 @@ public class PointGrid extends BaseObject {
             var auxRadiusAdj = auxRadius * zoomCompensation;
             radiusInterp = interpolateBetweenScalars((float) radius, (float) auxRadiusAdj, interpFactor);
 
-          // pr("main pop:",pop,"radius:",mainRadius,"aux pop:",auxPop,"radius:",auxRadius);
+            // pr("main pop:",pop,"radius:",mainRadius,"aux pop:",auxPop,"radius:",auxRadius);
             locationInterp = FPoint.interpolate(location, meanLocation(auxEvtList), interpFactor);
 
 
@@ -202,9 +234,9 @@ public class PointGrid extends BaseObject {
     return new FPoint(events.sumX() * s, events.sumY() * s);
   }
 
-
   private final int mTileSize;
-  private final Map<Integer, Tile.Builder> mTileMap;
+  private Map<Integer, Tile> mTileMap;
   private final int mNumColors;
-  private float mRadiusFactor ;
+  private float mRadiusFactor;
+
 }
