@@ -117,6 +117,16 @@ public final class GeomTools {
     return geomApp().widgetManager();
   }
 
+  public static int calcWidgetsHash(String... ids) {
+    var w = widgets();
+    var m = map();
+    for (var id : ids) {
+      var val = w.get(id).readValue();
+      m.putUnsafe(id, val);
+    }
+    return m.hashCode() & 0x7fffffff; // hate negative numbers
+  }
+
   public static ScriptManager scriptManager() {
     return ScriptManager.singleton();
   }

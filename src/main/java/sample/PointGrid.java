@@ -27,23 +27,23 @@ public class PointGrid extends BaseObject {
 
   public PointGrid(int tileSize, int numColors, Collection<PointEvent> pts) {
     mTileSize = tileSize;
-    mTileMap = hashMap();
+    Map<Integer, Tile> tileMap = hashMap();
     mNumColors = numColors;
+    mRadiusFactor = 0.01f + widgets().vi(RADIUS_FACTOR) / 500f;
 
     // During construction, the tile map contains builders; after
     // construction complete, replace with immutables
-
     for (var p : pts) {
-      insert(p);
+      insert(p, tileMap);
     }
 
-    freeze();
-  }
-
-  private void freeze() {
-    for (var key : mTileMap.keySet()) {
-      mTileMap.compute(key, (k, val) -> val.build());
+    // Construct a map that has immutable values
+    //
+    Map<Integer, Tile> mp = hashMap();
+    for (var entry : tileMap.entrySet()) {
+      mp.put(entry.getKey(), entry.getValue().build());
     }
+    mTileMap = mp;
   }
 
   @Override
@@ -62,7 +62,7 @@ public class PointGrid extends BaseObject {
     return m;
   }
 
-  public void insert(PointEvent evt) {
+  public void insert(PointEvent evt, Map<Integer, Tile> mTileMap) {
     var key = keyForPoint(evt.location().toIPoint());
     var tile = (Tile.Builder) mTileMap.get(key);
     if (tile == null) {
@@ -117,10 +117,10 @@ public class PointGrid extends BaseObject {
     return mTileMap.get(auxKey);
   }
 
-  private double radiusForPop(int pop) {
-    var radius = 1 / (1 + Math.exp(-pop * mRadiusFactor));
+  private float radiusForPop(int pop) {
+    var radius = 1 / (1 + (float) Math.exp(-pop * mRadiusFactor));
 
-    radius = (radius - 0.5) * 2 * 30;
+    radius = (radius - 0.5f) * 2 * 30;
     radius = clamp(radius, 1, 30);
     //pr("radius for pop:",pop,"is:",radius);
     return radius;
@@ -135,9 +135,6 @@ public class PointGrid extends BaseObject {
 
   public void render(float interpFactor, PointGrid auxGrid, List<RenderItem> renderItems) {
     WidgetManager g = widgets();
-
-    mRadiusFactor = 0.01f + g.vi(RADIUS_FACTOR) / 500f;
-//    pr("RADIUS_FACTOR:",g.vi(RADIUS_FACTOR),"f:",mRadiusFactor);
 
     // I am using the zoom feature to perform the scaling, but we need to
     // 'undo' the normal scaling that it does to keep things like the circle
@@ -173,17 +170,17 @@ public class PointGrid extends BaseObject {
         // Make radius level out asymptotically
         var pop = evtList.population();
         var mainRadius = radiusForPop(pop);
-        var radius = mainRadius * zoomCompensation;
+        var mainRadiusAdj = mainRadius * zoomCompensation;
         var location = meanLocation(evtList);
 
-        var radiusInterp = radius;
+        var radiusInterp = mainRadiusAdj;
         var locationInterp = location;
 
         // If we're interpolating with a coarser resolution grid (one with larger tiles), do so
         if (interpolate && auxGrid != null) {
           var auxTile = auxGrid.tileContainingTileFromHigherRes(tile.bounds());
-          if (auxTile != null) {
 
+          if (auxTile != null) {
             if (renderTiles) {
               stroke(auxTileBoundaryStroke);
               color(auxTileBoundaryColor);
@@ -195,11 +192,8 @@ public class PointGrid extends BaseObject {
             checkState(auxPop != 0);
             var auxRadius = auxGrid.radiusForPop(auxPop);
             var auxRadiusAdj = auxRadius * zoomCompensation;
-            radiusInterp = interpolateBetweenScalars((float) radius, (float) auxRadiusAdj, interpFactor);
-
-            // pr("main pop:",pop,"radius:",mainRadius,"aux pop:",auxPop,"radius:",auxRadius);
+            radiusInterp = interpolateBetweenScalars(mainRadiusAdj, auxRadiusAdj, interpFactor);
             locationInterp = FPoint.interpolate(location, meanLocation(auxEvtList), interpFactor);
-
 
             // if we're drawing the circles with some transparency, it is tricky to
             // transition smoothly from several overlapping discs at a higher resolution to
@@ -235,8 +229,8 @@ public class PointGrid extends BaseObject {
   }
 
   private final int mTileSize;
-  private Map<Integer, Tile> mTileMap;
+  private final Map<Integer, Tile> mTileMap;
   private final int mNumColors;
-  private float mRadiusFactor;
+  private final float mRadiusFactor;
 
 }
