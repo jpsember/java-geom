@@ -32,6 +32,7 @@ import geom.gen.cluster.PointEvent;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.IPoint;
+import js.geometry.MyMath;
 import js.graphics.ImgUtil;
 import js.graphics.PointElement;
 import js.graphics.ScriptElement;
@@ -42,6 +43,7 @@ import testbed.Render;
 import testbed.TestBedOperation;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -94,8 +96,11 @@ public class ClusterOper implements TestBedOperation {
         c.max(500).defaultVal(100).addSlider(COUNT);
         c.label("Stickyness:").addLabel();
         c.max(100).defaultVal(20).addSlider(STICKYNESS);
-        c.label("Radius:").addLabel();
+        c.label("Sticky Radius:").addLabel();
         c.max(100).defaultVal(20).addSlider(NBR_RAD);
+        c.label("Disc Radius:").addLabel();
+        c.max(100).defaultVal(20).addSlider(RADIUS_FACTOR);
+
 
         c.label("Bgnd image").defaultVal(true).addToggleButton(RENDER_BGND_IMAGE);
         c.label("Tiles").addToggleButton(RENDER_TILES);
@@ -186,7 +191,7 @@ public class ClusterOper implements TestBedOperation {
     var rand = new Random(1965);
 
     for (ScriptElement elem : scriptManager().state().elements()) {
-      if (!elem.is(PointElement.DEFAULT_INSTANCE))continue;
+      if (!elem.is(PointElement.DEFAULT_INSTANCE)) continue;
 
       var b = PointEvent.newBuilder();
       b.colorCode(rand.nextInt(mNumColors));
@@ -202,16 +207,21 @@ public class ClusterOper implements TestBedOperation {
   private List<PointEvent> mCachedPoints;
   private int mCachedPointsHashCode;
 
-  private Image mImage;
+  private BufferedImage mImage;
+
+  private BufferedImage bgndImage() {
+    if (mImage == null) {
+      mImage = ImgUtil.read(new File("victoria.jpg"));
+    }
+    return mImage;
+  }
 
   @Override
   public void paintView() {
+
     WidgetManager g = widgets();
     if (g.vb(RENDER_BGND_IMAGE)) {
-      if (mImage == null) {
-        mImage = ImgUtil.read(new File("background.jpg"));
-      }
-      Render.graphics().drawImage(mImage, 0, 0, null);
+      Render.graphics().drawImage(bgndImage(), 0, 0, null);
     }
 
     List<RenderItem> stack = arrayList();
@@ -225,13 +235,14 @@ public class ClusterOper implements TestBedOperation {
 
     // Sort stacked discs by z
     if (g.vb(SORT_BY_Z))
-  stack.sort((o1, o2) -> Float.compare(o1.zSort, o2.zSort));
+      stack.sort((o1, o2) -> Float.compare(o1.zSort, o2.zSort));
 
     for (var ri : stack) {
       color(ri.color);
       fillCircle(ri.origin, ri.radius);
     }
   }
+
 
   private void generate() {
     WidgetManager g = widgets();
@@ -240,19 +251,27 @@ public class ClusterOper implements TestBedOperation {
     int c = g.vi(COUNT);
     List<EditorElement> elemList = arrayList();
 
-    final int PADDING = 3;
+    final int PADDING = 0;
 
-    IPoint size = geomApp().pageSize();
-    float sx = size.x - 2 * PADDING;
-    float sy = size.y - 2 * PADDING;
+    IPoint size = ImgUtil.size(bgndImage());
+    float sx = size.x;
+    float sy = size.y;
 
-    var clip = new FRect(PADDING, PADDING, sx, sy);
+    var clip = new FRect(0, 0, sx, sy);
     FPoint stickyOrigin = null;
     var stickyness = g.vi(STICKYNESS) + 1;
     var stickyRadius = (g.vi(NBR_RAD) / 100.f) * Math.min(size.x, size.y);
+    todo("!have 'sticky' render things in lines, simulating road segments");
+    todo("circle zooming seems out of scale, things remain small when at high zoom factor");
+
+
+    int[] angles = {
+        0, 30, 45, 60, 90, 120, 90 + 45,
+    };
 
     while (elemList.size() < c) {
       FPoint newLoc = null;
+
 
       if (stickyOrigin != null && r.nextInt(stickyness) != 0) {
         todo("!why can't I call nextFloat(x)?");
@@ -267,6 +286,27 @@ public class ClusterOper implements TestBedOperation {
       if (newLoc == null) {
         newLoc = new FPoint(r.nextFloat() * sx + PADDING, r.nextFloat() * sy + PADDING);
         stickyOrigin = newLoc;
+
+
+        int segCount = r.nextInt(8) - 4;
+        for (int j = 0; j < segCount; j++) {
+          // generate some points along a line through this origin
+
+          var angle = angles[r.nextInt(angles.length)] * M_DEG;
+
+          var segRadius = stickyRadius * 0.25f;
+          var p0 = MyMath.pointOnCircle(stickyOrigin, angle, segRadius);
+          var p1 = MyMath.pointOnCircle(stickyOrigin, MyMath.PI + angle, segRadius);
+
+          int count = r.nextInt(20) + 12;
+
+          for (int i = 0; i < count; i++) {
+            float t = r.nextFloat(); //r.nextFloat();
+            var pt = FPoint.interpolate(p0, p1, t);
+            elemList.add(EditablePointElement.DEFAULT_INSTANCE
+                .withLocation(pt.toIPoint()));
+          }
+        }
       }
 
       elemList.add(EditablePointElement.DEFAULT_INSTANCE
@@ -320,6 +360,6 @@ public class ClusterOper implements TestBedOperation {
   private TileSizeParam mParam;
   private PointGrid mGrid0, mGrid1;
   private Map<Integer, PointGrid> mPointGridCache = hashMap();
-private int mNumColors;
+  private int mNumColors;
 
 }

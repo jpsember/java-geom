@@ -29,6 +29,7 @@ public class PointGrid extends BaseObject {
     mNumColors = numColors;
   }
 
+
   public void insert(PointEvent evt) {
     var key = keyForPoint(evt.location().toIPoint());
     var tile = mTileMap.get(key);
@@ -84,11 +85,12 @@ public class PointGrid extends BaseObject {
     return mTileMap.get(auxKey);
   }
 
-  double radiusForPop(int pop) {
-    var radius = 1 / (1 + Math.exp(-pop * 0.3));
+  private double radiusForPop(int pop) {
+    var radius = 1 / (1 + Math.exp(-pop * 0.3 /* mRadiusFactor */));
 
     radius = (radius - 0.5) * 2 * 30;
     radius = clamp(radius, 1, 30);
+    //pr("radius for pop:",pop,"is:",radius);
     return radius;
   }
 
@@ -99,8 +101,10 @@ public class PointGrid extends BaseObject {
       new Color(181, 189, 49, 128),
   };
 
-  public void render(float interpFactor, PointGrid auxGrid, List<RenderItem> renderItems) {
+  public void render(float interpFactor, PointGrid auxGrid, List<RenderItem> renderItems ) {
     WidgetManager g = widgets();
+
+    mRadiusFactor = 0.05f + g.vi(RADIUS_FACTOR) / 100f;
 
     // I am using the zoom feature to perform the scaling, but we need to
     // 'undo' the normal scaling that it does to keep things like the circle
@@ -135,7 +139,8 @@ public class PointGrid extends BaseObject {
 
         // Make radius level out asymptotically
         var pop = evtList.population();
-        var radius = radiusForPop(pop) * zoomCompensation;
+        var mainRadius = radiusForPop(pop);
+        var radius = mainRadius * zoomCompensation;
         var location = meanLocation(evtList);
 
         var radiusInterp = radius;
@@ -155,8 +160,11 @@ public class PointGrid extends BaseObject {
             var auxEvtList = auxTile.events().get(colorIndex);
             var auxPop = auxEvtList.population();
             checkState(auxPop != 0);
-            var radiusAux = auxGrid.radiusForPop(auxPop) * zoomCompensation;
-            radiusInterp = interpolateBetweenScalars((float) radius, (float) radiusAux, interpFactor);
+            var auxRadius = auxGrid.radiusForPop(auxPop);
+            var auxRadiusAdj = auxRadius * zoomCompensation;
+            radiusInterp = interpolateBetweenScalars((float) radius, (float) auxRadiusAdj, interpFactor);
+
+          // pr("main pop:",pop,"radius:",mainRadius,"aux pop:",auxPop,"radius:",auxRadius);
             locationInterp = FPoint.interpolate(location, meanLocation(auxEvtList), interpFactor);
 
 
@@ -197,4 +205,5 @@ public class PointGrid extends BaseObject {
   private final int mTileSize;
   private final Map<Integer, Tile.Builder> mTileMap;
   private final int mNumColors;
+  private float mRadiusFactor ;
 }
