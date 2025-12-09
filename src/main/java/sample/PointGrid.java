@@ -105,7 +105,7 @@ public class PointGrid extends BaseObject {
     WidgetManager g = widgets();
 
     mRadiusFactor = 0.01f + g.vi(RADIUS_FACTOR) / 500f;
-    pr("RADIUS_FACTOR:",g.vi(RADIUS_FACTOR),"f:",mRadiusFactor);
+//    pr("RADIUS_FACTOR:",g.vi(RADIUS_FACTOR),"f:",mRadiusFactor);
 
     // I am using the zoom feature to perform the scaling, but we need to
     // 'undo' the normal scaling that it does to keep things like the circle

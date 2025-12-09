@@ -104,11 +104,9 @@ public class ClusterOper implements TestBedOperation {
         c.label("Interpolate").defaultVal(true).addToggleButton(INTERPOLATE);
         c.spanx();
         c.label("Sort by z").defaultVal(true).addToggleButton(SORT_BY_Z);
-        //c.label("Cache").defaultVal(true).addToggleButton(CACHE);
         c.label("Zoom:").addLabel();
         c.max(300).addSlider(ZOOM);
         c.label("# Colors:").addLabel();
-        todo("!substituting spinner for slider fails");
         c.min(1).max(4).addSlider(NUM_COLORS);
       }
       c.close("cluster params");
@@ -262,32 +260,10 @@ public class ClusterOper implements TestBedOperation {
       if (newLoc == null) {
         newLoc = new FPoint(r.nextFloat() * sx + PADDING, r.nextFloat() * sy + PADDING);
         stickyOrigin = newLoc;
-
-
-        int segCount = r.nextInt(8) - 4;
-        for (int j = 0; j < segCount; j++) {
-          // generate some points along a line through this origin
-
-          var angle = angles[r.nextInt(angles.length)] * M_DEG;
-
-          var segRadius = stickyRadius * 0.25f;
-          var p0 = MyMath.pointOnCircle(stickyOrigin, angle, segRadius);
-          var p1 = MyMath.pointOnCircle(stickyOrigin, MyMath.PI + angle, segRadius);
-
-          int count = r.nextInt(20) + 12;
-
-          for (int i = 0; i < count; i++) {
-            float t = r.nextFloat(); //r.nextFloat();
-            var pt = FPoint.interpolate(p0, p1, t);
-            elemList.add(EditablePointElement.DEFAULT_INSTANCE
-                .withLocation(pt.toIPoint()));
-          }
-        }
       }
 
       elemList.add(EditablePointElement.DEFAULT_INSTANCE
           .withLocation(newLoc.toIPoint()));
-
     }
 
     Command.Builder b = Command.newBuilder();
