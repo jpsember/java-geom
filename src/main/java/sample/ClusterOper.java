@@ -57,8 +57,6 @@ import static testbed.Render.*;
 
 public class ClusterOper implements TestBedOperation {
 
-  public static final boolean DEBUG_CLUSTER = false && alert("!DEBUG_CLUSTER is true");
-
   private static final String OPER_ID = "cluster";
 
 
@@ -67,15 +65,13 @@ public class ClusterOper implements TestBedOperation {
     return OPER_ID;
   }
 
-  private void p2(Object... messages) {
-    if (DEBUG_CLUSTER) return;
-    pr(messages);
-  }
-
   public void addControls(WidgetManager c) {
     todo("!can't easily save current script");
     todo("!hand editing points doesn't discard cache or trigger redraw reliably");
     todo("!define constraints on radius of circle in relation to population, tile size");
+    todo("!have 'sticky' render things in lines, simulating road segments");
+    todo("circle zooming seems out of scale, things remain small when at high zoom factor");
+
 
     // To demonstrate that the oper id can be different than its UI label, make them distinct:
     //
@@ -106,8 +102,9 @@ public class ClusterOper implements TestBedOperation {
         c.label("Tiles").addToggleButton(RENDER_TILES);
         c.label("Merge").defaultVal(true).addToggleButton(MERGE);
         c.label("Interpolate").defaultVal(true).addToggleButton(INTERPOLATE);
+        c.spanx();
         c.label("Sort by z").defaultVal(true).addToggleButton(SORT_BY_Z);
-        c.label("Cache").defaultVal(true).addToggleButton(CACHE);
+        //c.label("Cache").defaultVal(true).addToggleButton(CACHE);
         c.label("Zoom:").addLabel();
         c.max(300).addSlider(ZOOM);
         c.label("# Colors:").addLabel();
@@ -131,7 +128,7 @@ public class ClusterOper implements TestBedOperation {
     WidgetManager g = widgets();
     mNumColors = g.vi(NUM_COLORS);
 
-    constructInputPoints();
+    constructPointEvents();
 
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
 
@@ -165,34 +162,15 @@ public class ClusterOper implements TestBedOperation {
     return result;
   }
 
-  private static int widgetValueHash(String... ids) {
-    var sb = new StringBuilder();
-    for (var id : ids) {
-      sb.append(' ');
-      sb.append(widgets().get(id).readValue());
-    }
-    return sb.toString().hashCode();
-  }
-
-  private List<PointEvent> constructInputPoints() {
-    var w = widgets();
-    var hash = widgetValueHash(SEED, COUNT, STICKYNESS, NBR_RAD, SEED);
-    boolean cacheIsValid =
-        w.vb(CACHE) &&
-            mCachedPoints != null && hash == mCachedPointsHashCode && !widgets().vb(GENERATE);
-    if (cacheIsValid)
-      return mCachedPoints;
-
-
-    mCachedPointsHashCode = hash;
-    mPointGridCache = hashMap();
+  private void constructPointEvents() {
+    // Only rebuild point grids if the input point events have changed
     List<PointEvent> points = arrayList();
-    mCachedPoints = points;
+
+    // We use a random generator to determine PointEvent colors
     var rand = new Random(1965);
 
     for (ScriptElement elem : scriptManager().state().elements()) {
       if (!elem.is(PointElement.DEFAULT_INSTANCE)) continue;
-
       var b = PointEvent.newBuilder();
       b.colorCode(rand.nextInt(mNumColors));
       b.location(elem.location().toFPoint());
@@ -200,13 +178,16 @@ public class ClusterOper implements TestBedOperation {
       points.add(b.build());
     }
 
-    return mCachedPoints;
+    var currentHashCode = points.hashCode();
+    if (mCachedPoints == null || currentHashCode != mCachedPointsHashCode) {
+      mCachedPointsHashCode = currentHashCode;
+      mCachedPoints = points;
+      mPointGridCache = hashMap();
+    }
   }
 
-
-  private List<PointEvent> mCachedPoints;
   private int mCachedPointsHashCode;
-
+  private List<PointEvent> mCachedPoints;
   private BufferedImage mImage;
 
   private BufferedImage bgndImage() {
@@ -243,7 +224,6 @@ public class ClusterOper implements TestBedOperation {
     }
   }
 
-
   private void generate() {
     WidgetManager g = widgets();
     int seed = g.vi(SEED);
@@ -261,9 +241,6 @@ public class ClusterOper implements TestBedOperation {
     FPoint stickyOrigin = null;
     var stickyness = g.vi(STICKYNESS) + 1;
     var stickyRadius = (g.vi(NBR_RAD) / 100.f) * Math.min(size.x, size.y);
-    todo("!have 'sticky' render things in lines, simulating road segments");
-    todo("circle zooming seems out of scale, things remain small when at high zoom factor");
-
 
     int[] angles = {
         0, 30, 45, 60, 90, 120, 90 + 45,
@@ -271,7 +248,6 @@ public class ClusterOper implements TestBedOperation {
 
     while (elemList.size() < c) {
       FPoint newLoc = null;
-
 
       if (stickyOrigin != null && r.nextInt(stickyness) != 0) {
         todo("!why can't I call nextFloat(x)?");

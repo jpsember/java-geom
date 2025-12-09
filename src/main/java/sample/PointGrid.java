@@ -86,7 +86,7 @@ public class PointGrid extends BaseObject {
   }
 
   private double radiusForPop(int pop) {
-    var radius = 1 / (1 + Math.exp(-pop * 0.3 /* mRadiusFactor */));
+    var radius = 1 / (1 + Math.exp(-pop *  mRadiusFactor  ));
 
     radius = (radius - 0.5) * 2 * 30;
     radius = clamp(radius, 1, 30);
@@ -104,7 +104,8 @@ public class PointGrid extends BaseObject {
   public void render(float interpFactor, PointGrid auxGrid, List<RenderItem> renderItems ) {
     WidgetManager g = widgets();
 
-    mRadiusFactor = 0.05f + g.vi(RADIUS_FACTOR) / 100f;
+    mRadiusFactor = 0.01f + g.vi(RADIUS_FACTOR) / 500f;
+    pr("RADIUS_FACTOR:",g.vi(RADIUS_FACTOR),"f:",mRadiusFactor);
 
     // I am using the zoom feature to perform the scaling, but we need to
     // 'undo' the normal scaling that it does to keep things like the circle
