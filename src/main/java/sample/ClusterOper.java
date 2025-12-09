@@ -32,7 +32,6 @@ import geom.gen.cluster.PointEvent;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.IPoint;
-import js.geometry.MyMath;
 import js.graphics.ImgUtil;
 import js.graphics.PointElement;
 import js.graphics.ScriptElement;
@@ -102,7 +101,8 @@ public class ClusterOper implements TestBedOperation {
         c.label("Tiles").addToggleButton(RENDER_TILES);
         c.label("Merge").defaultVal(true).addToggleButton(MERGE);
         c.label("Interpolate").defaultVal(true).addToggleButton(INTERPOLATE);
-        c.spanx();
+        c.label("Cache grids").defaultVal(true).addToggleButton(CACHE_GRID);
+
         c.label("Sort by z").defaultVal(true).addToggleButton(SORT_BY_Z);
         c.label("Zoom:").addLabel();
         c.max(300).addSlider(ZOOM);
@@ -122,11 +122,33 @@ public class ClusterOper implements TestBedOperation {
     }
   }
 
+  public int calcWidgetsHash(String... ids) {
+    var w = widgets();
+    var m = map();
+    for (var id : ids) {
+      var val = w.get(id).readValue();
+      m.putUnsafe(id, val);
+    }
+    return m.hashCode() & 0x7fffffff; // hate negative numbers
+  }
+
   public void runAlgorithm() {
+    todo("when starting zoomed all the way in, slowly zooming back out screws up radii interpolation; even with zero colors");
     WidgetManager g = widgets();
-    mNumColors = g.vi(NUM_COLORS);
+
+//    mNumColors = g.vi(NUM_COLORS);
 
     constructPointEvents();
+
+//    var wh = calcWidgetsHash(NUM_COLORS);
+//    if (wh != mWidgetsHash) {
+//      mWidgetsHash = wh;
+//      pr("hash changed to:", wh, "; discarding cache");
+//      clearGridCache();
+//      mCachedPoints = null;
+//    }
+
+
 
     AlgorithmStepper s = AlgorithmStepper.sharedInstance();
 
@@ -140,7 +162,6 @@ public class ClusterOper implements TestBedOperation {
       app.setZoomFactor(targZoom);
     }
     var ts = tileSizeForZoom(targZoom);
-
     mParam = ts;
 
     mGrid0 = buildGrid(ts.tileSize);
@@ -151,11 +172,15 @@ public class ClusterOper implements TestBedOperation {
   private PointGrid buildGrid(int tileSize) {
     var result = mPointGridCache.get(tileSize);
     if (result == null) {
-      result = new PointGrid(tileSize, mNumColors);
-      mPointGridCache.put(tileSize, result);
-      for (var evt : mCachedPoints) {
+      todo("I think cache validity depends upon # colors, maybe others");
+      var ncol = widgets().vi(NUM_COLORS);
+      result = new PointGrid(tileSize, ncol);
+        for (var evt : mCachedPoints) {
         result.insert(evt);
       }
+      if (widgets().vb(CACHE_GRID))
+        mPointGridCache.put(tileSize, result);
+
     }
     return result;
   }
@@ -167,10 +192,12 @@ public class ClusterOper implements TestBedOperation {
     // We use a random generator to determine PointEvent colors
     var rand = new Random(1965);
 
+    var  nc = widgets().vi(NUM_COLORS);
+
     for (ScriptElement elem : scriptManager().state().elements()) {
       if (!elem.is(PointElement.DEFAULT_INSTANCE)) continue;
       var b = PointEvent.newBuilder();
-      b.colorCode(rand.nextInt(mNumColors));
+      b.colorCode(rand.nextInt(nc));
       b.location(elem.location().toFPoint());
       b.zLoc(rand.nextFloat());
       points.add(b.build());
@@ -178,15 +205,13 @@ public class ClusterOper implements TestBedOperation {
 
     var currentHashCode = points.hashCode();
     if (mCachedPoints == null || currentHashCode != mCachedPointsHashCode) {
+      pr("points hash changed to:",currentHashCode,"...clearing grid cache");
       mCachedPointsHashCode = currentHashCode;
       mCachedPoints = points;
-      mPointGridCache = hashMap();
+      clearGridCache();
     }
   }
 
-  private int mCachedPointsHashCode;
-  private List<PointEvent> mCachedPoints;
-  private BufferedImage mImage;
 
   private BufferedImage bgndImage() {
     if (mImage == null) {
@@ -197,7 +222,6 @@ public class ClusterOper implements TestBedOperation {
 
   @Override
   public void paintView() {
-
     WidgetManager g = widgets();
     if (g.vb(RENDER_BGND_IMAGE)) {
       Render.graphics().drawImage(bgndImage(), 0, 0, null);
@@ -210,7 +234,6 @@ public class ClusterOper implements TestBedOperation {
     float zoomCompensation = getScale();
     var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
     stroke(pointSetStroke);
-
 
     // Sort stacked discs by z
     if (g.vb(SORT_BY_Z))
@@ -309,9 +332,18 @@ public class ClusterOper implements TestBedOperation {
     return p;
   }
 
+  private void clearGridCache() {
+    mPointGridCache.clear();
+  }
+
+  // Some sort of caching is tripping me up
+  
+  private int mCachedPointsHashCode;
+  private List<PointEvent> mCachedPoints;
+  private BufferedImage mImage;
   private TileSizeParam mParam;
   private PointGrid mGrid0, mGrid1;
   private Map<Integer, PointGrid> mPointGridCache = hashMap();
-  private int mNumColors;
+  private int mWidgetsHash;
 
 }

@@ -14,4 +14,5 @@ public final class ClusterGlobals {
   public static final String NUM_COLORS = "c_num_colors";
   public static final String SORT_BY_Z = "c_sort_by_z";
   public static final String RADIUS_FACTOR = "c_radius";
+  public static final String CACHE_GRID = "c_cache_grid";
 }
