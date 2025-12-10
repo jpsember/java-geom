@@ -29,8 +29,20 @@ public class PointGrid extends BaseObject {
     mTileSize = tileSize;
     Map<Integer, Tile> tileMap = hashMap();
     mNumColors = numColors;
-    mRadiusFactor = 0.01f + widgets().vi(RADIUS_FACTOR) / 500f;
 
+    var w = widgets();
+    var radiusFactW = w.vi(RADIUS_FACTOR);
+    var radiusExpW = w.vi(RADIUS_EXP);
+    var radExp = (float)Math.exp((radiusExpW - 50) / 300f);
+
+    radExp = 1f;
+
+    mRadiusFactor = 0.01f + (radiusFactW / 500f) * radExp;
+//pr("radius factor for tile size:",mTileSize,"radexp:",radiusExpW,"radfact:",radiusFactW,"is:",mRadiusFactor);
+
+
+
+    //mRadiusFactor = 0.01f + widgets().vi(RADIUS_FACTOR) / 500f;
     // During construction, the tile map contains builders; after
     // construction complete, replace with immutables
     for (var p : pts) {
@@ -121,7 +133,10 @@ public class PointGrid extends BaseObject {
     var radius = 1 / (1 + (float) Math.exp(-pop * mRadiusFactor));
 
     radius = (radius - 0.5f) * 2 * 30;
-    radius = clamp(radius, 1, 30);
+    radius = clamp(radius, 1, 3000);
+
+
+
     //pr("radius for pop:",pop,"is:",radius);
     return radius;
   }

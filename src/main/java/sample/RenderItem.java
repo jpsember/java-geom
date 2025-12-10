@@ -7,7 +7,7 @@ import java.awt.*;
 public class RenderItem {
   public RenderItem(FPoint origin, double radius, Color color, float zSort) {
     this.origin = origin;
-    this.radius = (float)radius;
+    this.radius = (float) radius;
     this.color = color;
     this.zSort = zSort;
   }

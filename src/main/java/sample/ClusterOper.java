@@ -95,6 +95,8 @@ public class ClusterOper implements TestBedOperation {
         c.max(100).defaultVal(20).addSlider(NBR_RAD);
         c.label("Disc Radius:").addLabel();
         c.max(100).defaultVal(20).addSlider(RADIUS_FACTOR);
+        c.label("Disc Radius Exp:").addLabel();
+        c.max(100).defaultVal(20).addSlider(RADIUS_EXP);
 
 
         c.label("Bgnd image").defaultVal(true).addToggleButton(RENDER_BGND_IMAGE);
@@ -177,6 +179,11 @@ public class ClusterOper implements TestBedOperation {
     }
 
     var currentHashCode = points.hashCode();
+
+
+    var whash = calcWidgetsHash(RADIUS_EXP, RADIUS_FACTOR);
+    currentHashCode += whash;
+
     if (mCachedPoints == null || currentHashCode != mCachedPointsHashCode) {
       mCachedPointsHashCode = currentHashCode;
       mCachedPoints = points;
@@ -204,7 +211,8 @@ public class ClusterOper implements TestBedOperation {
     mGrid0.render(mParam.param, mGrid1, stack);
 
     float zoomCompensation = getScale();
-    var pointSetStroke = new BasicStroke(1.5f * zoomCompensation);
+    var strokeWidth = 1.5f * zoomCompensation;
+    var pointSetStroke = new BasicStroke(strokeWidth);
     stroke(pointSetStroke);
 
     // Sort stacked discs by z
@@ -214,6 +222,14 @@ public class ClusterOper implements TestBedOperation {
     for (var ri : stack) {
       color(ri.color);
       fillCircle(ri.origin, ri.radius);
+      var boundaryGray = 255;
+      // Render a boundary using white, but with the same alpha as the color
+      var borderColor = new Color(boundaryGray, boundaryGray, boundaryGray, ri.color.getAlpha());
+      color(borderColor);
+
+      // we need to increase the radius so the boundary doesn't overlap
+      // the colored interior, otherwise the boundary looks fuzzy (and is not white)
+      drawCircle(ri.origin, ri.radius + strokeWidth / 2);
     }
   }
 
