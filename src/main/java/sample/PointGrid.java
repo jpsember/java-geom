@@ -32,10 +32,10 @@ public class PointGrid extends BaseObject {
 
     var w = widgets();
     var radiusFactW = w.vi(RADIUS_FACTOR);
-    var radiusExpW = w.vi(RADIUS_EXP);
-    var radExp = (float)Math.exp((radiusExpW - 50) / 300f);
+//    var radiusExpW = w.vi(RADIUS_EXP);
+//    var radExp = (float)Math.exp((radiusExpW - 50) / 300f);
 
-    radExp = 1f;
+    var radExp = 1f;
 
     mRadiusFactor = 0.01f + (radiusFactW / 500f) * radExp;
 //pr("radius factor for tile size:",mTileSize,"radexp:",radiusExpW,"radfact:",radiusFactW,"is:",mRadiusFactor);

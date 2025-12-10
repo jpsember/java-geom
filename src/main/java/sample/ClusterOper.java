@@ -66,9 +66,7 @@ public class ClusterOper implements TestBedOperation {
 
   public void addControls(WidgetManager c) {
     todo("!can't easily save current script");
-    todo("!hand editing points doesn't discard cache or trigger redraw reliably");
     todo("!define constraints on radius of circle in relation to population, tile size");
-    todo("!have 'sticky' render things in lines, simulating road segments");
     todo("circle zooming seems out of scale, things remain small when at high zoom factor");
 
 
@@ -95,17 +93,20 @@ public class ClusterOper implements TestBedOperation {
         c.max(100).defaultVal(20).addSlider(NBR_RAD);
         c.label("Disc Radius:").addLabel();
         c.max(100).defaultVal(20).addSlider(RADIUS_FACTOR);
-        c.label("Disc Radius Exp:").addLabel();
-        c.max(100).defaultVal(20).addSlider(RADIUS_EXP);
+
+//        c.label("Disc Radius Exp:").addLabel();
+//        c.max(100).defaultVal(20).addSlider(RADIUS_EXP);
 
 
         c.label("Bgnd image").defaultVal(true).addToggleButton(RENDER_BGND_IMAGE);
-        c.label("Tiles").addToggleButton(RENDER_TILES);
-        c.label("Merge").defaultVal(true).addToggleButton(MERGE);
+        c.label("Show tiles").addToggleButton(RENDER_TILES);
+
+        c.spanx();
+        //c.label("Merge").defaultVal(true).addToggleButton(MERGE);
         c.label("Interpolate").defaultVal(true).addToggleButton(INTERPOLATE);
         c.label("Cache grids").defaultVal(true).addToggleButton(CACHE_GRID);
 
-        c.label("Sort by z").defaultVal(true).addToggleButton(SORT_BY_Z);
+        c.label("Sort discs by z-coord").defaultVal(true).addToggleButton(SORT_BY_Z);
         c.label("Zoom:").addLabel();
         c.max(300).addSlider(ZOOM);
         c.label("# Colors:").addLabel();
@@ -145,7 +146,7 @@ public class ClusterOper implements TestBedOperation {
     mParam = ts;
 
     mGrid0 = buildGrid(ts.tileSize);
-    if (g.vb(MERGE))
+    if (g.vb(INTERPOLATE) /*g.vb(MERGE)*/)
       mGrid1 = buildGrid(ts.tileSize * 2);
   }
 
@@ -181,8 +182,8 @@ public class ClusterOper implements TestBedOperation {
     var currentHashCode = points.hashCode();
 
 
-    var whash = calcWidgetsHash(RADIUS_EXP, RADIUS_FACTOR);
-    currentHashCode += whash;
+//    var whash = calcWidgetsHash(RADIUS_EXP, RADIUS_FACTOR);
+//    currentHashCode += whash;
 
     if (mCachedPoints == null || currentHashCode != mCachedPointsHashCode) {
       mCachedPointsHashCode = currentHashCode;
