@@ -32,17 +32,12 @@ public class PointGrid extends BaseObject {
 
     var w = widgets();
     var radiusFactW = w.vi(RADIUS_FACTOR);
-//    var radiusExpW = w.vi(RADIUS_EXP);
-//    var radExp = (float)Math.exp((radiusExpW - 50) / 300f);
 
     var radExp = 1f;
 
     mRadiusFactor = 0.01f + (radiusFactW / 500f) * radExp;
-//pr("radius factor for tile size:",mTileSize,"radexp:",radiusExpW,"radfact:",radiusFactW,"is:",mRadiusFactor);
 
 
-
-    //mRadiusFactor = 0.01f + widgets().vi(RADIUS_FACTOR) / 500f;
     // During construction, the tile map contains builders; after
     // construction complete, replace with immutables
     for (var p : pts) {
@@ -129,18 +124,43 @@ public class PointGrid extends BaseObject {
     return mTileMap.get(auxKey);
   }
 
-  private float radiusForPop(int pop) {
-    var radius = 1 / (1 + (float) Math.exp(-pop * mRadiusFactor));
-
-    radius = (radius - 0.5f) * 2 * 30;
-    radius = clamp(radius, 1, 3000);
-
-
-
-    //pr("radius for pop:",pop,"is:",radius);
-    return radius;
+  private float rf(String id) {
+    return widgets().vf(id) / 5f;
   }
 
+  private float rf(String id, float defaultValue) {
+    var w = widgets();
+    var active = id+"_active";
+    if (!w.vb(active))
+      return defaultValue;
+    return widgets().vf(id) / 5f;
+  }
+
+  private float radiusForPop(int pop) {
+
+    // The disc radius is a combination of one or more of:
+    //
+    //  a constant
+    //  proportional to tile pop
+    //  inversely proportional to tile area
+    //  proportional to zoom factor
+    //
+
+    float rpop = rf(RAD_TILE_POP_B, 0) + rf(RAD_TILE_POP_M,1) * pop;
+
+    float tileAreaFactor = mTileSize*mTileSize * 0.1f;
+
+    float rtileArea = rf(RAD_TILE_AREA_B,0) + rf(RAD_TILE_AREA_M,0) * tileAreaFactor;
+    if (nonZero(rtileArea))
+      rpop = rpop * rtileArea + rf(RAD_TILE_AREA_B,0);
+
+    float r = rf(RAD_CONSTANT,rpop);
+    return r;
+  }
+
+private boolean nonZero(float f) {
+    return Math.abs(f) > 1e-5f;
+}
   private final static Color[] sampleColors = {
       new Color(255, 0, 0, 128),
       new Color(0, 0, 255, 128),
@@ -163,6 +183,7 @@ public class PointGrid extends BaseObject {
 
     var interpolate = g.vb(INTERPOLATE);
     var renderTiles = g.vb(RENDER_TILES);
+  var renderPoints = g.vb(RENDER_GRID_POINTS);
 
     for (var ent : mTileMap.entrySet()) {
       var tile = ent.getValue();
@@ -171,6 +192,8 @@ public class PointGrid extends BaseObject {
         color(tileBoundaryColor);
         drawRect(tile.bounds());
       }
+
+      if (!renderPoints) continue;
 
       // Render each color's (nonempty) event list
       var colorIndex = INIT_INDEX;

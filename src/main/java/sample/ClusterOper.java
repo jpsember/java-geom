@@ -52,6 +52,7 @@ import static geom.GeomTools.*;
 import static js.base.Tools.*;
 import static js.geometry.MyMath.*;
 import static sample.ClusterGlobals.*;
+import static sample.ClusterGlobals.RAD_TILE_ZOOM_M;
 import static testbed.Render.*;
 
 public class ClusterOper implements TestBedOperation {
@@ -99,10 +100,10 @@ public class ClusterOper implements TestBedOperation {
 
 
         c.label("Bgnd image").defaultVal(true).addToggleButton(RENDER_BGND_IMAGE);
+        c.label("Show grid points").defaultVal(true).addToggleButton(RENDER_GRID_POINTS);
+
         c.label("Show tiles").addToggleButton(RENDER_TILES);
 
-        c.spanx();
-        //c.label("Merge").defaultVal(true).addToggleButton(MERGE);
         c.label("Interpolate").defaultVal(true).addToggleButton(INTERPOLATE);
         c.label("Cache grids").defaultVal(true).addToggleButton(CACHE_GRID);
 
@@ -111,6 +112,16 @@ public class ClusterOper implements TestBedOperation {
         c.max(300).addSlider(ZOOM);
         c.label("# Colors:").addLabel();
         c.min(1).max(4).addSlider(NUM_COLORS);
+
+
+        aux("rad const", RAD_CONSTANT);
+        auxs("rad tile pop b", RAD_TILE_POP_B);
+        aux("rad tile pop m", RAD_TILE_POP_M);
+        auxs("rad tile area b", RAD_TILE_AREA_B);
+        auxs("rad tile area m", RAD_TILE_AREA_M);
+        aux("rad tile zoom b", RAD_TILE_ZOOM_B);
+        aux("rad tile zoom m", RAD_TILE_ZOOM_M);
+
       }
       c.close("cluster params");
 
@@ -118,6 +129,18 @@ public class ClusterOper implements TestBedOperation {
     c.closeTab();
   }
 
+  private void aux(String label, String id) {
+    var c = widgets();
+
+    c.label(label).defaultVal(false).addToggleButton(id+"_active");
+    c.min(0).max(100).defaultVal(0).addSlider(id);
+  }
+  private void auxs(String label, String id) {
+    var c = widgets();
+
+    c.label(label).defaultVal(false).addToggleButton(id+"_active");
+    c.min(-100).max(100).defaultVal(0).addSlider(id);
+  }
   public void processUserEvent(UserEvent event) {
     if (event.isWidget()) {
       if (widgets().vb(GENERATE))
