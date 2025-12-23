@@ -4,9 +4,9 @@ import js.base.BaseObject;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.json.JSMap;
-import geom.gen.Node;
-import geom.gen.NodeSet;
-import geom.gen.QtreeParam;
+import geom.gen.cluster.Node;
+import geom.gen.cluster.NodeSet;
+import geom.gen.cluster.QtreeParam;
 
 import java.util.Collection;
 import java.util.List;

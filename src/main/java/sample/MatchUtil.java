@@ -6,8 +6,8 @@ import js.file.Files;
 import js.geometry.*;
 import js.json.JSMap;
 import js.parsing.RegExp;
-import geom.gen.Node;
-import geom.gen.NodeSet;
+import geom.gen.cluster.Node;
+import geom.gen.cluster.NodeSet;
 
 import java.io.File;
 import java.util.Collection;

@@ -1,9 +1,0 @@
-// Parameters for the QuadTree
-//
-class {
-
-  // The maximum number of polylines that can exist in a leaf node
-  int max_node_capacity = 4;
-
-  int padding = 15;
-}

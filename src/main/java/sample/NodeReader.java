@@ -5,8 +5,8 @@ import js.file.Files;
 import js.geometry.FPoint;
 import js.parsing.DFA;
 import js.parsing.Lexer;
-import geom.gen.Node;
-import geom.gen.NodeSet;
+import geom.gen.cluster.Node;
+import geom.gen.cluster.NodeSet;
 
 import java.io.File;
 import java.util.ArrayList;

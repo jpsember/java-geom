@@ -1,7 +1,0 @@
-class {
-  string id;
-  - string description;
-  *FPoint vertices;
-
-  *string original_column_contents;
-}
