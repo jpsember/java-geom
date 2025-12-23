@@ -1,0 +1,10 @@
+class {
+  // candidate node
+  Node candidate;
+
+  // score calculated, if not rejected
+  float score;
+
+  // Description of why candidate was rejected, if so
+  string note;
+}

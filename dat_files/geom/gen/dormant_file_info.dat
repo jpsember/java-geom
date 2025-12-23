@@ -1,0 +1,7 @@
+class {
+    File file;
+    // Most recent time where file modified or length changed
+    long active_time;
+    long modification_time;
+    long length;
+}

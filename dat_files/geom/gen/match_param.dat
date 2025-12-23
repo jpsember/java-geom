@@ -1,0 +1,38 @@
+// Parameters for the polyline match algorithm
+//
+class {
+
+  // Threshold for the algorithm's computed cost.  If a candidate's cost
+  // exceeds this, it is not a suitable candidate.
+  //
+  int max_cost = 200;
+
+  // Apply polygon simplification algorithm to input?
+  //
+  bool simplify_input_polyline = true;
+  int input_polyline_simplify_factor = 6;
+
+  // Slice input segments into pieces not to exceed a length?
+  //
+  bool slice_enabled = true;
+  int slice_length = 15;
+
+  // Minimum lengths of input and candidate segments.  If segments are
+  // too short, they are ignored
+  //
+  int input_segment_min_length = 2;
+  int candidate_segment_min_length = 2;
+
+  // Contribution of difference between input and candidate segment angles
+  //
+  bool angle_cost_enabled = true;
+  float angle_cost_exponent = 1.0;
+  float angle_cost_multiplier = 2.0;
+
+  // Contribution of distance between input and candidate segments
+  //
+  bool distance_cost_enabled = true;
+  float distance_cost_exponent = 2.0;
+  float distance_cost_multiplier = 1.0;
+
+}

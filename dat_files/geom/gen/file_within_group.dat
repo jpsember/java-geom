@@ -1,0 +1,6 @@
+class {
+    string group_id;
+    File container;
+    File group_dir;
+    File file;
+}

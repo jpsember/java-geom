@@ -1,0 +1,5 @@
+class {
+  *Node nodes;
+  FPoint origin;
+  FPoint size;
+}
