@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  **/
-package sample;
+package cluster;
 
 import geom.EditorElement;
 import geom.GeomApp;
@@ -37,6 +37,7 @@ import js.graphics.PointElement;
 import js.graphics.ScriptElement;
 import js.guiapp.UserEvent;
 import js.widget.WidgetManager;
+import sample.RenderItem;
 import testbed.AlgorithmStepper;
 import testbed.Render;
 import testbed.TestBedOperation;
@@ -51,8 +52,8 @@ import java.util.Random;
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
 import static js.geometry.MyMath.*;
-import static sample.ClusterGlobals.*;
-import static sample.ClusterGlobals.RAD_TILE_ZOOM_M;
+import static cluster.ClusterGlobals.*;
+import static cluster.ClusterGlobals.RAD_TILE_ZOOM_M;
 import static testbed.Render.*;
 
 public class ClusterOper implements TestBedOperation {

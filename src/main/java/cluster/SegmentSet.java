@@ -1,4 +1,4 @@
-package sample;
+package cluster;
 
 import js.base.BaseObject;
 

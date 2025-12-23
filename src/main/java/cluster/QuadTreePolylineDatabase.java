@@ -1,4 +1,4 @@
-package sample;
+package cluster;
 
 import js.base.BaseObject;
 import js.geometry.FPoint;
@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static sample.MatchUtil.*;
+import static cluster.MatchUtil.*;
 // import static geom.MatchUtil.*;
 
 import static js.base.Tools.*;

@@ -1,11 +1,11 @@
-package sample;
+package cluster;
 
 import static js.base.Tools.*;
 
 import static geom.GeomTools.*;
 import static js.geometry.MyMath.*;
 import static testbed.Render.*;
-import static sample.ClusterGlobals.*;
+import static cluster.ClusterGlobals.*;
 
 import cluster.gen.EventList;
 import cluster.gen.PointEvent;
@@ -16,6 +16,7 @@ import js.geometry.IPoint;
 import js.geometry.IRect;
 import js.json.JSMap;
 import js.widget.WidgetManager;
+import sample.RenderItem;
 
 import java.awt.*;
 import java.util.Collection;

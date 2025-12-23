@@ -1,4 +1,4 @@
-package sample;
+package cluster;
 
 public final class ClusterGlobals {
 

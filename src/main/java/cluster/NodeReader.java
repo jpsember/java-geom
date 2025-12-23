@@ -1,4 +1,4 @@
-package sample;
+package cluster;
 
 import js.base.BaseObject;
 import js.file.Files;
@@ -7,14 +7,15 @@ import js.parsing.DFA;
 import js.parsing.Lexer;
 import cluster.gen.Node;
 import cluster.gen.NodeSet;
+import sample.SampleMain;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import static js.base.Tools.*;
-import static match.util.LineStringTokens.*;
-import static sample.MatchUtil.*;
+import static cluster.LineStringTokens.*;
+import static cluster.MatchUtil.*;
 
 public class NodeReader extends BaseObject {
 
@@ -40,7 +41,7 @@ public class NodeReader extends BaseObject {
   }
 
   private NodeSet parseNodesFromCsv(File databaseFile) {
-    var p = new match.util.CsvReader();
+    var p = new CsvReader();
     p.parse(databaseFile);
     mColumnNames = p.columnNames();
 

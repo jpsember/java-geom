@@ -1,4 +1,4 @@
-package sample;
+package cluster;
 
 import js.base.Pair;
 import js.file.DirWalk;
@@ -363,7 +363,7 @@ public final class MatchUtil {
     checkArgument(Files.getExtension(destFile).equals(Files.EXT_CSV), "expected csv extension for:", destFile);
     p13("writeToCsv, destFile:", destFile);
 
-    var w = new match.util.CsvWriter();
+    var w = new CsvWriter();
     for (var cn : columnNames)
       w.addColumn(cn);
     w.doneColumns();

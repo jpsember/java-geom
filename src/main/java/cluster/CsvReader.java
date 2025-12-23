@@ -1,12 +1,9 @@
-package match.util;
+package cluster;
 
 import js.base.BaseObject;
 import js.file.Files;
-import js.json.JSMap;
 import js.parsing.DFA;
 import js.parsing.Lexer;
-import js.parsing.ScanException;
-import js.parsing.Scanner;
 import sample.SampleMain;
 //import match.MatchMain;
 
@@ -15,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static js.base.Tools.*;
-import static sample.MatchUtil.*;
+import static cluster.MatchUtil.*;
 
 public class CsvReader extends BaseObject {
 
