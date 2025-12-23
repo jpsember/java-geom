@@ -28,7 +28,7 @@ import geom.GeomApp;
 import geom.elem.EditablePointElement;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
-import geom.gen.cluster.PointEvent;
+import cluster.gen.PointEvent;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.IPoint;

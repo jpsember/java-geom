@@ -3,14 +3,13 @@ package sample;
 import static js.base.Tools.*;
 
 import static geom.GeomTools.*;
-import static js.geometry.MyMath.clamp;
-import static js.geometry.MyMath.interpolateBetweenScalars;
+import static js.geometry.MyMath.*;
 import static testbed.Render.*;
 import static sample.ClusterGlobals.*;
 
-import geom.gen.cluster.EventList;
-import geom.gen.cluster.PointEvent;
-import geom.gen.cluster.Tile;
+import cluster.gen.EventList;
+import cluster.gen.PointEvent;
+import cluster.gen.Tile;
 import js.base.BaseObject;
 import js.geometry.FPoint;
 import js.geometry.IPoint;
