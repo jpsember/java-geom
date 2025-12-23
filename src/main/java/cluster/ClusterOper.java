@@ -67,10 +67,7 @@ public class ClusterOper implements TestBedOperation {
   }
 
   public void addControls(WidgetManager c) {
-    todo("!can't easily save current script");
-    todo("!define constraints on radius of circle in relation to population, tile size");
-    todo("circle zooming seems out of scale, things remain small when at high zoom factor");
-
+    todo("!if warning msg > ~90 chars, IDE doesn't make it clickable");
 
     // To demonstrate that the oper id can be different than its UI label, make them distinct:
     //
