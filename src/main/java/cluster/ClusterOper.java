@@ -23,7 +23,6 @@
  **/
 package cluster;
 
-import cluster.gen.Node;
 import cluster.gen.NodeSet;
 import geom.EditorElement;
 import geom.GeomApp;
@@ -52,7 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static cluster.MatchUtil.*;
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
 import static js.geometry.MyMath.*;
@@ -149,7 +147,7 @@ public class ClusterOper implements TestBedOperation {
 
   public void runAlgorithm() {
 
-    parseSampleData();
+    getTopology();
     WidgetManager g = widgets();
 
     constructPointEvents();
@@ -225,6 +223,9 @@ public class ClusterOper implements TestBedOperation {
     if (g.vb(RENDER_BGND_IMAGE)) {
       Render.graphics().drawImage(bgndImage(), 0, 0, null);
     }
+
+    renderTopology();
+
 
     List<RenderItem> stack = arrayList();
 
@@ -348,53 +349,30 @@ public class ClusterOper implements TestBedOperation {
   private final Map<Integer, PointGrid> mPointGridCache = hashMap();
 
 
+  private void renderTopology() {
+    var t = getTopology();
+
+  }
   // ----------------------------------------------------------------------------------------------
   // Parsing road network, bus events
   // ----------------------------------------------------------------------------------------------
 
-  private void parseSampleData() {
-    if (mParsed) return;
+  private NodeSet getTopology() {
+    if (mTopology == null) {
+      todo("!add ability to load different sample data");
 
-    var d = new File("sample_data");
-    Files.assertDirectoryExists(d,"road network and bus events");
-    var topology = new File(d, "road_network.csv");
+      var d = new File("sample_data");
+      Files.assertDirectoryExists(d, "road network and bus events");
+      var topology = new File(d, "road_network.csv");
 
-    var nr = new NodeReader();
-    nr.setGeomColumnName("geom");
-   var out = nr.parse(topology);
+      var nr = new NodeReader();
+      nr.setGeomColumnName("geom");
+      var out = nr.parse(topology);
 
-//    var rd = new CsvReader();
-//    rd.parse(topology);
-
-//    var fDirId = rd.findColumn("direction_id");
-//    var fRoutId = rd.findColumn("route_id");
-//    var fGeometry = rd.findColumn("geom");
-
-//    var nr = new NodeReader();
-//    nr.setNodeIdFieldName
-//    List<Node> nodes = arrayList();
-//    var rowNumber = INIT_INDEX;
-//    for (var row : rd.rows()) {rowNumber++;
-//      String text = "";
-//      try {
-//        var b = Node.newBuilder();
-//        text = stripQuotes(row.get(fGeometry));
-//        NodeReader.parseGeometryFromCell( text, nodes);
-//        nodes.add(b.build());
-//      } catch (Throwable t) {
-//        pr("...failed to parse geometry from line:", 2 + rowNumber, quote(text));
-//        throw t;
-//      }
-//    }
-//    var out = NodeSet.newBuilder();
-//    out.nodes(nodes);
-//    determineBounds(out);
-
-    pr("NodeSet:",INDENT,out);
-    mParsedNodeSet = out.build();
-    mParsed = true;
+      mTopology = out.build();
+    }
+    return mTopology;
   }
 
-  private boolean mParsed;
-  private NodeSet mParsedNodeSet;
+  private NodeSet mTopology;
 }

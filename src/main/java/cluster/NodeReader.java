@@ -22,6 +22,7 @@ public class NodeReader extends BaseObject {
 //  }
 
   public NodeSet parse(File databaseFile) {
+    todo("normalize from lat/lng to pixels, translated so top left is 0,0?")
     try {
       checkArgument(Files.nonEmpty(databaseFile), "database file is empty");
       prepareDfas();
@@ -107,6 +108,7 @@ public class NodeReader extends BaseObject {
 //
 //    out.nodes(nodeBuffer);
 
+    checkArgument(!nodeBuffer.isEmpty(),"no geometry found");
     var out = NodeSet.newBuilder();
     out.nodes(nodeBuffer);
     determineBounds(out);
