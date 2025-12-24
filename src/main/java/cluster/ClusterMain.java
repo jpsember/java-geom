@@ -1,7 +1,5 @@
 package cluster;
 
-
-
 import js.app.App;
 import js.file.Files;
 import js.graphics.ScriptUtil;

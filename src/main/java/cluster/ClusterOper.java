@@ -23,12 +23,14 @@
  **/
 package cluster;
 
+import cluster.gen.Node;
 import geom.EditorElement;
 import geom.GeomApp;
 import geom.elem.EditablePointElement;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
 import cluster.gen.PointEvent;
+import js.file.Files;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.IPoint;
@@ -49,11 +51,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static cluster.MatchUtil.*;
 import static geom.GeomTools.*;
 import static js.base.Tools.*;
 import static js.geometry.MyMath.*;
 import static cluster.ClusterGlobals.*;
-import static cluster.ClusterGlobals.RAD_TILE_ZOOM_M;
 import static testbed.Render.*;
 
 public class ClusterOper implements TestBedOperation {
@@ -93,10 +95,6 @@ public class ClusterOper implements TestBedOperation {
         c.label("Disc Radius:").addLabel();
         c.max(100).defaultVal(20).addSlider(RADIUS_FACTOR);
 
-//        c.label("Disc Radius Exp:").addLabel();
-//        c.max(100).defaultVal(20).addSlider(RADIUS_EXP);
-
-
         c.label("Bgnd image").defaultVal(true).addToggleButton(RENDER_BGND_IMAGE);
         c.label("Show grid points").defaultVal(true).addToggleButton(RENDER_GRID_POINTS);
 
@@ -130,15 +128,17 @@ public class ClusterOper implements TestBedOperation {
   private void aux(String label, String id) {
     var c = widgets();
 
-    c.label(label).defaultVal(false).addToggleButton(id+"_active");
+    c.label(label).defaultVal(false).addToggleButton(id + "_active");
     c.min(0).max(100).defaultVal(0).addSlider(id);
   }
+
   private void auxs(String label, String id) {
     var c = widgets();
 
-    c.label(label).defaultVal(false).addToggleButton(id+"_active");
+    c.label(label).defaultVal(false).addToggleButton(id + "_active");
     c.min(-100).max(100).defaultVal(0).addSlider(id);
   }
+
   public void processUserEvent(UserEvent event) {
     if (event.isWidget()) {
       if (widgets().vb(GENERATE))
@@ -146,8 +146,9 @@ public class ClusterOper implements TestBedOperation {
     }
   }
 
-
   public void runAlgorithm() {
+
+    parseSampleData();
     WidgetManager g = widgets();
 
     constructPointEvents();
@@ -201,10 +202,6 @@ public class ClusterOper implements TestBedOperation {
     }
 
     var currentHashCode = points.hashCode();
-
-
-//    var whash = calcWidgetsHash(RADIUS_EXP, RADIUS_FACTOR);
-//    currentHashCode += whash;
 
     if (mCachedPoints == null || currentHashCode != mCachedPointsHashCode) {
       mCachedPointsHashCode = currentHashCode;
@@ -348,4 +345,46 @@ public class ClusterOper implements TestBedOperation {
   private TileSizeParam mParam;
   private PointGrid mGrid0, mGrid1;
   private final Map<Integer, PointGrid> mPointGridCache = hashMap();
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Parsing road network, bus events
+  // ----------------------------------------------------------------------------------------------
+
+  private void parseSampleData() {
+    if (mParsed) return;
+    var d = new File("sample_data");
+    Files.assertDirectoryExists(d,"road network and bus events");
+
+    var topology = new File(d, "road_network.csv");
+    var rd = new CsvReader();
+    rd.parse(topology);
+
+    var fDirId = rd.findColumn("direction_id");
+    var fRoutId = rd.findColumn("route_id");
+    var fGeometry = rd.findColumn("geom");
+
+//    var nr = new NodeReader();
+//    nr.setNodeIdFieldName
+    List<Node> nodes = arrayList();
+    var rowNumber = INIT_INDEX;
+    for (var row : rd.rows()) {rowNumber++;
+      String text = "";
+      try {
+        var b = Node.newBuilder();
+        text = stripQuotes(row.get(fGeometry));
+        NodeReader.parseGeometryFromCell(b, text);
+        nodes.add(b.build());
+      } catch (Throwable t) {
+        pr("...failed to parse geometry from line:", 2 + rowNumber, quote(text));
+        throw t;
+      }
+    }
+    pr(rd);
+    pr("nodes:",INDENT,nodes);
+    mParsed = true;
+  }
+
+  private boolean mParsed;
+
 }

@@ -146,7 +146,8 @@ public class NodeReader extends BaseObject {
     return out;
   }
 
-  private static void parseGeometryFromCell(Node.Builder b, String text) {
+  public static void parseGeometryFromCell(Node.Builder b, String text) {
+    prepareDfas();
     checkArgument(!text.startsWith("\""));
     var s = new Lexer(sLinestringDfa).withSkipId(LS_WS).withText(text);
     s.read(LS_LINESTRING);
@@ -176,8 +177,9 @@ public class NodeReader extends BaseObject {
 
   private static void prepareDfas() {
     if (sLinestringDfa == null) {
-      todo("replace with constant string");
-      sLinestringDfa = DFA.parse(Files.readString(SampleMain.class, "linestring.dfa"));
+      sLinestringDfa = DFA.parse(
+          "{\"graph\":[0,9,1,80,1,97,1,1,77,1,-20,0,1,76,1,-97,0,1,49,9,-116,0,1,48,1,77,0,1,45,1,65,0,1,44,1,63,0,1,41,1,54,0,1,32,1,47,0,1,1,1,32,1,47,0,3,1,1,41,1,61,0,3,0,5,0,0,2,1,49,9,-116,0,1,48,1,77,0,4,2,2,69,1,101,1,112,0,1,46,1,91,0,0,1,1,48,10,98,0,4,2,2,69,1,101,1,112,0,1,48,10,98,0,0,2,1,48,10,-123,0,2,43,1,45,1,126,0,0,1,1,48,10,-123,0,4,1,1,48,10,-123,0,4,3,1,48,10,-116,0,2,69,1,101,1,112,0,1,46,1,91,0,0,1,1,73,1,-90,0,0,1,1,78,1,-83,0,0,1,1,69,1,-76,0,0,1,1,83,1,-69,0,0,1,1,84,1,-62,0,0,1,1,82,1,-55,0,0,1,1,73,1,-48,0,0,1,1,78,1,-41,0,0,1,1,71,1,-34,0,0,2,1,32,1,-34,0,1,40,1,-22,0,2,0,0,1,1,85,1,-13,0,0,1,1,76,1,-6,0,0,1,1,84,1,1,1,0,1,1,73,1,8,1,0,1,1,76,1,15,1,0,1,1,73,1,22,1,0,1,1,78,1,29,1,0,1,1,69,1,36,1,0,1,1,83,1,43,1,0,1,1,84,1,50,1,0,1,1,82,1,57,1,0,1,1,73,1,64,1,0,1,1,78,1,71,1,0,1,1,71,1,78,1,0,2,1,32,1,78,1,1,40,1,90,1,0,1,1,40,1,-22,0,0,1,1,79,1,104,1,0,1,1,73,1,111,1,0,1,1,78,1,118,1,0,1,1,84,1,-34,0],\"token_names\":\"WS LINESTRING ENDLINESTRING NUMBER COMMA\",\"version\":\"$2\"}"
+           );
     }
   }
 
