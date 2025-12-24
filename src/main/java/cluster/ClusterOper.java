@@ -24,6 +24,7 @@
 package cluster;
 
 import cluster.gen.Node;
+import cluster.gen.NodeSet;
 import geom.EditorElement;
 import geom.GeomApp;
 import geom.elem.EditablePointElement;
@@ -353,38 +354,47 @@ public class ClusterOper implements TestBedOperation {
 
   private void parseSampleData() {
     if (mParsed) return;
+
     var d = new File("sample_data");
     Files.assertDirectoryExists(d,"road network and bus events");
-
     var topology = new File(d, "road_network.csv");
-    var rd = new CsvReader();
-    rd.parse(topology);
 
-    var fDirId = rd.findColumn("direction_id");
-    var fRoutId = rd.findColumn("route_id");
-    var fGeometry = rd.findColumn("geom");
+    var nr = new NodeReader();
+    nr.setGeomColumnName("geom");
+   var out = nr.parse(topology);
+
+//    var rd = new CsvReader();
+//    rd.parse(topology);
+
+//    var fDirId = rd.findColumn("direction_id");
+//    var fRoutId = rd.findColumn("route_id");
+//    var fGeometry = rd.findColumn("geom");
 
 //    var nr = new NodeReader();
 //    nr.setNodeIdFieldName
-    List<Node> nodes = arrayList();
-    var rowNumber = INIT_INDEX;
-    for (var row : rd.rows()) {rowNumber++;
-      String text = "";
-      try {
-        var b = Node.newBuilder();
-        text = stripQuotes(row.get(fGeometry));
-        NodeReader.parseGeometryFromCell(b, text);
-        nodes.add(b.build());
-      } catch (Throwable t) {
-        pr("...failed to parse geometry from line:", 2 + rowNumber, quote(text));
-        throw t;
-      }
-    }
-    pr(rd);
-    pr("nodes:",INDENT,nodes);
+//    List<Node> nodes = arrayList();
+//    var rowNumber = INIT_INDEX;
+//    for (var row : rd.rows()) {rowNumber++;
+//      String text = "";
+//      try {
+//        var b = Node.newBuilder();
+//        text = stripQuotes(row.get(fGeometry));
+//        NodeReader.parseGeometryFromCell( text, nodes);
+//        nodes.add(b.build());
+//      } catch (Throwable t) {
+//        pr("...failed to parse geometry from line:", 2 + rowNumber, quote(text));
+//        throw t;
+//      }
+//    }
+//    var out = NodeSet.newBuilder();
+//    out.nodes(nodes);
+//    determineBounds(out);
+
+    pr("NodeSet:",INDENT,out);
+    mParsedNodeSet = out.build();
     mParsed = true;
   }
 
   private boolean mParsed;
-
+  private NodeSet mParsedNodeSet;
 }
