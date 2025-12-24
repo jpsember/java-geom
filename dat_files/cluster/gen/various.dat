@@ -177,12 +177,8 @@ class node_set {
 }
 
 class node {
-  - string id;
-  - string description;
   FPoint a;
   FPoint b;
-  - *FPoint vertices;
-  - *string original_column_contents;
 }
 
 class qtree_param {

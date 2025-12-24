@@ -23,22 +23,22 @@ public final class MatchUtil {
   public static final boolean ISSUE_13 = false && alert("Issue 13 (segment_matching inspection) is in effect");
 
   public static final boolean ISSUE_RUST = false && alert("ISSUE_RUST is in effect");
-  public static final Comparator<? super Node> NODE_COMPARATOR = new Comparator<Node>() {
-    @Override
-    public int compare(Node o1, Node o2) {
-      int diff = Integer.compare(o1.vertices().size(), o2.vertices().size());
-      if (diff != 0) return diff;
-      for (int i = 0; i < o1.vertices().size(); i++) {
-        var vi = o1.vertices().get(i);
-        var vj = o2.vertices().get(i);
-        diff = Float.compare(vi.x, vj.x);
-        if (diff != 0) return diff;
-        diff = Float.compare(vi.y, vj.y);
-        if (diff != 0) return diff;
-      }
-      return 0;
-    }
-  };
+//  public static final Comparator<? super Node> NODE_COMPARATOR = new Comparator<Node>() {
+//    @Override
+//    public int compare(Node o1, Node o2) {
+//      int diff = Integer.compare(o1.vertices().size(), o2.vertices().size());
+//      if (diff != 0) return diff;
+//      for (int i = 0; i < o1.vertices().size(); i++) {
+//        var vi = o1.vertices().get(i);
+//        var vj = o2.vertices().get(i);
+//        diff = Float.compare(vi.x, vj.x);
+//        if (diff != 0) return diff;
+//        diff = Float.compare(vi.y, vj.y);
+//        if (diff != 0) return diff;
+//      }
+//      return 0;
+//    }
+//  };
 
   public static void ru(Object... messages) {
     if (ISSUE_RUST)
@@ -58,45 +58,49 @@ public final class MatchUtil {
   //
   public static final float GEO_TO_PIXEL_SCALE_FACTOR = 30_000;
 
-  public static Node polygonToNode(Polygon polygon) {
-    var b = Node.newBuilder();
-    b.vertices(arrayList());
-    for (var ipt : polygon.vertices()) {
-      b.vertices().add(ipt.toFPoint());
-    }
-    return b.build();
-  }
+//  public static Node polygonToNode(Polygon polygon) {
+//    var b = Node.newBuilder();
+//    b.vertices(arrayList());
+//    for (var ipt : polygon.vertices()) {
+//      b.vertices().add(ipt.toFPoint());
+//    }
+//    return b.build();
+//  }
 
-  public static Polygon nodeToPolygon(Node n) {
-    List<IPoint> ipts = arrayList();
-    for (var fpt : n.vertices()) {
-      ipts.add(fpt.toIPoint());
-    }
-    return new Polygon(ipts, true);
-  }
+//  public static Polygon nodeToPolygon(Node n) {
+//    List<IPoint> ipts = arrayList();
+//    for (var fpt : n.vertices()) {
+//      ipts.add(fpt.toIPoint());
+//    }
+//    return new Polygon(ipts, true);
+//  }
 
 
-  public static Node polygonToNode(IPoint[] vertices) {
-    var n = Node.newBuilder();
-    n.vertices(arrayList());
-    for (var pt : vertices)
-      n.vertices().add(pt.toFPoint());
-    return n.build();
-  }
-
+//  public static Node polygonToNode(IPoint[] vertices) {
+//    var n = Node.newBuilder();
+//    n.vertices(arrayList());
+//    for (var pt : vertices)
+//      n.vertices().add(pt.toFPoint());
+//    return n.build();
+//  }
+//
   public static FRect bounds(Node n) {
-    return FRect.rectContainingPoints(n.vertices());
+    return FRect.rectContainingPoints(n.a(), n.b());
   }
 
   public static FRect calcBounds(Collection<Node> nodes) {
-    FRect b = null;
-    for (var nn : nodes) {
-      FRect b2 = bounds(nn);
-      if (b == null)
-        b = b2;
-      else b = b.including(b2);
-    }
-    return b;
+    List<FPoint> points = collectPoints(nodes);
+//
+////    FRect b = null;
+//    for (var nn : nodes) {
+//      points.add(nn.a());
+//      points.add(nn.b());
+////      FRect b2 = bounds(nn);
+////      if (b == null)
+////        b = b2;
+////      else b = b.including(b2);
+//    }
+    return FRect.rectContainingPoints(points);
   }
 
   public static void determineBounds(NodeSet.Builder input) {
@@ -104,26 +108,29 @@ public final class MatchUtil {
 
     if (nodes.isEmpty()) return;
 
-    float x_min = -1;
-    float y_min = -1;
-    float x_max = -1;
-    float y_max = -1;
-    boolean first = true;
-    for (var n : nodes) {
-      for (var v : n.vertices()) {
-        if (first) {
-          x_min = x_max = v.x;
-          y_min = y_max = v.y;
-          first = false;
-        }
-        x_min = Math.min(x_min, v.x);
-        y_min = Math.min(y_min, v.y);
-        x_max = Math.max(x_max, v.x);
-        y_max = Math.max(y_max, v.y);
-      }
-    }
-    input.origin(new FPoint(x_min, y_min));
-    input.size(new FPoint(x_max - x_min, y_max - y_min));
+    var b = calcBounds(nodes);
+
+//    float x_min = -1;
+//    float y_min = -1;
+//    float x_max = -1;
+//    float y_max = -1;
+//    boolean first = true;
+//    for (var n : nodes) {
+//      for (var v : n.vertices()) {
+//        if (first) {
+//          x_min = x_max = v.x;
+//          y_min = y_max = v.y;
+//          first = false;
+//        }
+//        x_min = Math.min(x_min, v.x);
+//        y_min = Math.min(y_min, v.y);
+//        x_max = Math.max(x_max, v.x);
+//        y_max = Math.max(y_max, v.y);
+//      }
+//    }
+    input.origin(b.location());
+//    new FPoint(x_min, y_min));
+    input.size(b.size()); //new FPoint(x_max - x_min, y_max - y_min));
   }
 
 
@@ -142,44 +149,48 @@ public final class MatchUtil {
     for (var n : out.nodes()) {
       i++;
       var b = n.toBuilder();
-      var j = INIT_INDEX;
-      for (var w : n.vertices()) {
-        j++;
-        var nw = normalizeGeoLoc(w, out);
-        b.vertices().set(j, nw);
-      }
+      b.a(normalizeGeoLoc(b.a(),out));
+      b.b(normalizeGeoLoc(b.b(),out));
+//      var j = INIT_INDEX;
+//      for (var w : n.vertices()) {
+//        j++;
+//        var nw = normalizeGeoLoc(w, out);
+//        b.vertices().set(j, nw);
+//      }
       out.nodes().set(i, b.build());
     }
+
+
     // Scale the size up as well
     out.size(input.size().scaledBy(GEO_TO_PIXEL_SCALE_FACTOR));
     return out.build();
   }
 
-  public static NodeSet applyPolylineSimplify(NodeSet in, int mPolylineSimplify) {
-    var out = in.build().toBuilder();
+//  public static NodeSet applyPolylineSimplify(NodeSet in, int mPolylineSimplify) {
+//    var out = in.build().toBuilder();
+//
+//    if (mPolylineSimplify > 0) {
+//      out.nodes().clear();
+//      // Apply simplification
+//      for (var n : in.nodes()) {
+//        var b = n.toBuilder();
+//        applySimplification(b, mPolylineSimplify);
+//        out.nodes().add(b.build());
+//      }
+//    }
+//    return out.build();
+//  }
 
-    if (mPolylineSimplify > 0) {
-      out.nodes().clear();
-      // Apply simplification
-      for (var n : in.nodes()) {
-        var b = n.toBuilder();
-        applySimplification(b, mPolylineSimplify);
-        out.nodes().add(b.build());
-      }
-    }
-    return out.build();
-  }
 
-
-  private static void applySimplification(Node.Builder b, int factor) {
-    if (b.vertices().size() < 3)
-      return;
-    if (factor != 0) {
-      var p = Polygon.fromVertices(b.vertices(), true);
-      var s2 = p.simplify(factor / 2f);
-      b.vertices(intToFloat(s2.vertices()));
-    }
-  }
+//  private static void applySimplification(Node.Builder b, int factor) {
+//    if (b.vertices().size() < 3)
+//      return;
+//    if (factor != 0) {
+//      var p = Polygon.fromVertices(b.vertices(), true);
+//      var s2 = p.simplify(factor / 2f);
+//      b.vertices(intToFloat(s2.vertices()));
+//    }
+//  }
 
   private static List<FPoint> intToFloat(IPoint[] input) {
     List<FPoint> out = arrayList();
@@ -197,20 +208,20 @@ public final class MatchUtil {
     return m;
   }
 
-  public static FRect expandBounds(FRect boundsOrNull, Node node) {
-    var nb = bounds(node);
-    if (boundsOrNull == null) {
-      return nb;
-    }
-    return boundsOrNull.including(nb);
-  }
+//  public static FRect expandBounds(FRect boundsOrNull, Node node) {
+//    var nb = bounds(node);
+//    if (boundsOrNull == null) {
+//      return nb;
+//    }
+//    return boundsOrNull.including(nb);
+//  }
 
-  public static FRect expandBounds(FRect bounds, Collection<Node> nodes) {
-    for (var n : nodes) {
-      bounds = expandBounds(bounds, n);
-    }
-    return bounds;
-  }
+//  public static FRect expandBounds(FRect bounds, Collection<Node> nodes) {
+//    for (var n : nodes) {
+//      bounds = expandBounds(bounds, n);
+//    }
+//    return bounds;
+//  }
 
   public static List<Node> transformNodes(Collection<Node> input, Matrix tfm) {
     List<Node> out = arrayList();
@@ -222,30 +233,34 @@ public final class MatchUtil {
 
   public static Node transformNode(Node input, Matrix tfm) {
     var b = input.toBuilder();
-    List<FPoint> pts = arrayList();
-    for (var pt : input.vertices()) {
-      pts.add(tfm.apply(pt));
-    }
-    b.vertices(pts);
+    b.a(tfm.apply(b.a()));
+    b.b(tfm.apply(b.b()));
+//    List<FPoint> pts = arrayList();
+//    for (var pt : input.vertices()) {
+//      pts.add(tfm.apply(pt));
+//    }
+//    b.vertices(pts);
     return b.build();
   }
 
-  public static NodeSet filterInvalid(NodeSet input) {
-    var out = input.build().toBuilder();
-    out.nodes().clear();
-    for (var n : input.nodes()) {
-      if (n.vertices().size() < 2) {
-        continue;
-      }
-      out.nodes().add(n);
-    }
-    return out.build();
-  }
+//  public static NodeSet filterInvalid(NodeSet input) {
+//    var out = input.build().toBuilder();
+//    out.nodes().clear();
+//    for (var n : input.nodes()) {
+//      if (n.vertices().size() < 2) {
+//        continue;
+//      }
+//      out.nodes().add(n);
+//    }
+//    return out.build();
+//  }
 
   public static List<FPoint> collectPoints(Collection<Node> nodes) {
     List<FPoint> out = arrayList();
     for (var n : nodes) {
-      out.addAll(n.vertices());
+      out.add(n.a());
+      out.add(n.b());
+//      out.addAll(n.vertices());
     }
     return out;
   }
@@ -273,15 +288,15 @@ public final class MatchUtil {
     return s;
   }
 
-  public static Node assertValid(Node node, String message) {
-    if (!valid(node))
-      badArg("node has too few vertices (" + message + ")", node);
-    return node;
-  }
+//  public static Node assertValid(Node node, String message) {
+//    if (!valid(node))
+//      badArg("node has too few vertices (" + message + ")", node);
+//    return node;
+//  }
 
-  public static boolean valid(Node node) {
-    return node.vertices().size() >= 2;
-  }
+//  public static boolean valid(Node node) {
+//    return node.vertices().size() >= 2;
+//  }
 
   private static Pattern TRIM_PAT = RegExp.pattern("\\d+\\.\\d+");
 
@@ -356,47 +371,47 @@ public final class MatchUtil {
   }
 
 
-  /**
-   * Write NodeSet to csv file
-   */
-  public static void writeToCsv(List<Node> nodes, List<String> columnNames, File destFile) {
-    checkArgument(Files.getExtension(destFile).equals(Files.EXT_CSV), "expected csv extension for:", destFile);
-    p13("writeToCsv, destFile:", destFile);
+//  /**
+//   * Write NodeSet to csv file
+//   */
+//  public static void writeToCsv(List<Node> nodes, List<String> columnNames, File destFile) {
+//    checkArgument(Files.getExtension(destFile).equals(Files.EXT_CSV), "expected csv extension for:", destFile);
+//    p13("writeToCsv, destFile:", destFile);
+//
+//    var w = new CsvWriter();
+//    for (var cn : columnNames)
+//      w.addColumn(cn);
+//    w.doneColumns();
+//
+//    for (var n : nodes) {
+//      for (var c : n.originalColumnContents()) {
+//        w.add(c);
+//      }
+//      w.doneRow();
+//    }
+//    Files.S.writeString(destFile, w.close());
+//  }
 
-    var w = new CsvWriter();
-    for (var cn : columnNames)
-      w.addColumn(cn);
-    w.doneColumns();
 
-    for (var n : nodes) {
-      for (var c : n.originalColumnContents()) {
-        w.add(c);
-      }
-      w.doneRow();
-    }
-    Files.S.writeString(destFile, w.close());
-  }
-
-
-  public static String generateGeometry(Node node) {
-    checkArgument(node.vertices().size() >= 2, "too few vertices");
-    var sb = new StringBuilder();
-    // "LINESTRING(-123.99787629392873 49.211193070827704,-123.99849595871265 49.211889715843995,-123.99849595871265 49.21315118318739)"
-    sb.append("LINESTRING(");
-
-    var i = INIT_INDEX;
-    for (var v : node.vertices()) {
-      i++;
-      if (i != 0) {
-        sb.append(',');
-      }
-      sb.append(v.x);
-      sb.append(' ');
-      sb.append(v.y);
-    }
-    sb.append(")");
-    return sb.toString();
-  }
+//  public static String generateGeometry(Node node) {
+//    checkArgument(node.vertices().size() >= 2, "too few vertices");
+//    var sb = new StringBuilder();
+//    // "LINESTRING(-123.99787629392873 49.211193070827704,-123.99849595871265 49.211889715843995,-123.99849595871265 49.21315118318739)"
+//    sb.append("LINESTRING(");
+//
+//    var i = INIT_INDEX;
+//    for (var v : node.vertices()) {
+//      i++;
+//      if (i != 0) {
+//        sb.append(',');
+//      }
+//      sb.append(v.x);
+//      sb.append(' ');
+//      sb.append(v.y);
+//    }
+//    sb.append(")");
+//    return sb.toString();
+//  }
 
 
 }

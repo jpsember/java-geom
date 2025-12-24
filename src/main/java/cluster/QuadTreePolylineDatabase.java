@@ -23,18 +23,30 @@ public class QuadTreePolylineDatabase extends BaseObject {
 
   public Node worldToPixelSpace(Node node) {
     var b = node.build().toBuilder();
-    List<FPoint> pixelVertices = arrayList();
-    for (var worldPt : b.vertices()) {
+//    List<FPoint> pixelVertices = arrayList();
+//    for (var worldPt : b.vertices()) {
+    {
+      var worldPt = b.a();
       var np = new FPoint((worldPt.x - mOrigin.x) * GEO_TO_PIXEL_SCALE_FACTOR,
           (worldPt.y - mOrigin.y) * GEO_TO_PIXEL_SCALE_FACTOR);
-      pixelVertices.add(np);
+      b.a(np);
     }
-    b.vertices(pixelVertices);
+    {
+      var worldPt = b.b();
+      var np = new FPoint((worldPt.x - mOrigin.x) * GEO_TO_PIXEL_SCALE_FACTOR,
+          (worldPt.y - mOrigin.y) * GEO_TO_PIXEL_SCALE_FACTOR);
+      b.b(np);
+
+    }
+
+//      pixelVertices.add(np);
+//    }
+//    b.vertices(pixelVertices);
     return b.build();
   }
 
   public QuadTreePolylineDatabase(NodeSet nodeSet, QtreeParam paramOrNull) {
-    nodeSet = filterInvalid(nodeSet);
+//    nodeSet = filterInvalid(nodeSet);
     checkArgument(nodeSet.nodes().size() != 0, "node set is empty");
     mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
     mOrigin = nodeSet.origin();
@@ -43,7 +55,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
 
   private void prepare() {
     if (mRoot == null) {
-      var p1 = mNodeSet.nodes().get(0).vertices().get(0);
+      var p1 = mNodeSet.nodes().get(0).a();
       if (db)
         checkArgument(p1.x < 20000, "improperly transformed nodeset:", p1);
 
@@ -74,9 +86,9 @@ public class QuadTreePolylineDatabase extends BaseObject {
     List<Node> out = arrayList();
     out.addAll(mQueryResultSet);
 
-    if (alert("sorting candidates")) {
-      out.sort(NODE_COMPARATOR);
-    }
+//    if (alert("sorting candidates")) {
+//      out.sort(NODE_COMPARATOR);
+//    }
     if (db)
       pr("candidates:", out);
     return out;
@@ -133,6 +145,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
     }
 
     List<Node> polylines() {
+      todo("rename this to nodes?");
       return mNodes;
     }
 
