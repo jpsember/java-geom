@@ -10,7 +10,6 @@ import js.testutil.MyTestCase;
 
 public class PointSetTest extends MyTestCase {
 
-
   @Test
   public void simple() {
     loadTools();
@@ -28,6 +27,15 @@ public class PointSetTest extends MyTestCase {
     }
     ps().freeze();
     assertMessage(ps().toJson());
+  }
+
+  @Test
+  public void verifyIds() {
+    for (int i = 0; i < 5; i++) {
+      add(i);
+    }
+    checkState(add(0) == 1);
+    checkState(add(4) == 5);
   }
 
   @Test(expected = IllegalStateException.class)

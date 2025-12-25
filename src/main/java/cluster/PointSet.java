@@ -9,8 +9,14 @@ import java.util.Map;
 
 import static js.base.Tools.*;
 
+/**
+ * Constructs a set of FPoints, with unique ids
+ */
 public class PointSet extends BaseObject {
 
+  /**
+   * Add a point, if it doesn't already exist; return its id
+   */
   public int add(FPoint pt) {
     checkState(mPointIndexMap != null, "PointSet is frozen");
     var index = mPointIndexMap.get(pt);
@@ -24,6 +30,9 @@ public class PointSet extends BaseObject {
     return index;
   }
 
+  /**
+   * Make PointSet immutable, discarding unnecessary data structures
+   */
   public void freeze() {
     if (mPointIndexMap != null) {
       mPointIndexMap = null;
