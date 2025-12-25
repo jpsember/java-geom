@@ -5,7 +5,7 @@ import js.json.JSMap;
 
 public class AlgResult implements AbstractData {
 
-  public Node candidate() {
+  public RoadSegment candidate() {
     return mCandidate;
   }
 
@@ -52,10 +52,10 @@ public class AlgResult implements AbstractData {
 
   private AlgResult(JSMap m) {
     {
-      mCandidate = Node.DEFAULT_INSTANCE;
+      mCandidate = RoadSegment.DEFAULT_INSTANCE;
       Object x = m.optUnsafe(_0);
       if (x != null) {
-        mCandidate = Node.DEFAULT_INSTANCE.parse(x);
+        mCandidate = RoadSegment.DEFAULT_INSTANCE.parse(x);
       }
     }
     mScore = m.opt(_1, 0f);
@@ -97,7 +97,7 @@ public class AlgResult implements AbstractData {
     return r;
   }
 
-  protected Node mCandidate;
+  protected RoadSegment mCandidate;
   protected float mScore;
   protected String mNote;
   protected int m__hashcode;
@@ -130,8 +130,8 @@ public class AlgResult implements AbstractData {
       return r;
     }
 
-    public Builder candidate(Node x) {
-      mCandidate = (x == null) ? Node.DEFAULT_INSTANCE : x.build();
+    public Builder candidate(RoadSegment x) {
+      mCandidate = (x == null) ? RoadSegment.DEFAULT_INSTANCE : x.build();
       return this;
     }
 
@@ -150,7 +150,7 @@ public class AlgResult implements AbstractData {
   public static final AlgResult DEFAULT_INSTANCE = new AlgResult();
 
   private AlgResult() {
-    mCandidate = Node.DEFAULT_INSTANCE;
+    mCandidate = RoadSegment.DEFAULT_INSTANCE;
     mNote = "";
   }
 

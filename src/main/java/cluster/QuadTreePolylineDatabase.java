@@ -4,8 +4,8 @@ import js.base.BaseObject;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.json.JSMap;
-import cluster.gen.Node;
-import cluster.gen.NodeSet;
+import cluster.gen.RoadSegment;
+import cluster.gen.RoadNetwork;
 import cluster.gen.QtreeParam;
 
 import java.util.Collection;
@@ -21,7 +21,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
   private static final boolean db = false && alert("Verbose is on in QuadTree");
 
 
-  public Node worldToPixelSpace(Node node) {
+  public RoadSegment worldToPixelSpace(RoadSegment node) {
     var b = node.build().toBuilder();
 //    List<FPoint> pixelVertices = arrayList();
 //    for (var worldPt : b.vertices()) {
@@ -45,9 +45,9 @@ public class QuadTreePolylineDatabase extends BaseObject {
     return b.build();
   }
 
-  public QuadTreePolylineDatabase(NodeSet nodeSet, QtreeParam paramOrNull) {
+  public QuadTreePolylineDatabase(RoadNetwork nodeSet, QtreeParam paramOrNull) {
 //    nodeSet = filterInvalid(nodeSet);
-    checkArgument(nodeSet.nodes().size() != 0, "node set is empty");
+    checkArgument(nodeSet.roadSegments().size() != 0, "node set is empty");
     mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
     mOrigin = nodeSet.origin();
     mNodeSet = MatchUtil.normalize(nodeSet);
@@ -55,7 +55,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
 
   private void prepare() {
     if (mRoot == null) {
-      var p1 = mNodeSet.nodes().get(0).a();
+      var p1 = mNodeSet.roadSegments().get(0).a();
       if (db)
         checkArgument(p1.x < 20000, "improperly transformed nodeset:", p1);
 
@@ -65,7 +65,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
     }
   }
 
-  public List<Node> findCandidates(Node pixelInputPolyline, int padding) {
+  public List<RoadSegment> findCandidates(RoadSegment pixelInputPolyline, int padding) {
     prepare();
 
     var inputBounds = MatchUtil.bounds(pixelInputPolyline).withInset(-padding);
@@ -83,7 +83,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
 
     // Copy the remaining (unique) elements to an array for output.
 
-    List<Node> out = arrayList();
+    List<RoadSegment> out = arrayList();
     out.addAll(mQueryResultSet);
 
 //    if (alert("sorting candidates")) {
@@ -130,7 +130,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
 
     // If this is a leaf node, this will contain the polylines; at present, these are "Node"s, but
     // maybe later we'll use a more optimized datastructure
-    private List<Node> mNodes;
+    private List<RoadSegment> mNodes;
 
     QNode() {
 
@@ -144,7 +144,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
       return mRightChild;
     }
 
-    List<Node> polylines() {
+    List<RoadSegment> polylines() {
       todo("rename this to nodes?");
       return mNodes;
     }
@@ -170,7 +170,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
       return m;
     }
 
-    public void addPolylines(Collection<Node> nodes) {
+    public void addPolylines(Collection<RoadSegment> nodes) {
       if (mNodes == null)
         mNodes = arrayList();
       mNodes.addAll(nodes);
@@ -183,7 +183,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
       return mNodes.size();
     }
 
-    public void addPolyline(Node n) {
+    public void addPolyline(RoadSegment n) {
       if (mNodes == null)
         mNodes = arrayList();
       mNodes.add(n);
@@ -217,11 +217,11 @@ public class QuadTreePolylineDatabase extends BaseObject {
   /**
    * Construct the QuadTree
    */
-  private void construct(NodeSet nodeSet) {
+  private void construct(RoadNetwork nodeSet) {
     QNode.sDebugIndex = 100;
     // Build a leaf QNode that contains all the nodes, to be recursively split
     var qn = new QNode();
-    qn.addPolylines(nodeSet.nodes());
+    qn.addPolylines(nodeSet.roadSegments());
     mDepth = 0;
 
     // Calculate the bounds of all of the nodes, and pass that into the split node method
@@ -326,7 +326,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
     return f;
   }
 
-  private NodeSet mNodeSet;
+  private RoadNetwork mNodeSet;
   private FPoint mOrigin;
   private QNode mRoot;
   private FRect mRootBounds;
@@ -334,7 +334,7 @@ public class QuadTreePolylineDatabase extends BaseObject {
   // Used for recursing during constructing Quadtree
 
   private FRect mQueryInputBounds;
-  private Set<Node> mQueryResultSet = hashSet();
+  private Set<RoadSegment> mQueryResultSet = hashSet();
   private int mDepth;
   private QtreeParam mParam;
 }

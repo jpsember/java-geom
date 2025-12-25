@@ -4,7 +4,7 @@ import js.data.AbstractData;
 import js.geometry.FPoint;
 import js.json.JSMap;
 
-public class Node implements AbstractData {
+public class RoadSegment implements AbstractData {
 
   public FPoint a() {
     return mA;
@@ -36,16 +36,16 @@ public class Node implements AbstractData {
   }
 
   @Override
-  public Node build() {
+  public RoadSegment build() {
     return this;
   }
 
   @Override
-  public Node parse(Object obj) {
-    return new Node((JSMap) obj);
+  public RoadSegment parse(Object obj) {
+    return new RoadSegment((JSMap) obj);
   }
 
-  private Node(JSMap m) {
+  private RoadSegment(JSMap m) {
     {
       mA = FPoint.DEFAULT_INSTANCE;
       Object x = m.optUnsafe(_0);
@@ -70,9 +70,9 @@ public class Node implements AbstractData {
   public boolean equals(Object object) {
     if (this == object)
       return true;
-    if (object == null || !(object instanceof Node))
+    if (object == null || !(object instanceof RoadSegment))
       return false;
-    Node other = (Node) object;
+    RoadSegment other = (RoadSegment) object;
     if (other.hashCode() != hashCode())
       return false;
     if (!(mA.equals(other.mA)))
@@ -98,9 +98,9 @@ public class Node implements AbstractData {
   protected FPoint mB;
   protected int m__hashcode;
 
-  public static final class Builder extends Node {
+  public static final class Builder extends RoadSegment {
 
-    private Builder(Node m) {
+    private Builder(RoadSegment m) {
       mA = m.mA;
       mB = m.mB;
     }
@@ -117,8 +117,8 @@ public class Node implements AbstractData {
     }
 
     @Override
-    public Node build() {
-      Node r = new Node();
+    public RoadSegment build() {
+      RoadSegment r = new RoadSegment();
       r.mA = mA;
       r.mB = mB;
       return r;
@@ -136,9 +136,9 @@ public class Node implements AbstractData {
 
   }
 
-  public static final Node DEFAULT_INSTANCE = new Node();
+  public static final RoadSegment DEFAULT_INSTANCE = new RoadSegment();
 
-  private Node() {
+  private RoadSegment() {
     mA = FPoint.DEFAULT_INSTANCE;
     mB = FPoint.DEFAULT_INSTANCE;
   }

@@ -6,12 +6,11 @@ import js.file.Files;
 import js.geometry.*;
 import js.json.JSMap;
 import js.parsing.RegExp;
-import cluster.gen.Node;
-import cluster.gen.NodeSet;
+import cluster.gen.RoadSegment;
+import cluster.gen.RoadNetwork;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -44,6 +43,7 @@ public final class MatchUtil {
     if (ISSUE_RUST)
       pc(insertStringToFront(">>", messages));
   }
+
   public static void rf(Object... messages) {
     if (ISSUE_RUST)
       pr(insertStringToFront(">>", messages));
@@ -76,7 +76,7 @@ public final class MatchUtil {
 //  }
 
 
-//  public static Node polygonToNode(IPoint[] vertices) {
+  //  public static Node polygonToNode(IPoint[] vertices) {
 //    var n = Node.newBuilder();
 //    n.vertices(arrayList());
 //    for (var pt : vertices)
@@ -84,11 +84,11 @@ public final class MatchUtil {
 //    return n.build();
 //  }
 //
-  public static FRect bounds(Node n) {
+  public static FRect bounds(RoadSegment n) {
     return FRect.rectContainingPoints(n.a(), n.b());
   }
 
-  public static FRect calcBounds(Collection<Node> nodes) {
+  public static FRect calcBounds(Collection<RoadSegment> nodes) {
     List<FPoint> points = collectPoints(nodes);
 //
 ////    FRect b = null;
@@ -103,61 +103,70 @@ public final class MatchUtil {
     return FRect.rectContainingPoints(points);
   }
 
-  public static void determineBounds(NodeSet.Builder input) {
-    var nodes = input.nodes();
-
-    if (nodes.isEmpty()) return;
+  public static FRect determineBounds(RoadNetwork.Builder input) {
+    var nodes = input.roadSegments();
+    checkArgument(!nodes.isEmpty());
+//    if (nodes.isEmpty()) return;
 
     var b = calcBounds(nodes);
-
-//    float x_min = -1;
-//    float y_min = -1;
-//    float x_max = -1;
-//    float y_max = -1;
-//    boolean first = true;
-//    for (var n : nodes) {
-//      for (var v : n.vertices()) {
-//        if (first) {
-//          x_min = x_max = v.x;
-//          y_min = y_max = v.y;
-//          first = false;
-//        }
-//        x_min = Math.min(x_min, v.x);
-//        y_min = Math.min(y_min, v.y);
-//        x_max = Math.max(x_max, v.x);
-//        y_max = Math.max(y_max, v.y);
-//      }
-//    }
     input.origin(b.location());
-//    new FPoint(x_min, y_min));
-    input.size(b.size()); //new FPoint(x_max - x_min, y_max - y_min));
+    input.size(b.size());
+    return b;
   }
 
 
-  public static FPoint normalizeGeoLoc(FPoint longLat, NodeSet nodeSet) {
+  public static JSMap determineExtremalPoints(RoadNetwork nw) {
+    FPoint xmin = null;
+    FPoint xmax = null;
+    FPoint ymin = null;
+    FPoint ymax = null;
+
+    for (var seg : nw.roadSegments()) {
+      for (int pass = 0; pass < 2; pass++) {
+        var pt = pass == 0 ? seg.a() : seg.b();
+        if (xmin == null) {
+          xmin = pt;
+          xmax = pt;
+          ymin = pt;
+          ymax = pt;
+        }
+        if (xmin.x > pt.x)
+          xmin = pt;
+        if (xmax.x < pt.x)
+          xmax = pt;
+
+
+        if (ymin.y > pt.y)
+          ymin = pt;
+        if (ymax.y < pt.y)
+          ymax = pt;
+      }
+    }
+
+    return map().put("", "Extremal points").putNumbered("# segs", nw.roadSegments().size()).putNumbered("x min", xmin).putNumbered("x max", xmax)
+        .putNumbered("y min", ymin).putNumbered("y max", ymax);
+  }
+
+
+  public static FPoint normalizeGeoLoc(FPoint longLat, RoadNetwork nodeSet) {
     return new FPoint((longLat.x - nodeSet.origin().x) * GEO_TO_PIXEL_SCALE_FACTOR,
         (longLat.y - nodeSet.origin().y) * GEO_TO_PIXEL_SCALE_FACTOR);
   }
 
-  public static NodeSet normalize(NodeSet input) {
+  public static RoadNetwork normalize(RoadNetwork input) {
 
+    todo("avoid normalizing, we are already dealing with pixels at this point");
     var out = input.build().toBuilder();
 
     determineBounds(out);
 
     var i = INIT_INDEX;
-    for (var n : out.nodes()) {
+    for (var n : out.roadSegments()) {
       i++;
       var b = n.toBuilder();
-      b.a(normalizeGeoLoc(b.a(),out));
-      b.b(normalizeGeoLoc(b.b(),out));
-//      var j = INIT_INDEX;
-//      for (var w : n.vertices()) {
-//        j++;
-//        var nw = normalizeGeoLoc(w, out);
-//        b.vertices().set(j, nw);
-//      }
-      out.nodes().set(i, b.build());
+      b.a(normalizeGeoLoc(b.a(), out));
+      b.b(normalizeGeoLoc(b.b(), out));
+      out.roadSegments().set(i, b.build());
     }
 
 
@@ -199,10 +208,10 @@ public final class MatchUtil {
     return out;
   }
 
-  public static JSMap debugInfo(NodeSet s) {
+  public static JSMap debugInfo(RoadNetwork s) {
     var s2 = s.build().toBuilder();
-    var count = s2.nodes().size();
-    s2.nodes().clear();
+    var count = s2.roadSegments().size();
+    s2.roadSegments().clear();
     var m = s2.toJson();
     m.put("nodes", count);
     return m;
@@ -223,15 +232,15 @@ public final class MatchUtil {
 //    return bounds;
 //  }
 
-  public static List<Node> transformNodes(Collection<Node> input, Matrix tfm) {
-    List<Node> out = arrayList();
+  public static List<RoadSegment> transformNodes(Collection<RoadSegment> input, Matrix tfm) {
+    List<RoadSegment> out = arrayList();
     for (var n : input) {
       out.add(transformNode(n, tfm));
     }
     return out;
   }
 
-  public static Node transformNode(Node input, Matrix tfm) {
+  public static RoadSegment transformNode(RoadSegment input, Matrix tfm) {
     var b = input.toBuilder();
     b.a(tfm.apply(b.a()));
     b.b(tfm.apply(b.b()));
@@ -255,7 +264,7 @@ public final class MatchUtil {
 //    return out.build();
 //  }
 
-  public static List<FPoint> collectPoints(Collection<Node> nodes) {
+  public static List<FPoint> collectPoints(Collection<RoadSegment> nodes) {
     List<FPoint> out = arrayList();
     for (var n : nodes) {
       out.add(n.a());
@@ -265,7 +274,7 @@ public final class MatchUtil {
     return out;
   }
 
-  public static Pair<Matrix, FRect> calcPixelToAlignedWorldSpaceTransform(Collection<Node> nodes) {
+  public static Pair<Matrix, FRect> calcPixelToAlignedWorldSpaceTransform(Collection<RoadSegment> nodes) {
     List<FPoint> pts = collectPoints(nodes);
     checkArgument(nonEmpty(pts), "no points found");
     var pixBounds = FRect.rectContainingPoints(pts);

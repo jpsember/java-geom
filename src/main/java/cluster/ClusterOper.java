@@ -23,7 +23,7 @@
  **/
 package cluster;
 
-import cluster.gen.NodeSet;
+import cluster.gen.RoadNetwork;
 import geom.EditorElement;
 import geom.GeomApp;
 import geom.elem.EditablePointElement;
@@ -161,6 +161,7 @@ public class ClusterOper implements TestBedOperation {
       var app = geomApp();
       var z = g.vi(ZOOM);
       targZoom = interpolateBetweenScalars(0.8f, 9f, z / 300f);
+      //if (!alert("not setting zoom factor"))
       app.setZoomFactor(targZoom);
     }
     var ts = tileSizeForZoom(targZoom);
@@ -352,12 +353,29 @@ public class ClusterOper implements TestBedOperation {
   private void renderTopology() {
     var t = getTopology();
 
+
+
+
+    float zoomCompensation = getScale();
+    var strokeWidth = 1.5f * zoomCompensation;
+    var pointSetStroke = new BasicStroke(strokeWidth);
+    stroke(pointSetStroke);
+    color(Color.MAGENTA);
+    var i = INIT_INDEX;
+    for (var s : t.roadSegments()) {
+      i++;
+      drawLine(s.a().toIPoint(),s.b().toIPoint());
+//      if (i < 10)
+//        pr("draw",s.a(),"...",s.b());
+//      pr("draw:",s.a(),s.b());
+    }
   }
+
   // ----------------------------------------------------------------------------------------------
   // Parsing road network, bus events
   // ----------------------------------------------------------------------------------------------
 
-  private NodeSet getTopology() {
+  private RoadNetwork getTopology() {
     if (mTopology == null) {
       todo("!add ability to load different sample data");
 
@@ -365,7 +383,7 @@ public class ClusterOper implements TestBedOperation {
       Files.assertDirectoryExists(d, "road network and bus events");
       var topology = new File(d, "road_network.csv");
 
-      var nr = new NodeReader();
+      var nr = new RoadNetworkReader();
       nr.setGeomColumnName("geom");
       var out = nr.parse(topology);
 
@@ -374,5 +392,5 @@ public class ClusterOper implements TestBedOperation {
     return mTopology;
   }
 
-  private NodeSet mTopology;
+  private RoadNetwork mTopology;
 }

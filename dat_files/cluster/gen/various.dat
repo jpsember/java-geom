@@ -18,7 +18,7 @@ class tile {
 
 class alg_result {
   // candidate node
-  Node candidate;
+  RoadSegment candidate;
 
   // score calculated, if not rejected
   float score;
@@ -170,13 +170,16 @@ class match_param {
 
 }
 
-class node_set {
-  *Node nodes;
+class road_network {
+  *RoadSegment road_segments;
   FPoint origin;
   FPoint size;
+
+  FPoint translate;
+  FPoint scale;
 }
 
-class node {
+class road_segment {
   FPoint a;
   FPoint b;
 }
