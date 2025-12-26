@@ -5,6 +5,7 @@ import js.data.FloatArray;
 import js.geometry.FPoint;
 import js.json.JSMap;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static js.base.Tools.*;
@@ -14,6 +15,12 @@ import static js.base.Tools.*;
  */
 public class PointSet extends BaseObject {
 
+  public static PointSet withPoints(Collection<FPoint> pts) {
+    var ps = new PointSet();
+    for (var pt : pts)
+      ps.add(pt);
+    return ps.freeze();
+  }
   /**
    * Add a point, if it doesn't already exist; return its id
    */
@@ -33,13 +40,17 @@ public class PointSet extends BaseObject {
   /**
    * Make PointSet immutable, discarding unnecessary data structures
    */
-  public void freeze() {
-    if (mPointIndexMap != null) {
+  public PointSet freeze() {
+    if (mutable()) {
       mPointIndexMap = null;
       mPointList = mPointList.build();
     }
+    return this;
   }
 
+  public boolean mutable() {
+    return mPointIndexMap != null;
+  }
   @Override
   public JSMap toJson() {
     var n = super.toJson();

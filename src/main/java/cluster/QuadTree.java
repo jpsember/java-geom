@@ -34,11 +34,53 @@ public class QuadTree extends BaseObject {
 //
 //    }
 //
-////      pixelVertices.add(np);
-////    }
-////    b.vertices(pixelVertices);
+
+  /// /      pixelVertices.add(np);
+  /// /    }
+  /// /    b.vertices(pixelVertices);
 //    return b.build();
 //  }
+
+
+  public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs) {
+    checkArgument(segmentEndpointPairs.length != 0, "segment list is empty");
+    checkArgument(!pointSet.mutable(),"PointSet must be frozen");
+    mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
+    mPointSet = pointSet;
+
+//    // Determine bounds of all the points
+//    List<FPoint> pts = arrayList();
+//    for (var rs : nodeSet.roadSegments()) {
+//      pts.add(rs.a());
+//      pts.add(rs.b());
+//      }
+//    mRootBounds =
+//    FRect.rectContainingPoints(pts);
+
+    // Add all points to the point set, and to the quad tree
+
+    mRoot = new QNode();
+    var seg = IntArray.newBuilder();
+    mRoot.mSegments = seg;
+    todo("replace node intarray builder with immutable at some point");
+
+    List<FPoint> allFPoints = arrayList();
+    for (int i = 0; i < segmentEndpointPairs.length; i+= 2) {
+
+      var id0 = segmentEndpointPairs[i+0];
+      var id1 = segmentEndpointPairs[i+1];
+      var a = pointSet.get(id0);
+      var b= pointSet.get(id1);
+      allFPoints.add(a);
+      allFPoints.add(b);
+//      int i0 = mPointSet.add(a);
+//      int i1 = mPointSet.add(b);
+      seg.add(id0) .add(id1);
+    }
+
+    mRootBounds = FRect.rectContainingPoints(allFPoints);
+    mRoot = splitNodeSet(mRoot, mRootBounds);
+  }
 
   public QuadTree(RoadNetwork nodeSet, QtreeParam paramOrNull) {
     checkArgument(nodeSet.roadSegments().size() != 0, "node set is empty");
@@ -57,9 +99,9 @@ public class QuadTree extends BaseObject {
     // Add all points to the point set, and to the quad tree
 
     mRoot = new QNode();
-    var seg =  IntArray.newBuilder();
+    var seg = IntArray.newBuilder();
     mRoot.mSegments = seg;
-todo("replace node intarray builder with immutable at some point");
+    todo("replace node intarray builder with immutable at some point");
 
     List<FPoint> allFPoints = arrayList();
     for (var rs : nodeSet.roadSegments()) {
@@ -134,13 +176,13 @@ todo("replace node intarray builder with immutable at some point");
         auxFind(qNode.right(), recurseBounds[1]);
     } else {
       var segmentEndpointIds = qNode.mSegments.array();
-      for (int i = 0; i < segmentEndpointIds.length; i+=2) {
+      for (int i = 0; i < segmentEndpointIds.length; i += 2) {
         var id0 = segmentEndpointIds[i];
-        var id1 = segmentEndpointIds[i+1];
+        var id1 = segmentEndpointIds[i + 1];
         var p0 = mPointSet.get(id0);
         var p1 = mPointSet.get(id1);
-        var segmentBounds = FRect.rectContainingPoints(p0,p1);
-         if (mQueryInputBounds.intersects(segmentBounds)) {
+        var segmentBounds = FRect.rectContainingPoints(p0, p1);
+        if (mQueryInputBounds.intersects(segmentBounds)) {
           mQueryResultSet.add(id0);
           mQueryResultSet.add(id1);
         }
@@ -169,11 +211,11 @@ todo("replace node intarray builder with immutable at some point");
     }
 
     IntArray segments() {
-     return mSegments;
+      return mSegments;
     }
 
     void addSegment(int endpointId0, int endpointId1) {
-      var b = (IntArray.Builder)mSegments;
+      var b = (IntArray.Builder) mSegments;
       b.add(endpointId0);
       b.add(endpointId1);
     }
@@ -273,7 +315,7 @@ todo("replace node intarray builder with immutable at some point");
 //  }
 
   private QNode splitNodeSet(final QNode node, FRect bounds) {
-todo("this does NOT need to return anything, as input node doesn't change");
+    todo("this does NOT need to return anything, as input node doesn't change");
 
 
     // If there are only a few polylines in this node, don't split it further
@@ -292,21 +334,21 @@ todo("this does NOT need to return anything, as input node doesn't change");
     final float s = splitCoordinate(splitDimension, bounds);
     {
       var segs = node.segments().array();
-      for (int i = 0; i < segs.length; i+=2) {
+      for (int i = 0; i < segs.length; i += 2) {
         var id0 = segs[i];
-        var id1 = segs[i+1];
+        var id1 = segs[i + 1];
         var pt0 = mPointSet.get(id0);
         var pt1 = mPointSet.get(id1);
-      var segmentBounds = FRect.rectContainingPoints(pt0,pt1);
+        var segmentBounds = FRect.rectContainingPoints(pt0, pt1);
         // Add segment to each child node that it intersects
         var isect = calcIntersectFlags(splitDimension, s, segmentBounds);
         var isectL = (isect & 1) != 0;
         var isectR = (isect & 2) != 0;
         if (isectL) {
-          qL.addSegment(id0,id1);
+          qL.addSegment(id0, id1);
         }
         if (isectR) {
-          qR.addSegment(id0,id1);
+          qR.addSegment(id0, id1);
         }
       }
 //      for (var n : node.polylines()) {
@@ -380,8 +422,6 @@ todo("this does NOT need to return anything, as input node doesn't change");
     return f;
   }
 
-//  private RoadNetwork mNodeSet;
-//  private FPoint mOrigin;
   private QNode mRoot;
   private FRect mRootBounds;
 
