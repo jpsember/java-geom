@@ -26,11 +26,20 @@ public class QuadTreeTest extends MyTestCase {
 
   @Test
   public void seg4() {
+    setVerbose();
     genSegments(4);
     genTree();
     genOut();
   }
 
+
+  @Test
+  public void seg100() {
+    setVerbose();
+    genSegments(100);
+    genTree();
+    genOut();
+  }
   private void genOut() {
 
     var m = map();
@@ -40,9 +49,9 @@ public class QuadTreeTest extends MyTestCase {
       var b = FRect.rectContainingPoints(p0, p1);
       var m2 = map();
       m2.put("bounds", b.toJson());
-      var result = genTree().findCandidates(b);
-      if (!alert("reenable this check"))
-        checkArgument(result.length != 0, "result was empty, should have contained at least the segment", p0, p1);
+      var result = genTree().findSegments(b);
+      //if (!alert("reenable this check"))
+      checkArgument(result.length != 0, "result was empty, should have contained at least the segment", p0, p1);
       m2.put("result", JSList.with(result));
       m.putNumbered(m2);
     }
@@ -50,14 +59,14 @@ public class QuadTreeTest extends MyTestCase {
   }
 
   private void genSegments(int count) {
-    int n = 0;
     var clip = new FRect(new FPoint(100, 100));
 
     var target = mSegments.size() + count;
     while (mSegments.size() < target) {
       var p0 = new FPoint(10f + random().nextFloat() * 90f, 10f + random().nextFloat() * 90f);
       p0 = p0.toIPoint().toFPoint();
-      var dir = random().nextInt(4) * 45 * MyMath.M_DEG;
+      var wedge = 30;
+      var dir = random().nextInt((int) (360.0/wedge)) * wedge * MyMath.M_DEG;
       var p1 = MyMath.pointOnCircle(p0, dir, 75f * random().nextFloat() * random().nextFloat());
       p1 = p1.toIPoint().toFPoint();
       var bnd = FRect.rectContainingPoints(p0, p1);
@@ -68,8 +77,9 @@ public class QuadTreeTest extends MyTestCase {
   }
 
   private QuadTree genTree() {
-    if (mTree == null)
-      mTree = new QuadTree(mParam, pointSet(), segmentEndpoints());
+    if (mTree == null) {
+      mTree = new QuadTree(mParam, pointSet(), segmentEndpoints(),verbose());
+    }
     return mTree;
   }
 
