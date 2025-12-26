@@ -16,46 +16,12 @@ public class QuadTree extends BaseObject {
   private static final boolean db = false && alert("Verbose is on in QuadTree");
 
 
-//  public RoadSegment worldToPixelSpace(RoadSegment node) {
-//    var b = node.build().toBuilder();
-////    List<FPoint> pixelVertices = arrayList();
-////    for (var worldPt : b.vertices()) {
-//    {
-//      var worldPt = b.a();
-//      var np = new FPoint((worldPt.x - mOrigin.x) * GEO_TO_PIXEL_SCALE_FACTOR,
-//          (worldPt.y - mOrigin.y) * GEO_TO_PIXEL_SCALE_FACTOR);
-//      b.a(np);
-//    }
-//    {
-//      var worldPt = b.b();
-//      var np = new FPoint((worldPt.x - mOrigin.x) * GEO_TO_PIXEL_SCALE_FACTOR,
-//          (worldPt.y - mOrigin.y) * GEO_TO_PIXEL_SCALE_FACTOR);
-//      b.b(np);
-//
-//    }
-//
-
-  /// /      pixelVertices.add(np);
-  /// /    }
-  /// /    b.vertices(pixelVertices);
-//    return b.build();
-//  }
-
-
   public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs) {
+    todo("!allow empty segment list");
     checkArgument(segmentEndpointPairs.length != 0, "segment list is empty");
     checkArgument(!pointSet.mutable(),"PointSet must be frozen");
     mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
     mPointSet = pointSet;
-
-//    // Determine bounds of all the points
-//    List<FPoint> pts = arrayList();
-//    for (var rs : nodeSet.roadSegments()) {
-//      pts.add(rs.a());
-//      pts.add(rs.b());
-//      }
-//    mRootBounds =
-//    FRect.rectContainingPoints(pts);
 
     // Add all points to the point set, and to the quad tree
 
@@ -87,15 +53,6 @@ public class QuadTree extends BaseObject {
     mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
     mPointSet = new PointSet();
 
-//    // Determine bounds of all the points
-//    List<FPoint> pts = arrayList();
-//    for (var rs : nodeSet.roadSegments()) {
-//      pts.add(rs.a());
-//      pts.add(rs.b());
-//      }
-//    mRootBounds =
-//    FRect.rectContainingPoints(pts);
-
     // Add all points to the point set, and to the quad tree
 
     mRoot = new QNode();
@@ -118,18 +75,7 @@ public class QuadTree extends BaseObject {
     mRootBounds = FRect.rectContainingPoints(allFPoints);
     mRoot = splitNodeSet(mRoot, mRootBounds);
   }
-//
-//  private void prepare() {
-//    if (mRoot == null) {
-//      var p1 = mNodeSet.roadSegments().get(0).a();
-//      if (db)
-//        checkArgument(p1.x < 20000, "improperly transformed nodeset:", p1);
-//
-//      construct(mNodeSet);
-//      // We can throw out the node set since it is no longer needed
-//      mNodeSet = null;
-//    }
-//  }
+
 
   public int[] findCandidates(FRect inputBounds) {
 
@@ -143,16 +89,6 @@ public class QuadTree extends BaseObject {
 
     todo("sort the results to remove duplicates");
     return mQueryResultSet.array();
-//
-//    List<RoadSegment> out = arrayList();
-//    out.addAll(mQueryResultSet);
-//
-////    if (alert("sorting candidates")) {
-////      out.sort(NODE_COMPARATOR);
-////    }
-//    if (db)
-//      pr("candidates:", out);
-//    return out;
   }
 
   private void auxFind(QNode qNode, FRect bounds) {
@@ -219,20 +155,6 @@ public class QuadTree extends BaseObject {
       b.add(endpointId0);
       b.add(endpointId1);
     }
-//    FRect calculateBounds(PointSet ps) {
-//      checkArgument(population() != 0);
-//      List<FPoint> pts = arrayList();
-//      var sz = mSegments.size();
-//      for (int j = 0; j < sz; j+=2) {
-//        int p0 = mSegments.get(j);
-//        int p1 = mSegments.get(j+1);
-//        var pt0 = ps.get(p0);
-//        var pt1 = ps.get(p1);
-//        pts.add(pt0);
-//        pts.add(pt1);
-//      }
-//      return FRect.rectContainingPoints(pts);
-//    }
 
     @Override
     public String toString() {
@@ -250,11 +172,6 @@ public class QuadTree extends BaseObject {
       return m;
     }
 
-//    public void addPolylines(Collection<RoadSegment> nodes) {
-//      if (mNodes == null)
-//        mNodes = arrayList();
-//      mNodes.addAll(nodes);
-//    }
 
     // Returns the number of polylines stored in this node (not in the rest of the subtree though)
     public int population() {
@@ -262,17 +179,10 @@ public class QuadTree extends BaseObject {
         return 0;
       return mSegments.size() / 2;
     }
-//
-//    public void addPolyline(RoadSegment n) {
-//      if (mNodes == null)
-//        mNodes = arrayList();
-//      mNodes.add(n);
-//    }
+
 
     public void discardPolylines() {
-
       mSegments = null;
-//      mNodes = null;
     }
 
     public void setLeftChild(QNode child) {
@@ -296,27 +206,10 @@ public class QuadTree extends BaseObject {
   //-------------------------------------------------------------------------
   // Construction
   //-------------------------------------------------------------------------
-//
-//  /**
-//   * Construct the QuadTree
-//   */
-//  private void construct(RoadNetwork nodeSet) {
-//    QNode.sDebugIndex = 100;
-//    // Build a leaf QNode that contains all the nodes, to be recursively split
-//    var qn = new QNode();
-//    qn.addPolylines(nodeSet.roadSegments());
-//    mDepth = 0;
-//
-//    // Calculate the bounds of all of the nodes, and pass that into the split node method
-//
-//    var bounds = qn.calculateBounds();
-//    mRootBounds = bounds;
-//    mRoot = splitNodeSet(qn, bounds);
-//  }
+
 
   private QNode splitNodeSet(final QNode node, FRect bounds) {
     todo("this does NOT need to return anything, as input node doesn't change");
-
 
     // If there are only a few polylines in this node, don't split it further
     if (node.population() <= mParam.maxNodeCapacity()) {
