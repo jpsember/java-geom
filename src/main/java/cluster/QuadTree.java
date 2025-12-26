@@ -5,7 +5,6 @@ import js.data.IntArray;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.json.JSMap;
-import cluster.gen.RoadNetwork;
 import cluster.gen.QtreeParam;
 
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.List;
 import static js.base.Tools.*;
 
 public class QuadTree extends BaseObject {
-//  private static final boolean db = false && alert("Verbose is on in QuadTree");
 
   public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs) {
     this(paramOrNull, pointSet, segmentEndpointPairs, false);
@@ -36,15 +34,12 @@ public class QuadTree extends BaseObject {
 
     List<FPoint> allFPoints = arrayList();
     for (int i = 0; i < segmentEndpointPairs.length; i += 2) {
-
       var id0 = segmentEndpointPairs[i + 0];
       var id1 = segmentEndpointPairs[i + 1];
       var a = pointSet.get(id0);
       var b = pointSet.get(id1);
       allFPoints.add(a);
       allFPoints.add(b);
-//      int i0 = mPointSet.add(a);
-//      int i1 = mPointSet.add(b);
       seg.add(id0).add(id1);
     }
 
@@ -53,35 +48,6 @@ public class QuadTree extends BaseObject {
     splitNodeSet(mRoot, mRootBounds);
   }
 
-  public QuadTree(RoadNetwork nodeSet, QtreeParam paramOrNull) {
-    checkArgument(nodeSet.roadSegments().size() != 0, "node set is empty");
-    mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
-    mPointSet = new PointSet();
-
-    // Add all points to the point set, and to the quad tree
-
-    mRoot = new QNode();
-    var seg = (IntArray.Builder)mRoot.mSegments;
-//    mRoot.mSegments = seg;
-    todo("replace node intarray builder with immutable at some point");
-
-    List<FPoint> allFPoints = arrayList();
-    for (var rs : nodeSet.roadSegments()) {
-      var a = rs.a();
-      var b = rs.b();
-      allFPoints.add(a);
-      allFPoints.add(b);
-      int i0 = mPointSet.add(a);
-      int i1 = mPointSet.add(b);
-      seg.add(i0);
-      seg.add(i1);
-    }
-
-    mRootBounds = FRect.rectContainingPoints(allFPoints);
-    splitNodeSet(mRoot, mRootBounds);
-  }
-
-
   public int[] findSegments(FRect inputBounds) {
     log("findSegments, inputBounds:", INDENT, inputBounds);
 
@@ -89,7 +55,6 @@ public class QuadTree extends BaseObject {
     mQueryInputBounds = inputBounds;
     mDepth = 0;
     auxFind(mRoot, mRootBounds);
-
     todo("sort the results to remove duplicates");
     return mQueryResultSet.array();
   }
@@ -133,15 +98,17 @@ public class QuadTree extends BaseObject {
     mDepth--;
   }
 
+  private static final IntArray EMPTY_SEGMENT_LIST = IntArray.DEFAULT_INSTANCE;
+
   private static class QNode {
 
     private QNode mLeftChild, mRightChild; // Pointers to child nodes
 
-    // If this is a leaf node, this will contain the segments, as pairs of start+end endpoint ids
+    // Storage for start+end endpoint ids, if this is a leaf node; otherwise, an empty array
     private IntArray mSegments;
 
     QNode() {
-mSegments = IntArray.newBuilder();
+      mSegments = IntArray.newBuilder();
     }
 
     QNode left() {
@@ -181,14 +148,11 @@ mSegments = IntArray.newBuilder();
 
     // Returns the number of polylines stored in this node (not in the rest of the subtree though)
     public int population() {
-      if (mSegments == null)
-        return 0;
       return mSegments.size() / 2;
     }
 
-
     public void discardPolylines() {
-      mSegments = null;
+      mSegments = IntArray.DEFAULT_INSTANCE;
     }
 
     public void setLeftChild(QNode child) {
@@ -199,11 +163,6 @@ mSegments = IntArray.newBuilder();
       mRightChild = child;
     }
 
-    public void assertUseful() {
-      todo("do a useful check");
-//      if (mLeftChild == null || mRightChild == null && mNodes == null)
-//        badState("QuadTree node is not useful:", INDENT, toJson());
-    }
 
     private static int sDebugIndex;
     private int debugIndex;
@@ -256,11 +215,7 @@ mSegments = IntArray.newBuilder();
           qR.addSegment(id0, id1);
         }
       }
-//      for (var n : node.polylines()) {
-//        var b = MatchUtil.bounds(n);
-//
-//
-//      }
+
 
       // We need a recursion stopping criterion to avoid infinite descent for large intermingled polylines
       // that can't be separated by further subdivisions
@@ -288,16 +243,13 @@ mSegments = IntArray.newBuilder();
 
     if (qL.population() != 0) {
       log("recurse, left bounds:", recurseBounds[0]);
-
       splitNodeSet(qL, recurseBounds[0]);
-//      node.setLeftChild(qL);
+      node.setLeftChild(qL);
     }
     if (qR.population() != 0) {
       log("recurse, right bounds:", recurseBounds[1]);
       splitNodeSet(qR, recurseBounds[1]);
-//      if (x != qR)
-//        x.assertUseful();
-//      node.setRightChild(x);
+      node.setRightChild(qR);
     }
     mDepth--;
   }
