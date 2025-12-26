@@ -45,7 +45,7 @@ public class QuadTree extends BaseObject {
     }
 
     mRootBounds = FRect.rectContainingPoints(allFPoints);
-    mRoot = splitNodeSet(mRoot, mRootBounds);
+    splitNodeSet(mRoot, mRootBounds);
   }
 
   public QuadTree(RoadNetwork nodeSet, QtreeParam paramOrNull) {
@@ -73,7 +73,7 @@ public class QuadTree extends BaseObject {
     }
 
     mRootBounds = FRect.rectContainingPoints(allFPoints);
-    mRoot = splitNodeSet(mRoot, mRootBounds);
+     splitNodeSet(mRoot, mRootBounds);
   }
 
 
@@ -208,12 +208,12 @@ public class QuadTree extends BaseObject {
   //-------------------------------------------------------------------------
 
 
-  private QNode splitNodeSet(final QNode node, FRect bounds) {
+  private void splitNodeSet(final QNode node, FRect bounds) {
     todo("this does NOT need to return anything, as input node doesn't change");
 
     // If there are only a few polylines in this node, don't split it further
     if (node.population() <= mParam.maxNodeCapacity()) {
-      return node;
+      return  ;
     }
 
     // Construct new nodes for the left and right children
@@ -261,7 +261,7 @@ public class QuadTree extends BaseObject {
       // TODO: if the same segments is added many times, this might recurse forever
       todo("add unit test for many copies of the same segment");
       if (max == inputPop && min != 0) {
-        return node;
+        return  ;
       }
     }
 
@@ -273,21 +273,16 @@ public class QuadTree extends BaseObject {
     checkState(mDepth < 50, "recurse depth limit exceeded");
 
     if (qL.population() != 0) {
-      var x = splitNodeSet(qL, recurseBounds[0]);
-      todo("assert useful ONLY if it undergoes splitting");
-      if (x != qL)
-        x.assertUseful();
-      node.setLeftChild(x);
+      splitNodeSet(qL, recurseBounds[0]);
+//      node.setLeftChild(qL);
     }
     if (qR.population() != 0) {
-      var x = splitNodeSet(qR, recurseBounds[1]);
+        splitNodeSet(qR, recurseBounds[1]);
 //      if (x != qR)
 //        x.assertUseful();
-      node.setRightChild(x);
+//      node.setRightChild(x);
     }
     mDepth--;
-
-    return node;
   }
 
   private static float splitCoordinate(boolean splitDimension, FRect bounds) {
