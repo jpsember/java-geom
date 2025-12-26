@@ -54,4 +54,10 @@ public class PointSet extends BaseObject {
 
   private Map<FPoint, Integer> mPointIndexMap = hashMap();
   private FloatArray mPointList = FloatArray.newBuilder();
+
+  public FPoint get(int id) {
+    int i = (id - 1) << 1;
+    return new FPoint(mPointList.get(i), mPointList.get(i+1));
+  }
+
 }
