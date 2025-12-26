@@ -19,10 +19,16 @@ import static js.base.Tools.*;
 public class QuadTreeTest extends MyTestCase {
 
   @Test
-  public void example() {
+  public void seg1() {
+    genSegments(1);
+    genOut();
+  }
+
+  @Test
+  public void seg4() {
     genSegments(4);
     genTree();
-   genOut();
+    genOut();
   }
 
   private void genOut() {
