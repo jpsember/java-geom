@@ -117,8 +117,10 @@ public class QuadTreeTest extends MyTestCase {
 
   private QuadTree genTree() {
     if (mTree == null) {
-       mTree = new QuadTree(param(), pointSet(), segmentEndpoints(), verbose());
+       mTree = new QuadTree(param(), pointSet(), segmentEndpoints());
+       if (verbose()) mTree.setVerbose();
        mParam = null;
+       mTree.prepare();
     }
     return mTree;
   }

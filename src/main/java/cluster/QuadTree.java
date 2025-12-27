@@ -15,23 +15,22 @@ import static js.base.Tools.*;
 public class QuadTree extends BaseObject {
 
   public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs) {
-    this(paramOrNull, pointSet, segmentEndpointPairs, false);
-  }
-
-  public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs, boolean verbose) {
-    if (verbose)
-      setVerbose(true);
-//    checkArgument(segmentEndpointPairs.length != 0, "segment list is empty");
     checkArgument(!pointSet.mutable(), "PointSet must be frozen");
+    mSegmentEndpointPairs = segmentEndpointPairs;
     mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
     mPointSet = pointSet;
+  }
 
+  public void prepare() {
+    if (mRoot != null) return;
     // Add all points to the point set, and to the quad tree
     mRoot = new QNode();
     var seg = IntArray.newBuilder();
     mRoot.mSegments = seg;
     todo("replace node intarray builder with immutable at some point");
 
+    var segmentEndpointPairs = mSegmentEndpointPairs;
+    var pointSet = mPointSet;
     List<FPoint> allFPoints = arrayList();
     for (int i = 0; i < segmentEndpointPairs.length; i += 2) {
       var id0 = segmentEndpointPairs[i + 0];
@@ -50,6 +49,9 @@ public class QuadTree extends BaseObject {
     mRootBounds = bounds;
     log("root bounds:", mRootBounds);
     splitNodeSet(0, mRoot, mRootBounds);
+
+    // Discard things no longer required
+    mSegmentEndpointPairs = null;
   }
 
   public int height() {
@@ -58,6 +60,7 @@ public class QuadTree extends BaseObject {
 
   public int[] findSegments(FRect inputBounds) {
     log("findSegments, inputBounds:", INDENT, inputBounds);
+    prepare();
     mQueryResultPairs.clear();
     mQueryInputBounds = inputBounds;
     auxFind(0, mRoot, mRootBounds);
@@ -103,7 +106,6 @@ public class QuadTree extends BaseObject {
         var segmentBounds = FRect.rectContainingPoints(p0, p1);
         if (rectsTouch(mQueryInputBounds, segmentBounds)) {
           mQueryResultPairs.add((((long) id0) << 32) | id1);
-
         }
       }
     }
@@ -172,19 +174,14 @@ public class QuadTree extends BaseObject {
     public void setRightChild(QNode child) {
       mRightChild = child;
     }
-
-
   }
 
   //-------------------------------------------------------------------------
   // Construction
   //-------------------------------------------------------------------------
 
-
   private void splitNodeSet(int depth, final QNode node, FRect bounds) {
     log("splitNodeSet, pop:", node.population(), "bounds:", bounds, "depth:", depth);
-
-    todo("need to deal with case where bunch of segs are overlapping such that further splitting is useless");
 
     mTreeHeight = Math.max(mTreeHeight, depth);
 
@@ -312,5 +309,6 @@ public class QuadTree extends BaseObject {
   private Set<Long> mQueryResultPairs = hashSet();
   private QtreeParam mParam;
   private PointSet mPointSet;
+  private int[] mSegmentEndpointPairs;
   private int mTreeHeight;
 }
