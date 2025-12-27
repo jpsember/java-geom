@@ -26,21 +26,27 @@ public class QuadTreeTest extends MyTestCase {
 
   @Test
   public void seg4() {
-    setVerbose();
     genSegments(4);
     genTree();
     genOut();
   }
 
+  @Test
+ public void zeroSegments() {
+    genSegments(0);
+    genTree();
+    genOut();
+  }
 
   @Test
   public void seg100() {
-    setVerbose();
     genSegments(100);
     genTree();
     genOut();
   }
+
   private void genOut() {
+    todo("add unit tests for same endpoints added multiple times...?");
 
     var m = map();
     for (var seg : mSegments) {
@@ -66,7 +72,7 @@ public class QuadTreeTest extends MyTestCase {
       var p0 = new FPoint(10f + random().nextFloat() * 90f, 10f + random().nextFloat() * 90f);
       p0 = p0.toIPoint().toFPoint();
       var wedge = 30;
-      var dir = random().nextInt((int) (360.0/wedge)) * wedge * MyMath.M_DEG;
+      var dir = random().nextInt((int) (360.0 / wedge)) * wedge * MyMath.M_DEG;
       var p1 = MyMath.pointOnCircle(p0, dir, 75f * random().nextFloat() * random().nextFloat());
       p1 = p1.toIPoint().toFPoint();
       var bnd = FRect.rectContainingPoints(p0, p1);
@@ -78,7 +84,7 @@ public class QuadTreeTest extends MyTestCase {
 
   private QuadTree genTree() {
     if (mTree == null) {
-      mTree = new QuadTree(mParam, pointSet(), segmentEndpoints(),verbose());
+      mTree = new QuadTree(mParam, pointSet(), segmentEndpoints(), verbose());
     }
     return mTree;
   }

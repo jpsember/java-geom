@@ -8,6 +8,7 @@ import js.json.JSMap;
 import cluster.gen.QtreeParam;
 
 import java.util.List;
+import java.util.Set;
 
 import static js.base.Tools.*;
 
@@ -50,13 +51,19 @@ public class QuadTree extends BaseObject {
 
   public int[] findSegments(FRect inputBounds) {
     log("findSegments, inputBounds:", INDENT, inputBounds);
-
-    mQueryResultSet.clear();
+    mQueryResultPairs.clear();
     mQueryInputBounds = inputBounds;
     mDepth = 0;
     auxFind(mRoot, mRootBounds);
-    todo("sort the results to remove duplicates");
-    return mQueryResultSet.array();
+
+    var b = IntArray.newBuilder();
+    for (var key : mQueryResultPairs) {
+      int pt0 =(int) (key >> 32);
+      int pt1 = key.intValue();
+      b.add(pt0);
+      b.add(pt1);
+    }
+    return b.array();
   }
 
   private static boolean rectsTouch(FRect a, FRect b) {
@@ -90,8 +97,8 @@ public class QuadTree extends BaseObject {
         var p1 = mPointSet.get(id1);
         var segmentBounds = FRect.rectContainingPoints(p0, p1);
         if (rectsTouch(mQueryInputBounds, segmentBounds)) {
-          mQueryResultSet.add(id0);
-          mQueryResultSet.add(id1);
+          mQueryResultPairs.add((((long)id0) << 32) | id1);
+
         }
       }
     }
@@ -227,7 +234,7 @@ public class QuadTree extends BaseObject {
 
       // TODO: if the same segments is added many times, this might recurse forever
       todo("add unit test for many copies of the same segment");
-      pr("leftPop:", leftPop, "rightPop:", rightPop);
+      log("leftPop:", leftPop, "rightPop:", rightPop);
       if (max == inputPop && min != 0) {
         log("....stop criterion reached, stopping");
         return;
@@ -285,7 +292,7 @@ public class QuadTree extends BaseObject {
   // Used for recursing during constructing Quadtree
 
   private FRect mQueryInputBounds;
-  private IntArray.Builder mQueryResultSet = IntArray.newBuilder();
+  private Set<Long> mQueryResultPairs = hashSet();
   private int mDepth;
   private QtreeParam mParam;
   private PointSet mPointSet;
