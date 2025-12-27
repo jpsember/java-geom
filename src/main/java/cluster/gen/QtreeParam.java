@@ -5,12 +5,12 @@ import js.json.JSMap;
 
 public class QtreeParam implements AbstractData {
 
-  public int maxNodeCapacity() {
-    return mMaxNodeCapacity;
+  public int targetNodeMaxPop() {
+    return mTargetNodeMaxPop;
   }
 
-  public int padding() {
-    return mPadding;
+  public float minNodeDimension() {
+    return mMinNodeDimension;
   }
 
   @Override
@@ -18,8 +18,8 @@ public class QtreeParam implements AbstractData {
     return new Builder(this);
   }
 
-  protected static final String _0 = "max_node_capacity";
-  protected static final String _1 = "padding";
+  protected static final String _0 = "target_node_max_pop";
+  protected static final String _1 = "min_node_dimension";
 
   @Override
   public String toString() {
@@ -29,8 +29,8 @@ public class QtreeParam implements AbstractData {
   @Override
   public JSMap toJson() {
     JSMap m = new JSMap();
-    m.putUnsafe(_0, mMaxNodeCapacity);
-    m.putUnsafe(_1, mPadding);
+    m.putUnsafe(_0, mTargetNodeMaxPop);
+    m.putUnsafe(_1, mMinNodeDimension);
     return m;
   }
 
@@ -45,8 +45,8 @@ public class QtreeParam implements AbstractData {
   }
 
   private QtreeParam(JSMap m) {
-    mMaxNodeCapacity = m.opt(_0, 4);
-    mPadding = m.opt(_1, 15);
+    mTargetNodeMaxPop = m.opt(_0, 4);
+    mMinNodeDimension = m.opt(_1, 2.7E-4f);
   }
 
   public static Builder newBuilder() {
@@ -62,9 +62,9 @@ public class QtreeParam implements AbstractData {
     QtreeParam other = (QtreeParam) object;
     if (other.hashCode() != hashCode())
       return false;
-    if (!(mMaxNodeCapacity == other.mMaxNodeCapacity))
+    if (!(mTargetNodeMaxPop == other.mTargetNodeMaxPop))
       return false;
-    if (!(mPadding == other.mPadding))
+    if (!(mMinNodeDimension == other.mMinNodeDimension))
       return false;
     return true;
   }
@@ -74,22 +74,22 @@ public class QtreeParam implements AbstractData {
     int r = m__hashcode;
     if (r == 0) {
       r = 1;
-      r = r * 37 + mMaxNodeCapacity;
-      r = r * 37 + mPadding;
+      r = r * 37 + mTargetNodeMaxPop;
+      r = r * 37 + (int)mMinNodeDimension;
       m__hashcode = r;
     }
     return r;
   }
 
-  protected int mMaxNodeCapacity;
-  protected int mPadding;
+  protected int mTargetNodeMaxPop;
+  protected float mMinNodeDimension;
   protected int m__hashcode;
 
   public static final class Builder extends QtreeParam {
 
     private Builder(QtreeParam m) {
-      mMaxNodeCapacity = m.mMaxNodeCapacity;
-      mPadding = m.mPadding;
+      mTargetNodeMaxPop = m.mTargetNodeMaxPop;
+      mMinNodeDimension = m.mMinNodeDimension;
     }
 
     @Override
@@ -106,18 +106,18 @@ public class QtreeParam implements AbstractData {
     @Override
     public QtreeParam build() {
       QtreeParam r = new QtreeParam();
-      r.mMaxNodeCapacity = mMaxNodeCapacity;
-      r.mPadding = mPadding;
+      r.mTargetNodeMaxPop = mTargetNodeMaxPop;
+      r.mMinNodeDimension = mMinNodeDimension;
       return r;
     }
 
-    public Builder maxNodeCapacity(int x) {
-      mMaxNodeCapacity = x;
+    public Builder targetNodeMaxPop(int x) {
+      mTargetNodeMaxPop = x;
       return this;
     }
 
-    public Builder padding(int x) {
-      mPadding = x;
+    public Builder minNodeDimension(float x) {
+      mMinNodeDimension = x;
       return this;
     }
 
@@ -126,8 +126,8 @@ public class QtreeParam implements AbstractData {
   public static final QtreeParam DEFAULT_INSTANCE = new QtreeParam();
 
   private QtreeParam() {
-    mMaxNodeCapacity = 4;
-    mPadding = 15;
+    mTargetNodeMaxPop = 4;
+    mMinNodeDimension = 2.7E-4f;
   }
 
 }

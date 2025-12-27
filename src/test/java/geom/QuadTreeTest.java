@@ -53,6 +53,15 @@ public class QuadTreeTest extends MyTestCase {
     genOut();
   }
 
+
+  @Test
+  public void manyCopiesSameSegSmallDim() {
+    param()
+    .minNodeDimension(1e-8f);
+    manyCopiesSameSeg();
+  }
+
+
   @Test
   public void seg100() {
     genSegments(100);
@@ -64,6 +73,7 @@ public class QuadTreeTest extends MyTestCase {
 
     var m = map();
 
+//  if (!alert("not adding height"))
     m.put("height", t.height());
     for (var seg : mSegments) {
       var p0 = seg.first;
@@ -107,7 +117,8 @@ public class QuadTreeTest extends MyTestCase {
 
   private QuadTree genTree() {
     if (mTree == null) {
-      mTree = new QuadTree(mParam, pointSet(), segmentEndpoints(), verbose());
+       mTree = new QuadTree(param(), pointSet(), segmentEndpoints(), verbose());
+       mParam = null;
     }
     return mTree;
   }
@@ -135,6 +146,10 @@ public class QuadTreeTest extends MyTestCase {
       mSegmentIds = ids.array();
     }
     return mPointSet;
+  }
+
+  private QtreeParam.Builder param() {
+    return checkNotNull(mParam, "params no longer available");
   }
 
   private List<Pair<FPoint, FPoint>> mSegments = arrayList();

@@ -1,7 +1,8 @@
-{  "manyCopiesSameSeg" : 2634,
-                "seg1" : 5009,
-              "seg100" : 8211,
-                "seg4" : 2217,
-  "zeroLengthSegments" : 5138,
-        "zeroSegments" : 8132
+{         "manyCopiesSameSeg" : 7779,
+  "manyCopiesSameSegSmallDim" : 2634,
+                       "seg1" : 5615,
+                     "seg100" : 3932,
+                       "seg4" : 2236,
+         "zeroLengthSegments" : 1039,
+               "zeroSegments" : 8132
 }

@@ -46,7 +46,7 @@ public class QuadTree extends BaseObject {
     var bounds = FRect.DEFAULT_INSTANCE;
     if (!allFPoints.isEmpty())
       bounds =
-     FRect.rectContainingPoints(allFPoints);
+          FRect.rectContainingPoints(allFPoints);
     mRootBounds = bounds;
     log("root bounds:", mRootBounds);
     splitNodeSet(0, mRoot, mRootBounds);
@@ -146,12 +146,12 @@ public class QuadTree extends BaseObject {
 
     public JSMap toJson() {
       var m = map();
-      m.put("", "QNode " + debugIndex);
+//      m.put("", "QNode " + debugIndex);
       m.put("pop", population());
       if (mLeftChild != null)
-        m.put("cLeft", mLeftChild.debugIndex);
+        m.put("cLeft", true); //mLeftChild.debugIndex);
       if (mRightChild != null)
-        m.put("cRight", mRightChild.debugIndex);
+        m.put("cRight", true); //mRightChild.debugIndex);
       return m;
     }
 
@@ -174,8 +174,6 @@ public class QuadTree extends BaseObject {
     }
 
 
-    private static int sDebugIndex;
-    private int debugIndex;
   }
 
   //-------------------------------------------------------------------------
@@ -189,11 +187,28 @@ public class QuadTree extends BaseObject {
     todo("need to deal with case where bunch of segs are overlapping such that further splitting is useless");
 
     mTreeHeight = Math.max(mTreeHeight, depth);
+
+    // If node is empty, splitting is trivially unnecessary
+    if (node.population() == 0) return;
+
     // If there are only a few elements in this node, don't split it further
-    if (node.population() <= mParam.maxNodeCapacity()) {
+    todo("!but does this have any effect on the size or runtime?");
+    if (node.population() <= mParam.targetNodeMaxPop()) {
       log("...population too low, doing nothing");
       return;
     }
+
+    boolean splitDimension = bounds.width > bounds.height;
+
+    // If split dimension is less than the min, do no futher splitting
+    float unsplitSize = splitDimension ? bounds.width : bounds.height;
+    if ( // !alert("not splitting min node dim yet") &&
+        unsplitSize <= mParam.minNodeDimension()) {
+      log("...reached minimum node dimension, doing nothing");
+      return;
+    }
+    final float s = splitCoordinate(splitDimension, bounds);
+
 
     // Construct new nodes for the left and right children
 
@@ -201,9 +216,7 @@ public class QuadTree extends BaseObject {
     var qR = new QNode();
     var inputPop = node.population();
 
-    boolean splitDimension = bounds.width > bounds.height;
 
-    final float s = splitCoordinate(splitDimension, bounds);
     log("...split dimension:", splitDimension, "coordinate:", s);
     {
       var segs = node.segments().array();
@@ -220,7 +233,7 @@ public class QuadTree extends BaseObject {
         var isectL = (isect & 1) != 0;
         var isectR = (isect & 2) != 0;
 
-        log("...segment bounds:", segmentBounds, "isect L:", isectL, "R:", isectR);
+//        log("...segment bounds:", segmentBounds, "isect L:", isectL, "R:", isectR);
         if (isectL) {
           qL.addSegment(id0, id1);
         }
@@ -238,8 +251,8 @@ public class QuadTree extends BaseObject {
       var max = Math.max(leftPop, rightPop);
       var min = Math.min(leftPop, rightPop);
 
+      todo("this kind of check is probably no longer necessary, if we are going to 'undo' fruitless subdivisions");
       // TODO: if the same segments is added many times, this might recurse forever
-      todo("add unit test for many copies of the same segment");
       log("leftPop:", leftPop, "rightPop:", rightPop);
       if (max == inputPop && min != 0) {
         log("....stop criterion reached, stopping");

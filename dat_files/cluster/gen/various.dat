@@ -186,8 +186,13 @@ class road_segment {
 
 class qtree_param {
 
-  // The maximum number of polylines that can exist in a leaf node
-  int max_node_capacity = 4;
+  // The preferred maximum population of a leaf node (it can exceed this
+  // value if segments are not separable by further splitting)
+  int target_node_max_pop = 4;
 
-  int padding = 15;
+  // minimum dimension of node bounds, below which no splitting will occur
+  // (this is about 30 meters, if coordinate system is lat/long)
+  //
+  float min_node_dimension = 0.00027;
+
 }
