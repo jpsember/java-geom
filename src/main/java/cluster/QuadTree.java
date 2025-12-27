@@ -21,8 +21,7 @@ public class QuadTree extends BaseObject {
   public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs, boolean verbose) {
     if (verbose)
       setVerbose(true);
-    todo("!allow empty segment list");
-    checkArgument(segmentEndpointPairs.length != 0, "segment list is empty");
+//    checkArgument(segmentEndpointPairs.length != 0, "segment list is empty");
     checkArgument(!pointSet.mutable(), "PointSet must be frozen");
     mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
     mPointSet = pointSet;
@@ -44,7 +43,11 @@ public class QuadTree extends BaseObject {
       seg.add(id0).add(id1);
     }
 
-    mRootBounds = FRect.rectContainingPoints(allFPoints);
+    var bounds = FRect.DEFAULT_INSTANCE;
+    if (!allFPoints.isEmpty())
+      bounds =
+     FRect.rectContainingPoints(allFPoints);
+    mRootBounds = bounds;
     log("root bounds:", mRootBounds);
     splitNodeSet(0, mRoot, mRootBounds);
   }

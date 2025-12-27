@@ -2,5 +2,6 @@
                 "seg1" : 5009,
               "seg100" : 8211,
                 "seg4" : 2217,
-  "zeroLengthSegments" : 5138
+  "zeroLengthSegments" : 5138,
+        "zeroSegments" : 8132
 }
