@@ -1,4 +1,6 @@
-{   "seg1" : 5009,
-  "seg100" : 8211,
-    "seg4" : 2217
+{  "manyCopiesSameSeg" : 2634,
+                "seg1" : 5009,
+              "seg100" : 8211,
+                "seg4" : 2217,
+  "zeroLengthSegments" : 5138
 }

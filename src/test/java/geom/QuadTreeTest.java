@@ -27,36 +27,51 @@ public class QuadTreeTest extends MyTestCase {
   @Test
   public void seg4() {
     genSegments(4);
-    genTree();
     genOut();
   }
 
   @Test
- public void zeroSegments() {
+  public void zeroSegments() {
     genSegments(0);
-    genTree();
+    genOut();
+  }
+
+  @Test
+  public void zeroLengthSegments() {
+    addSeg(20, 30, 20, 30);
+    addSeg(60, 70, 60, 70);
+    genOut();
+  }
+
+  @Test
+  public void manyCopiesSameSeg() {
+    int count = 20;
+    for (int i = 0; i < count; i++)
+      addSeg(20, 30, 20, 30);
+    for (int i = 0; i < count; i++)
+      addSeg(60, 70, 60, 70);
     genOut();
   }
 
   @Test
   public void seg100() {
     genSegments(100);
-    genTree();
     genOut();
   }
 
   private void genOut() {
-    todo("add unit tests for same endpoints added multiple times...?");
+    var t = genTree();
 
     var m = map();
+
+    m.put("height", t.height());
     for (var seg : mSegments) {
       var p0 = seg.first;
       var p1 = seg.second;
       var b = FRect.rectContainingPoints(p0, p1);
       var m2 = map();
       m2.put("bounds", b.toJson());
-      var result = genTree().findSegments(b);
-      //if (!alert("reenable this check"))
+      var result = t.findSegments(b);
       checkArgument(result.length != 0, "result was empty, should have contained at least the segment", p0, p1);
       m2.put("result", JSList.with(result));
       m.putNumbered(m2);
@@ -78,8 +93,16 @@ public class QuadTreeTest extends MyTestCase {
       var bnd = FRect.rectContainingPoints(p0, p1);
       if (!clip.contains(bnd))
         continue;
-      mSegments.add(pair(p0, p1));
+      addSeg(p0, p1);
     }
+  }
+
+  private void addSeg(double x0, double y0, double x1, double y1) {
+    addSeg(new FPoint(x0, y0), new FPoint(x1, y1));
+  }
+
+  private void addSeg(FPoint p0, FPoint p1) {
+    mSegments.add(pair(p0, p1));
   }
 
   private QuadTree genTree() {

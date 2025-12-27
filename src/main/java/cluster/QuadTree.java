@@ -46,19 +46,22 @@ public class QuadTree extends BaseObject {
 
     mRootBounds = FRect.rectContainingPoints(allFPoints);
     log("root bounds:", mRootBounds);
-    splitNodeSet(mRoot, mRootBounds);
+    splitNodeSet(0, mRoot, mRootBounds);
+  }
+
+  public int height() {
+    return mTreeHeight;
   }
 
   public int[] findSegments(FRect inputBounds) {
     log("findSegments, inputBounds:", INDENT, inputBounds);
     mQueryResultPairs.clear();
     mQueryInputBounds = inputBounds;
-    mDepth = 0;
-    auxFind(mRoot, mRootBounds);
+    auxFind(0, mRoot, mRootBounds);
 
     var b = IntArray.newBuilder();
     for (var key : mQueryResultPairs) {
-      int pt0 =(int) (key >> 32);
+      int pt0 = (int) (key >> 32);
       int pt1 = key.intValue();
       b.add(pt0);
       b.add(pt1);
@@ -70,24 +73,23 @@ public class QuadTree extends BaseObject {
     return (a.x <= b.endX() && a.endX() >= b.x && a.y <= b.endY() && a.endY() >= b.y);
   }
 
-  private void auxFind(QNode qNode, FRect bounds) {
+  private void auxFind(int depth, QNode qNode, FRect bounds) {
     if (verbose())
-      log(TAB(mDepth * 3), "bounds:", bounds, "queryB:", mQueryInputBounds);
+      log(TAB(depth * 2), "bounds:", bounds);
 
     if (!rectsTouch(mQueryInputBounds, bounds)) {
       log("....doesn't intersect");
       return;
     }
-    mDepth++;
 
     if (qNode.left() != null || qNode.right() != null) {
       boolean splitDimension = bounds.width > bounds.height;
       float s = splitCoordinate(splitDimension, bounds);
       var recurseBounds = calcSubdivisionBounds(splitDimension, bounds, s);
       if (qNode.left() != null)
-        auxFind(qNode.left(), recurseBounds[0]);
+        auxFind(1 + depth, qNode.left(), recurseBounds[0]);
       if (qNode.right() != null)
-        auxFind(qNode.right(), recurseBounds[1]);
+        auxFind(1 + depth, qNode.right(), recurseBounds[1]);
     } else {
       var segmentEndpointIds = qNode.mSegments.array();
       for (int i = 0; i < segmentEndpointIds.length; i += 2) {
@@ -97,15 +99,13 @@ public class QuadTree extends BaseObject {
         var p1 = mPointSet.get(id1);
         var segmentBounds = FRect.rectContainingPoints(p0, p1);
         if (rectsTouch(mQueryInputBounds, segmentBounds)) {
-          mQueryResultPairs.add((((long)id0) << 32) | id1);
+          mQueryResultPairs.add((((long) id0) << 32) | id1);
 
         }
       }
     }
-    mDepth--;
   }
 
-  private static final IntArray EMPTY_SEGMENT_LIST = IntArray.DEFAULT_INSTANCE;
 
   private static class QNode {
 
@@ -180,10 +180,13 @@ public class QuadTree extends BaseObject {
   //-------------------------------------------------------------------------
 
 
-  private void splitNodeSet(final QNode node, FRect bounds) {
-    log("splitNodeSet, pop:", node.population(), "bounds:", bounds, "depth:", mDepth);
+  private void splitNodeSet(int depth, final QNode node, FRect bounds) {
+    log("splitNodeSet, pop:", node.population(), "bounds:", bounds, "depth:", depth);
 
-    // If there are only a few polylines in this node, don't split it further
+    todo("need to deal with case where bunch of segs are overlapping such that further splitting is useless");
+
+    mTreeHeight = Math.max(mTreeHeight, depth);
+    // If there are only a few elements in this node, don't split it further
     if (node.population() <= mParam.maxNodeCapacity()) {
       log("...population too low, doing nothing");
       return;
@@ -245,20 +248,18 @@ public class QuadTree extends BaseObject {
 
     // The polylines have been moved to the child nodes, so get rid of ours
     node.discardPolylines();
-    mDepth++;
-    checkState(mDepth < 50, "recurse depth limit exceeded");
+    checkState(depth < 50, "recurse depth limit exceeded");
 
     if (qL.population() != 0) {
       log("recurse, left bounds:", recurseBounds[0]);
-      splitNodeSet(qL, recurseBounds[0]);
+      splitNodeSet(1 + depth, qL, recurseBounds[0]);
       node.setLeftChild(qL);
     }
     if (qR.population() != 0) {
       log("recurse, right bounds:", recurseBounds[1]);
-      splitNodeSet(qR, recurseBounds[1]);
+      splitNodeSet(1 + depth, qR, recurseBounds[1]);
       node.setRightChild(qR);
     }
-    mDepth--;
   }
 
   private static float splitCoordinate(boolean splitDimension, FRect bounds) {
@@ -293,7 +294,7 @@ public class QuadTree extends BaseObject {
 
   private FRect mQueryInputBounds;
   private Set<Long> mQueryResultPairs = hashSet();
-  private int mDepth;
   private QtreeParam mParam;
   private PointSet mPointSet;
+  private int mTreeHeight;
 }
