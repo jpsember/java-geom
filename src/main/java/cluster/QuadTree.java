@@ -54,7 +54,7 @@ public class QuadTree extends BaseObject {
     todo("fruitless splits doesn't do anything");
     todo("have more sophisticated seg intersects box calculation");
 
-    {
+   if (!alert("skipping fruitless splits")) {
       mPreCull = subtreeNodeCount(mRoot);
       mRoot = undoFruitlessSplits(mRoot);
       mPostCull = subtreeNodeCount(mRoot);
