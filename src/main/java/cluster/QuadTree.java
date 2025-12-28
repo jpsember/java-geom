@@ -122,7 +122,7 @@ public class QuadTree extends BaseObject {
           var arr = n.segments().build();
           sumOfSegmentListCounts += arr.size() / 2;
           leafCount++;
-         set.add(arr);
+          set.add(arr);
         }
       }
       m.put("leaf count", leafCount).put("leaf unique", set.size());
@@ -242,15 +242,13 @@ public class QuadTree extends BaseObject {
       return m;
     }
 
-
     // Returns the number of polylines stored in this node (not in the rest of the subtree though)
     public int population() {
       return mSegments.size() / 2;
     }
 
-    @Deprecated
     public void discardSegments() {
-      mSegments = IntArray.DEFAULT_INSTANCE;
+      mSegments = null;
     }
 
     public void setLeftChild(QNode child) {
@@ -260,10 +258,6 @@ public class QuadTree extends BaseObject {
     public void setRightChild(QNode child) {
       mRightChild = child;
     }
-
-//    public void trimSegmentList() {
-//      mSegments = mSegments.build();
-//    }
   }
 
   //-------------------------------------------------------------------------
