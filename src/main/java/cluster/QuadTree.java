@@ -18,7 +18,7 @@ public class QuadTree extends BaseObject {
 
   public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs) {
     todo("!remove unused parameters, e.g. stopping");
-    todo("!assign a unique id number to each leaf node, for more compact serialization");
+    todo("!assign a unique id number to each leaf node, for more compact serialization; but not necessary if done at serialization stage");
     checkArgument(!pointSet.mutable(), "PointSet must be frozen");
     mSegmentEndpointPairs = segmentEndpointPairs;
     mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
@@ -88,7 +88,7 @@ public class QuadTree extends BaseObject {
 
     todo("!have more sophisticated seg intersects box calculation");
 
-    if (!mParam.disableFruitlessRewrite()) {
+    if (!mParam.disableRewrite()) {
       mPreCull = subtreeNodeCount(mRoot);
       Map<IntArray, QNode> uniqueLeafMap = hashMap();
       mRoot = rewriteTree(mRoot, uniqueLeafMap);
@@ -169,7 +169,7 @@ public class QuadTree extends BaseObject {
       return;
     }
 
-    if (qNode.left() != null || qNode.right() != null) {
+    if (!qNode.isLeaf()) {
       boolean splitDimension = bounds.width > bounds.height;
       float s = splitCoordinate(splitDimension, bounds);
       var recurseBounds = calcSubdivisionBounds(splitDimension, bounds, s);
@@ -184,6 +184,10 @@ public class QuadTree extends BaseObject {
         var id1 = segmentEndpointIds[i + 1];
         var p0 = mPointSet.get(id0);
         var p1 = mPointSet.get(id1);
+
+        // We are LIBERAL in what we return.  If the query bounds touches the
+        // segment bounds, include it.
+
         var segmentBounds = FRect.rectContainingPoints(p0, p1);
         if (rectsTouch(mQueryInputBounds, segmentBounds)) {
           mQueryResultPairs.add((((long) id0) << 32) | id1);
@@ -265,10 +269,7 @@ public class QuadTree extends BaseObject {
   //-------------------------------------------------------------------------
 
   private void splitNodeSet(int depth, final QNode node, FRect bounds) {
-
     log("splitNodeSet, pop:", node.population(), "bounds:", bounds, "depth:", depth);
-
-//    node.trimSegmentList();
 
     // If there are only a few elements in this node (or none), don't split it further
     if (node.population() <= mParam.targetNodeMaxPop()) {
@@ -304,7 +305,25 @@ public class QuadTree extends BaseObject {
         var pt0 = mPointSet.get(id0);
         var pt1 = mPointSet.get(id1);
         var segmentBounds = FRect.rectContainingPoints(pt0, pt1);
+
+
         // Add segment to each child node that it intersects
+
+
+        // During this tree construction operation, we want to be more strict
+        // about whether a segment touches the node bounding box.
+
+        // If the bounding boxes don't touch, then no;
+        // otherwise, if a segment endpoint touches the box, then yes;
+        // otherwise, yes iff the segment intersects one of the box sides
+
+        // We are more liberal (for efficiency) during the tree query operation.
+
+
+
+        
+
+
         var isect = calcIntersectFlags(splitDimension, s, segmentBounds);
         var isectL = (isect & 1) != 0;
         var isectR = (isect & 2) != 0;

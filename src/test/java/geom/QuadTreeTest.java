@@ -26,7 +26,7 @@ public class QuadTreeTest extends MyTestCase {
 
   @Test
   public void seg1_no_rewrite() {
-    param().disableFruitlessRewrite(true);
+    param().disableRewrite(true);
     genSegments(1);
     genOut();
   }
