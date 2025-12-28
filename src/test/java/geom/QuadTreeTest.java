@@ -64,6 +64,7 @@ public class QuadTreeTest extends MyTestCase {
 
   @Test
   public void seg100() {
+    rv();
     genSegments(100);
     genOut();
   }
@@ -74,7 +75,7 @@ public class QuadTreeTest extends MyTestCase {
     var m = map();
 
 //  if (!alert("not adding height"))
-    m.put("height", t.height());
+    m.put("info", t.auxInfo());
     for (var seg : mSegments) {
       var p0 = seg.first;
       var p1 = seg.second;
@@ -155,7 +156,7 @@ public class QuadTreeTest extends MyTestCase {
   }
 
   private List<Pair<FPoint, FPoint>> mSegments = arrayList();
-  private QtreeParam.Builder mParam = QtreeParam.newBuilder();
+  private QtreeParam.Builder mParam = QtreeParam.newBuilder().minNodeDimension(1f);
   private int[] mSegmentIds = null;
   private PointSet mPointSet;
   private QuadTree mTree;

@@ -50,12 +50,30 @@ public class QuadTree extends BaseObject {
     log("root bounds:", mRootBounds);
     splitNodeSet(0, mRoot, mRootBounds);
 
+//    if (!alert("skipping cull"))
+    todo("fruitless splits doesn't do anything");
+    todo("have more sophisticated seg intersects box calculation");
+
+    {
+      mPreCull = subtreeNodeCount(mRoot);
+      mRoot = undoFruitlessSplits(mRoot);
+      mPostCull = subtreeNodeCount(mRoot);
+    }
     // Discard things no longer required
     mSegmentEndpointPairs = null;
   }
 
-  public int height() {
-    return mTreeHeight;
+  public JSMap auxInfo() {
+    return map().put("before_cull", mPreCull).put("post_cull", mPostCull).put("height", auxHeight(mRoot) - 1);
+  }
+
+  //  public int height() {
+//    return auxHeight(0, mRoot);
+//  }
+  private int auxHeight(QNode node) {
+    if (node == null)
+      return 0;
+    return 1 + Math.max(auxHeight(node.left()), auxHeight(node.right()));
   }
 
   public int[] findSegments(FRect inputBounds) {
@@ -123,6 +141,10 @@ public class QuadTree extends BaseObject {
       mSegments = IntArray.newBuilder();
     }
 
+    boolean isLeaf() {
+      return mLeftChild == null && mRightChild == null;
+    }
+
     QNode left() {
       return mLeftChild;
     }
@@ -181,9 +203,9 @@ public class QuadTree extends BaseObject {
   //-------------------------------------------------------------------------
 
   private void splitNodeSet(int depth, final QNode node, FRect bounds) {
-    log("splitNodeSet, pop:", node.population(), "bounds:", bounds, "depth:", depth);
+    checkState(depth < 50,"wtf, depth too large");
 
-    mTreeHeight = Math.max(mTreeHeight, depth);
+    log("splitNodeSet, pop:", node.population(), "bounds:", bounds, "depth:", depth);
 
     // If node is empty, splitting is trivially unnecessary
     if (node.population() == 0) return;
@@ -199,12 +221,15 @@ public class QuadTree extends BaseObject {
 
     // If split dimension is less than the min, do no futher splitting
     float unsplitSize = splitDimension ? bounds.width : bounds.height;
-    if ( // !alert("not splitting min node dim yet") &&
-        unsplitSize <= mParam.minNodeDimension()) {
+
+   pr("depth:",depth,"unsplitSize:",unsplitSize,"minNodeDim:",mParam.minNodeDimension());
+    if ( unsplitSize <= mParam.minNodeDimension()) {
       log("...reached minimum node dimension, doing nothing");
       return;
     }
+
     final float s = splitCoordinate(splitDimension, bounds);
+    pr("unsplitSize:",unsplitSize);
 
 
     // Construct new nodes for the left and right children
@@ -251,7 +276,7 @@ public class QuadTree extends BaseObject {
       todo("this kind of check is probably no longer necessary, if we are going to 'undo' fruitless subdivisions");
       // TODO: if the same segments is added many times, this might recurse forever
       log("leftPop:", leftPop, "rightPop:", rightPop);
-      if (max == inputPop && min != 0) {
+      if (!alert("skipping this step") && max == inputPop && min != 0) {
         log("....stop criterion reached, stopping");
         return;
       }
@@ -265,15 +290,39 @@ public class QuadTree extends BaseObject {
 
     if (qL.population() != 0) {
       log("recurse, left bounds:", recurseBounds[0]);
+      pr("splitLeft, orig b:",bounds.size(),"rec:",recurseBounds[0].size());
       splitNodeSet(1 + depth, qL, recurseBounds[0]);
       node.setLeftChild(qL);
     }
     if (qR.population() != 0) {
       log("recurse, right bounds:", recurseBounds[1]);
+      pr("splitRigt, orig b:",bounds.size(),"rec:",recurseBounds[1].size());
       splitNodeSet(1 + depth, qR, recurseBounds[1]);
       node.setRightChild(qR);
     }
   }
+
+  private int subtreeNodeCount(QNode parent) {
+    if (parent == null) return 0;
+    return 1 + subtreeNodeCount(parent.left()) + subtreeNodeCount(parent.right());
+  }
+
+  private static QNode undoFruitlessSplits(QNode parent) {
+   // if (alert("disabling fruitless split stuff")) return parent;
+    if (parent == null) return parent;
+    var left = undoFruitlessSplits(parent.left());
+    var right = undoFruitlessSplits(parent.right());
+    int numKids = (left != null ? 1 : 0) + (right != null ? 1 : 0);
+//    checkState(numKids != 1);
+    if (numKids == 0) return parent;
+    if (!left.isLeaf() || !right.isLeaf())
+      return parent;
+    if (left.mSegments.equals(right.mSegments)) {
+      return left;
+    }
+    return parent;
+  }
+
 
   private static float splitCoordinate(boolean splitDimension, FRect bounds) {
     return splitDimension ? bounds.midX() : bounds.midY();
@@ -310,5 +359,5 @@ public class QuadTree extends BaseObject {
   private QtreeParam mParam;
   private PointSet mPointSet;
   private int[] mSegmentEndpointPairs;
-  private int mTreeHeight;
+  private int mPreCull, mPostCull;
 }
