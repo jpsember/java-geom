@@ -9,6 +9,7 @@ import cluster.gen.QtreeParam;
 import js.json.JSObject;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static js.base.Tools.*;
@@ -17,6 +18,7 @@ public class QuadTree extends BaseObject {
 
   public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs) {
     todo("!remove unused parameters, e.g. stopping");
+    todo("!assign a unique id number to each leaf node, for more compact serialization");
     checkArgument(!pointSet.mutable(), "PointSet must be frozen");
     mSegmentEndpointPairs = segmentEndpointPairs;
     mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
@@ -31,8 +33,6 @@ public class QuadTree extends BaseObject {
     m.put("tree", m2);
     return m;
   }
-
-
 
   private JSObject auxDump(QNode node, FRect bounds) {
     if (node.isLeaf()) {
@@ -62,9 +62,8 @@ public class QuadTree extends BaseObject {
   public void prepare() {
     if (mRoot != null) return;
     // Add all points to the point set, and to the quad tree
-    mRoot = new QNode();
-    var seg = IntArray.newBuilder();
-    mRoot.mSegments = seg;
+    mRoot = new QNode(true);
+    var seg = mRoot.mSegments.toBuilder(); // it's already a builder, so it will just return mSegments
 
     var segmentEndpointPairs = mSegmentEndpointPairs;
     var pointSet = mPointSet;
@@ -88,11 +87,11 @@ public class QuadTree extends BaseObject {
     splitNodeSet(0, mRoot, mRootBounds);
 
     todo("!have more sophisticated seg intersects box calculation");
-    todo("!maybe recycle nodes that are equivalent");
 
     if (!mParam.disableFruitlessRewrite()) {
       mPreCull = subtreeNodeCount(mRoot);
-      mRoot = undoFruitlessSplits(mRoot);
+      Map<IntArray, QNode> uniqueLeafMap = hashMap();
+      mRoot = rewriteTree(mRoot, uniqueLeafMap);
       mPostCull = subtreeNodeCount(mRoot);
     }
     // Discard things no longer required
@@ -106,11 +105,10 @@ public class QuadTree extends BaseObject {
       m.put("nodes_before_cull", mPreCull).put("nodes_post_cull", mPostCull);
 
 
-
-    if (true) {
-
+    {
       int leafCount = 0;
       Set<IntArray> set = hashSet();
+      int sumOfSegmentListCounts = 0;
 
       // Determine number of distinct leaf nodes
       List<QNode> stack = arrayList();
@@ -118,20 +116,19 @@ public class QuadTree extends BaseObject {
       while (!stack.isEmpty()) {
         var n = pop(stack);
         if (!n.isLeaf()) {
-          if (n.left() != null)push(stack,n.left());
-          if (n.right() != null)    push(stack,n.right());
+          if (n.left() != null) push(stack, n.left());
+          if (n.right() != null) push(stack, n.right());
         } else {
-          var arr =  n.segments().build();
-          if (arr.isEmpty()) continue;
+          var arr = n.segments().build();
+          sumOfSegmentListCounts += arr.size() / 2;
           leafCount++;
-          var wasNew = set.add(arr);
-          if (!wasNew)
-            pr("segment list already exists:",INDENT,arr);
+         set.add(arr);
         }
       }
-      m.put("leaf count",leafCount).put("leaf unique",set.size());
+      m.put("leaf count", leafCount).put("leaf unique", set.size());
+      if (leafCount != 0)
+        m.put("leaf list avg #segs", sumOfSegmentListCounts / (float) leafCount);
     }
-
 
     return m;
   }
@@ -199,11 +196,12 @@ public class QuadTree extends BaseObject {
 
     private QNode mLeftChild, mRightChild; // Pointers to child nodes
 
-    // Storage for start+end endpoint ids, if this is a leaf node; otherwise, an empty array
+    // Storage for start+end endpoint ids, if this is a leaf node; otherwise, null
     private IntArray mSegments;
 
-    QNode() {
-      mSegments = IntArray.newBuilder();
+    QNode(boolean leafNode) {
+      if (leafNode)
+        mSegments = IntArray.newBuilder();
     }
 
     boolean isLeaf() {
@@ -250,6 +248,7 @@ public class QuadTree extends BaseObject {
       return mSegments.size() / 2;
     }
 
+    @Deprecated
     public void discardSegments() {
       mSegments = IntArray.DEFAULT_INSTANCE;
     }
@@ -262,9 +261,9 @@ public class QuadTree extends BaseObject {
       mRightChild = child;
     }
 
-    public void trimSegmentList() {
-      mSegments = mSegments.build();
-    }
+//    public void trimSegmentList() {
+//      mSegments = mSegments.build();
+//    }
   }
 
   //-------------------------------------------------------------------------
@@ -275,7 +274,7 @@ public class QuadTree extends BaseObject {
 
     log("splitNodeSet, pop:", node.population(), "bounds:", bounds, "depth:", depth);
 
-    node.trimSegmentList();
+//    node.trimSegmentList();
 
     // If there are only a few elements in this node (or none), don't split it further
     if (node.population() <= mParam.targetNodeMaxPop()) {
@@ -297,8 +296,8 @@ public class QuadTree extends BaseObject {
 
     // Construct new nodes for the left and right children
 
-    var qL = new QNode();
-    var qR = new QNode();
+    var qL = new QNode(true);
+    var qR = new QNode(true);
 
     log("...split dimension:", splitDimension, "coordinate:", s);
     {
@@ -355,13 +354,25 @@ public class QuadTree extends BaseObject {
    * @param parent root of subtree, or null
    * @return root of (possibly rewritten) subtree
    */
-  private static QNode undoFruitlessSplits(QNode parent) {
+  private static QNode rewriteTree(QNode parent, Map<IntArray, QNode> uniqueLeafMap) {
     if (parent == null) return null;
-    if (parent.isLeaf()) return parent;
+    if (parent.isLeaf()) {
+
+      // Convert the segment list to an immutable version
+      var seg = parent.mSegments;
+      seg = seg.build();
+      parent.mSegments = seg;
+
+      // If there is already a leaf node in the map with this set of segments, return it instead
+      var existing = uniqueLeafMap.get(seg);
+      if (existing != null) return existing;
+      uniqueLeafMap.put(seg, parent);
+      return parent;
+    }
 
     // Rewrite each child
-    var left = undoFruitlessSplits(parent.left());
-    var right = undoFruitlessSplits(parent.right());
+    var left = rewriteTree(parent.left(), uniqueLeafMap);
+    var right = rewriteTree(parent.right(), uniqueLeafMap);
 
     // If two children exist, are both leaf nodes, and have identical segments, return either one of these as the new parent;
     // otherwise, return a new node with these children
@@ -369,8 +380,7 @@ public class QuadTree extends BaseObject {
       return left;
     }
 
-    var newP = new QNode();
-    newP.discardSegments();
+    var newP = new QNode(false);
     newP.setLeftChild(left);
     newP.setRightChild(right);
     return newP;
