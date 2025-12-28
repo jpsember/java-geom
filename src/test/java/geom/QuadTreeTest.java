@@ -36,6 +36,13 @@ public class QuadTreeTest extends MyTestCase {
   }
 
   @Test
+  public void seg1_no_rewrite() {
+    param().disableFruitlessRewrite(true);
+    genSegments(1);
+    genOut();
+  }
+
+  @Test
   public void seg4() {
     genSegments(4);
     genOut();
@@ -66,6 +73,15 @@ public class QuadTreeTest extends MyTestCase {
   }
 
   @Test
+  public void manyCopies() {
+    skipQueries();
+    int count = 10;
+    for (int i = 0; i < count; i++)
+      addSeg(20, 30, 20 + 10, 30 - 2);
+    genOut();
+  }
+
+  @Test
   public void manyCopiesSameSeg() {
     skipQueries();
     int count = 20;
@@ -83,6 +99,12 @@ public class QuadTreeTest extends MyTestCase {
     manyCopiesSameSeg();
   }
 
+  @Test
+  public void seg10() {
+    genSegments(10);
+    genOut();
+  }
+
 
   @Test
   public void seg100() {
@@ -96,6 +118,7 @@ public class QuadTreeTest extends MyTestCase {
     var m = map();
 
     m.put("info", t.auxInfo());
+    //m.put("tree", t.toJson());
 
     if (!mSkipQueries)
       for (var seg : mSegments) {

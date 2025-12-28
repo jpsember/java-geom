@@ -6,6 +6,7 @@ import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.json.JSMap;
 import cluster.gen.QtreeParam;
+import js.json.JSObject;
 
 import java.util.List;
 import java.util.Set;
@@ -15,10 +16,45 @@ import static js.base.Tools.*;
 public class QuadTree extends BaseObject {
 
   public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs) {
+    todo("!remove unused parameters, e.g. stopping");
     checkArgument(!pointSet.mutable(), "PointSet must be frozen");
     mSegmentEndpointPairs = segmentEndpointPairs;
     mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
     mPointSet = pointSet;
+  }
+
+  @Override
+  public JSMap toJson() {
+    var m = super.toJson();
+    if (mRoot == null) return m;
+    var m2 = auxDump(mRoot, mRootBounds);
+    m.put("tree", m2);
+    return m;
+  }
+
+  private JSObject auxDump(QNode node, FRect bounds) {
+    if (node.isLeaf()) {
+      var x = list();
+      x.add("w").add(bounds.width).add("h").add(bounds.height);
+      x.add("p").add(node.population());
+      return x;
+    } else {
+      var m = map();
+      if (node.left() != null || node.right() != null) {
+        boolean splitDimension = bounds.width > bounds.height;
+        float s = splitCoordinate(splitDimension, bounds);
+        var recurseBounds = calcSubdivisionBounds(splitDimension, bounds, s);
+        if (node.left() != null) {
+          var m2 = auxDump(node.left(), recurseBounds[0]);
+          m.put("L", m2);
+        }
+        if (node.right() != null) {
+          var m2 = auxDump(node.right(), recurseBounds[1]);
+          m.put("R", m2);
+        }
+      }
+      return m;
+    }
   }
 
   public void prepare() {
@@ -48,15 +84,12 @@ public class QuadTree extends BaseObject {
           FRect.rectContainingPoints(allFPoints);
     mRootBounds = bounds;
     log("root bounds:", mRootBounds);
-    pr("root bounds:", z(mRootBounds));
     splitNodeSet(0, mRoot, mRootBounds);
 
-//    if (!alert("skipping cull"))
-    todo("fruitless splits doesn't do anything");
-    todo("have more sophisticated seg intersects box calculation");
+    todo("!have more sophisticated seg intersects box calculation");
+todo("!would it be useful to recycle nodes that are equivalent within tree?");
 
-//    if (!alert("skipping fruitless splits"))
-    {
+    if (!mParam.disableFruitlessRewrite()) {
       mPreCull = subtreeNodeCount(mRoot);
       mRoot = undoFruitlessSplits(mRoot);
       mPostCull = subtreeNodeCount(mRoot);
@@ -66,7 +99,11 @@ public class QuadTree extends BaseObject {
   }
 
   public JSMap auxInfo() {
-    return map().put("before_cull", mPreCull).put("post_cull", mPostCull).put("height", auxHeight(mRoot) - 1);
+    var m = map();
+    m.put("height", auxHeight(mRoot)  );
+    if (mPreCull != 0)
+      m.put("nodes_before_cull", mPreCull).put("nodes_post_cull", mPostCull);
+    return m;
   }
 
   private int auxHeight(QNode node) {
@@ -128,6 +165,9 @@ public class QuadTree extends BaseObject {
     }
   }
 
+//  zzzzz get rid of this  private static boolean optIsLeafNode(QNode q) {
+//    return q != null && q.isLeaf();
+//  }
 
   private static class QNode {
 
@@ -222,35 +262,17 @@ public class QuadTree extends BaseObject {
     // If split dimension is less than the min, do no futher splitting
     float unsplitSize = splitDimension ? bounds.width : bounds.height;
 
-    pr("depth:", depth, "unsplitSize:", unsplitSize, "minNodeDim:", mParam.minNodeDimension());
     if (unsplitSize <= mParam.minNodeDimension()) {
       log("...reached minimum node dimension, doing nothing");
       return;
     }
 
     final float s = splitCoordinate(splitDimension, bounds);
-    pr("unsplitSize:", unsplitSize, "bounds:", z(bounds));
-
-    if (splitDimension) {
-      var left = s - bounds.x;
-      var right = bounds.endX() - s;
-      pr("left:", "" + left, "right:", "" + right);
-      pr("bounds:", z(bounds));
-      checkArgument(Math.min(left, right) * 2 >= mParam.minNodeDimension());
-    } else {
-      var bot = s - bounds.y;
-      var top = bounds.endY() - s;
-      pr("bottom:", "" + bot, "top:", "" + top);
-      pr("bounds:", z(bounds));
-      checkArgument(Math.min(bot, top) * 2 >= mParam.minNodeDimension());
-    }
 
     // Construct new nodes for the left and right children
 
     var qL = new QNode();
     var qR = new QNode();
-    var inputPop = node.population();
-
 
     log("...split dimension:", splitDimension, "coordinate:", s);
     {
@@ -268,7 +290,6 @@ public class QuadTree extends BaseObject {
         var isectL = (isect & 1) != 0;
         var isectR = (isect & 2) != 0;
 
-//        log("...segment bounds:", segmentBounds, "isect L:", isectL, "R:", isectR);
         if (isectL) {
           qL.addSegment(id0, id1);
         }
@@ -276,55 +297,29 @@ public class QuadTree extends BaseObject {
           qR.addSegment(id0, id1);
         }
       }
-
-
-      // We need a recursion stopping criterion to avoid infinite descent for large intermingled polylines
-      // that can't be separated by further subdivisions
-
-      var leftPop = qL.population();
-      var rightPop = qR.population();
-      var max = Math.max(leftPop, rightPop);
-      var min = Math.min(leftPop, rightPop);
-
-      todo("this kind of check is probably no longer necessary, if we are going to 'undo' fruitless subdivisions");
-      // TODO: if the same segments is added many times, this might recurse forever
-      log("leftPop:", leftPop, "rightPop:", rightPop);
-      if (!alert("skipping this step") && max == inputPop && min != 0) {
-        log("....stop criterion reached, stopping");
-        return;
-      }
     }
 
     var recurseBounds = calcSubdivisionBounds(splitDimension, bounds, s);
 
-    if (recurseBounds[0].maxDim() * 2 < mParam.minNodeDimension()
-
-        || recurseBounds[1].maxDim() * 2 < mParam.minNodeDimension()
-    ) die("min node dim is:", "" + mParam.minNodeDimension(), "but recursebounds:", INDENT,
-
-        z(recurseBounds[0]), CR, z(recurseBounds[1]), CR, "orig:", CR, z(bounds));
-//
-//    if (unsplitSize <= mParam.minNodeDimension()) {
-
-
     // The polylines have been moved to the child nodes, so get rid of ours
+    todo("rename polylines -> segments");
     node.discardPolylines();
+
     checkState(depth < MAX_RECURSE_DEPTH, "recurse depth limit exceeded");
 
     if (qL.population() != 0) {
       log("recurse, left bounds:", recurseBounds[0]);
-      pr("splitLeft, orig b:", bounds.size(), "rec:", recurseBounds[0].size());
       splitNodeSet(1 + depth, qL, recurseBounds[0]);
       node.setLeftChild(qL);
     }
     if (qR.population() != 0) {
       log("recurse, right bounds:", recurseBounds[1]);
-      pr("splitRigt, orig b:", bounds.size(), "rec:", recurseBounds[1].size());
       splitNodeSet(1 + depth, qR, recurseBounds[1]);
       node.setRightChild(qR);
     }
   }
 
+  // Display FRect without doing any rounding
   private static String z(FRect r) {
     return "x:" + r.x + " y:" + r.y + " w:" + r.width + " h:" + r.height;
   }
@@ -341,17 +336,17 @@ public class QuadTree extends BaseObject {
     return "intr";
   }
 
+  /**
+   * Rewrite a subtree, eliminating splits that yield identical sets of segments in each of the immediate (leaf) children
+   *
+   * @param parent root of subtree, or null
+   * @return root of (possibly rewritten) subtree
+   */
   private static QNode undoFruitlessSplits(QNode parent) {
-    // if (alert("disabling fruitless split stuff")) return parent;
-    if (parent == null) return parent;
+    if (parent == null) return null;
+    if (parent.isLeaf()) return parent;
 
-    {
-      if (parent.isLeaf())
-        pr("undoFruitless, leaf, pop:", parent.population());
-      else {
-        pr("undoFruitless, children:", ci(parent.left()), ci(parent.right()));
-      }
-    }
+    // Rewrite each child
     var left = undoFruitlessSplits(parent.left());
     var right = undoFruitlessSplits(parent.right());
 
@@ -360,44 +355,17 @@ public class QuadTree extends BaseObject {
     if (left != null && right != null && left.isLeaf() && right.isLeaf() && left.mSegments.equals(right.mSegments)) {
       return left;
     }
+
     var newP = new QNode();
     newP.discardPolylines();
-    ;
     newP.setLeftChild(left);
     newP.setRightChild(right);
     return newP;
-//    if ()
-////    int numKids = (left != null ? 1 : 0) + (right != null ? 1 : 0);
-////    checkState(numKids != 1);
-//    if (numKids == 0) return parent;
-//    if (!left.isLeaf() || !right.isLeaf())
-//      return parent;
-//    if (left.mSegments.equals(right.mSegments)) {
-//      return left;
-//    }
-//    return parent;
   }
 
 
   private static float splitCoordinate(boolean splitDimension, FRect bounds) {
-    float result;
-    if (splitDimension) {
-      result = bounds.midX();
-      checkEps(result - bounds.x);
-      checkEps(bounds.endX() - result);
-    } else {
-      result = bounds.midY();
-      checkEps(result - bounds.y);
-      checkEps(bounds.endY() - result);
-    }
-    return result;
-//    return splitDimension ? bounds.midX() : bounds.midY();
-  }
-
-  private static float checkEps(float value) {
-    if (value < 1e-8)
-      badArg("value is too close to zero:", "" + value);
-    return value;
+    return splitDimension ? bounds.midX() : bounds.midY();
   }
 
   private static FRect[] calcSubdivisionBounds(boolean splitDimension, FRect inb, float splitc) {

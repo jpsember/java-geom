@@ -195,4 +195,5 @@ class qtree_param {
   //
   float min_node_dimension = 0.00027;
 
+  bool disable_fruitless_rewrite;
 }

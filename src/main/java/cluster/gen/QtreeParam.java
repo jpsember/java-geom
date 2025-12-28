@@ -13,6 +13,10 @@ public class QtreeParam implements AbstractData {
     return mMinNodeDimension;
   }
 
+  public boolean disableFruitlessRewrite() {
+    return mDisableFruitlessRewrite;
+  }
+
   @Override
   public Builder toBuilder() {
     return new Builder(this);
@@ -20,6 +24,7 @@ public class QtreeParam implements AbstractData {
 
   protected static final String _0 = "target_node_max_pop";
   protected static final String _1 = "min_node_dimension";
+  protected static final String _2 = "disable_fruitless_rewrite";
 
   @Override
   public String toString() {
@@ -31,6 +36,7 @@ public class QtreeParam implements AbstractData {
     JSMap m = new JSMap();
     m.putUnsafe(_0, mTargetNodeMaxPop);
     m.putUnsafe(_1, mMinNodeDimension);
+    m.putUnsafe(_2, mDisableFruitlessRewrite);
     return m;
   }
 
@@ -47,6 +53,7 @@ public class QtreeParam implements AbstractData {
   private QtreeParam(JSMap m) {
     mTargetNodeMaxPop = m.opt(_0, 4);
     mMinNodeDimension = m.opt(_1, 2.7E-4f);
+    mDisableFruitlessRewrite = m.opt(_2, false);
   }
 
   public static Builder newBuilder() {
@@ -66,6 +73,8 @@ public class QtreeParam implements AbstractData {
       return false;
     if (!(mMinNodeDimension == other.mMinNodeDimension))
       return false;
+    if (!(mDisableFruitlessRewrite == other.mDisableFruitlessRewrite))
+      return false;
     return true;
   }
 
@@ -76,6 +85,7 @@ public class QtreeParam implements AbstractData {
       r = 1;
       r = r * 37 + mTargetNodeMaxPop;
       r = r * 37 + (int)mMinNodeDimension;
+      r = r * 37 + (mDisableFruitlessRewrite ? 1 : 0);
       m__hashcode = r;
     }
     return r;
@@ -83,6 +93,7 @@ public class QtreeParam implements AbstractData {
 
   protected int mTargetNodeMaxPop;
   protected float mMinNodeDimension;
+  protected boolean mDisableFruitlessRewrite;
   protected int m__hashcode;
 
   public static final class Builder extends QtreeParam {
@@ -90,6 +101,7 @@ public class QtreeParam implements AbstractData {
     private Builder(QtreeParam m) {
       mTargetNodeMaxPop = m.mTargetNodeMaxPop;
       mMinNodeDimension = m.mMinNodeDimension;
+      mDisableFruitlessRewrite = m.mDisableFruitlessRewrite;
     }
 
     @Override
@@ -108,6 +120,7 @@ public class QtreeParam implements AbstractData {
       QtreeParam r = new QtreeParam();
       r.mTargetNodeMaxPop = mTargetNodeMaxPop;
       r.mMinNodeDimension = mMinNodeDimension;
+      r.mDisableFruitlessRewrite = mDisableFruitlessRewrite;
       return r;
     }
 
@@ -118,6 +131,11 @@ public class QtreeParam implements AbstractData {
 
     public Builder minNodeDimension(float x) {
       mMinNodeDimension = x;
+      return this;
+    }
+
+    public Builder disableFruitlessRewrite(boolean x) {
+      mDisableFruitlessRewrite = x;
       return this;
     }
 
