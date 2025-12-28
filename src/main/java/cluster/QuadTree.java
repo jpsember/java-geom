@@ -32,6 +32,8 @@ public class QuadTree extends BaseObject {
     return m;
   }
 
+
+
   private JSObject auxDump(QNode node, FRect bounds) {
     if (node.isLeaf()) {
       var x = list();
@@ -63,7 +65,6 @@ public class QuadTree extends BaseObject {
     mRoot = new QNode();
     var seg = IntArray.newBuilder();
     mRoot.mSegments = seg;
-    todo("replace node intarray builder with immutable at some point");
 
     var segmentEndpointPairs = mSegmentEndpointPairs;
     var pointSet = mPointSet;
@@ -87,7 +88,7 @@ public class QuadTree extends BaseObject {
     splitNodeSet(0, mRoot, mRootBounds);
 
     todo("!have more sophisticated seg intersects box calculation");
-todo("!would it be useful to recycle nodes that are equivalent within tree?");
+    todo("!maybe recycle nodes that are equivalent");
 
     if (!mParam.disableFruitlessRewrite()) {
       mPreCull = subtreeNodeCount(mRoot);
@@ -100,9 +101,38 @@ todo("!would it be useful to recycle nodes that are equivalent within tree?");
 
   public JSMap auxInfo() {
     var m = map();
-    m.put("height", auxHeight(mRoot)  );
+    m.put("height", auxHeight(mRoot));
     if (mPreCull != 0)
       m.put("nodes_before_cull", mPreCull).put("nodes_post_cull", mPostCull);
+
+
+
+    if (true) {
+
+      int leafCount = 0;
+      Set<IntArray> set = hashSet();
+
+      // Determine number of distinct leaf nodes
+      List<QNode> stack = arrayList();
+      push(stack, mRoot);
+      while (!stack.isEmpty()) {
+        var n = pop(stack);
+        if (!n.isLeaf()) {
+          if (n.left() != null)push(stack,n.left());
+          if (n.right() != null)    push(stack,n.right());
+        } else {
+          var arr =  n.segments().build();
+          if (arr.isEmpty()) continue;
+          leafCount++;
+          var wasNew = set.add(arr);
+          if (!wasNew)
+            pr("segment list already exists:",INDENT,arr);
+        }
+      }
+      m.put("leaf count",leafCount).put("leaf unique",set.size());
+    }
+
+
     return m;
   }
 
@@ -165,10 +195,6 @@ todo("!would it be useful to recycle nodes that are equivalent within tree?");
     }
   }
 
-//  zzzzz get rid of this  private static boolean optIsLeafNode(QNode q) {
-//    return q != null && q.isLeaf();
-//  }
-
   private static class QNode {
 
     private QNode mLeftChild, mRightChild; // Pointers to child nodes
@@ -224,7 +250,7 @@ todo("!would it be useful to recycle nodes that are equivalent within tree?");
       return mSegments.size() / 2;
     }
 
-    public void discardPolylines() {
+    public void discardSegments() {
       mSegments = IntArray.DEFAULT_INSTANCE;
     }
 
@@ -235,23 +261,23 @@ todo("!would it be useful to recycle nodes that are equivalent within tree?");
     public void setRightChild(QNode child) {
       mRightChild = child;
     }
+
+    public void trimSegmentList() {
+      mSegments = mSegments.build();
+    }
   }
 
   //-------------------------------------------------------------------------
   // Construction
   //-------------------------------------------------------------------------
 
-  private static final int MAX_RECURSE_DEPTH = 100;
-
   private void splitNodeSet(int depth, final QNode node, FRect bounds) {
 
     log("splitNodeSet, pop:", node.population(), "bounds:", bounds, "depth:", depth);
 
-    // If node is empty, splitting is trivially unnecessary
-    if (node.population() == 0) return;
+    node.trimSegmentList();
 
-    // If there are only a few elements in this node, don't split it further
-    todo("!but does this have any effect on the size or runtime?");
+    // If there are only a few elements in this node (or none), don't split it further
     if (node.population() <= mParam.targetNodeMaxPop()) {
       log("...population too low, doing nothing");
       return;
@@ -301,11 +327,10 @@ todo("!would it be useful to recycle nodes that are equivalent within tree?");
 
     var recurseBounds = calcSubdivisionBounds(splitDimension, bounds, s);
 
-    // The polylines have been moved to the child nodes, so get rid of ours
-    todo("rename polylines -> segments");
-    node.discardPolylines();
+    // The segments have been moved to the child nodes, so get rid of ours
+    node.discardSegments();
 
-    checkState(depth < MAX_RECURSE_DEPTH, "recurse depth limit exceeded");
+    checkState(depth < 50, "recurse depth limit exceeded");
 
     if (qL.population() != 0) {
       log("recurse, left bounds:", recurseBounds[0]);
@@ -319,21 +344,9 @@ todo("!would it be useful to recycle nodes that are equivalent within tree?");
     }
   }
 
-  // Display FRect without doing any rounding
-  private static String z(FRect r) {
-    return "x:" + r.x + " y:" + r.y + " w:" + r.width + " h:" + r.height;
-  }
-
   private int subtreeNodeCount(QNode parent) {
     if (parent == null) return 0;
     return 1 + subtreeNodeCount(parent.left()) + subtreeNodeCount(parent.right());
-  }
-
-  private static String ci(QNode q) {
-    if (q == null) return "-";
-    if (q.isLeaf())
-      return "leaf:" + q.population();
-    return "intr";
   }
 
   /**
@@ -357,12 +370,11 @@ todo("!would it be useful to recycle nodes that are equivalent within tree?");
     }
 
     var newP = new QNode();
-    newP.discardPolylines();
+    newP.discardSegments();
     newP.setLeftChild(left);
     newP.setRightChild(right);
     return newP;
   }
-
 
   private static float splitCoordinate(boolean splitDimension, FRect bounds) {
     return splitDimension ? bounds.midX() : bounds.midY();

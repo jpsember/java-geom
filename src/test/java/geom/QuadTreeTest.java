@@ -19,17 +19,6 @@ import static js.base.Tools.*;
 public class QuadTreeTest extends MyTestCase {
 
   @Test
-  public void wtf() {
-    // Investigating floating point stability problem (subtracting floats with small values produces zero)
-    float y = 28.0f;
-    float h = 1.9073486E-6f;
-
-    var midy = y + h * .5f;
-    pr("midy:" + midy, "h: " + h, "top:" + (midy - y), "bot:" + (y + h - midy));
-  }
-
-
-  @Test
   public void seg1() {
     genSegments(1);
     genOut();
