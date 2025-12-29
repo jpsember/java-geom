@@ -430,10 +430,27 @@ public final class MatchUtil {
     return segmentIntersectsBox(b.x, b.y, b.width, b.height, u.x, u.y, v.x, v.y);
   }
 
-    /**
-     * Determine if a line segment (u...v) intersects box b
-     */
+  /**
+   * Determine if a line segment (u...v) intersects box b
+   */
   public static boolean segmentIntersectsBox(float bx, float by, float bw, float bh, float ux, float uy, float vx, float vy) {
+
+    // Sufficient but not necessary:
+    //   box contains an endoint
+
+    // Sufficient but not necessary:
+    //   segment intersects a box boundary segment
+
+    if (ux >= bx && ux <= bx + bw && uy >= by && uy <= by + bh)
+      return true;
+    if (vx >= bx && vx <= bx + bw && vy >= by && vy <= by + bh)
+      return true;
+
+//
+//    pr("box:" + bx + " " + by + " " + bw + " " + bh);
+//    pr("u:" + ux + " " + uy);
+//    pr("v:" + vx + " " + vy);
+
 
     var dx = vx - ux;
     var dy = vy - uy;
@@ -443,57 +460,51 @@ public final class MatchUtil {
     var sqLength = dxs + dys;
     var EPS = 1e-7;
     var isPoint = sqLength < EPS * EPS;
-    boolean isect;
+    if (isPoint)
+      return false;
 
-    if (isPoint) {
-      isect = ux >= bx && ux <= bx + bw && uy >= by && uy <= by + bh;
+    // See https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+    // the section "Given two points on each line segment"
+
+    float x2, x3, y3, x4, y4, y3b, y4b, t, u;
+
+    if (dxs <= dys) {
+      // The (abs) slope of the segment is >= 1; see if segment intersects the horizontal edges of the box
+
+      // transform to the box's origin by subtracting bx, by
+
+      x2 = bw; // i.e. (bx + bw) - bx
+      //
+      x3 = ux - bx;
+      y3 = uy - by;
+      //
+      x4 = vx - bx;
+      y4 = vy - by;
+      //
+      // For the top edge, transform to the top left point (bx, by+bh)
+      y3b = uy - (by + bh);
+      y4b = vy - (by + bh);
     } else {
+      // The (abs) slope of the segment is < 1; see if segment intersects the vertical edges of the box,
+      // by flipping box and segment around the x=y axis
+      x2 = bh;
+      x3 = uy - by;
+      y3 = ux - bx;
+      x4 = vy - by;
+      y4 = vx - bx;
 
-      // See https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
-      // the section "Given two points on each line segment"
-
-      float x2, x3, y3, x4, y4, y3b, y4b, t, u;
-
-      if (dxs <= dys) {
-        // The (abs) slope of the segment is >= 1; see if segment intersects the horizontal edges of the box
-
-        // transform to the box's origin by subtracting bx, by
-
-        x2 = bw; // i.e. (bx + bw) - bx
-        //
-        x3 = ux - bx;
-        y3 = uy - by;
-        //
-        x4 = vx - bx;
-        y4 = vy - by;
-        //
-        // For the top edge, transform to the top left point (bx, by+bh)
-        y3b = uy - (by + bh);
-        y4b = vy - (by + bh);
-      } else {
-        // The (abs) slope of the segment is < 1; see if segment intersects the vertical edges of the box,
-        // by flipping box and segment around the x=y axis
-        x2 = bh;
-        x3 = uy - by;
-        y3 = ux - bx;
-        x4 = vy - by;
-        y4 = vx - bx;
-
-        y3b = ux - (bx + bw);
-        y4b = vx - (bx + bw);
-      }
-
-      t = (x3 * (y4 - y3) + y3 * (x3 - x4)) / (x2 * (y4 - y3));
-      u = (x2 * y3) / (x2 * (y3 - y4));
-      isect = (t >= 0 && t <= 1) && (u >= 0 && u <= 1);
-      if (!isect) {
-        // Check the opposite side of the box
-        var tb = (x3 * (y4b - y3b) + y3b * (x3 - x4)) / (x2 * (y4b - y3b));
-        var ub = (x2 * y3b) / ((x2) * (y3b - y4b));
-        isect = tb >= 0 && tb <= 1 && ub >= 0 && ub <= 1;
-      }
+      y3b = ux - (bx + bw);
+      y4b = vx - (bx + bw);
     }
-    return isect;
+
+    t = (x3 * (y4 - y3) + y3 * (x3 - x4)) / (x2 * (y4 - y3));
+    u = (x2 * y3) / (x2 * (y3 - y4));
+    if ((t >= 0 && t <= 1) && (u >= 0 && u <= 1)) return true;
+
+    // Check the opposite side of the box
+    var tb = (x3 * (y4b - y3b) + y3b * (x3 - x4)) / (x2 * (y4b - y3b));
+    var ub = (x2 * y3b) / ((x2) * (y3b - y4b));
+    return (tb >= 0 && tb <= 1 && ub >= 0 && ub <= 1);
   }
 
 }

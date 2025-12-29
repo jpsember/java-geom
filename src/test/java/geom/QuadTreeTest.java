@@ -163,6 +163,24 @@ public class QuadTreeTest extends MyTestCase {
       genOut();
   }
 
+  @Test
+  public void wtf2() {
+    FRect a = new FRect(18,32,33,43);
+    FRect b = new FRect(51,32,33,43);
+    var p1 = new FPoint(18,52);
+    var p2 = new FPoint(21,47);
+    var ia = segmentIntersectsBox(a,p1,p2);
+    checkState(ia);
+    var ib = segmentIntersectsBox(b,p1,p2);
+    pr("ia:",ia,"ib:",ib);
+    pr(a.contains(p1),a.contains(p2));
+//    bounds:
+//    (   18         32         66         43      )
+//    seg:     18.0000     52.0000     21.0000     47.0000
+//    left: (   18         32         33         43      )
+//    rigt: (   51         32         33         43      )
+//    (wtf:) ------------ tearDown
+  }
 
   @Test
   public void segr() {
