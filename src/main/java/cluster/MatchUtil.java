@@ -423,4 +423,93 @@ public final class MatchUtil {
 //  }
 
 
+  /**
+   * Determine if a line segment (u...v) intersects box b
+   */
+  public static boolean segmentIntersectsBox(float bx, float by, float bw, float bh, float ux, float uy, float vx, float vy) {
+
+    var dx = vx - ux;
+    var dy = vy - uy;
+    var dxs = dx * dx;
+    var dys = dy * dy;
+
+    var sqLength = dxs + dys;
+    var EPS = 1e-7;
+    var isPoint = sqLength < EPS * EPS;
+    boolean isect;
+
+
+    if (isPoint) {
+      isect = ux >= bx && ux <= bx + bw && uy >= by && uy <= by + bh;
+    } else {
+
+      // See https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+      // the section "Given two points on each line segment"
+
+      float x2, x3, y3, x4, y4, y3b, y4b, t, u;
+      float x1, y1, y2; // These are all zero
+
+      x1 = 0;
+      y1 = 0;
+      y2 = 0;
+
+      if (dxs <= dys) {
+        // The (abs) slope of the segment is >= 1; see if segment intersects the horizontal edges of the box
+
+        // transform to the box's origin by subtracting bx, by
+
+        x2 = bw; // i.e. (bx + bw) - bx
+        //
+        x3 = ux - bx;
+        y3 = uy - by;
+        //
+        x4 = vx - bx;
+        y4 = vy - by;
+        //
+        // For the top edge, transform to the top left point (bx, by+bh)
+        y3b = uy - (by + bh);
+        y4b = vy - (by + bh);
+      } else {
+        // The (abs) slope of the segment is < 1; see if segment intersects the vertical edges of the box,
+        // by flipping box and segment around the x=y axis
+        x2 = bh;
+        x3 = uy - by;
+        y3 = ux - bx;
+        x4 = vy - by;
+        y4 = vx - bx;
+
+        y3b = ux - (bx + bw);
+        y4b = vx - (bx + bw);
+      }
+
+      t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) //
+          /    //---------------------------------------------
+          ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+
+      // There's a friggin negative sign here
+      u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3))   //
+          /    //---------------------------------------------
+          ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+
+      isect = (t >= 0 && t <= 1) && (u >= 0 && u <= 1);
+
+      if (!isect) {
+
+        // Check the opposite side of the box
+
+        var tb = ((x1 - x3) * (y3b - y4b) - (y1 - y3b) * (x3 - x4))  //
+            /    //---------------------------------------------
+            ((x1 - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
+
+        var ub = -((x1 - x2) * (y1 - y3b) - (y1 - y2) * (x1 - x3)) //
+            /    //---------------------------------------------
+            ((x1 - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
+
+        isect = tb >= 0 && tb <= 1 && ub >= 0 && ub <= 1;
+      }
+    }
+    return isect;
+  }
+
+
 }
