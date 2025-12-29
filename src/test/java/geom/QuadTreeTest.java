@@ -30,32 +30,23 @@ public class QuadTreeTest extends MyTestCase {
   }
 
   @Test
-  public void segBoxInt() {
-    var bx = 40;
-    var by = 20;
-    var bw = 80;
-    var bh = 60;
+  public void segboxz() {
+//    var result = segIsectBox(40,20,80,60, 30,19, 125, 35);
+    var result = segIsectBox(40,20,80,60, //
 
-    int[] segs = {
-        // No
-        0, 0, 50, 0, //
-        0, 0, 0, 50, //
-        40, 0, 40, 19, //
+        90, 19, 122, 24
+//        51,19,61,82
+       );
 
-        99, 99, 99, 99,
-        // Yes
-        40, 0, 40, 20, //
-        30, 15, 50, 25, //
-        20, 30, 40, 30, //
-        20, 30, 60, 30, //
-        100, 19, 130, 21,
+    checkState(result);
+//    isect(100, 50 - 2 * 10, 0 - 3 * 10, 50 + 4 * 10, 0 + 6 * 10);
+  }
 
-    };
+  private void auxSegBox(int bx, int by, int bw, int bh, int[] segs) {
 
     var m = map();
     boolean expected = false;
 
-//    m.putNumbered("NO");
     boolean problem = false;
     for (int i = 0; i < segs.length; i += 4) {
       var ux = segs[i];
@@ -73,6 +64,36 @@ public class QuadTreeTest extends MyTestCase {
     }
     assertMessage(m);
     checkState(!problem);
+  }
+
+
+  @Test
+  public void segBoxIntB() {
+    int[] segs = {
+        // No
+        40, 0, 40, 19, //
+    };
+    auxSegBox(40, 20, 80, 60, segs);
+  }
+
+  @Test
+  public void segBoxInt() {
+    int[] segs = {
+        // No
+        0, 0, 50, 0, //
+        0, 0, 0, 50, //
+        40, 0, 40, 19, //
+
+        99, 99, 99, 99,
+        // Yes
+        40, 0, 40, 20, //
+        30, 15, 50, 25, //
+        20, 30, 40, 30, //
+        20, 30, 60, 30, //
+        90, 19, 122, 24,
+
+    };
+    auxSegBox(40, 20, 80, 60, segs);
   }
 
   private void isect(float x2, float x3, float y3, float x4, float y4) {
@@ -100,7 +121,6 @@ public class QuadTreeTest extends MyTestCase {
     var sqLength = dxs + dys;
     var EPS = 1e-7;
     var isPoint = sqLength < EPS * EPS;
-
     boolean isect;
 
 
@@ -108,14 +128,34 @@ public class QuadTreeTest extends MyTestCase {
       isect = ux >= bx && ux <= bx + bw && uy >= by && uy <= by + bh;
     } else {
 
-      float x2, x3, y3, x4, y4, y3b, y4b, t0, t1;
+      pr("segIsectBox, not point");
+
+      // See https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+      // the section "Given two points on each line segment"
+
+      float x2, x3, y3, x4, y4, y3b, y4b, t, u;
+      float x1, y1, y2; // These are all zero
+
+      x1 = 0;
+      y1 = 0;
+      y2 = 0;
+
+      pr("dxs:",dxs,"dys:",dys);
       if (dxs <= dys) {
+        pr("....slope >= 1");
         // The (abs) slope of the segment is >= 1; see if segment intersects the horizontal edges of the box
-        x2 = bw;
+
+        // transform to the box's origin by subtracting bx, by
+
+        x2 = bw; // i.e. (bx + bw) - bx
+        //
         x3 = ux - bx;
-        x4 = vx - bx;
         y3 = uy - by;
+        //
+        x4 = vx - bx;
         y4 = vy - by;
+        //
+        // For the top edge, transform to the top left point (bx, by+bh)
         y3b = uy - (by + bh);
         y4b = vy - (by + bh);
       } else {
@@ -123,19 +163,39 @@ public class QuadTreeTest extends MyTestCase {
         // by flipping box and segment around the x=y axis
         x2 = bh;
         x3 = uy - by;
-        x4 = vy - by;
         y3 = ux - bx;
+        x4 = vy - by;
         y4 = vx - bx;
 
         y3b = ux - (bx + bw);
         y4b = vx - (bx + bw);
       }
-      t0 = ((-x3) * (y3 - y4) - (-y3) * (x3 - x4)) / (-x2 * (y3 - y4));
 
-      isect = t0 >= 0 && t0 <= 1;
+      t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) //
+          /    //---------------------------------------------
+          ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+
+      // There's a friggin negative sign here
+      u = - ((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3))   //
+          /    //---------------------------------------------
+          ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+
+      isect = (t >= 0 && t <= 1) && (u >= 0 && u <= 1);
+pr("t:",t,"u:",u);
+
       if (!isect) {
-        var t0b = ((-x3) * (y3b - y4b) - (-y3b) * (x3 - x4)) / (-x2 * (y3b - y4b));
-        isect = t0b >= 0 && t0 <= 1;
+
+        // Check the opposite side of the box
+
+        var tb = ((x1 - x3) * (y3b - y4b) - (y1 - y3b) * (x3 - x4))  //
+            /    //---------------------------------------------
+            ((x1 - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
+
+        var ub = - ((x1 - x2) * (y1 - y3b) - (y1 - y2) * (x1 - x3)) //
+            /    //---------------------------------------------
+            ((x1 - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
+
+        isect = tb >= 0 && tb <= 1 && ub >= 0 && ub <= 1;
       }
     }
     return isect;
