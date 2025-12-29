@@ -294,6 +294,10 @@ public class QuadTree extends BaseObject {
     var qL = new QNode(true);
     var qR = new QNode(true);
 
+    var recurseBounds = calcSubdivisionBounds(splitDimension, bounds, s);
+    var boundsLeft = recurseBounds[0];
+   var  boundsRight = recurseBounds[1];
+
     log("...split dimension:", splitDimension, "coordinate:", s);
     {
       var segs = node.segments().array();
@@ -321,23 +325,25 @@ public class QuadTree extends BaseObject {
 
 
 
-        
 
+      todo("calcIntersectFlags is kind of clunky");
 
         var isect = calcIntersectFlags(splitDimension, s, segmentBounds);
         var isectL = (isect & 1) != 0;
         var isectR = (isect & 2) != 0;
 
         if (isectL) {
-          qL.addSegment(id0, id1);
+          // Do stricter check
+          if (boxTouchesSegment(boundsLeft, pt0, pt1))
+            qL.addSegment(id0, id1);
         }
         if (isectR) {
-          qR.addSegment(id0, id1);
+          if (boxTouchesSegment(boundsRight, pt0, pt1))
+            qR.addSegment(id0, id1);
         }
       }
     }
 
-    var recurseBounds = calcSubdivisionBounds(splitDimension, bounds, s);
 
     // The segments have been moved to the child nodes, so get rid of ours
     node.discardSegments();
@@ -345,15 +351,35 @@ public class QuadTree extends BaseObject {
     checkState(depth < 50, "recurse depth limit exceeded");
 
     if (qL.population() != 0) {
-      log("recurse, left bounds:", recurseBounds[0]);
-      splitNodeSet(1 + depth, qL, recurseBounds[0]);
+      log("recurse, left bounds:", boundsLeft);
+      splitNodeSet(1 + depth, qL, boundsLeft);
       node.setLeftChild(qL);
     }
     if (qR.population() != 0) {
-      log("recurse, right bounds:", recurseBounds[1]);
-      splitNodeSet(1 + depth, qR, recurseBounds[1]);
+      log("recurse, right bounds:", boundsRight);
+      splitNodeSet(1 + depth, qR, boundsRight);
       node.setRightChild(qR);
     }
+  }
+
+  // We will assume that the bounding box of the segment touches the query box
+  public /*for testing*/ static boolean boxTouchesSegment(FRect box, FPoint p0, FPoint p1) {
+    if (box.contains(p0)) {
+       return true;
+    }
+    if (box.contains(p1))
+      return true;
+
+    todo("check if box edge intersects segment");
+
+    // If segment touches a box side, then it will touch both a horizontal and vertical side
+    // (perhaps at the box corner).
+    //
+     // This lets us check only segments that intersect at at least 45 degrees to avoid precision problems
+
+    todo("finish this code");
+    if (true) return true;
+    return false;
   }
 
   private int subtreeNodeCount(QNode parent) {

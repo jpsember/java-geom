@@ -7,6 +7,9 @@
                      "seg100" : 8606,
             "seg1_no_rewrite" : 1266,
                        "seg4" : 6657,
+                  "segBoxInt" : 1480,
+                     "segint" : 5418,
+                    "segint2" : 7080,
          "zeroLengthSegments" : 3308,
                "zeroSegments" : 2519
 }
