@@ -157,6 +157,35 @@ public class QuadTreeTest extends MyTestCase {
 
 
   @Test
+  public void wtf() {
+      resetSeed(5000);
+      genSegments(5);
+      genOut();
+  }
+
+
+  @Test
+  public void segr() {
+    int i = 5000;
+    for (int j=0; j<100; j++,i++) {
+
+//      mParam = QtreeParam.newBuilder().minNodeDimension(1f);
+//      mSegments.clear();
+//      mSegmentIds = null;
+//      mPointSet = null;
+//      mTree = null;
+//      mSkipQueries = false;
+
+      pr("seed:",i);
+      resetSeed(i);
+      genSegments(5);
+      genOut();
+      break;
+    }
+  }
+
+
+  @Test
   public void seg100() {
     genSegments(100);
     genOut();

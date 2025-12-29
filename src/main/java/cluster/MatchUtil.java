@@ -426,6 +426,13 @@ public final class MatchUtil {
   /**
    * Determine if a line segment (u...v) intersects box b
    */
+  public static boolean segmentIntersectsBox(FRect b, FPoint u, FPoint v) {
+    return segmentIntersectsBox(b.x, b.y, b.width, b.height, u.x, u.y, v.x, v.y);
+  }
+
+    /**
+     * Determine if a line segment (u...v) intersects box b
+     */
   public static boolean segmentIntersectsBox(float bx, float by, float bw, float bh, float ux, float uy, float vx, float vy) {
 
     var dx = vx - ux;

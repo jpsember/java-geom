@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static cluster.MatchUtil.*;
+
 import static js.base.Tools.*;
 
 public class QuadTree extends BaseObject {
@@ -296,7 +298,7 @@ public class QuadTree extends BaseObject {
 
     var recurseBounds = calcSubdivisionBounds(splitDimension, bounds, s);
     var boundsLeft = recurseBounds[0];
-   var  boundsRight = recurseBounds[1];
+    var boundsRight = recurseBounds[1];
 
     log("...split dimension:", splitDimension, "coordinate:", s);
     {
@@ -308,7 +310,6 @@ public class QuadTree extends BaseObject {
         checkArgument(id1 > 0, id1);
         var pt0 = mPointSet.get(id0);
         var pt1 = mPointSet.get(id1);
-        var segmentBounds = FRect.rectContainingPoints(pt0, pt1);
 
 
         // Add segment to each child node that it intersects
@@ -323,23 +324,31 @@ public class QuadTree extends BaseObject {
 
         // We are more liberal (for efficiency) during the tree query operation.
 
-
-
-
-      todo("calcIntersectFlags is kind of clunky");
-
-        var isect = calcIntersectFlags(splitDimension, s, segmentBounds);
-        var isectL = (isect & 1) != 0;
-        var isectR = (isect & 2) != 0;
-
-        if (isectL) {
-          // Do stricter check
-          if (boxTouchesSegment(boundsLeft, pt0, pt1))
+        if (true || !alert("not doing new way yet")) {
+          if (segmentIntersectsBox(boundsLeft, pt0, pt1)) {
             qL.addSegment(id0, id1);
-        }
-        if (isectR) {
-          if (boxTouchesSegment(boundsRight, pt0, pt1))
+          }
+          if (segmentIntersectsBox(boundsRight, pt0, pt1)) {
             qR.addSegment(id0, id1);
+          }
+        } else {
+          var segmentBounds = FRect.rectContainingPoints(pt0, pt1);
+
+          todo("calcIntersectFlags is kind of clunky");
+
+          var isect = calcIntersectFlags(splitDimension, s, segmentBounds);
+          var isectL = (isect & 1) != 0;
+          var isectR = (isect & 2) != 0;
+
+          if (isectL) {
+            // Do stricter check
+            if (boxTouchesSegment(boundsLeft, pt0, pt1))
+              qL.addSegment(id0, id1);
+          }
+          if (isectR) {
+            if (boxTouchesSegment(boundsRight, pt0, pt1))
+              qR.addSegment(id0, id1);
+          }
         }
       }
     }
@@ -365,7 +374,7 @@ public class QuadTree extends BaseObject {
   // We will assume that the bounding box of the segment touches the query box
   public /*for testing*/ static boolean boxTouchesSegment(FRect box, FPoint p0, FPoint p1) {
     if (box.contains(p0)) {
-       return true;
+      return true;
     }
     if (box.contains(p1))
       return true;
@@ -375,7 +384,7 @@ public class QuadTree extends BaseObject {
     // If segment touches a box side, then it will touch both a horizontal and vertical side
     // (perhaps at the box corner).
     //
-     // This lets us check only segments that intersect at at least 45 degrees to avoid precision problems
+    // This lets us check only segments that intersect at at least 45 degrees to avoid precision problems
 
     todo("finish this code");
     if (true) return true;
