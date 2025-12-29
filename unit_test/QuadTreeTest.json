@@ -11,6 +11,7 @@
                  "segBoxIntB" : 9589,
                      "segint" : 5418,
                     "segint2" : 7080,
+     "segmentBoxIntersection" : 9543,
          "zeroLengthSegments" : 3308,
                "zeroSegments" : 2519
 }

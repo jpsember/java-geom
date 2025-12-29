@@ -20,64 +20,7 @@ public class QuadTreeTest extends MyTestCase {
 
 
   @Test
-  public void segint() {
-    isect(100, 20, -10, 40, 12);
-  }
-
-  @Test
-  public void segint2() {
-    isect(100, 50 - 2 * 10, 0 - 3 * 10, 50 + 4 * 10, 0 + 6 * 10);
-  }
-
-  @Test
-  public void segboxz() {
-//    var result = segIsectBox(40,20,80,60, 30,19, 125, 35);
-    var result = segIsectBox(40,20,80,60, //
-
-        90, 19, 122, 24
-//        51,19,61,82
-       );
-
-    checkState(result);
-//    isect(100, 50 - 2 * 10, 0 - 3 * 10, 50 + 4 * 10, 0 + 6 * 10);
-  }
-
-  private void auxSegBox(int bx, int by, int bw, int bh, int[] segs) {
-
-    var m = map();
-    boolean expected = false;
-
-    boolean problem = false;
-    for (int i = 0; i < segs.length; i += 4) {
-      var ux = segs[i];
-      var uy = segs[i + 1];
-      var vx = segs[i + 2];
-      var vy = segs[i + 3];
-      if (ux == 99) {
-        expected = true;
-        continue;
-      }
-      var r = segIsectBox(bx, by, bw, bh, ux, uy, vx, vy);
-      var correct = r == expected;
-      if (!correct) problem = true;
-      m.putNumbered(list().add(ux).add(uy).add(vx).add(vy).add(correct ? (expected ? "Y" : "N") : "****"));
-    }
-    assertMessage(m);
-    checkState(!problem);
-  }
-
-
-  @Test
-  public void segBoxIntB() {
-    int[] segs = {
-        // No
-        40, 0, 40, 19, //
-    };
-    auxSegBox(40, 20, 80, 60, segs);
-  }
-
-  @Test
-  public void segBoxInt() {
+  public void segmentBoxIntersection() {
     int[] segs = {
         // No
         0, 0, 50, 0, //
@@ -96,20 +39,46 @@ public class QuadTreeTest extends MyTestCase {
     auxSegBox(40, 20, 80, 60, segs);
   }
 
-  private void isect(float x2, float x3, float y3, float x4, float y4) {
-    var t = ((-x3) * (y3 - y4) - (-y3) * (x3 - x4)) / (-x2 * (y3 - y4));
+
+  /**
+   * Given a box and a set of segments, perform the segment/box intersection algorithm,
+   * and generate a json summary of the results
+   *
+   * Segs is an array of 4n integers, where each 4 are the segment x1,y1,x2,y2.
+   * It assumes the first bunch of segments do *not* intersect the box.
+   *
+   * The special value 99,99,99,99 indicates that the following segments *do* intersect
+   * the box.
+   */
+  private void auxSegBox(int bx, int by, int bw, int bh, int[] segs) {
+
     var m = map();
-    m.put("x2", x2).put("x3", x3).put("y3", y3).put("y4", y4);
-    m.put("t", t);
-    var xi = t * x2;
-    m.put("xi", xi);
+    boolean expectedIsectResult = false;
 
-    float[] param = new float[2];
-    MyMath.linesIntersection(0, 0, x2, 0, x3, y3, x4, y4, param);
-    m.put("tm", param[0]);
+    boolean problem = false; // true if any mismatch occurred
 
+    for (int i = 0; i < segs.length; i += 4) {
+      var ux = segs[i];
+      if (ux == 99) {
+        expectedIsectResult = true;
+        continue;
+      }
+
+      var uy = segs[i + 1];
+      var vx = segs[i + 2];
+      var vy = segs[i + 3];
+
+      var r = segIsectBox(bx, by, bw, bh, ux, uy, vx, vy);
+      var correct = r == expectedIsectResult;
+      if (!correct) problem = true;
+      m.putNumbered(list().add(ux).add(uy).add(vx).add(vy).add(correct ? (expectedIsectResult ? "Y" : "N") : "****"));
+    }
     assertMessage(m);
+    checkState(!problem);
   }
+
+
+
 
   private static boolean segIsectBox(float bx, float by, float bw, float bh, float ux, float uy, float vx, float vy) {
 
@@ -140,7 +109,7 @@ public class QuadTreeTest extends MyTestCase {
       y1 = 0;
       y2 = 0;
 
-      pr("dxs:",dxs,"dys:",dys);
+      pr("dxs:", dxs, "dys:", dys);
       if (dxs <= dys) {
         pr("....slope >= 1");
         // The (abs) slope of the segment is >= 1; see if segment intersects the horizontal edges of the box
@@ -176,12 +145,12 @@ public class QuadTreeTest extends MyTestCase {
           ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
 
       // There's a friggin negative sign here
-      u = - ((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3))   //
+      u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3))   //
           /    //---------------------------------------------
           ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
 
       isect = (t >= 0 && t <= 1) && (u >= 0 && u <= 1);
-pr("t:",t,"u:",u);
+      pr("t:", t, "u:", u);
 
       if (!isect) {
 
@@ -191,7 +160,7 @@ pr("t:",t,"u:",u);
             /    //---------------------------------------------
             ((x1 - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
 
-        var ub = - ((x1 - x2) * (y1 - y3b) - (y1 - y2) * (x1 - x3)) //
+        var ub = -((x1 - x2) * (y1 - y3b) - (y1 - y2) * (x1 - x3)) //
             /    //---------------------------------------------
             ((x1 - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
 
@@ -201,13 +170,7 @@ pr("t:",t,"u:",u);
     return isect;
   }
 
-  /// /    float x3, float y3, float x4, float y4) {
-//      var t = ((-x3) * (y3 - y4) - (-y3) * (x3 - x4)) / (-x2 * (y3 - y4));
-//      var m = map();
-//      m.put("x2", x2).put("x3", x3).put("y3", y3).put("y4", y4);
-//      m.put("t", t);
-//      var xi = t * x2;
-//      m.put("xi", xi);
+
   @Test
   public void seg1() {
     genSegments(1);
