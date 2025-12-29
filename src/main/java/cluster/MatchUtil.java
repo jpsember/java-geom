@@ -447,7 +447,6 @@ public final class MatchUtil {
       // the section "Given two points on each line segment"
 
       float x2, x3, y3, x4, y4, y3b, y4b, t, u;
-      final var x1 = 0;
       final var y1 = 0;
       final var y2 = 0;
 
@@ -480,14 +479,14 @@ public final class MatchUtil {
         y4b = vx - (bx + bw);
       }
 
-      t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) //
+      t = ((  - x3) * (y3 - y4) - (  - y3) * (x3 - x4)) //
           /    //---------------------------------------------
-          ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+          ((  - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
 
       // There's a friggin negative sign here
-      u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3))   //
+      u = -((  - x2) * (  - y3) - (y1 - y2) * (  - x3))   //
           /    //---------------------------------------------
-          ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+          ((  - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
 
       isect = (t >= 0 && t <= 1) && (u >= 0 && u <= 1);
 
@@ -495,13 +494,13 @@ public final class MatchUtil {
 
         // Check the opposite side of the box
 
-        var tb = ((x1 - x3) * (y3b - y4b) - (y1 - y3b) * (x3 - x4))  //
+        var tb = ((  - x3) * (y3b - y4b) - (  - y3b) * (x3 - x4))  //
             /    //---------------------------------------------
-            ((x1 - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
+            (( - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
 
-        var ub = -((x1 - x2) * (y1 - y3b) - (y1 - y2) * (x1 - x3)) //
+        var ub = -((  - x2) * ( - y3b) - (y1 - y2) * (  - x3)) //
             /    //---------------------------------------------
-            ((x1 - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
+            ((  - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
 
         isect = tb >= 0 && tb <= 1 && ub >= 0 && ub <= 1;
       }
