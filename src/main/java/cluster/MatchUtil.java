@@ -447,11 +447,9 @@ public final class MatchUtil {
       // the section "Given two points on each line segment"
 
       float x2, x3, y3, x4, y4, y3b, y4b, t, u;
-      float x1, y1, y2; // These are all zero
-
-      x1 = 0;
-      y1 = 0;
-      y2 = 0;
+      final var x1 = 0;
+      final var y1 = 0;
+      final var y2 = 0;
 
       if (dxs <= dys) {
         // The (abs) slope of the segment is >= 1; see if segment intersects the horizontal edges of the box
