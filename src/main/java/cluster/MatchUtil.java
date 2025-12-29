@@ -438,7 +438,6 @@ public final class MatchUtil {
     var isPoint = sqLength < EPS * EPS;
     boolean isect;
 
-
     if (isPoint) {
       isect = ux >= bx && ux <= bx + bw && uy >= by && uy <= by + bh;
     } else {
@@ -447,8 +446,6 @@ public final class MatchUtil {
       // the section "Given two points on each line segment"
 
       float x2, x3, y3, x4, y4, y3b, y4b, t, u;
-      final var y1 = 0;
-      final var y2 = 0;
 
       if (dxs <= dys) {
         // The (abs) slope of the segment is >= 1; see if segment intersects the horizontal edges of the box
@@ -479,34 +476,17 @@ public final class MatchUtil {
         y4b = vx - (bx + bw);
       }
 
-      t = ((  - x3) * (y3 - y4) - (  - y3) * (x3 - x4)) //
-          /    //---------------------------------------------
-          ((  - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
-
-      // There's a friggin negative sign here
-      u = -((  - x2) * (  - y3) - (y1 - y2) * (  - x3))   //
-          /    //---------------------------------------------
-          ((  - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
-
+      t = (x3 * (y4 - y3) + y3 * (x3 - x4)) / (x2 * (y4 - y3));
+      u = (x2 * y3) / (x2 * (y3 - y4));
       isect = (t >= 0 && t <= 1) && (u >= 0 && u <= 1);
-
       if (!isect) {
-
         // Check the opposite side of the box
-
-        var tb = ((  - x3) * (y3b - y4b) - (  - y3b) * (x3 - x4))  //
-            /    //---------------------------------------------
-            (( - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
-
-        var ub = -((  - x2) * ( - y3b) - (y1 - y2) * (  - x3)) //
-            /    //---------------------------------------------
-            ((  - x2) * (y3b - y4b) - (y1 - y2) * (x3 - x4));
-
+        var tb = (x3 * (y4b - y3b) + y3b * (x3 - x4)) / (x2 * (y4b - y3b));
+        var ub = (x2 * y3b) / ((x2) * (y3b - y4b));
         isect = tb >= 0 && tb <= 1 && ub >= 0 && ub <= 1;
       }
     }
     return isect;
   }
-
 
 }
