@@ -180,7 +180,7 @@ public class QuadTree extends BaseObject {
       if (qNode.right() != null)
         auxFind(1 + depth, qNode.right(), recurseBounds[1]);
     } else {
-      var segmentEndpointIds = qNode.mSegments2.array();
+      var segmentEndpointIds = qNode.mSegments.array();
       for (int i = 0; i < segmentEndpointIds.length; i += 2) {
         var id0 = segmentEndpointIds[i];
         var id1 = segmentEndpointIds[i + 1];
@@ -203,20 +203,15 @@ public class QuadTree extends BaseObject {
     private QNode mLeftChild, mRightChild; // Pointers to child nodes
 
     // Storage for start+end endpoint ids, if this is a leaf node; otherwise, null
-    private IntArray mSegments2;
+    private IntArray mSegments;
 
     QNode(boolean leafNode) {
       if (leafNode)
-        mSegments2 = IntArray.newBuilder();
+        mSegments = IntArray.newBuilder();
     }
 
     boolean isLeaf() {
-      var f1 = mLeftChild == null && mRightChild == null;
-      var f2 = mSegments2 != null;
-      checkState(f1 == f2);
-
-
-      return mLeftChild == null && mRightChild == null;
+      return mSegments != null;
     }
 
     QNode left() {
@@ -228,8 +223,8 @@ public class QuadTree extends BaseObject {
     }
 
     IntArray segments() {
-      checkArgument(mSegments2 != null);
-      return mSegments2;
+      checkArgument(mSegments != null);
+      return mSegments;
     }
 
     void addSegment(int endpointId0, int endpointId1) {
@@ -239,14 +234,13 @@ public class QuadTree extends BaseObject {
     }
 
 
-     void convertToInterior(QNode newLeft, QNode newRight) {
+    void convertToInterior(QNode newLeft, QNode newRight) {
+      todo("can we instead construct a fresh node?");
       checkArgument(isLeaf());
       checkArgument(newLeft != null || newRight != null);
-      mSegments2 = null;
+      mSegments = null;
       mLeftChild = newLeft;
       mRightChild = newRight;
-      // The segments have been moved to the child nodes, so get rid of ours
-//      node.discardSegments();
     }
 
     @Override
@@ -256,7 +250,6 @@ public class QuadTree extends BaseObject {
 
     public JSMap toJson() {
       var m = map();
-//      m.put("", "QNode " + debugIndex);
       m.put("pop", population());
       if (mLeftChild != null)
         m.put("cLeft", true); //mLeftChild.debugIndex);
@@ -268,12 +261,6 @@ public class QuadTree extends BaseObject {
     // Returns the number of polylines stored in this node (not in the rest of the subtree though)
     public int population() {
       return segments().size() / 2;
-    }
-
-    public void discardSegments() {
-      todo("who is discarding segments?");
-      die("wtf");
-      mSegments2 = null;
     }
 
     public void setLeftChild(QNode child) {
@@ -356,11 +343,11 @@ public class QuadTree extends BaseObject {
             isectCount++;
           }
           if (isectCount == 0) {
-            pr("bounds:",INDENT,bounds);
-            pr("seg:",pt0,pt1);
-            pr("left:",boundsLeft);
-            pr("rigt:",boundsRight);
-            die("segment did NOT intersect either child node:",bounds,INDENT,pt0,pt1,CR,"left:");
+            pr("bounds:", INDENT, bounds);
+            pr("seg:", pt0, pt1);
+            pr("left:", boundsLeft);
+            pr("rigt:", boundsRight);
+            die("segment did NOT intersect either child node:", bounds, INDENT, pt0, pt1, CR, "left:");
           }
         } else {
           var segmentBounds = FRect.rectContainingPoints(pt0, pt1);
@@ -389,9 +376,6 @@ public class QuadTree extends BaseObject {
     // 1) one or more children get added
     // 2) the segments are discarded (they were moved)
 
-//    pr("qL pop:",qL.population());
-//    pr("qR pop:",qR.population());
-
     QNode newLeft = null;
     QNode newRight = null;
 
@@ -399,18 +383,14 @@ public class QuadTree extends BaseObject {
       log("recurse, left bounds:", boundsLeft);
       splitNodeSet(1 + depth, qL, boundsLeft);
       newLeft = qL;
-    //  node.setLeftChild(qL);
     }
     if (qR.population() != 0) {
       log("recurse, right bounds:", boundsRight);
       splitNodeSet(1 + depth, qR, boundsRight);
       newRight = qR;
-//      node.setRightChild(qR);
     }
 
-
     node.convertToInterior(newLeft, newRight);
-
   }
 
   // We will assume that the bounding box of the segment touches the query box
@@ -459,7 +439,7 @@ public class QuadTree extends BaseObject {
 
       todo("The 'freezing' of the segments should be done before rewriting, or at least not to confuse what is happening here");
 
-      parent.mSegments2 = seg;
+      parent.mSegments = seg;
       uniqueLeafMap.put(seg, parent);
       return parent;
     }
@@ -470,7 +450,7 @@ public class QuadTree extends BaseObject {
 
     // If two children exist, are both leaf nodes, and have identical segments, return either one of these as the new parent;
     // otherwise, return a new node with these children
-    if (left != null && right != null && left.isLeaf() && right.isLeaf() && left.mSegments2.equals(right.mSegments2)) {
+    if (left != null && right != null && left.isLeaf() && right.isLeaf() && left.mSegments.equals(right.mSegments)) {
       return left;
     }
 
