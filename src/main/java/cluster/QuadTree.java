@@ -30,8 +30,7 @@ public class QuadTree extends BaseObject {
   public JSMap toJson() {
     var m = super.toJson();
     if (mRoot == null) return m;
-    var m2 = auxDump(mRoot, mRootBounds);
-    m.put("tree", m2);
+    m.put("tree", auxDump(mRoot, mRootBounds));
     return m;
   }
 
@@ -99,10 +98,9 @@ public class QuadTree extends BaseObject {
 
   public JSMap auxInfo() {
     var m = map();
-    m.put("height", auxHeight(mRoot));
+    m.put("height", treeHeight(mRoot));
     if (mPreCull != 0)
       m.put("nodes_before_cull", mPreCull).put("nodes_post_cull", mPostCull);
-
 
     {
       int leafCount = 0;
@@ -128,14 +126,13 @@ public class QuadTree extends BaseObject {
       if (leafCount != 0)
         m.put("leaf list avg #segs", sumOfSegmentListCounts / (float) leafCount);
     }
-
     return m;
   }
 
-  private int auxHeight(QNode node) {
+  private int treeHeight(QNode node) {
     if (node == null)
       return 0;
-    return 1 + Math.max(auxHeight(node.left()), auxHeight(node.right()));
+    return 1 + Math.max(treeHeight(node.left()), treeHeight(node.right()));
   }
 
   public int[] findSegments(FRect inputBounds) {
@@ -177,7 +174,7 @@ public class QuadTree extends BaseObject {
       if (qNode.right() != null)
         auxFind(1 + depth, qNode.right(), recurseBounds[1]);
     } else {
-      var segmentEndpointIds = qNode.mSegments.array();
+      var segmentEndpointIds = qNode.segments().array();
       for (int i = 0; i < segmentEndpointIds.length; i += 2) {
         var id0 = segmentEndpointIds[i];
         var id1 = segmentEndpointIds[i + 1];
@@ -241,16 +238,6 @@ public class QuadTree extends BaseObject {
       b.add(endpointId1);
     }
 
-
-    void convertToInterior(QNode newLeft, QNode newRight) {
-      todo("can we instead construct a fresh node?");
-      checkArgument(isLeaf());
-      checkArgument(newLeft != null || newRight != null);
-      mSegments = null;
-      mLeftChild = newLeft;
-      mRightChild = newRight;
-    }
-
     @Override
     public String toString() {
       return toJson().prettyPrint();
@@ -266,11 +253,14 @@ public class QuadTree extends BaseObject {
       return m;
     }
 
-    // Returns the number of segments stored in this left node
+    // Returns the number of segments stored in this leaf node
     public int population() {
       return segments().size() / 2;
     }
 
+    public void freeze() {
+      mSegments = segments().build();
+    }
   }
 
   //-------------------------------------------------------------------------
@@ -322,7 +312,6 @@ public class QuadTree extends BaseObject {
 
         // Add segment to each child node that it intersects
 
-
         // During this tree construction operation, we want to be more strict
         // about whether a segment touches the node bounding box.
 
@@ -332,41 +321,21 @@ public class QuadTree extends BaseObject {
 
         // We are more liberal (for efficiency) during the tree query operation.
 
-        if (true || !alert("not doing new way yet")) {
-          int isectCount = 0;
-          if (segmentIntersectsBox(boundsLeft, pt0, pt1)) {
-            qL.addSegment(id0, id1);
-            isectCount++;
-          }
-          if (segmentIntersectsBox(boundsRight, pt0, pt1)) {
-            qR.addSegment(id0, id1);
-            isectCount++;
-          }
-          if (isectCount == 0) {
-            pr("bounds:", INDENT, bounds);
-            pr("seg:", pt0, pt1);
-            pr("left:", boundsLeft);
-            pr("rigt:", boundsRight);
-            die("segment did NOT intersect either child node:", bounds, INDENT, pt0, pt1, CR, "left:");
-          }
-        } else {
-          var segmentBounds = FRect.rectContainingPoints(pt0, pt1);
-
-          todo("calcIntersectFlags is kind of clunky");
-
-          var isect = calcIntersectFlags(splitDimension, s, segmentBounds);
-          var isectL = (isect & 1) != 0;
-          var isectR = (isect & 2) != 0;
-
-          if (isectL) {
-            // Do stricter check
-            if (boxTouchesSegment(boundsLeft, pt0, pt1))
-              qL.addSegment(id0, id1);
-          }
-          if (isectR) {
-            if (boxTouchesSegment(boundsRight, pt0, pt1))
-              qR.addSegment(id0, id1);
-          }
+        int isectCount = 0;
+        if (segmentIntersectsBox(boundsLeft, pt0, pt1)) {
+          qL.addSegment(id0, id1);
+          isectCount++;
+        }
+        if (segmentIntersectsBox(boundsRight, pt0, pt1)) {
+          qR.addSegment(id0, id1);
+          isectCount++;
+        }
+        if (isectCount == 0) {
+          pr("bounds:", INDENT, bounds);
+          pr("seg:", pt0, pt1);
+          pr("left:", boundsLeft);
+          pr("rigt:", boundsRight);
+          die("segment did NOT intersect either child node:", bounds, INDENT, pt0, pt1, CR, "left:");
         }
       }
     }
@@ -379,7 +348,6 @@ public class QuadTree extends BaseObject {
     todo("treating things as immutable is better, e.g. build a new one rather than mutating existing");
     QNode newLeft = null;
     QNode newRight = null;
-
     if (qL.population() != 0) {
       log("recurse, left bounds:", boundsLeft);
       newLeft = splitNode(qL, 1 + depth, boundsLeft);
@@ -388,29 +356,7 @@ public class QuadTree extends BaseObject {
       log("recurse, right bounds:", boundsRight);
       newRight = splitNode(qR, 1 + depth, boundsRight);
     }
-
     return new QNode(newLeft, newRight);
-//    node.convertToInterior(qL,qR);
-  }
-
-  // We will assume that the bounding box of the segment touches the query box
-  public /*for testing*/ static boolean boxTouchesSegment(FRect box, FPoint p0, FPoint p1) {
-    if (box.contains(p0)) {
-      return true;
-    }
-    if (box.contains(p1))
-      return true;
-
-    todo("check if box edge intersects segment");
-
-    // If segment touches a box side, then it will touch both a horizontal and vertical side
-    // (perhaps at the box corner).
-    //
-    // This lets us check only segments that intersect at at least 45 degrees to avoid precision problems
-
-    todo("finish this code");
-    if (true) return true;
-    return false;
   }
 
   private int subtreeNodeCount(QNode parent) {
@@ -419,43 +365,39 @@ public class QuadTree extends BaseObject {
   }
 
   /**
-   * Rewrite a subtree, eliminating splits that yield identical sets of segments in each of the immediate (leaf) children
+   * Rewrite a subtree, eliminating splits that yield identical sets of segments in each of the immediate (leaf) children.
+   * Also, convert the leaf node segment lists to immutable (non-builder) arrays
    *
-   * @param parent root of subtree, or null
+   * @param rootNode root of subtree, or null
    * @return root of (possibly rewritten) subtree
    */
-  private static QNode rewriteTree(QNode parent, Map<IntArray, QNode> uniqueLeafMap) {
-    //pr("rewriteTree:",INDENT,parent,"parent is null:",parent == null);
-    if (parent == null) return null;
-    if (parent.isLeaf()) {
+  private static QNode rewriteTree(QNode rootNode, Map<IntArray, QNode> uniqueLeafMap) {
+    if (rootNode == null) return null;
 
+    if (rootNode.isLeaf()) {
       // Convert the segment list to an immutable version
-      var seg = parent.segments();
-      seg = seg.build();
+      rootNode.freeze();
+      var seg = rootNode.segments();
 
       // If there is already a leaf node in the map with this set of segments, return it instead
       var existing = uniqueLeafMap.get(seg);
       if (existing != null) return existing;
 
-      todo("The 'freezing' of the segments should be done before rewriting, or at least not to confuse what is happening here");
-
-      parent.mSegments = seg;
-      uniqueLeafMap.put(seg, parent);
-      return parent;
+      uniqueLeafMap.put(seg, rootNode);
+      return rootNode;
     }
 
     // Rewrite each child
-    var left = rewriteTree(parent.left(), uniqueLeafMap);
-    var right = rewriteTree(parent.right(), uniqueLeafMap);
+    var left = rewriteTree(rootNode.left(), uniqueLeafMap);
+    var right = rewriteTree(rootNode.right(), uniqueLeafMap);
 
     // If two children exist, are both leaf nodes, and have identical segments, return either one of these as the new parent;
     // otherwise, return a new node with these children
-    if (left != null && right != null && left.isLeaf() && right.isLeaf() && left.mSegments.equals(right.mSegments)) {
+    if (left != null && right != null && left.isLeaf() && right.isLeaf() && left.segments().equals(right.segments())) {
       return left;
     }
 
     return new QNode(left, right);
-
   }
 
   private static float splitCoordinate(boolean splitDimension, FRect bounds) {
@@ -474,14 +416,6 @@ public class QuadTree extends BaseObject {
     return out;
   }
 
-  private int calcIntersectFlags(boolean splitDimension, float splitCoordinate, FRect objectBounds) {
-    int f = 0;
-    if ((splitDimension ? objectBounds.x : objectBounds.y) <= splitCoordinate)
-      f |= 1;
-    if ((splitDimension ? objectBounds.endX() : objectBounds.endY()) >= splitCoordinate)
-      f |= 2;
-    return f;
-  }
 
   private QNode mRoot;
   private FRect mRootBounds;
