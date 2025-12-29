@@ -171,9 +171,6 @@ public class QuadTreeTest extends MyTestCase {
     var p2 = new FPoint(21,47);
     var ia = segmentIntersectsBox(a,p1,p2);
     checkState(ia);
-    var ib = segmentIntersectsBox(b,p1,p2);
-    pr("ia:",ia,"ib:",ib);
-    pr(a.contains(p1),a.contains(p2));
 //    bounds:
 //    (   18         32         66         43      )
 //    seg:     18.0000     52.0000     21.0000     47.0000

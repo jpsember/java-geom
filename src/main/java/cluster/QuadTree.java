@@ -19,7 +19,6 @@ import static js.base.Tools.*;
 public class QuadTree extends BaseObject {
 
   public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs) {
-    todo("!remove unused parameters, e.g. stopping");
     todo("!assign a unique id number to each leaf node, for more compact serialization; but not necessary if done at serialization stage");
     checkArgument(!pointSet.mutable(), "PointSet must be frozen");
     mSegmentEndpointPairs = segmentEndpointPairs;
@@ -64,7 +63,7 @@ public class QuadTree extends BaseObject {
   public void prepare() {
     if (mRoot != null) return;
     // Add all points to the point set, and to the quad tree
-    mRoot = new QNode(true);
+    mRoot = new QNode();
     var seg = mRoot.segments().toBuilder(); // it's already a builder, so it will just return mSegments
 
     var segmentEndpointPairs = mSegmentEndpointPairs;
@@ -86,9 +85,7 @@ public class QuadTree extends BaseObject {
           FRect.rectContainingPoints(allFPoints);
     mRootBounds = bounds;
     log("root bounds:", mRootBounds);
-    splitNodeSet(0, mRoot, mRootBounds);
-
-    todo("!have more sophisticated seg intersects box calculation");
+    mRoot = splitNode(mRoot, 0, mRootBounds);
 
     if (!mParam.disableRewrite()) {
       mPreCull = subtreeNodeCount(mRoot);
@@ -205,9 +202,20 @@ public class QuadTree extends BaseObject {
     // Storage for start+end endpoint ids, if this is a leaf node; otherwise, null
     private IntArray mSegments;
 
-    QNode(boolean leafNode) {
-      if (leafNode)
-        mSegments = IntArray.newBuilder();
+    /**
+     * Construct a left node
+     */
+    QNode() {
+      mSegments = IntArray.newBuilder();
+    }
+
+    /**
+     * Construct an interior node
+     */
+    QNode(QNode left, QNode right) {
+      checkArgument(left != null || right != null);
+      mLeftChild = left;
+      mRightChild = right;
     }
 
     boolean isLeaf() {
@@ -252,23 +260,15 @@ public class QuadTree extends BaseObject {
       var m = map();
       m.put("pop", population());
       if (mLeftChild != null)
-        m.put("cLeft", true); //mLeftChild.debugIndex);
+        m.put("cLeft", true);
       if (mRightChild != null)
-        m.put("cRight", true); //mRightChild.debugIndex);
+        m.put("cRight", true);
       return m;
     }
 
-    // Returns the number of polylines stored in this node (not in the rest of the subtree though)
+    // Returns the number of segments stored in this left node
     public int population() {
       return segments().size() / 2;
-    }
-
-    public void setLeftChild(QNode child) {
-      mLeftChild = child;
-    }
-
-    public void setRightChild(QNode child) {
-      mRightChild = child;
     }
 
   }
@@ -277,14 +277,14 @@ public class QuadTree extends BaseObject {
   // Construction
   //-------------------------------------------------------------------------
 
-  private void splitNodeSet(int depth, final QNode node, FRect bounds) {
+  private QNode splitNode(final QNode node, int depth, FRect bounds) {
     log("splitNodeSet, pop:", node.population(), "bounds:", bounds, "depth:", depth);
 
     checkArgument(node.isLeaf());
     // If there are only a few elements in this node (or none), don't split it further
     if (node.population() <= mParam.targetNodeMaxPop()) {
       log("...population too low, doing nothing");
-      return;
+      return node;
     }
 
     boolean splitDimension = bounds.width > bounds.height;
@@ -294,15 +294,15 @@ public class QuadTree extends BaseObject {
 
     if (unsplitSize <= mParam.minNodeDimension()) {
       log("...reached minimum node dimension, doing nothing");
-      return;
+      return node;
     }
 
     final float s = splitCoordinate(splitDimension, bounds);
 
     // Construct new nodes for the left and right children
 
-    var qL = new QNode(true);
-    var qR = new QNode(true);
+    var qL = new QNode();
+    var qR = new QNode();
 
     var recurseBounds = calcSubdivisionBounds(splitDimension, bounds, s);
     var boundsLeft = recurseBounds[0];
@@ -376,21 +376,21 @@ public class QuadTree extends BaseObject {
     // 1) one or more children get added
     // 2) the segments are discarded (they were moved)
 
+    todo("treating things as immutable is better, e.g. build a new one rather than mutating existing");
     QNode newLeft = null;
     QNode newRight = null;
 
     if (qL.population() != 0) {
       log("recurse, left bounds:", boundsLeft);
-      splitNodeSet(1 + depth, qL, boundsLeft);
-      newLeft = qL;
+      newLeft = splitNode(qL, 1 + depth, boundsLeft);
     }
     if (qR.population() != 0) {
       log("recurse, right bounds:", boundsRight);
-      splitNodeSet(1 + depth, qR, boundsRight);
-      newRight = qR;
+      newRight = splitNode(qR, 1 + depth, boundsRight);
     }
 
-    node.convertToInterior(newLeft, newRight);
+    return new QNode(newLeft, newRight);
+//    node.convertToInterior(qL,qR);
   }
 
   // We will assume that the bounding box of the segment touches the query box
@@ -454,10 +454,8 @@ public class QuadTree extends BaseObject {
       return left;
     }
 
-    var newP = new QNode(false);
-    newP.setLeftChild(left);
-    newP.setRightChild(right);
-    return newP;
+    return new QNode(left, right);
+
   }
 
   private static float splitCoordinate(boolean splitDimension, FRect bounds) {
