@@ -72,7 +72,7 @@ public class ClusterOper implements TestBedOperation {
 
 
     todo("For each tile, maintain a set of segments drawn from topology");
-    
+
     todo("!if warning msg > ~90 chars, IDE doesn't make it clickable");
 
     // To demonstrate that the oper id can be different than its UI label, make them distinct:
@@ -184,6 +184,7 @@ public class ClusterOper implements TestBedOperation {
       result = new PointGrid(tileSize, ncol, mCachedPoints);
       if (widgets().vb(CACHE_GRID))
         mPointGridCache.put(tileSize, result);
+      else alert("!not caching grids");
     }
     return result;
   }

@@ -130,7 +130,7 @@ public class PointGrid extends BaseObject {
 
   private float rf(String id, float defaultValue) {
     var w = widgets();
-    var active = id+"_active";
+    var active = id + "_active";
     if (!w.vb(active))
       return defaultValue;
     return widgets().vf(id) / 5f;
@@ -146,21 +146,22 @@ public class PointGrid extends BaseObject {
     //  proportional to zoom factor
     //
 
-    float rpop = rf(RAD_TILE_POP_B, 0) + rf(RAD_TILE_POP_M,1) * pop;
+    float rpop = rf(RAD_TILE_POP_B, 0) + rf(RAD_TILE_POP_M, 1) * pop;
 
-    float tileAreaFactor = mTileSize*mTileSize * 0.1f;
+    float tileAreaFactor = mTileSize * mTileSize * 0.1f;
 
-    float rtileArea = rf(RAD_TILE_AREA_B,0) + rf(RAD_TILE_AREA_M,0) * tileAreaFactor;
+    float rtileArea = rf(RAD_TILE_AREA_B, 0) + rf(RAD_TILE_AREA_M, 0) * tileAreaFactor;
     if (nonZero(rtileArea))
-      rpop = rpop * rtileArea + rf(RAD_TILE_AREA_B,0);
+      rpop = rpop * rtileArea + rf(RAD_TILE_AREA_B, 0);
 
-    float r = rf(RAD_CONSTANT,rpop);
+    float r = rf(RAD_CONSTANT, rpop);
     return r;
   }
 
-private boolean nonZero(float f) {
+  private boolean nonZero(float f) {
     return Math.abs(f) > 1e-5f;
-}
+  }
+
   private final static Color[] sampleColors = {
       new Color(255, 0, 0, 128),
       new Color(0, 0, 255, 128),
@@ -183,7 +184,7 @@ private boolean nonZero(float f) {
 
     var interpolate = g.vb(INTERPOLATE);
     var renderTiles = g.vb(RENDER_TILES);
-  var renderPoints = g.vb(RENDER_GRID_POINTS);
+    var renderPoints = g.vb(RENDER_GRID_POINTS);
 
     for (var ent : mTileMap.entrySet()) {
       var tile = ent.getValue();
@@ -233,6 +234,10 @@ private boolean nonZero(float f) {
             radiusInterp = interpolateBetweenScalars(mainRadiusAdj, auxRadiusAdj, interpFactor);
             locationInterp = FPoint.interpolate(location, meanLocation(auxEvtList), interpFactor);
 
+            {
+              todo("if snapping is in effect, snap this interpolated position to " +
+                  "segments in the vicinity of the (larger) tile");
+            }
             // if we're drawing the circles with some transparency, it is tricky to
             // transition smoothly from several overlapping discs at a higher resolution to
             // a single disk at a lower resolution.
