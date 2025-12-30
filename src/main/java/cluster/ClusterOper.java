@@ -242,7 +242,7 @@ public class ClusterOper implements TestBedOperation {
     if (g.vb(SORT_BY_Z))
       stack.sort((o1, o2) -> Float.compare(o1.zSort, o2.zSort));
 
-    boolean first = true;
+    boolean first = false;
     for (var ri : stack) {
       color(ri.color);
       fillCircle(ri.origin, ri.radius);
@@ -267,12 +267,9 @@ public class ClusterOper implements TestBedOperation {
   private FPoint snapPointToTopology(FPoint sourcePoint, boolean log) {
     var q = quadTree();
 
-    todo("lots of segs even with smallish radius");
-    q.setVerbose();
-    int[] seg = q.findSegments(sourcePoint, 5);
+    int[] seg = q.findSegments(sourcePoint, 30);
 if (log) {
   pr("snap point:",sourcePoint,"yielded seg:",seg.length/2);
-
 }
     var ps = q.pointSet();
     var pts = ps.points(seg);
@@ -413,7 +410,7 @@ if (log) {
       var topology = new File(d, "road_network.csv");
 
       var nr = new RoadNetworkReader();
-      nr.withMax(5000);
+      //nr.withMax(5000);
       nr.setGeomColumnName("geom");
       var out = nr.parse(topology);
       pr("built topology");

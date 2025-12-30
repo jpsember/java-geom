@@ -146,7 +146,8 @@ public class QuadTree extends BaseObject {
    * @param radius     half the width of the square
    */
   public int[] findSegments(FPoint queryPoint, float radius) {
-    var bounds = new FRect(queryPoint).withInset(-radius);
+    var bounds =
+        new FRect(queryPoint, queryPoint).withInset(-radius);
     return findSegments(bounds);
   }
 
