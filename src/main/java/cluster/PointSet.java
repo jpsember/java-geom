@@ -6,6 +6,7 @@ import js.geometry.FPoint;
 import js.json.JSMap;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static js.base.Tools.*;
@@ -21,6 +22,16 @@ public class PointSet extends BaseObject {
       ps.add(pt);
     return ps.freeze();
   }
+
+  public List<FPoint> points(int... indices) {
+    List<FPoint> out =  arrayList();
+    for (var i : indices) {
+      var pt = get(i);
+      out.add(pt);
+    }
+    return out;
+  }
+
   /**
    * Add a point, if it doesn't already exist; return its id
    */
@@ -51,6 +62,7 @@ public class PointSet extends BaseObject {
   public boolean mutable() {
     return mPointIndexMap != null;
   }
+
   @Override
   public JSMap toJson() {
     var n = super.toJson();
@@ -68,7 +80,7 @@ public class PointSet extends BaseObject {
 
   public FPoint get(int id) {
     int i = (id - 1) << 1;
-    return new FPoint(mPointList.get(i), mPointList.get(i+1));
+    return new FPoint(mPointList.get(i), mPointList.get(i + 1));
   }
 
 }

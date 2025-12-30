@@ -23,6 +23,7 @@
  **/
 package cluster;
 
+import cluster.gen.QtreeParam;
 import cluster.gen.RoadNetwork;
 import geom.EditorElement;
 import geom.GeomApp;
@@ -30,10 +31,12 @@ import geom.elem.EditablePointElement;
 import geom.gen.Command;
 import geom.gen.ScriptEditState;
 import cluster.gen.PointEvent;
+import js.data.IntArray;
 import js.file.Files;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.IPoint;
+import js.geometry.MyMath;
 import js.graphics.ImgUtil;
 import js.graphics.PointElement;
 import js.graphics.ScriptElement;
@@ -60,7 +63,6 @@ import static testbed.Render.*;
 public class ClusterOper implements TestBedOperation {
 
   private static final String OPER_ID = "cluster";
-
 
   @Override
   public String operId() {
@@ -227,7 +229,6 @@ public class ClusterOper implements TestBedOperation {
 
     renderTopology();
 
-
     List<RenderItem> stack = arrayList();
 
     mGrid0.render(mParam.param, mGrid1, stack);
@@ -252,7 +253,39 @@ public class ClusterOper implements TestBedOperation {
       // we need to increase the radius so the boundary doesn't overlap
       // the colored interior, otherwise the boundary looks fuzzy (and is not white)
       drawCircle(ri.origin, ri.radius + strokeWidth / 2);
+
+      // snap circle to topology
+      var pt = snapPointToTopology(ri.origin);
+      if (pt != null) {
+        drawCircle(pt, ri.radius);
+      }
     }
+  }
+
+  private FPoint snapPointToTopology(FPoint sourcePoint) {
+    var q = quadTree();
+
+//    var qrect = new FRect(sourcePoint).withInset(-50);
+    int[] seg = q.findSegments(sourcePoint, 50);
+
+
+    var ps = q.pointSet();
+    var pts = ps.points(seg);
+
+    FPoint[] snapLoc = new FPoint[1];
+    float minDist = -1;
+    FPoint best = null;
+    for (int i = 0; i < pts.size(); i += 2) {
+      var p0 = pts.get(i);
+      var p1 = pts.get(i + 1);
+      float dist = MyMath.ptDistanceToSegment(sourcePoint, p0, p1, snapLoc);
+      if (best == null || dist < minDist) {
+        minDist = dist;
+        best = snapLoc[0];
+      }
+    }
+
+    return best;
   }
 
   private void generate() {
@@ -354,8 +387,6 @@ public class ClusterOper implements TestBedOperation {
     var t = getTopology();
 
 
-
-
     float zoomCompensation = getScale();
     var strokeWidth = 1.5f * zoomCompensation;
     var pointSetStroke = new BasicStroke(strokeWidth);
@@ -364,10 +395,7 @@ public class ClusterOper implements TestBedOperation {
     var i = INIT_INDEX;
     for (var s : t.roadSegments()) {
       i++;
-      drawLine(s.a().toIPoint(),s.b().toIPoint());
-//      if (i < 10)
-//        pr("draw",s.a(),"...",s.b());
-//      pr("draw:",s.a(),s.b());
+      drawLine(s.a().toIPoint(), s.b().toIPoint());
     }
   }
 
@@ -388,9 +416,39 @@ public class ClusterOper implements TestBedOperation {
       var out = nr.parse(topology);
 
       mTopology = out.build();
+
+      todo("Construct a QuadTree containing the topology segments");
+
+      mQuadTree = constructQuadTreeFromRoadNetwork(mTopology);
     }
     return mTopology;
   }
 
+  private QuadTree quadTree() {
+    getTopology();
+    return mQuadTree;
+  }
+
+  private QuadTree constructQuadTreeFromRoadNetwork(RoadNetwork nw) {
+    var segs = IntArray.newBuilder();
+    var ps = new PointSet();
+    for (var x : nw.roadSegments()) {
+      segs.add(ps.add(x.a()));
+      segs.add(ps.add(x.b()));
+    }
+    ps.freeze();
+
+    var param = QtreeParam.newBuilder();
+    // These are NOT lat long, but pixels; so set param accordingly
+    param.minNodeDimension(1f);
+
+    var q = new QuadTree(param, ps, segs.array());
+    return q;
+  }
+
+
   private RoadNetwork mTopology;
+  private QuadTree mQuadTree;
+
+
 }

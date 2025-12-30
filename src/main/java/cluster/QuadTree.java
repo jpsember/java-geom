@@ -26,6 +26,11 @@ public class QuadTree extends BaseObject {
     mPointSet = pointSet;
   }
 
+  public PointSet pointSet() {
+    return mPointSet;
+  }
+
+
   @Override
   public JSMap toJson() {
     var m = super.toJson();
@@ -133,6 +138,16 @@ public class QuadTree extends BaseObject {
     if (node == null)
       return 0;
     return 1 + Math.max(treeHeight(node.left()), treeHeight(node.right()));
+  }
+
+  /**
+   * Find all segments intersecting a square centered at a query point
+   * @param queryPoint
+   * @param radius half the width of the square
+   */
+  public int[] findSegments(FPoint queryPoint, float radius) {
+    var bounds = new FRect(queryPoint).withInset(-radius);
+    return findSegments(bounds);
   }
 
   public int[] findSegments(FRect inputBounds) {
@@ -341,19 +356,14 @@ public class QuadTree extends BaseObject {
     }
     checkState(depth < 50, "recurse depth limit exceeded");
 
-    // We are turning this leaf node into an interior node, which means
-    // 1) one or more children get added
-    // 2) the segments are discarded (they were moved)
+    // Construct an interior node to replace this node
 
-    todo("treating things as immutable is better, e.g. build a new one rather than mutating existing");
     QNode newLeft = null;
     QNode newRight = null;
     if (qL.population() != 0) {
-      log("recurse, left bounds:", boundsLeft);
       newLeft = splitNode(qL, 1 + depth, boundsLeft);
     }
     if (qR.population() != 0) {
-      log("recurse, right bounds:", boundsRight);
       newRight = splitNode(qR, 1 + depth, boundsRight);
     }
     return new QNode(newLeft, newRight);
