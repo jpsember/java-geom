@@ -23,9 +23,12 @@ public class PointSet extends BaseObject {
     return ps.freeze();
   }
 
-  public List<FPoint> points(int... indices) {
+  /**
+   * Get FPoints from ids
+   */
+  public List<FPoint> points(int... ids) {
     List<FPoint> out =  arrayList();
-    for (var i : indices) {
+    for (var i : ids) {
       var pt = get(i);
       out.add(pt);
     }

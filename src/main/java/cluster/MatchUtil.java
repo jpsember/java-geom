@@ -507,4 +507,23 @@ public final class MatchUtil {
     return (tb >= 0 && tb <= 1 && ub >= 0 && ub <= 1);
   }
 
+  public static FPoint snapPointToSegments(FPoint sourcePoint, List<FPoint> pts) {
+    return snapPointToSegments(sourcePoint, pts, Float.MAX_VALUE);
+  }
+
+  public static FPoint snapPointToSegments(FPoint sourcePoint, List<FPoint> pts, float maxDistance) {
+    FPoint[] snapLoc = new FPoint[1];
+    float minDist = maxDistance;
+    FPoint best = null;
+    for (int i = 0; i < pts.size(); i += 2) {
+      var p0 = pts.get(i);
+      var p1 = pts.get(i + 1);
+      float dist = MyMath.ptDistanceToSegment(sourcePoint, p0, p1, snapLoc);
+      if (dist < minDist) {
+        minDist = dist;
+        best = snapLoc[0];
+      }
+    }
+    return best;
+  }
 }

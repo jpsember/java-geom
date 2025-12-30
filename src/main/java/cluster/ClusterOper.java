@@ -242,6 +242,7 @@ public class ClusterOper implements TestBedOperation {
     if (g.vb(SORT_BY_Z))
       stack.sort((o1, o2) -> Float.compare(o1.zSort, o2.zSort));
 
+    boolean first = true;
     for (var ri : stack) {
       color(ri.color);
       fillCircle(ri.origin, ri.radius);
@@ -255,37 +256,39 @@ public class ClusterOper implements TestBedOperation {
       drawCircle(ri.origin, ri.radius + strokeWidth / 2);
 
       // snap circle to topology
-      var pt = snapPointToTopology(ri.origin);
+      var pt = snapPointToTopology(ri.origin, first);
+      first = false;
       if (pt != null) {
         drawCircle(pt, ri.radius);
       }
     }
   }
 
-  private FPoint snapPointToTopology(FPoint sourcePoint) {
+  private FPoint snapPointToTopology(FPoint sourcePoint, boolean log) {
     var q = quadTree();
 
-//    var qrect = new FRect(sourcePoint).withInset(-50);
-    int[] seg = q.findSegments(sourcePoint, 50);
+    todo("lots of segs even with smallish radius");
+    q.setVerbose();
+    int[] seg = q.findSegments(sourcePoint, 5);
+if (log) {
+  pr("snap point:",sourcePoint,"yielded seg:",seg.length/2);
 
-
+}
     var ps = q.pointSet();
     var pts = ps.points(seg);
 
-    FPoint[] snapLoc = new FPoint[1];
-    float minDist = -1;
-    FPoint best = null;
-    for (int i = 0; i < pts.size(); i += 2) {
-      var p0 = pts.get(i);
-      var p1 = pts.get(i + 1);
-      float dist = MyMath.ptDistanceToSegment(sourcePoint, p0, p1, snapLoc);
-      if (best == null || dist < minDist) {
-        minDist = dist;
-        best = snapLoc[0];
+
+    if (alert("rendering found segs")) {
+      color(Color.GREEN);
+      stroke(STRK_THIN);
+      for (int j = 0; j < pts.size(); j+=2) {
+        var p0 = pts.get(j);
+        var p1 = pts.get(j+1);
+        drawLine(p0,p1);
       }
     }
 
-    return best;
+    return MatchUtil.snapPointToSegments(sourcePoint, pts);
   }
 
   private void generate() {
@@ -385,16 +388,14 @@ public class ClusterOper implements TestBedOperation {
 
   private void renderTopology() {
     var t = getTopology();
-
+//if (alert("not rendering")) return;
 
     float zoomCompensation = getScale();
     var strokeWidth = 1.5f * zoomCompensation;
     var pointSetStroke = new BasicStroke(strokeWidth);
     stroke(pointSetStroke);
     color(Color.MAGENTA);
-    var i = INIT_INDEX;
     for (var s : t.roadSegments()) {
-      i++;
       drawLine(s.a().toIPoint(), s.b().toIPoint());
     }
   }
@@ -412,9 +413,10 @@ public class ClusterOper implements TestBedOperation {
       var topology = new File(d, "road_network.csv");
 
       var nr = new RoadNetworkReader();
+      nr.withMax(5000);
       nr.setGeomColumnName("geom");
       var out = nr.parse(topology);
-
+      pr("built topology");
       mTopology = out.build();
 
       todo("Construct a QuadTree containing the topology segments");

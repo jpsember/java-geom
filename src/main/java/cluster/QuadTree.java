@@ -30,7 +30,6 @@ public class QuadTree extends BaseObject {
     return mPointSet;
   }
 
-
   @Override
   public JSMap toJson() {
     var m = super.toJson();
@@ -142,8 +141,9 @@ public class QuadTree extends BaseObject {
 
   /**
    * Find all segments intersecting a square centered at a query point
+   *
    * @param queryPoint
-   * @param radius half the width of the square
+   * @param radius     half the width of the square
    */
   public int[] findSegments(FPoint queryPoint, float radius) {
     var bounds = new FRect(queryPoint).withInset(-radius);
@@ -157,6 +157,7 @@ public class QuadTree extends BaseObject {
     mQueryInputBounds = inputBounds;
     auxFind(0, mRoot, mRootBounds);
 
+    log("number of segs found:",mQueryResultPairs.size());
     var b = IntArray.newBuilder();
     for (var key : mQueryResultPairs) {
       int pt0 = (int) (key >> 32);

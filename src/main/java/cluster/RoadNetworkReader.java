@@ -29,7 +29,13 @@ public class RoadNetworkReader extends BaseObject {
     }
   }
 
+  public RoadNetworkReader withMax(int maxRoads) {
+    mMaxRoads = maxRoads;
+    return this;
+  }
+
   private String mGeomColumnName;
+  private int mMaxRoads = -1;
 
   public void setGeomColumnName(String name) {
     mGeomColumnName = name;
@@ -46,6 +52,7 @@ public class RoadNetworkReader extends BaseObject {
     List<RoadSegment> nodeBuffer = arrayList();
 
     for (var row : p.rows()) {
+      if (mMaxRoads >= 0 && nodeBuffer.size() >= mMaxRoads) break;
       parseGeometry(row.get(geomColumn), nodeBuffer);
     }
 
@@ -57,8 +64,9 @@ public class RoadNetworkReader extends BaseObject {
     pr(determineExtremalPoints(out));
     // Transform all the points
 
-    FPoint scl = new FPoint(GEO_TO_PIXEL_SCALE_FACTOR, GEO_TO_PIXEL_SCALE_FACTOR);
-    FPoint translate = bnds.midPoint().negate();
+    var f = GEO_TO_PIXEL_SCALE_FACTOR * 0.1f;
+    FPoint scl = new FPoint(f, f);
+    FPoint translate = bnds.location().negate(); // bnds.midPoint().negate();
     var tfm = Matrix.preMultiply(Matrix.getTranslate(translate), Matrix.getScale(scl.x, scl.y));
     var i = INIT_INDEX;
     for (var pt : out.roadSegments()) {
