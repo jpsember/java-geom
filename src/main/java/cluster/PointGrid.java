@@ -152,21 +152,7 @@ public class PointGrid extends BaseObject {
     //  inversely proportional to tile area
     //  proportional to zoom factor
     //
-
-    float rpop = rf(RAD_TILE_POP_B, 0) + rf(RAD_TILE_POP_M, 1) * pop;
-
-    float tileAreaFactor = mTileSize * mTileSize * 0.1f;
-
-    float rtileArea = rf(RAD_TILE_AREA_B, 0) + rf(RAD_TILE_AREA_M, 0) * tileAreaFactor;
-    if (nonZero(rtileArea))
-      rpop = rpop * rtileArea + rf(RAD_TILE_AREA_B, 0);
-
-    float r = rf(RAD_CONSTANT, rpop);
-    return r;
-  }
-
-  private boolean nonZero(float f) {
-    return Math.abs(f) > 1e-5f;
+    return pop*2f;
   }
 
   private final static Color[] sampleColors = {

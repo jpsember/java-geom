@@ -43,12 +43,6 @@ public class ClusterMain extends TestBed {
 
   @Override
   public void addControls(WidgetManager c) {
-    c.open("SampleMain controls");
-    c.label("This is where app-wide controls get added").addLabel();
-
-    c.listener(this::buttonListener).label("Hello").addButton(".hello_id");
-
-    c.close("SampleMain controls");
   }
 
   private void buttonListener(String id) {

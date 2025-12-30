@@ -69,58 +69,81 @@ public class ClusterOper implements TestBedOperation {
   }
 
   public void addControls(WidgetManager c) {
-
     todo("!if warning msg > ~90 chars, IDE doesn't make it clickable");
 
     // To demonstrate that the oper id can be different than its UI label, make them distinct:
     //
     c.openTab(OPER_ID);
     {
-      c.label("Calculate minimum bounding box of objects").addLabel();
+      c.label("Demonstrate Point Coalescing with Snap to Topology").addLabel();
+
 
       c.columns(".x");
       c.open("cluster params");
       {
-        c.spanx();
-        c.label("Generate").defaultVal(true).addToggleButton(GENERATE);
 
-        c.label("Seed:").addLabel();
-        c.withDisplay();
-        c.max(100).addSlider(SEED);
-        c.label("Count:").addLabel();
-        c.max(500).defaultVal(100).addSlider(COUNT);
-        c.label("Stickyness:").addLabel();
-        c.max(100).defaultVal(20).addSlider(STICKYNESS);
-        c.label("Sticky Radius:").addLabel();
-        c.max(100).defaultVal(20).addSlider(NBR_RAD);
-        c.label("Disc Radius:").addLabel();
-        c.max(100).defaultVal(20).addSlider(RADIUS_FACTOR);
+        c.label("Zoom:").addLabel();
+        c.max(1000).addSlider(ZOOM);
 
-        c.label("Bgnd image").defaultVal(true).addToggleButton(RENDER_BGND_IMAGE);
-        c.label("Show grid points").defaultVal(true).addToggleButton(RENDER_GRID_POINTS);
+
+// Can I just cause these to not be printed?
+
+        if (false) {
+          c.spanx();
+          c.label("Generate").defaultVal(true).addToggleButton(GENERATE);
+
+          c.label("Seed:").addLabel();
+          c.withDisplay();
+          c.max(100).addSlider(SEED);
+          c.label("Count:").addLabel();
+          c.max(500).defaultVal(100).addSlider(COUNT);
+          c.label("Stickyness:").addLabel();
+          c.max(100).defaultVal(20).addSlider(STICKYNESS);
+          c.label("Sticky Radius:").addLabel();
+          c.max(100).defaultVal(20).addSlider(NBR_RAD);
+        }
 
         c.spanx();
         c.label("Snap to topology").defaultVal(true).addToggleButton(SNAP);
 
+        c.spanx();
         c.label("Show tiles").addToggleButton(RENDER_TILES);
 
+        c.spanx();
         c.label("Interpolate").defaultVal(true).addToggleButton(INTERPOLATE);
-        c.label("Cache grids").defaultVal(true).addToggleButton(CACHE_GRID);
 
-        c.label("Sort discs by z-coord").defaultVal(true).addToggleButton(SORT_BY_Z);
-        c.label("Zoom:").addLabel();
-        c.max(1000).addSlider(ZOOM);
+
+        c.addHidden(CACHE_GRID, true);
+//        c.label("Cache grids").defaultVal(true).addToggleButton(CACHE_GRID);
+
+        c.addHidden(SORT_BY_Z, true);
+//        c.label("Sort discs by z-coord").defaultVal(true).addToggleButton(SORT_BY_Z);
         c.label("# Colors:").addLabel();
         c.min(1).max(4).addSlider(NUM_COLORS);
 
 
-        aux("rad const", RAD_CONSTANT);
-        auxs("rad tile pop b", RAD_TILE_POP_B);
-        aux("rad tile pop m", RAD_TILE_POP_M);
-        auxs("rad tile area b", RAD_TILE_AREA_B);
-        auxs("rad tile area m", RAD_TILE_AREA_M);
-        aux("rad tile zoom b", RAD_TILE_ZOOM_B);
-        aux("rad tile zoom m", RAD_TILE_ZOOM_M);
+//        aux("rad const", RAD_CONSTANT);
+//        auxs("rad tile pop b", RAD_TILE_POP_B);
+//        aux("rad tile pop m", RAD_TILE_POP_M);
+//        auxs("rad tile area b", RAD_TILE_AREA_B);
+//        auxs("rad tile area m", RAD_TILE_AREA_M);
+//        aux("rad tile zoom b", RAD_TILE_ZOOM_B);
+//        aux("rad tile zoom m", RAD_TILE_ZOOM_M);
+
+        c.spanx();
+        c.addHidden(RADIUS_FACTOR, 20);
+//        c.label("Disc Radius:").addLabel();
+//        c.max(100).defaultVal(20).addSlider(RADIUS_FACTOR);
+
+        c.spanx();
+        c.addHidden(RENDER_BGND_IMAGE, false);
+        //      if (false)
+      //        c.label("Bgnd image").defaultVal(true).addToggleButton(RENDER_BGND_IMAGE);
+
+
+        c.spanx();
+        c.addHidden(RENDER_GRID_POINTS, true);
+        //        c.label("Show grid points").defaultVal(true).addToggleButton(RENDER_GRID_POINTS);
 
       }
       c.close("cluster params");
@@ -145,8 +168,11 @@ public class ClusterOper implements TestBedOperation {
 
   public void processUserEvent(UserEvent event) {
     if (event.isWidget()) {
-      if (widgets().vb(GENERATE))
-        generate();
+      if (widgets().exists(GENERATE)) {
+        todo("make sure this widget has been created");
+        if (widgets().vb(GENERATE))
+          generate();
+      }
     }
   }
 

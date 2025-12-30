@@ -39,13 +39,8 @@ public final class ClusterGlobals {
 
   public static final String RADIUS_FACTOR = "c_radius";
 
-  public static final String RAD_CONSTANT = "c_rad_const";
-  public static final String RAD_TILE_POP_B = "c_rad_tile_pop_b";
-  public static final String RAD_TILE_POP_M = "c_rad_tile_pop_m";
-  public static final String RAD_TILE_AREA_B = "c_rad_tile_area_b";
-  public static final String RAD_TILE_AREA_M = "c_rad_tile_area_m";
-  public static final String RAD_TILE_ZOOM_B = "c_rad_tile_zoom_b";
-  public static final String RAD_TILE_ZOOM_M = "c_rad_tile_zoom_m";
+//  public static final String RAD_CONSTANT = "c_rad_const";
+
 
   // Does not have much effect on performance
   public static final String CACHE_GRID = "c_cache_grid";
