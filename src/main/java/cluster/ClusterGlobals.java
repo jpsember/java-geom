@@ -2,21 +2,6 @@ package cluster;
 
 public final class ClusterGlobals {
 
-  // Regenerate points with each event
-  public static final String GENERATE = "c_generate";
-
-  // Random seed for generating points deterministically
-  public static final String SEED = "c_seed";
-
-  // Number of points to generate
-  public static final String COUNT = "c_count";
-
-  // How likely next point is to be generated in neighborhood of previous
-  public static final String STICKYNESS = "c_stickyness";
-
-  // Bound on how far next point is to be from previous, if 'sticky'
-  public static final String NBR_RAD = "c_rad";
-
   // Display tile edges
   public static final String RENDER_TILES = "c_rendertiles";
 
@@ -38,9 +23,6 @@ public final class ClusterGlobals {
   public static final String SORT_BY_Z = "c_sort_by_z";
 
   public static final String RADIUS_FACTOR = "c_radius";
-
-//  public static final String RAD_CONSTANT = "c_rad_const";
-
 
   // Does not have much effect on performance
   public static final String CACHE_GRID = "c_cache_grid";

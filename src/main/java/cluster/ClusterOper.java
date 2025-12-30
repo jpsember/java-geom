@@ -85,24 +85,6 @@ public class ClusterOper implements TestBedOperation {
         c.label("Zoom:").addLabel();
         c.max(1000).addSlider(ZOOM);
 
-
-// Can I just cause these to not be printed?
-
-        if (false) {
-          c.spanx();
-          c.label("Generate").defaultVal(true).addToggleButton(GENERATE);
-
-          c.label("Seed:").addLabel();
-          c.withDisplay();
-          c.max(100).addSlider(SEED);
-          c.label("Count:").addLabel();
-          c.max(500).defaultVal(100).addSlider(COUNT);
-          c.label("Stickyness:").addLabel();
-          c.max(100).defaultVal(20).addSlider(STICKYNESS);
-          c.label("Sticky Radius:").addLabel();
-          c.max(100).defaultVal(20).addSlider(NBR_RAD);
-        }
-
         c.spanx();
         c.label("Snap to topology").defaultVal(true).addToggleButton(SNAP);
 
@@ -112,39 +94,20 @@ public class ClusterOper implements TestBedOperation {
         c.spanx();
         c.label("Interpolate").defaultVal(true).addToggleButton(INTERPOLATE);
 
-
         c.addHidden(CACHE_GRID, true);
-//        c.label("Cache grids").defaultVal(true).addToggleButton(CACHE_GRID);
 
         c.addHidden(SORT_BY_Z, true);
-//        c.label("Sort discs by z-coord").defaultVal(true).addToggleButton(SORT_BY_Z);
         c.label("# Colors:").addLabel();
         c.min(1).max(4).addSlider(NUM_COLORS);
 
-
-//        aux("rad const", RAD_CONSTANT);
-//        auxs("rad tile pop b", RAD_TILE_POP_B);
-//        aux("rad tile pop m", RAD_TILE_POP_M);
-//        auxs("rad tile area b", RAD_TILE_AREA_B);
-//        auxs("rad tile area m", RAD_TILE_AREA_M);
-//        aux("rad tile zoom b", RAD_TILE_ZOOM_B);
-//        aux("rad tile zoom m", RAD_TILE_ZOOM_M);
-
         c.spanx();
         c.addHidden(RADIUS_FACTOR, 20);
-//        c.label("Disc Radius:").addLabel();
-//        c.max(100).defaultVal(20).addSlider(RADIUS_FACTOR);
 
         c.spanx();
         c.addHidden(RENDER_BGND_IMAGE, false);
-        //      if (false)
-      //        c.label("Bgnd image").defaultVal(true).addToggleButton(RENDER_BGND_IMAGE);
-
 
         c.spanx();
         c.addHidden(RENDER_GRID_POINTS, true);
-        //        c.label("Show grid points").defaultVal(true).addToggleButton(RENDER_GRID_POINTS);
-
       }
       c.close("cluster params");
 
@@ -167,13 +130,6 @@ public class ClusterOper implements TestBedOperation {
   }
 
   public void processUserEvent(UserEvent event) {
-    if (event.isWidget()) {
-      if (widgets().exists(GENERATE)) {
-        todo("make sure this widget has been created");
-        if (widgets().vb(GENERATE))
-          generate();
-      }
-    }
   }
 
   public void runAlgorithm() {
@@ -298,79 +254,6 @@ public class ClusterOper implements TestBedOperation {
       drawCircle(ri.origin, ri.radius + strokeWidth / 2);
     }
   }
-
-  private FPoint snapPointToTopology(FPoint sourcePoint, boolean log) {
-    var q = quadTree();
-
-    int[] seg = q.findSegments(sourcePoint, 30);
-    if (log) {
-      pr("snap point:", sourcePoint, "yielded seg:", seg.length / 2);
-    }
-    var ps = q.pointSet();
-    var pts = ps.points(seg);
-
-
-    if (alert("rendering found segs")) {
-      color(Color.GREEN);
-      stroke(STRK_THIN);
-      for (int j = 0; j < pts.size(); j += 2) {
-        var p0 = pts.get(j);
-        var p1 = pts.get(j + 1);
-        drawLine(p0, p1);
-      }
-    }
-
-    return MatchUtil.snapPointToSegments(sourcePoint, pts);
-  }
-
-  private void generate() {
-    WidgetManager g = widgets();
-    int seed = g.vi(SEED);
-    Random r = new Random(seed + 1);
-    int c = g.vi(COUNT);
-    List<EditorElement> elemList = arrayList();
-
-    final int PADDING = 0;
-
-    IPoint size = ImgUtil.size(bgndImage());
-    float sx = size.x;
-    float sy = size.y;
-
-    var clip = new FRect(0, 0, sx, sy);
-    FPoint stickyOrigin = null;
-    var stickyness = g.vi(STICKYNESS) + 1;
-    var stickyRadius = (g.vi(NBR_RAD) / 100.f) * Math.min(size.x, size.y);
-
-    while (elemList.size() < c) {
-      FPoint newLoc = null;
-
-      if (stickyOrigin != null && r.nextInt(stickyness) != 0) {
-        todo("!why can't I call nextFloat(x)?");
-        var nearbyPoint =
-            pointOnCircle(stickyOrigin, r.nextFloat() * (360f * M_DEG), r.nextFloat() * stickyRadius);
-        if (!clip.contains(nearbyPoint)) {
-          continue;
-        }
-        newLoc = nearbyPoint;
-      }
-
-      if (newLoc == null) {
-        newLoc = new FPoint(r.nextFloat() * sx + PADDING, r.nextFloat() * sy + PADDING);
-        stickyOrigin = newLoc;
-      }
-
-      elemList.add(EditablePointElement.DEFAULT_INSTANCE
-          .withLocation(newLoc.toIPoint()));
-    }
-
-    Command.Builder b = Command.newBuilder();
-    ScriptEditState editState = scriptManager().state();
-    // We must discard any selected elements, as they may no longer exist
-    b.newState(editState.toBuilder().elements(elemList).selectedElements(null));
-    geomApp().perform(b);
-    geomApp().performRepaint(GeomApp.REPAINT_EDITOR);
-  }
-
 
   static class TileSizeParam {
     float zoomFactor;
