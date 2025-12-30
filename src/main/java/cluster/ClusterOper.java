@@ -36,7 +36,6 @@ import js.file.Files;
 import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.IPoint;
-import js.geometry.MyMath;
 import js.graphics.ImgUtil;
 import js.graphics.PointElement;
 import js.graphics.ScriptElement;
@@ -70,6 +69,10 @@ public class ClusterOper implements TestBedOperation {
   }
 
   public void addControls(WidgetManager c) {
+
+
+    todo("For each tile, maintain a set of segments drawn from topology");
+    
     todo("!if warning msg > ~90 chars, IDE doesn't make it clickable");
 
     // To demonstrate that the oper id can be different than its UI label, make them distinct:

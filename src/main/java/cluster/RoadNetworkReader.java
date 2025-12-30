@@ -61,12 +61,15 @@ public class RoadNetworkReader extends BaseObject {
     out.roadSegments(nodeBuffer);
     var bnds = determineBounds(out);
 
-    pr(determineExtremalPoints(out));
+   // pr(determineExtremalPoints(out));
+
     // Transform all the points
 
     var f = GEO_TO_PIXEL_SCALE_FACTOR * 0.1f;
     FPoint scl = new FPoint(f, f);
-    FPoint translate = bnds.location().negate(); // bnds.midPoint().negate();
+//    FPoint translate = bnds.midPoint().negate();
+    FPoint translate =
+        bnds.location().negate();
     var tfm = Matrix.preMultiply(Matrix.getTranslate(translate), Matrix.getScale(scl.x, scl.y));
     var i = INIT_INDEX;
     for (var pt : out.roadSegments()) {
@@ -79,7 +82,7 @@ public class RoadNetworkReader extends BaseObject {
     out.translate(translate);
     out.scale(scl);
 
-//    pr("after transform:",CR,determineExtremalPoints(out));
+    //pr("after transform:", CR, determineExtremalPoints(out));
 
     return out;
   }
