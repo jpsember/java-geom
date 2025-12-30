@@ -70,9 +70,6 @@ public class ClusterOper implements TestBedOperation {
 
   public void addControls(WidgetManager c) {
 
-
-    todo("For each tile, maintain a set of segments drawn from topology");
-
     todo("!if warning msg > ~90 chars, IDE doesn't make it clickable");
 
     // To demonstrate that the oper id can be different than its UI label, make them distinct:
@@ -275,15 +272,6 @@ public class ClusterOper implements TestBedOperation {
       // we need to increase the radius so the boundary doesn't overlap
       // the colored interior, otherwise the boundary looks fuzzy (and is not white)
       drawCircle(ri.origin, ri.radius + strokeWidth / 2);
-
-      if (!alert("snapping now moved elsewhere")) {
-        // snap circle to topology
-        var pt = snapPointToTopology(ri.origin, first);
-        first = false;
-        if (pt != null) {
-          drawCircle(pt, ri.radius);
-        }
-      }
     }
   }
 
@@ -437,11 +425,7 @@ if (log) {
       //nr.withMax(5000);
       nr.setGeomColumnName("geom");
       var out = nr.parse(topology);
-      pr("built topology");
       mTopology = out.build();
-
-      todo("Construct a QuadTree containing the topology segments");
-
       mQuadTree = constructQuadTreeFromRoadNetwork(mTopology);
     }
     return mTopology;

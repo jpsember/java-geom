@@ -227,13 +227,9 @@ public class PointGrid extends BaseObject {
           var tileEntry = auxGrid.tileContainingTileFromHigherRes(tile.bounds());
           var key = tileEntry.first;
           var auxTile = tileEntry.second;
-//              auxTile = auxGrid.tileContainingTileFromHigherRes(tile.bounds());
-          todo("figure out when to invalidate our cache");
-
+          // todo("figure out when to invalidate our cache");
 
           if (auxTile != null) {
-
-
             if (renderTiles) {
               stroke(auxTileBoundaryStroke);
               color(auxTileBoundaryColor);
@@ -247,12 +243,6 @@ public class PointGrid extends BaseObject {
             var auxRadiusAdj = auxRadius * zoomCompensation;
             radiusInterp = interpolateBetweenScalars(mainRadiusAdj, auxRadiusAdj, interpFactor);
             locationInterp = FPoint.interpolate(location, meanLocation(auxEvtList), interpFactor);
-
-            {
-              todo("if snapping is in effect, snap this interpolated position to " +
-                  "segments in the vicinity of the (larger) tile");
-            }
-
 
             if (quadTree != null) {
               var segSet = readTileTopology(auxTile, quadTree, key);
@@ -306,7 +296,6 @@ public class PointGrid extends BaseObject {
         mTileTopologyCache.put(cacheKey, endpoints);
       }
     }
-    todo("use a color other than blue for our rendering, to distinguish from editor points");
     return endpoints;
   }
 
