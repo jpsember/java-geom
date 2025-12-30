@@ -109,7 +109,7 @@ public class ClusterOper implements TestBedOperation {
 
         c.label("Sort discs by z-coord").defaultVal(true).addToggleButton(SORT_BY_Z);
         c.label("Zoom:").addLabel();
-        c.max(300).addSlider(ZOOM);
+        c.max(1000).addSlider(ZOOM);
         c.label("# Colors:").addLabel();
         c.min(1).max(4).addSlider(NUM_COLORS);
 
@@ -163,11 +163,9 @@ public class ClusterOper implements TestBedOperation {
 
     float targZoom;
     {
-      var app = geomApp();
-      var z = g.vi(ZOOM);
-      targZoom = interpolateBetweenScalars(0.8f, 9f, z / 300f);
-      //if (!alert("not setting zoom factor"))
-      app.setZoomFactor(targZoom);
+      var zoomWidgetValue = g.vi(ZOOM);
+      targZoom = interpolateBetweenScalars(1.7f, 12f, zoomWidgetValue / 300f);
+      geomApp().setZoomFactor(targZoom);
     }
     var ts = tileSizeForZoom(targZoom);
     mParam = ts;
@@ -188,7 +186,7 @@ public class ClusterOper implements TestBedOperation {
       var cache = mTileCaches.get(tileSize);
       if (cache == null) {
         cache = hashMap();
-        mTileCaches.put(tileSize,cache);
+        mTileCaches.put(tileSize, cache);
       }
       result.withTileTopologyCache(cache);
 
@@ -279,9 +277,9 @@ public class ClusterOper implements TestBedOperation {
     var q = quadTree();
 
     int[] seg = q.findSegments(sourcePoint, 30);
-if (log) {
-  pr("snap point:",sourcePoint,"yielded seg:",seg.length/2);
-}
+    if (log) {
+      pr("snap point:", sourcePoint, "yielded seg:", seg.length / 2);
+    }
     var ps = q.pointSet();
     var pts = ps.points(seg);
 
@@ -289,10 +287,10 @@ if (log) {
     if (alert("rendering found segs")) {
       color(Color.GREEN);
       stroke(STRK_THIN);
-      for (int j = 0; j < pts.size(); j+=2) {
+      for (int j = 0; j < pts.size(); j += 2) {
         var p0 = pts.get(j);
-        var p1 = pts.get(j+1);
-        drawLine(p0,p1);
+        var p1 = pts.get(j + 1);
+        drawLine(p0, p1);
       }
     }
 
@@ -373,7 +371,7 @@ if (log) {
   private TileSizeParam tileSizeForZoom(float zoomFactor) {
     var p = new TileSizeParam();
     p.zoomFactor = zoomFactor;
-    p.idealTileSize = Math.max(1, 90f / p.zoomFactor);
+    p.idealTileSize = Math.max(1, 120f / p.zoomFactor);
     var log2 = Math.log(p.idealTileSize) / Math.log(2);
     checkState(log2 >= 0);
     p.exponent = (int) Math.floor(log2);
@@ -398,12 +396,12 @@ if (log) {
     var t = getTopology();
 //if (alert("not rendering")) return;
 
-    float zoomCompensation = getScale();
-    var strokeWidth = 1.5f * zoomCompensation;
+//    float zoomCompensation = getScale();
+    var strokeWidth = 0.45f; // * zoomCompensation;
     var pointSetStroke = new BasicStroke(strokeWidth);
     stroke(pointSetStroke);
 
-    color(Color.GRAY);
+    color(new Color(111, 76, 138, 128));
     for (var s : t.roadSegments()) {
       drawLine(s.a().toIPoint(), s.b().toIPoint());
     }

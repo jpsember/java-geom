@@ -171,7 +171,7 @@ public class PointGrid extends BaseObject {
 
   private final static Color[] sampleColors = {
       new Color(255, 0, 0, 128),
-      new Color(193,56,214, 128),
+      new Color(193, 56, 214, 128),
       new Color(0, 255, 0, 128),
       new Color(181, 189, 49, 128),
   };
@@ -184,10 +184,16 @@ public class PointGrid extends BaseObject {
     // radii and stroke thickness remain *constant* throughout zooming
     float zoomCompensation = getScale();
 
-    var tileBoundaryStroke = new BasicStroke(0.7f * zoomCompensation);
+    float d = zoomCompensation * 3f;
+    float[] dash = {d, d * .5f};
+    var tileBoundaryStroke =
+        new BasicStroke(0.7f * zoomCompensation, BasicStroke.CAP_BUTT,
+            BasicStroke.JOIN_ROUND, 1.0f, dash, 0);
+    if (false) tileBoundaryStroke =
+        new BasicStroke(0.7f * zoomCompensation);
     Color tileBoundaryColor = new Color(0, 100, 0, 128);
     Color auxTileBoundaryColor = new Color(0, 80, 80, 128);
-    var auxTileBoundaryStroke = new BasicStroke(1.2f * zoomCompensation);
+    var auxTileBoundaryStroke = new BasicStroke(0.8f * zoomCompensation);
 
     var interpolate = g.vb(INTERPOLATE);
     var renderTiles = g.vb(RENDER_TILES);
