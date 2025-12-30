@@ -373,7 +373,7 @@ if (log) {
   private TileSizeParam tileSizeForZoom(float zoomFactor) {
     var p = new TileSizeParam();
     p.zoomFactor = zoomFactor;
-    p.idealTileSize = Math.max(1, 30f / p.zoomFactor);
+    p.idealTileSize = Math.max(1, 90f / p.zoomFactor);
     var log2 = Math.log(p.idealTileSize) / Math.log(2);
     checkState(log2 >= 0);
     p.exponent = (int) Math.floor(log2);
