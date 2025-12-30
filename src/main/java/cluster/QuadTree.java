@@ -30,39 +30,6 @@ public class QuadTree extends BaseObject {
     return mPointSet;
   }
 
-  @Override
-  public JSMap toJson() {
-    var m = super.toJson();
-    if (mRoot == null) return m;
-    m.put("tree", auxDump(mRoot, mRootBounds));
-    return m;
-  }
-
-  private JSObject auxDump(QNode node, FRect bounds) {
-    if (node.isLeaf()) {
-      var x = list();
-      x.add("w").add(bounds.width).add("h").add(bounds.height);
-      x.add("p").add(node.population());
-      return x;
-    } else {
-      var m = map();
-      if (node.left() != null || node.right() != null) {
-        boolean splitDimension = bounds.width > bounds.height;
-        float s = splitCoordinate(splitDimension, bounds);
-        var recurseBounds = calcSubdivisionBounds(splitDimension, bounds, s);
-        if (node.left() != null) {
-          var m2 = auxDump(node.left(), recurseBounds[0]);
-          m.put("L", m2);
-        }
-        if (node.right() != null) {
-          var m2 = auxDump(node.right(), recurseBounds[1]);
-          m.put("R", m2);
-        }
-      }
-      return m;
-    }
-  }
-
   public void prepare() {
     if (mRoot != null) return;
     // Add all points to the point set, and to the quad tree
@@ -100,54 +67,13 @@ public class QuadTree extends BaseObject {
     mSegmentEndpointPairs = null;
   }
 
-  public JSMap auxInfo() {
-    var m = map();
-    m.put("height", treeHeight(mRoot));
-    if (mPreCull != 0)
-      m.put("nodes_before_cull", mPreCull).put("nodes_post_cull", mPostCull);
-
-    {
-      int leafCount = 0;
-      Set<IntArray> set = hashSet();
-      int sumOfSegmentListCounts = 0;
-
-      // Determine number of distinct leaf nodes
-      List<QNode> stack = arrayList();
-      push(stack, mRoot);
-      while (!stack.isEmpty()) {
-        var n = pop(stack);
-        if (!n.isLeaf()) {
-          if (n.left() != null) push(stack, n.left());
-          if (n.right() != null) push(stack, n.right());
-        } else {
-          var arr = n.segments().build();
-          sumOfSegmentListCounts += arr.size() / 2;
-          leafCount++;
-          set.add(arr);
-        }
-      }
-      m.put("leaf count", leafCount).put("leaf unique", set.size());
-      if (leafCount != 0)
-        m.put("leaf list avg #segs", sumOfSegmentListCounts / (float) leafCount);
-    }
-    return m;
-  }
-
-  private int treeHeight(QNode node) {
-    if (node == null)
-      return 0;
-    return 1 + Math.max(treeHeight(node.left()), treeHeight(node.right()));
-  }
-
   /**
    * Find all segments intersecting a square centered at a query point
    *
-   * @param queryPoint
-   * @param radius     half the width of the square
+   * @param radius half the width of the square
    */
   public int[] findSegments(FPoint queryPoint, float radius) {
-    var bounds =
-        new FRect(queryPoint, queryPoint).withInset(-radius);
+    var bounds = new FRect(queryPoint, queryPoint).withInset(-radius);
     return findSegments(bounds);
   }
 
@@ -158,8 +84,7 @@ public class QuadTree extends BaseObject {
     mQueryInputBounds = inputBounds;
     auxFind(0, mRoot, mRootBounds);
 
-
-    log("number of segs found:",mQueryResultPairs.size());
+    log("number of segs found:", mQueryResultPairs.size());
     var b = IntArray.newBuilder();
     for (var key : mQueryResultPairs) {
       int pt0 = (int) (key >> 32);
@@ -171,6 +96,8 @@ public class QuadTree extends BaseObject {
   }
 
   private static boolean rectsTouch(FRect a, FRect b) {
+    // I can't use the FRect.intersects function, since it may fail with vertical or horizontal
+    // road segments (which can produce zero-area rects)
     return (a.x <= b.endX() && a.endX() >= b.x && a.y <= b.endY() && a.endY() >= b.y);
   }
 
@@ -207,77 +134,6 @@ public class QuadTree extends BaseObject {
           mQueryResultPairs.add((((long) id0) << 32) | id1);
         }
       }
-    }
-  }
-
-  private static class QNode {
-
-    private QNode mLeftChild, mRightChild; // Pointers to child nodes
-
-    // Storage for start+end endpoint ids, if this is a leaf node; otherwise, null
-    private IntArray mSegments;
-
-    /**
-     * Construct a left node
-     */
-    QNode() {
-      mSegments = IntArray.newBuilder();
-    }
-
-    /**
-     * Construct an interior node
-     */
-    QNode(QNode left, QNode right) {
-      checkArgument(left != null || right != null);
-      mLeftChild = left;
-      mRightChild = right;
-    }
-
-    boolean isLeaf() {
-      return mSegments != null;
-    }
-
-    QNode left() {
-      return mLeftChild;
-    }
-
-    QNode right() {
-      return mRightChild;
-    }
-
-    IntArray segments() {
-      checkArgument(mSegments != null);
-      return mSegments;
-    }
-
-    void addSegment(int endpointId0, int endpointId1) {
-      var b = (IntArray.Builder) segments();
-      b.add(endpointId0);
-      b.add(endpointId1);
-    }
-
-    @Override
-    public String toString() {
-      return toJson().prettyPrint();
-    }
-
-    public JSMap toJson() {
-      var m = map();
-      m.put("pop", population());
-      if (mLeftChild != null)
-        m.put("cLeft", true);
-      if (mRightChild != null)
-        m.put("cRight", true);
-      return m;
-    }
-
-    // Returns the number of segments stored in this leaf node
-    public int population() {
-      return segments().size() / 2;
-    }
-
-    public void freeze() {
-      mSegments = segments().build();
     }
   }
 
@@ -372,11 +228,6 @@ public class QuadTree extends BaseObject {
     return new QNode(newLeft, newRight);
   }
 
-  private int subtreeNodeCount(QNode parent) {
-    if (parent == null) return 0;
-    return 1 + subtreeNodeCount(parent.left()) + subtreeNodeCount(parent.right());
-  }
-
   /**
    * Rewrite a subtree, eliminating splits that yield identical sets of segments in each of the immediate (leaf) children.
    * Also, convert the leaf node segment lists to immutable (non-builder) arrays
@@ -429,16 +280,96 @@ public class QuadTree extends BaseObject {
     return out;
   }
 
+  private final Set<Long> mQueryResultPairs = hashSet();
+  private final QtreeParam mParam;
+  private final PointSet mPointSet;
 
   private QNode mRoot;
   private FRect mRootBounds;
-
-  // Used for recursing during constructing Quadtree
-
   private FRect mQueryInputBounds;
-  private Set<Long> mQueryResultPairs = hashSet();
-  private QtreeParam mParam;
-  private PointSet mPointSet;
   private int[] mSegmentEndpointPairs;
   private int mPreCull, mPostCull;
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Logging and debugging
+  // ----------------------------------------------------------------------------------------------
+
+  @Override
+  public JSMap toJson() {
+    var m = super.toJson();
+    if (mRoot == null) return m;
+    m.put("tree", auxDump(mRoot, mRootBounds));
+    return m;
+  }
+
+  private JSObject auxDump(QNode node, FRect bounds) {
+    if (node.isLeaf()) {
+      var x = list();
+      x.add("w").add(bounds.width).add("h").add(bounds.height);
+      x.add("p").add(node.population());
+      return x;
+    } else {
+      var m = map();
+      if (node.left() != null || node.right() != null) {
+        boolean splitDimension = bounds.width > bounds.height;
+        float s = splitCoordinate(splitDimension, bounds);
+        var recurseBounds = calcSubdivisionBounds(splitDimension, bounds, s);
+        if (node.left() != null) {
+          var m2 = auxDump(node.left(), recurseBounds[0]);
+          m.put("L", m2);
+        }
+        if (node.right() != null) {
+          var m2 = auxDump(node.right(), recurseBounds[1]);
+          m.put("R", m2);
+        }
+      }
+      return m;
+    }
+  }
+
+
+  private int subtreeNodeCount(QNode parent) {
+    if (parent == null) return 0;
+    return 1 + subtreeNodeCount(parent.left()) + subtreeNodeCount(parent.right());
+  }
+
+  public JSMap auxInfo() {
+    var m = map();
+    m.put("height", treeHeight(mRoot));
+    if (mPreCull != 0)
+      m.put("nodes_before_cull", mPreCull).put("nodes_post_cull", mPostCull);
+
+    {
+      int leafCount = 0;
+      Set<IntArray> set = hashSet();
+      int sumOfSegmentListCounts = 0;
+
+      // Determine number of distinct leaf nodes
+      List<QNode> stack = arrayList();
+      push(stack, mRoot);
+      while (!stack.isEmpty()) {
+        var n = pop(stack);
+        if (!n.isLeaf()) {
+          if (n.left() != null) push(stack, n.left());
+          if (n.right() != null) push(stack, n.right());
+        } else {
+          var arr = n.segments().build();
+          sumOfSegmentListCounts += arr.size() / 2;
+          leafCount++;
+          set.add(arr);
+        }
+      }
+      m.put("leaf count", leafCount).put("leaf unique", set.size());
+      if (leafCount != 0)
+        m.put("leaf list avg #segs", sumOfSegmentListCounts / (float) leafCount);
+    }
+    return m;
+  }
+
+  private int treeHeight(QNode node) {
+    if (node == null)
+      return 0;
+    return 1 + Math.max(treeHeight(node.left()), treeHeight(node.right()));
+  }
 }
