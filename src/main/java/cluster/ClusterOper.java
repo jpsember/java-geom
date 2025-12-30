@@ -180,11 +180,21 @@ public class ClusterOper implements TestBedOperation {
       mGrid1 = buildGrid(ts.tileSize * 2);
   }
 
+  private Map<Integer, Map<Integer, List<FPoint>>> mTileCaches = hashMap();
+
   private PointGrid buildGrid(int tileSize) {
     var result = mPointGridCache.get(tileSize);
     if (result == null) {
       var ncol = widgets().vi(NUM_COLORS);
       result = new PointGrid(tileSize, ncol, mCachedPoints);
+      todo("!assuming older caches are valid");
+      var cache = mTileCaches.get(tileSize);
+      if (cache == null) {
+        cache = hashMap();
+        mTileCaches.put(tileSize,cache);
+      }
+      result.withTileTopologyCache(cache);
+
       if (widgets().vb(CACHE_GRID))
         mPointGridCache.put(tileSize, result);
       else alert("!not caching grids");
@@ -404,7 +414,8 @@ if (log) {
     var strokeWidth = 1.5f * zoomCompensation;
     var pointSetStroke = new BasicStroke(strokeWidth);
     stroke(pointSetStroke);
-    color(Color.MAGENTA);
+
+    color(Color.GRAY);
     for (var s : t.roadSegments()) {
       drawLine(s.a().toIPoint(), s.b().toIPoint());
     }

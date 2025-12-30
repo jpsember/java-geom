@@ -26,8 +26,8 @@ import java.util.Map;
 
 public class PointGrid extends BaseObject {
 
+
   public PointGrid(int tileSize, int numColors, Collection<PointEvent> pts) {
-    pr("*********** rebuilding point grid, tile size:",tileSize,"# points:",pts.size());
     mTileSize = tileSize;
     Map<Integer, Tile> tileMap = hashMap();
     mNumColors = numColors;
@@ -53,6 +53,11 @@ public class PointGrid extends BaseObject {
       mp.put(entry.getKey(), entry.getValue().build());
     }
     mTileMap = mp;
+  }
+
+  public PointGrid withTileTopologyCache(Map<Integer, List<FPoint>> cache) {
+    mTileTopologyCache = cache;
+    return this;
   }
 
   @Override
@@ -166,7 +171,7 @@ public class PointGrid extends BaseObject {
 
   private final static Color[] sampleColors = {
       new Color(255, 0, 0, 128),
-      new Color(0, 0, 255, 128),
+      new Color(193,56,214, 128),
       new Color(0, 255, 0, 128),
       new Color(181, 189, 49, 128),
   };
@@ -285,11 +290,11 @@ public class PointGrid extends BaseObject {
   }
 
   private List<FPoint> readTileTopology(Tile tile, QuadTree quadTree, int cacheKey) {
-    var endpoints = mTileTopologyCache.get(cacheKey);
+    List<FPoint> endpoints = null;
+    if (mTileTopologyCache != null)
+      endpoints = mTileTopologyCache.get(cacheKey);
+
     if (endpoints == null) {
-
-      pr("no endpoints found for key:", cacheKey, "size:", mTileTopologyCache.size());
-
       float tileMargin = 0.3f;
       var bounds = tile.bounds().toRect().withInset(-tile.bounds().width * tileMargin);
 
@@ -297,10 +302,11 @@ public class PointGrid extends BaseObject {
 
       endpoints = quadTree.pointSet().points(endpointIds);
       checkArgument(endpoints != null);
-      //if (!alert("disabling topology tile cache"))
-      mTileTopologyCache.put(cacheKey, endpoints);
-      pr("cached tile topology, key:", cacheKey, "# segs:", endpoints.size() / 2);
+      if (mTileTopologyCache != null) {
+        mTileTopologyCache.put(cacheKey, endpoints);
+      }
     }
+    todo("use a color other than blue for our rendering, to distinguish from editor points");
     return endpoints;
   }
 
@@ -314,5 +320,5 @@ public class PointGrid extends BaseObject {
   private final Map<Integer, Tile> mTileMap;
   private final int mNumColors;
   private final float mRadiusFactor;
-  private final Map<Integer, List<FPoint>> mTileTopologyCache = hashMap();
+  private Map<Integer, List<FPoint>> mTileTopologyCache;
 }
