@@ -102,6 +102,9 @@ public class ClusterOper implements TestBedOperation {
         c.label("Bgnd image").defaultVal(true).addToggleButton(RENDER_BGND_IMAGE);
         c.label("Show grid points").defaultVal(true).addToggleButton(RENDER_GRID_POINTS);
 
+        c.spanx();
+        c.label("Snap to topology").defaultVal(true).addToggleButton(SNAP);
+
         c.label("Show tiles").addToggleButton(RENDER_TILES);
 
         c.label("Interpolate").defaultVal(true).addToggleButton(INTERPOLATE);
@@ -235,7 +238,11 @@ public class ClusterOper implements TestBedOperation {
 
     List<RenderItem> stack = arrayList();
 
-    mGrid0.render(mParam.param, mGrid1, stack);
+    QuadTree quadTreeForSnap = null;
+    if (g.vb(SNAP))
+      quadTreeForSnap = quadTree();
+
+    mGrid0.render(mParam.param, mGrid1, stack, quadTreeForSnap);
 
     float zoomCompensation = getScale();
     var strokeWidth = 1.5f * zoomCompensation;
@@ -259,11 +266,13 @@ public class ClusterOper implements TestBedOperation {
       // the colored interior, otherwise the boundary looks fuzzy (and is not white)
       drawCircle(ri.origin, ri.radius + strokeWidth / 2);
 
-      // snap circle to topology
-      var pt = snapPointToTopology(ri.origin, first);
-      first = false;
-      if (pt != null) {
-        drawCircle(pt, ri.radius);
+      if (!alert("snapping now moved elsewhere")) {
+        // snap circle to topology
+        var pt = snapPointToTopology(ri.origin, first);
+        first = false;
+        if (pt != null) {
+          drawCircle(pt, ri.radius);
+        }
       }
     }
   }

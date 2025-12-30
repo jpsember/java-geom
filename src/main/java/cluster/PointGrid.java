@@ -11,6 +11,7 @@ import cluster.gen.EventList;
 import cluster.gen.PointEvent;
 import cluster.gen.Tile;
 import js.base.BaseObject;
+import js.base.Pair;
 import js.geometry.FPoint;
 import js.geometry.IPoint;
 import js.geometry.IRect;
@@ -26,6 +27,7 @@ import java.util.Map;
 public class PointGrid extends BaseObject {
 
   public PointGrid(int tileSize, int numColors, Collection<PointEvent> pts) {
+    pr("*********** rebuilding point grid, tile size:",tileSize,"# points:",pts.size());
     mTileSize = tileSize;
     Map<Integer, Tile> tileMap = hashMap();
     mNumColors = numColors;
@@ -119,9 +121,9 @@ public class PointGrid extends BaseObject {
    * @param smallerTileBounds bounds of smaller tile in higher resolution grid
    * @return larger tile, or null
    */
-  public Tile tileContainingTileFromHigherRes(IRect smallerTileBounds) {
+  public Pair<Integer, Tile> tileContainingTileFromHigherRes(IRect smallerTileBounds) {
     var auxKey = keyForPoint(smallerTileBounds.location());
-    return mTileMap.get(auxKey);
+    return pair(auxKey, mTileMap.get(auxKey));
   }
 
   private float rf(String id) {
@@ -169,7 +171,7 @@ public class PointGrid extends BaseObject {
       new Color(181, 189, 49, 128),
   };
 
-  public void render(float interpFactor, PointGrid auxGrid, List<RenderItem> renderItems) {
+  public void render(float interpFactor, PointGrid auxGrid, List<RenderItem> renderItems, QuadTree quadTree) {
     WidgetManager g = widgets();
 
     // I am using the zoom feature to perform the scaling, but we need to
@@ -217,9 +219,16 @@ public class PointGrid extends BaseObject {
 
         // If we're interpolating with a coarser resolution grid (one with larger tiles), do so
         if (interpolate && auxGrid != null) {
-          var auxTile = auxGrid.tileContainingTileFromHigherRes(tile.bounds());
+          var tileEntry = auxGrid.tileContainingTileFromHigherRes(tile.bounds());
+          var key = tileEntry.first;
+          var auxTile = tileEntry.second;
+//              auxTile = auxGrid.tileContainingTileFromHigherRes(tile.bounds());
+          todo("figure out when to invalidate our cache");
+
 
           if (auxTile != null) {
+
+
             if (renderTiles) {
               stroke(auxTileBoundaryStroke);
               color(auxTileBoundaryColor);
@@ -238,6 +247,16 @@ public class PointGrid extends BaseObject {
               todo("if snapping is in effect, snap this interpolated position to " +
                   "segments in the vicinity of the (larger) tile");
             }
+
+
+            if (quadTree != null) {
+              var segSet = readTileTopology(auxTile, quadTree, key);
+              var snappedLoc = MatchUtil.snapPointToSegments(locationInterp, segSet);
+              if (snappedLoc != null)
+                locationInterp = snappedLoc;
+            }
+
+
             // if we're drawing the circles with some transparency, it is tricky to
             // transition smoothly from several overlapping discs at a higher resolution to
             // a single disk at a lower resolution.
@@ -265,6 +284,26 @@ public class PointGrid extends BaseObject {
     }
   }
 
+  private List<FPoint> readTileTopology(Tile tile, QuadTree quadTree, int cacheKey) {
+    var endpoints = mTileTopologyCache.get(cacheKey);
+    if (endpoints == null) {
+
+      pr("no endpoints found for key:", cacheKey, "size:", mTileTopologyCache.size());
+
+      float tileMargin = 0.3f;
+      var bounds = tile.bounds().toRect().withInset(-tile.bounds().width * tileMargin);
+
+      int[] endpointIds = quadTree.findSegments(bounds);
+
+      endpoints = quadTree.pointSet().points(endpointIds);
+      checkArgument(endpoints != null);
+      //if (!alert("disabling topology tile cache"))
+      mTileTopologyCache.put(cacheKey, endpoints);
+      pr("cached tile topology, key:", cacheKey, "# segs:", endpoints.size() / 2);
+    }
+    return endpoints;
+  }
+
   private static FPoint meanLocation(EventList events) {
     checkArgument(events.population() != 0);
     var s = 1f / events.population();
@@ -275,5 +314,5 @@ public class PointGrid extends BaseObject {
   private final Map<Integer, Tile> mTileMap;
   private final int mNumColors;
   private final float mRadiusFactor;
-
+  private final Map<Integer, List<FPoint>> mTileTopologyCache = hashMap();
 }

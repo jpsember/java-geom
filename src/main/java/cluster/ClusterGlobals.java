@@ -49,4 +49,6 @@ public final class ClusterGlobals {
 
   // Does not have much effect on performance
   public static final String CACHE_GRID = "c_cache_grid";
+
+  public static final String SNAP = "c_snap";
 }

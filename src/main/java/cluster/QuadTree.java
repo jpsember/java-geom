@@ -158,6 +158,7 @@ public class QuadTree extends BaseObject {
     mQueryInputBounds = inputBounds;
     auxFind(0, mRoot, mRootBounds);
 
+
     log("number of segs found:",mQueryResultPairs.size());
     var b = IntArray.newBuilder();
     for (var key : mQueryResultPairs) {
