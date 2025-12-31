@@ -290,7 +290,18 @@ public class QuadTree extends BaseObject {
   private int[] mSegmentEndpointPairs;
   private int mPreCull, mPostCull;
 
+  // ----------------------------------------------------------------------------------------------
+  // Serialization
+  // ----------------------------------------------------------------------------------------------
 
+  public JSMap serialize() {
+    throw notFinished();
+  }
+
+  public static QuadTree deserialize(JSMap m) {
+    throw notFinished();
+  }
+  
   // ----------------------------------------------------------------------------------------------
   // Logging and debugging
   // ----------------------------------------------------------------------------------------------
