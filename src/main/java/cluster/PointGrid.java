@@ -55,25 +55,15 @@ public class PointGrid extends BaseObject {
     mTileMap = mp;
   }
 
+  /**
+   * Specify an optional cache to store quadtree query results for individual tiles.
+   *
+   * An optimization - it lets us store the topology query for a particular tile to be saved, without requiring
+   * repeated calls for each of several points that might lie within that tile
+   */
   public PointGrid withTileTopologyCache(Map<Integer, List<FPoint>> cache) {
     mTileTopologyCache = cache;
     return this;
-  }
-
-  @Override
-  public JSMap toJson() {
-    var m = super.toJson();
-    m.put("nc", mNumColors);
-    m.put("radius", mRadiusFactor);
-    m.put("tile size", mTileSize);
-    var z = map();
-    m.put("tiles", z);
-
-    for (var ent : mTileMap.entrySet()) {
-      z.put("#" + ent.getKey(), ent.getValue().toJson());
-    }
-
-    return m;
   }
 
   public void insert(PointEvent evt, Map<Integer, Tile> mTileMap) {
@@ -131,20 +121,8 @@ public class PointGrid extends BaseObject {
     return pair(auxKey, mTileMap.get(auxKey));
   }
 
-  private float rf(String id) {
-    return widgets().vf(id) / 5f;
-  }
-
-  private float rf(String id, float defaultValue) {
-    var w = widgets();
-    var active = id + "_active";
-    if (!w.vb(active))
-      return defaultValue;
-    return widgets().vf(id) / 5f;
-  }
 
   private float radiusForPop(int pop) {
-
     // The disc radius is a combination of one or more of:
     //
     //  a constant
@@ -303,4 +281,27 @@ public class PointGrid extends BaseObject {
   private final int mNumColors;
   private final float mRadiusFactor;
   private Map<Integer, List<FPoint>> mTileTopologyCache;
+
+
+  // ----------------------------------------------------------------------------------------------
+  // Logging and testing
+  // ----------------------------------------------------------------------------------------------
+
+  @Override
+  public JSMap toJson() {
+    var m = super.toJson();
+    m.put("nc", mNumColors);
+    m.put("radius", mRadiusFactor);
+    m.put("tile size", mTileSize);
+    var z = map();
+    m.put("tiles", z);
+
+    for (var ent : mTileMap.entrySet()) {
+      z.put("#" + ent.getKey(), ent.getValue().toJson());
+    }
+
+    return m;
+  }
+
+
 }

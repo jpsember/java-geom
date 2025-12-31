@@ -9,6 +9,7 @@ import js.geometry.FPoint;
 import js.geometry.FRect;
 import js.geometry.MyMath;
 import js.json.JSList;
+import js.json.JSMap;
 import js.testutil.MyTestCase;
 import org.junit.Test;
 
@@ -155,21 +156,26 @@ public class QuadTreeTest extends MyTestCase {
     genOut();
   }
 
+  @Test
+  public void serialize() {
+    ser(10);
+  }
+
 
   @Test
   public void wtf() {
-      resetSeed(5000);
-      genSegments(5);
-      genOut();
+    resetSeed(5000);
+    genSegments(5);
+    genOut();
   }
 
   @Test
   public void wtf2() {
-    FRect a = new FRect(18,32,33,43);
-    FRect b = new FRect(51,32,33,43);
-    var p1 = new FPoint(18,52);
-    var p2 = new FPoint(21,47);
-    var ia = segmentIntersectsBox(a,p1,p2);
+    FRect a = new FRect(18, 32, 33, 43);
+    FRect b = new FRect(51, 32, 33, 43);
+    var p1 = new FPoint(18, 52);
+    var p2 = new FPoint(21, 47);
+    var ia = segmentIntersectsBox(a, p1, p2);
     checkState(ia);
 //    bounds:
 //    (   18         32         66         43      )
@@ -184,12 +190,13 @@ public class QuadTreeTest extends MyTestCase {
 //    int i = 5000;
 //    for (int j=0; j<100; j++,i++) {
 //
-////      mParam = QtreeParam.newBuilder().minNodeDimension(1f);
-////      mSegments.clear();
-////      mSegmentIds = null;
-////      mPointSet = null;
-////      mTree = null;
-////      mSkipQueries = false;
+
+  /// /      mParam = QtreeParam.newBuilder().minNodeDimension(1f);
+  /// /      mSegments.clear();
+  /// /      mSegmentIds = null;
+  /// /      mPointSet = null;
+  /// /      mTree = null;
+  /// /      mSkipQueries = false;
 //
 //      pr("seed:",i);
 //      resetSeed(i);
@@ -198,8 +205,6 @@ public class QuadTreeTest extends MyTestCase {
 //      break;
 //    }
 //  }
-
-
   @Test
   public void seg100() {
     genSegments(100);
@@ -215,17 +220,7 @@ public class QuadTreeTest extends MyTestCase {
     //m.put("tree", t.toJson());
 
     if (!mSkipQueries)
-      for (var seg : mSegments) {
-        var p0 = seg.first;
-        var p1 = seg.second;
-        var b = FRect.rectContainingPoints(p0, p1);
-        var m2 = map();
-        m2.put("bounds", b.toJson());
-        var result = t.findSegments(b);
-        checkArgument(result.length != 0, "result was empty, should have contained at least the segment", p0, p1);
-        m2.put("result", JSList.with(result));
-        m.putNumbered(m2);
-      }
+      performQueries(t, m);
 
     assertMessage(m.prettyPrint());
   }
@@ -247,6 +242,42 @@ public class QuadTreeTest extends MyTestCase {
       addSeg(p0, p1);
     }
   }
+
+  private void ser(int count) {
+    genSegments(count);
+
+
+    var t = genTree();
+
+    var m1 = t.serialize();
+    var m2 = map();
+    performQueries(t, m2);
+    var t2 = QuadTree.deserialize(m1);
+    var m3 = map();
+    performQueries(t2, m3);
+    var m4 = map();
+    m4.put("A orig", m2);
+    m4.put("B deser", m3);
+
+    generateMessage(m4.prettyPrint());
+    checkState(m2.equals(m3));
+    assertGenerated();
+  }
+
+  private void performQueries(QuadTree t, JSMap m) {
+    for (var seg : mSegments) {
+      var p0 = seg.first;
+      var p1 = seg.second;
+      var b = FRect.rectContainingPoints(p0, p1);
+      var m2 = map();
+      m2.put("bounds", b.toJson());
+      var result = t.findSegments(b);
+      checkArgument(result.length != 0, "result was empty, should have contained at least the segment", p0, p1);
+      m2.put("result", JSList.with(result));
+      m.putNumbered(m2);
+    }
+  }
+
 
   private void addSeg(double x0, double y0, double x1, double y1) {
     addSeg(new FPoint(x0, y0), new FPoint(x1, y1));
