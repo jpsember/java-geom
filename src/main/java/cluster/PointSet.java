@@ -3,6 +3,7 @@ package cluster;
 import js.base.BaseObject;
 import js.data.FloatArray;
 import js.geometry.FPoint;
+import js.json.JSList;
 import js.json.JSMap;
 
 import java.util.Collection;
@@ -27,7 +28,7 @@ public class PointSet extends BaseObject {
    * Get FPoints from ids
    */
   public List<FPoint> points(int... ids) {
-    List<FPoint> out =  arrayList();
+    List<FPoint> out = arrayList();
     for (var i : ids) {
       var pt = get(i);
       out.add(pt);
@@ -64,6 +65,10 @@ public class PointSet extends BaseObject {
 
   public boolean mutable() {
     return mPointIndexMap != null;
+  }
+
+  public JSList serialize() {
+    return mPointList.toJson();
   }
 
   @Override

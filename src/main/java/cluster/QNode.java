@@ -12,6 +12,16 @@ public class QNode {
   // Storage for start+end endpoint ids, if this is a leaf node; otherwise, null
   private IntArray mSegments;
 
+  private int mSerializationId;
+
+  public void setSerializationId(int id) {
+    mSerializationId = id;
+  }
+
+  public int serializationId() {
+    return mSerializationId;
+  }
+
   /**
    * Construct a left node
    */

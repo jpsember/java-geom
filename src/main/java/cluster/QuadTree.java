@@ -295,13 +295,90 @@ public class QuadTree extends BaseObject {
   // ----------------------------------------------------------------------------------------------
 
   public JSMap serialize() {
-    throw notFinished();
+
+    // Assign a unique (nonzero) serialization id to each node
+    int nextId = 1;
+
+    List<QNode> auxList = arrayList();
+    {
+      List<QNode> stack = arrayList();
+      push(stack, mRoot);
+      while (!stack.isEmpty()) {
+        var node = pop(stack);
+        auxList.add(node);
+        node.setSerializationId(nextId);
+        nextId++;
+        if (!node.isLeaf()) {
+          if (node.left() != null)
+            push(stack, node.left());
+          if (node.right() != null)
+            push(stack, node.right());
+        }
+      }
+    }
+
+    final int SER_NODE_INTERIOR = 1;
+    final int SER_NODE_LEAF = 2;
+
+    var nodeInfo = IntArray.newBuilder();
+    for (var n : auxList) {
+      if (n.isLeaf()) {
+        nodeInfo.add(SER_NODE_LEAF);
+        var segs = n.segments();
+        nodeInfo.add(segs.size());
+        for (int q : segs.array()) {
+          nodeInfo.add(q);
+        }
+      } else {
+        nodeInfo.add(SER_NODE_INTERIOR);
+        for (int pass = 0 ; pass<2; pass++) {
+          var child = (pass == 0) ? n.left() : n.right();
+          if (child == null)
+            nodeInfo.add(0);
+          else {
+            nodeInfo.add(child.serializationId());
+          }
+        }
+      }
+    }
+    checkArgument(mRoot.serializationId() == 1);
+
+    var m = map();
+    m.put("nodes",nodeInfo.toJson());
+    m.put("root_bounds",mRootBounds.toJson());
+    m.put("points",mPointSet.serialize());
+//    {
+//      List<QNode> stack = arrayList();
+//      push(stack, mRoot);
+//      while (!stack.isEmpty()) {
+//        var node = pop(stack);
+//        node.setSerializationId(nextId);
+//        nextId++;
+//        if (!node.isLeaf()) {
+//          if (node.left() != null)
+//            push(stack, node.left());
+//          if (node.right() != null)
+//            push(stack, node.right());
+////
+////        if ()
+////        var seg = node.segments();
+////        var nodeId = leafNodeIdMap.get(seg);
+////        if (nodeId == null) {
+////          nodeId = leafNodeIdMap.size() + 1;
+////          leafNodeIdMap.put(seg, nodeId);
+////        }
+//        }
+//      }
+//    }
+//
+
+    return m;
   }
 
   public static QuadTree deserialize(JSMap m) {
     throw notFinished();
   }
-  
+
   // ----------------------------------------------------------------------------------------------
   // Logging and debugging
   // ----------------------------------------------------------------------------------------------

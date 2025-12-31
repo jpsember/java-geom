@@ -246,10 +246,10 @@ public class QuadTreeTest extends MyTestCase {
   private void ser(int count) {
     genSegments(count);
 
-
     var t = genTree();
 
     var m1 = t.serialize();
+    log("serialized:",INDENT,m1);
     var m2 = map();
     performQueries(t, m2);
     var t2 = QuadTree.deserialize(m1);
