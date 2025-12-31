@@ -28,4 +28,6 @@ public final class ClusterGlobals {
   public static final String CACHE_GRID = "c_cache_grid";
 
   public static final String SNAP = "c_snap";
+
+  public static final String RENDER_REPRESENTATIVE = "c_render_repr";
 }

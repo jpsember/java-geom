@@ -86,6 +86,9 @@ public class ClusterOper implements TestBedOperation {
         c.max(1000).addSlider(ZOOM);
 
         c.spanx();
+        c.label("Representative pts").defaultVal(true).addToggleButton(RENDER_REPRESENTATIVE);
+
+        c.spanx();
         c.label("Snap to topology").defaultVal(true).addToggleButton(SNAP);
 
         c.spanx();

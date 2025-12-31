@@ -152,7 +152,7 @@ public class PointGrid extends BaseObject {
     //  inversely proportional to tile area
     //  proportional to zoom factor
     //
-    return pop*2f;
+    return pop * 2f;
   }
 
   private final static Color[] sampleColors = {
@@ -265,7 +265,8 @@ public class PointGrid extends BaseObject {
             colorInterp = new Color(colorInterp.getRed(), colorInterp.getGreen(), colorInterp.getBlue(), blendedAlpha);
           }
         }
-        renderItems.add(new RenderItem(locationInterp, radiusInterp, colorInterp, evtList.zLoc()));
+        if (widgets().vb(RENDER_REPRESENTATIVE))
+          renderItems.add(new RenderItem(locationInterp, radiusInterp, colorInterp, evtList.zLoc()));
       }
 
     }
