@@ -1,6 +1,7 @@
 package cluster;
 
 import js.base.BaseObject;
+import js.data.DataUtil;
 import js.data.FloatArray;
 import js.geometry.FPoint;
 import js.json.JSList;
@@ -16,6 +17,16 @@ import static js.base.Tools.*;
  * Constructs a set of FPoints, with unique ids
  */
 public class PointSet extends BaseObject {
+
+  public static PointSet deserialize(JSList json) {
+    var pts = FloatArray.newBuilder();
+    for (var x : json.wrappedList()) {
+      pts.add(((Number) x).floatValue());
+    }
+    var ps = new PointSet();
+    ps.mPointList = pts.build();
+    return ps;
+  }
 
   public static PointSet withPoints(Collection<FPoint> pts) {
     var ps = new PointSet();

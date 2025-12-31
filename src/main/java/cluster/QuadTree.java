@@ -8,6 +8,7 @@ import js.json.JSMap;
 import cluster.gen.QtreeParam;
 import js.json.JSObject;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -18,12 +19,17 @@ import static js.base.Tools.*;
 
 public class QuadTree extends BaseObject {
 
+  private QuadTree(QtreeParam paramOrNull, PointSet pointSet) {
+    mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
+    mPointSet = pointSet;
+  }
+
   public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs) {
+    this(paramOrNull, pointSet);
     todo("!assign a unique id number to each leaf node, for more compact serialization; but not necessary if done at serialization stage");
     checkArgument(!pointSet.mutable(), "PointSet must be frozen");
     mSegmentEndpointPairs = segmentEndpointPairs;
-    mParam = nullTo(paramOrNull, QtreeParam.DEFAULT_INSTANCE).build();
-    mPointSet = pointSet;
+
   }
 
   public PointSet pointSet() {
@@ -105,10 +111,12 @@ public class QuadTree extends BaseObject {
     if (verbose())
       log(TAB(depth * 2), "bounds:", bounds);
 
+    //pr("checking if:", mQueryInputBounds, CR, "touches:", bounds);
     if (!rectsTouch(mQueryInputBounds, bounds)) {
       log("....doesn't intersect");
       return;
     }
+//    pr("...yes");
 
     if (!qNode.isLeaf()) {
       boolean splitDimension = bounds.width > bounds.height;
@@ -296,7 +304,6 @@ public class QuadTree extends BaseObject {
 
   public JSMap serialize() {
 
-
     // Assign a unique (nonzero) serialization id to each node
     int nextId = 1;
 
@@ -329,7 +336,7 @@ public class QuadTree extends BaseObject {
     var nodeInfo = IntArray.newBuilder();
     nodeInfo.add(interiorList.size());
     for (var n : interiorList) {
-      for (int pass = 0 ; pass<2; pass++) {
+      for (int pass = 0; pass < 2; pass++) {
         var child = (pass == 0) ? n.left() : n.right();
         if (child == null)
           nodeInfo.add(0);
@@ -342,22 +349,92 @@ public class QuadTree extends BaseObject {
     nodeInfo.add(leafList.size());
 
     for (var n : leafList) {
-        var segs = n.segments();
-        nodeInfo.add(segs.size());
-        for (int q : segs.array()) {
-          nodeInfo.add(q);
-        }
+      pr("serializing leaf node:", n);
+      var segs = n.segments();
+      pr("segments:", segs);
+      nodeInfo.add(segs.size() / 2);
+      for (int q : segs.array()) {
+        nodeInfo.add(q);
+      }
     }
 
     var m = map();
-    m.put("nodes",nodeInfo.toJson());
-    m.put("root_bounds",mRootBounds.toJson());
-    m.put("points",mPointSet.serialize());
+    m.put(SER_KEY_NODES, nodeInfo.toJson());
+    m.put(SER_KEY_ROOT_BOUNDS, mRootBounds.toJson());
+    m.put(SER_KEY_POINTS, mPointSet.serialize());
+    m.put(SER_KEY_PARAM, mParam.toJson());
     return m;
   }
 
+  public static String SER_KEY_NODES = "nodes";
+  public static String SER_KEY_ROOT_BOUNDS = "root_bounds";
+  public static String SER_KEY_POINTS = "points";
+  public static String SER_KEY_PARAM = "param";
+
   public static QuadTree deserialize(JSMap m) {
-    throw notFinished();
+    pr(VERT_SP, "deserialize:", INDENT, m);
+    var nodes = m.getList(SER_KEY_NODES).asIntArray();
+    var i = 0;
+
+    List<QNode> constr = arrayList();
+
+    show("interiorCount", nodes, i);
+    var interiorCount = nodes[i++];
+    for (int j = 0; j < interiorCount; j++) {
+      show("left,right", nodes, i);
+      var leftId = nodes[i++];
+      var rightId = nodes[i++];
+
+      // This is to be an internal node, but temporarily represent it as a leaf node
+      var q = new QNode();
+      q.addSegment(leftId, rightId);
+      pr("adding internal node, temp rep as:", INDENT, leftId, rightId);
+      constr.add(q);
+    }
+
+    var leafCount = nodes[i++];
+    for (int j = 0; j < leafCount; j++) {
+      show("numsegs", nodes, i);
+      int numSegs = nodes[i++];
+      pr("deserializing leaf node, num segs:", numSegs);
+      var q = new QNode();
+      for (int k = 0; k < numSegs; k++) {
+        show("point ids", nodes, i);
+        var p1 = nodes[i++];
+        var p2 = nodes[i++];
+        q.addSegment(p1, p2);
+        pr("added segment:", p1, p2);
+      }
+      pr("added leaf node:", INDENT, q);
+      constr.add(q);
+    }
+
+    // Now replace the (temporarily) leaf nodes with interior nodes
+    for (int j = 0; j < interiorCount; j++) {
+      var q = constr.get(j);
+      QNode[] children = new QNode[2];
+      for (int k = 0; k < 2; k++) {
+        var id = q.segments().get(k);
+        if (id != 0)
+          children[k] = constr.get(id - 1);
+      }
+
+      var q2 = new QNode(children[0], children[1]);
+      constr.set(j, q2);
+    }
+
+    var rootBounds = FRect.DEFAULT_INSTANCE.parse(m.getList(SER_KEY_ROOT_BOUNDS));
+    var points = PointSet.deserialize(m.getList(SER_KEY_POINTS));
+    var param = m.getUnsafe(SER_KEY_PARAM);
+    var params = QtreeParam.DEFAULT_INSTANCE.parse(param);
+    var qt = new QuadTree(params, points);
+    qt.mRoot = constr.get(0);
+    qt.mRootBounds = rootBounds;
+    return qt;
+  }
+
+  private static void show(String prompt, int[] n, int offset) {
+    pr("reading:", prompt, Arrays.copyOfRange(n, offset, n.length));
   }
 
   // ----------------------------------------------------------------------------------------------

@@ -23,7 +23,7 @@ public class QNode {
   }
 
   /**
-   * Construct a left node
+   * Construct a leaf node
    */
   QNode() {
     mSegments = IntArray.newBuilder();

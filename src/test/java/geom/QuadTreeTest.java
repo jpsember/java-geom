@@ -156,9 +156,66 @@ public class QuadTreeTest extends MyTestCase {
     genOut();
   }
 
+
+
+  private void auxSer( ) {
+    var name =  name();
+    int j = 0;
+    while (!Character.isDigit(name.charAt(j) ))j++;
+    int numSegs = Integer.parseInt(name.substring(j));
+
+    for (int i = 0; i<500; i++) {
+      int seed = mStartSeed + i;
+      pr(VERT_SP,"seed:",seed);
+      reset();
+      resetSeed(seed);
+      ser(""+i, numSegs);
+      pr(VERT_SP,"seed:",seed,VERT_SP);
+    }
+    assertGenerated();
+  }
+
+
   @Test
-  public void serialize() {
-    ser(10);
+  public void serialize1() {
+    startSeed(119);
+    auxSer( );
+  }
+
+  @Test
+  public void serialize2() {
+    auxSer( );
+  }
+  @Test
+  public void serialize3() {
+    auxSer();
+  }
+
+
+  @Test
+  public void serialize4() {rv();
+    auxSer();
+  }
+
+  @Test
+  public void serialize5() {
+    startSeed(119);
+    auxSer();
+  }
+
+  @Test
+  public void serialize8() {
+    auxSer();
+  }
+
+  @Test
+  public void serialize20() {
+    auxSer();
+  }
+
+  @Test
+  public void serialize100() {
+    auxSer();
   }
 
 
@@ -239,29 +296,31 @@ public class QuadTreeTest extends MyTestCase {
       var bnd = FRect.rectContainingPoints(p0, p1);
       if (!clip.contains(bnd))
         continue;
+      log("adding seg:",p0,"==>",p1);
       addSeg(p0, p1);
     }
   }
 
-  private void ser(int count) {
+  private void ser(String prefix, int count) {
     genSegments(count);
 
     var t = genTree();
+    pr(DASHES,VERT_SP,"Attempting to serialize:",INDENT,t);
 
     var m1 = t.serialize();
-    log("serialized:",INDENT,m1);
+    log("serialized:", INDENT, m1);
     var m2 = map();
     performQueries(t, m2);
     var t2 = QuadTree.deserialize(m1);
+    pr(DASHES,VERT_SP,"Deserialized:",INDENT,t2,VERT_SP);
     var m3 = map();
     performQueries(t2, m3);
     var m4 = map();
     m4.put("A orig", m2);
     m4.put("B deser", m3);
 
-    generateMessage(m4.prettyPrint());
+    generateMessage("res_"+prefix+"_.json", m4.prettyPrint());
     checkState(m2.equals(m3));
-    assertGenerated();
   }
 
   private void performQueries(QuadTree t, JSMap m) {
@@ -269,6 +328,7 @@ public class QuadTreeTest extends MyTestCase {
       var p0 = seg.first;
       var p1 = seg.second;
       var b = FRect.rectContainingPoints(p0, p1);
+      pr("QUERYING bounds:",b);
       var m2 = map();
       m2.put("bounds", b.toJson());
       var result = t.findSegments(b);
@@ -330,10 +390,22 @@ public class QuadTreeTest extends MyTestCase {
     mSkipQueries = true;
   }
 
+  private void reset() {
+    mSegments.clear();
+    mSegmentIds = null;
+    mPointSet = null;
+    mTree = null;
+    mParam = QtreeParam.newBuilder().minNodeDimension(1f);
+  }
+
+  private void startSeed(int n) {
+    mStartSeed = n;
+  }
   private List<Pair<FPoint, FPoint>> mSegments = arrayList();
   private QtreeParam.Builder mParam = QtreeParam.newBuilder().minNodeDimension(1f);
   private int[] mSegmentIds = null;
   private PointSet mPointSet;
   private QuadTree mTree;
   private boolean mSkipQueries;
+  private int mStartSeed = 100;
 }
