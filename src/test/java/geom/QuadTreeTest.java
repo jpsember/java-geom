@@ -328,7 +328,6 @@ public class QuadTreeTest extends MyTestCase {
       var p0 = seg.first;
       var p1 = seg.second;
       var b = FRect.rectContainingPoints(p0, p1);
-      pr("QUERYING bounds:",b);
       var m2 = map();
       m2.put("bounds", b.toJson());
       var result = t.findSegments(b);
