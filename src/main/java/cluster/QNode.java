@@ -42,6 +42,11 @@ public class QNode {
     return mSegments != null;
   }
 
+  QNode child(int index) {
+    checkArgument(index >= 0 && index < 2);
+    return (index == 0) ? left() : right();
+  }
+
   QNode left() {
     return mLeftChild;
   }
@@ -68,16 +73,22 @@ public class QNode {
 
   public JSMap toJson() {
     var m = map();
-    m.put("pop", population());
-    if (mLeftChild != null)
-      m.put("cLeft", true);
-    if (mRightChild != null)
-      m.put("cRight", true);
+    if (isLeaf())
+      m.put("pop", population());
+    else {
+      for (int ch = 0; ch<2; ch++) {
+        var child = child(ch);
+        if (child != null) {
+         m.put(ch == 0 ? "L" : "R", child.serializationId());
+        }
+      }
+    }
     return m;
   }
 
   // Returns the number of segments stored in this leaf node
   public int population() {
+    checkState(isLeaf());
     return segments().size() / 2;
   }
 
