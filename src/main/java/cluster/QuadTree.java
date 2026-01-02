@@ -240,7 +240,7 @@ public class QuadTree extends BaseObject {
       var existing = uniqueLeafMap.get(seg);
       if (existing != null) return existing;
 
-      rootNode.mDebugId = 50 + uniqueLeafMap.size();
+      rootNode.setDebugId(50 + uniqueLeafMap.size());
       uniqueLeafMap.put(seg, rootNode);
       return rootNode;
     }
@@ -412,8 +412,8 @@ public class QuadTree extends BaseObject {
   private JSObject auxDump(QNode node, FRect bounds) {
     if (node.isLeaf()) {
       var m = map();
-      if (node.mDebugId != 0)
-        m.put("x", node.mDebugId);
+      if (node.debugId() != 0)
+        m.put("x", node.debugId());
 
       var x = list();
 //      if (node.mDebugId != 0)
@@ -426,8 +426,8 @@ public class QuadTree extends BaseObject {
       return m;
     } else {
       var m = map();
-      if (node.mDebugId != 0)
-        m.put("x", node.mDebugId);
+      if (node.debugId()!= 0)
+        m.put("x", node.debugId());
       if (node.left() != null || node.right() != null) {
         boolean splitDimension = bounds.width > bounds.height;
         float s = splitCoordinate(splitDimension, bounds);

@@ -14,6 +14,7 @@ public class QNode {
 
   private int mSerializationId;
 
+
   public void setSerializationId(int id) {
     mSerializationId = id;
   }
@@ -21,6 +22,7 @@ public class QNode {
   public int serializationId() {
     return mSerializationId;
   }
+
 
   /**
    * Construct a leaf node
@@ -60,8 +62,6 @@ public class QNode {
     return mSegments;
   }
 
-  int mDebugId;
-
   void addSegment(int endpointId0, int endpointId1) {
     var b = (IntArray.Builder) segments();
     b.add(endpointId0);
@@ -76,14 +76,14 @@ public class QNode {
   public JSMap toJson() {
     var m = map();
     if (mDebugId != 0)
-      m.put("xId",mDebugId);
+      m.put("xId", mDebugId);
     if (isLeaf())
       m.put("pop", population());
     else {
-      for (int ch = 0; ch<2; ch++) {
+      for (int ch = 0; ch < 2; ch++) {
         var child = child(ch);
         if (child != null) {
-         m.put(ch == 0 ? "L" : "R", child.serializationId());
+          m.put(ch == 0 ? "L" : "R", child.serializationId());
         }
       }
     }
@@ -99,4 +99,18 @@ public class QNode {
   public void freeze() {
     mSegments = segments().build();
   }
+
+  // ----------------------------------------------------------------------------------------------
+  // Ids used for debug purposes only
+  // ----------------------------------------------------------------------------------------------
+  public void setDebugId(int debugId) {
+    mDebugId = debugId;
+  }
+
+  public int debugId() {
+    return mDebugId;
+  }
+
+  private int mDebugId;
+
 }
