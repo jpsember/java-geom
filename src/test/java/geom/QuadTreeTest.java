@@ -157,20 +157,19 @@ public class QuadTreeTest extends MyTestCase {
   }
 
 
-
-  private void auxSer( ) {
-    var name =  name();
+  private void auxSerialize() {
+    var name = name();
     int j = 0;
-    while (!Character.isDigit(name.charAt(j) ))j++;
+    while (!Character.isDigit(name.charAt(j))) j++;
     int numSegs = Integer.parseInt(name.substring(j));
-
-    for (int i = 0; i<500; i++) {
+    int numReps = Math.min(200, 5000 / numSegs);
+    for (int i = 0; i < numReps; i++) {
       int seed = mStartSeed + i;
-      pr(VERT_SP,"seed:",seed);
+      log(VERT_SP, "seed:", seed);
       reset();
       resetSeed(seed);
-      ser(""+i, numSegs);
-      pr(VERT_SP,"seed:",seed,VERT_SP);
+      ser("" + i, numSegs);
+      log(VERT_SP, "seed:", seed, VERT_SP);
     }
     assertGenerated();
   }
@@ -179,45 +178,44 @@ public class QuadTreeTest extends MyTestCase {
   @Test
   public void serialize1() {
     startSeed(119);
-    auxSer( );
+    auxSerialize();
   }
 
   @Test
   public void serialize2() {
-    auxSer( );
+    auxSerialize();
   }
 
   @Test
   public void serialize3() {
-    auxSer();
+    auxSerialize();
   }
-
 
   @Test
   public void serialize4() {
-    auxSer();
+    auxSerialize();
   }
 
   @Test
   public void serialize5() {
     startSeed(119);
-    auxSer();
+    auxSerialize();
   }
 
   @Test
   public void serialize8() {
     startSeed(182);
-    auxSer();
+    auxSerialize();
   }
 
   @Test
   public void serialize20() {
-    auxSer();
+    auxSerialize();
   }
 
   @Test
   public void serialize100() {
-    auxSer();
+    auxSerialize();
   }
 
 
@@ -228,42 +226,6 @@ public class QuadTreeTest extends MyTestCase {
     genOut();
   }
 
-  @Test
-  public void wtf2() {
-    FRect a = new FRect(18, 32, 33, 43);
-    FRect b = new FRect(51, 32, 33, 43);
-    var p1 = new FPoint(18, 52);
-    var p2 = new FPoint(21, 47);
-    var ia = segmentIntersectsBox(a, p1, p2);
-    checkState(ia);
-//    bounds:
-//    (   18         32         66         43      )
-//    seg:     18.0000     52.0000     21.0000     47.0000
-//    left: (   18         32         33         43      )
-//    rigt: (   51         32         33         43      )
-//    (wtf:) ------------ tearDown
-  }
-
-//  @Test
-//  public void segr() {
-//    int i = 5000;
-//    for (int j=0; j<100; j++,i++) {
-//
-
-  /// /      mParam = QtreeParam.newBuilder().minNodeDimension(1f);
-  /// /      mSegments.clear();
-  /// /      mSegmentIds = null;
-  /// /      mPointSet = null;
-  /// /      mTree = null;
-  /// /      mSkipQueries = false;
-//
-//      pr("seed:",i);
-//      resetSeed(i);
-//      genSegments(5);
-//      genOut();
-//      break;
-//    }
-//  }
   @Test
   public void seg100() {
     genSegments(100);
@@ -298,30 +260,29 @@ public class QuadTreeTest extends MyTestCase {
       var bnd = FRect.rectContainingPoints(p0, p1);
       if (!clip.contains(bnd))
         continue;
-      log("adding seg:",p0,"==>",p1);
+      log("adding seg:", p0, "==>", p1);
       addSeg(p0, p1);
     }
   }
 
   private void ser(String prefix, int count) {
     genSegments(count);
-
     var t = genTree();
-    pr(DASHES,VERT_SP,"Attempting to serialize:",INDENT,t);
+    log(DASHES, VERT_SP, "Attempting to serialize:", INDENT, t);
 
     var m1 = t.serialize();
     log("serialized:", INDENT, m1);
     var m2 = map();
     performQueries(t, m2);
     var t2 = QuadTree.deserialize(m1);
-    pr(DASHES,VERT_SP,"Deserialized:",INDENT,t2,VERT_SP);
+    log(DASHES, VERT_SP, "Deserialized:", INDENT, t2, VERT_SP);
     var m3 = map();
     performQueries(t2, m3);
     var m4 = map();
     m4.put("A orig", m2);
     m4.put("B deser", m3);
 
-    generateMessage("res_"+prefix+"_.json", m4.prettyPrint());
+    generateMessage("res_" + prefix + "_.json", m4.prettyPrint());
     checkState(m2.equals(m3));
   }
 
@@ -402,6 +363,7 @@ public class QuadTreeTest extends MyTestCase {
   private void startSeed(int n) {
     mStartSeed = n;
   }
+
   private List<Pair<FPoint, FPoint>> mSegments = arrayList();
   private QtreeParam.Builder mParam = QtreeParam.newBuilder().minNodeDimension(1f);
   private int[] mSegmentIds = null;

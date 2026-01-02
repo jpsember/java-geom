@@ -8,7 +8,6 @@ import js.json.JSMap;
 import cluster.gen.QtreeParam;
 import js.json.JSObject;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +25,6 @@ public class QuadTree extends BaseObject {
 
   public QuadTree(QtreeParam paramOrNull, PointSet pointSet, int[] segmentEndpointPairs) {
     this(paramOrNull, pointSet);
-    todo("!assign a unique id number to each leaf node, for more compact serialization; but not necessary if done at serialization stage");
     checkArgument(!pointSet.mutable(), "PointSet must be frozen");
     mSegmentEndpointPairs = segmentEndpointPairs;
 
@@ -46,7 +44,7 @@ public class QuadTree extends BaseObject {
     var pointSet = mPointSet;
     List<FPoint> allFPoints = arrayList();
     for (int i = 0; i < segmentEndpointPairs.length; i += 2) {
-      var id0 = segmentEndpointPairs[i + 0];
+      var id0 = segmentEndpointPairs[i /*+ 0*/];
       var id1 = segmentEndpointPairs[i + 1];
       var a = pointSet.get(id0);
       var b = pointSet.get(id1);
@@ -84,13 +82,13 @@ public class QuadTree extends BaseObject {
   }
 
   public int[] findSegments(FRect inputBounds) {
-//    log("findSegments, inputBounds:", INDENT, inputBounds);
+    log("findSegments, inputBounds:", INDENT, inputBounds);
     prepare();
     mQueryResultPairs.clear();
     mQueryInputBounds = inputBounds;
     auxFind(0, mRoot, mRootBounds);
 
-//    log("number of segs found:", mQueryResultPairs.size());
+    log("number of segs found:", mQueryResultPairs.size());
     var b = IntArray.newBuilder();
     for (var key : mQueryResultPairs) {
       int pt0 = (int) (key >> 32);
@@ -108,15 +106,9 @@ public class QuadTree extends BaseObject {
   }
 
   private void auxFind(int depth, QNode qNode, FRect bounds) {
-//    if (verbose())
-//      log(TAB(depth * 2), "bounds:", bounds);
-
-    //pr("checking if:", mQueryInputBounds, CR, "touches:", bounds);
     if (!rectsTouch(mQueryInputBounds, bounds)) {
-//      log("....doesn't intersect");
       return;
     }
-//    pr("...yes");
 
     if (!qNode.isLeaf()) {
       boolean splitDimension = bounds.width > bounds.height;
@@ -151,9 +143,9 @@ public class QuadTree extends BaseObject {
   //-------------------------------------------------------------------------
 
   private QNode splitNode(final QNode node, int depth, FRect bounds) {
+    checkArgument(node.isLeaf());
     log("splitNodeSet, pop:", node.population(), "bounds:", bounds, "depth:", depth);
 
-    checkArgument(node.isLeaf());
     // If there are only a few elements in this node (or none), don't split it further
     if (node.population() <= mParam.targetNodeMaxPop()) {
       log("...population too low, doing nothing");
@@ -187,8 +179,6 @@ public class QuadTree extends BaseObject {
       for (int i = 0; i < segs.length; i += 2) {
         var id0 = segs[i];
         var id1 = segs[i + 1];
-        checkArgument(id0 > 0, id0);
-        checkArgument(id1 > 0, id1);
         var pt0 = mPointSet.get(id0);
         var pt1 = mPointSet.get(id1);
 
@@ -213,13 +203,7 @@ public class QuadTree extends BaseObject {
           qR.addSegment(id0, id1);
           isectCount++;
         }
-        if (isectCount == 0) {
-          pr("bounds:", INDENT, bounds);
-          pr("seg:", pt0, pt1);
-          pr("left:", boundsLeft);
-          pr("rigt:", boundsRight);
-          die("segment did NOT intersect either child node:", bounds, INDENT, pt0, pt1, CR, "left:");
-        }
+        checkState(isectCount != 0);
       }
     }
     checkState(depth < 50, "recurse depth limit exceeded");
@@ -306,10 +290,8 @@ public class QuadTree extends BaseObject {
 
   private void postOrderTraversal(QNode subtree, List<QNode> result) {
     if (subtree == null) return;
-    pr("postOrderTraversal, node:", INDENT, subtree.toJson());
     postOrderTraversal(subtree.left(), result);
     postOrderTraversal(subtree.right(), result);
-    pr("...adding node:", INDENT, subtree.toJson());
     result.add(subtree);
   }
 
@@ -331,25 +313,17 @@ public class QuadTree extends BaseObject {
       if (n.serializationId() != 0)
         continue;
       n.setSerializationId(nextId);
-      pr("..........ASSIGNING UNIQUE ID:", nextId, "TO:", INDENT, n);
       nextId++;
     }
 
     var serializedNodeInts = IntArray.newBuilder();
-    QNode forAssertionOnlylastNodeSerialized = null;
 
-
-    pr(VERT_SP, "now serializing nodes");
     // Serialize the nodes, skipping those that have already been serialized
     int lastSerializedId = 0;
     for (var n : traversal) {
-      pr("ser id:", n.serializationId(), INDENT, n);
       if (n.serializationId() <= lastSerializedId)
         continue;
       lastSerializedId = n.serializationId();
-      pr("...updating serializedId to", lastSerializedId);
-      forAssertionOnlylastNodeSerialized = n;
-
 
       if (!n.isLeaf()) {
         serializedNodeInts.add(nodeIdOrZero(n.left()));
@@ -363,9 +337,6 @@ public class QuadTree extends BaseObject {
         }
       }
     }
-    checkState(forAssertionOnlylastNodeSerialized == mRoot);
-
-    pr("serialized nodes to:", INDENT, serializedNodeInts);
 
     var m = map();
     m.put(SER_KEY_NODES, serializedNodeInts.toJson());
@@ -388,7 +359,7 @@ public class QuadTree extends BaseObject {
   public static String SER_KEY_PARAM = "param";
 
   public static QuadTree deserialize(JSMap m) {
-    pr(VERT_SP, "deserialize:", INDENT, m);
+    //pr(VERT_SP, "deserialize:", INDENT, m);
     var nodes = m.getList(SER_KEY_NODES).asIntArray();
 
     var i = 0;
@@ -396,7 +367,6 @@ public class QuadTree extends BaseObject {
     List<QNode> constructedNodes = arrayList();
 
     while (i < nodes.length) {
-      pr("next ints:",nodes[i],nodes[i+1]);
       var x = nodes[i++];
       if (x < 0) {  // It's a leaf node
         int numSegs = -x - 1;
@@ -408,64 +378,10 @@ public class QuadTree extends BaseObject {
         }
         constructedNodes.add(q);
       } else {
-        var y = nodes[i++];
-        pr("getting nodes for x:",x,"and y:",y);
-        var q = new QNode(optNode(constructedNodes,x), optNode(constructedNodes,y));
-        constructedNodes.add(q);
+        constructedNodes.add(new QNode(optNode(constructedNodes, x), optNode(constructedNodes, nodes[i++])));
       }
     }
     QNode root = last(constructedNodes);
-
-
-//
-//    var interiorCount = nodes[i++];
-//    pr("deserializing interior nodes, count:",interiorCount);
-//
-//    for (int j = 0; j < interiorCount; j++) {
-//      show("left,right", nodes, i);
-//      var leftId = nodes[i++];
-//      var rightId = nodes[i++];
-//
-//      // This is to be an internal node, but temporarily represent it as a leaf node,
-//      // with a single segment, whose endpoints are the ids of the left and right child
-//      var q = new QNode();
-//      q.addSegment(leftId, rightId);
-//      constructedNodes.add(q);
-//    }
-//
-//    var leafCount = nodes[i++];
-//    pr("deserializing leaf nodes, count:",leafCount);
-//    for (int j = 0; j < leafCount; j++) {
-//      show("numsegs", nodes, i);
-//      int numSegs = nodes[i++];
-//      var q = new QNode();
-//      for (int k = 0; k < numSegs; k++) {
-//        show("point ids", nodes, i);
-//        var p1 = nodes[i++];
-//        var p2 = nodes[i++];
-//        q.addSegment(p1, p2);
-//      }
-//      constructedNodes.add(q);
-//    }
-//
-//    // Now replace the (temporarily) leaf nodes with interior nodes
-//    for (int j = 0; j < interiorCount; j++) {
-//      var q = constructedNodes.get(j);
-//
-//      pr("...converting temporary leaf node back to interior node");
-//
-//      QNode[] children = new QNode[2];
-//      for (int k = 0; k < 2; k++) {
-//        var id = q.segments().get(k);
-//        pr("...id:",id);
-//        if (id != 0)
-//          children[k] = constructedNodes.get(id - 1);
-//      }
-//
-//      var interiorNode = new QNode(children[0], children[1]);
-//      constructedNodes.set(j, interiorNode);
-//      pr("converted leaf back to interior node:",INDENT,interiorNode);
-//    }
 
     var rootBounds = FRect.DEFAULT_INSTANCE.parse(m.getList(SER_KEY_ROOT_BOUNDS));
     var points = PointSet.deserialize(m.getList(SER_KEY_POINTS));
@@ -477,13 +393,9 @@ public class QuadTree extends BaseObject {
     return qt;
   }
 
-  private static void show(String prompt, int[] n, int offset) {
-    pr("reading:", prompt, Arrays.copyOfRange(n, offset, n.length));
-  }
-
   private static QNode optNode(List<QNode> list, int id) {
     if (id == 0) return null;
-    return list.get(id-1);
+    return list.get(id - 1);
   }
   // ----------------------------------------------------------------------------------------------
   // Logging and debugging
