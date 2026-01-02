@@ -99,12 +99,6 @@ public class QuadTree extends BaseObject {
     return b.array();
   }
 
-  private static boolean rectsTouch(FRect a, FRect b) {
-    // I can't use the FRect.intersects function, since it may fail with vertical or horizontal
-    // road segments (which can produce zero-area rects)
-    return (a.x <= b.endX() && a.endX() >= b.x && a.y <= b.endY() && a.endY() >= b.y);
-  }
-
   private void auxFind(int depth, QNode qNode, FRect bounds) {
     if (!rectsTouch(mQueryInputBounds, bounds)) {
       return;
@@ -136,6 +130,13 @@ public class QuadTree extends BaseObject {
         }
       }
     }
+  }
+
+
+  private static boolean rectsTouch(FRect a, FRect b) {
+    // I can't use the FRect.intersects function, since it may fail with vertical or horizontal
+    // road segments (which can produce zero-area rects)
+    return (a.x <= b.endX() && a.endX() >= b.x && a.y <= b.endY() && a.endY() >= b.y);
   }
 
   //-------------------------------------------------------------------------
@@ -206,7 +207,6 @@ public class QuadTree extends BaseObject {
         checkState(isectCount != 0);
       }
     }
-    checkState(depth < 50, "recurse depth limit exceeded");
 
     // Construct an interior node to replace this node
 
@@ -288,14 +288,9 @@ public class QuadTree extends BaseObject {
   // Serialization
   // ----------------------------------------------------------------------------------------------
 
-  private void postOrderTraversal(QNode subtree, List<QNode> result) {
-    if (subtree == null) return;
-    postOrderTraversal(subtree.left(), result);
-    postOrderTraversal(subtree.right(), result);
-    result.add(subtree);
-  }
-
   public JSMap serialize() {
+
+    todo("!document format of serialized nodes");
 
     // Perform a post-order tree traversal (https://en.wikipedia.org/wiki/Tree_traversal)
     // so that when an interior node needs to be serialized (or deserialized), its
@@ -316,7 +311,7 @@ public class QuadTree extends BaseObject {
       nextId++;
     }
 
-    var serializedNodeInts = IntArray.newBuilder();
+    var encodedNodes = IntArray.newBuilder();
 
     // Serialize the nodes, skipping those that have already been serialized
     int lastSerializedId = 0;
@@ -326,25 +321,33 @@ public class QuadTree extends BaseObject {
       lastSerializedId = n.serializationId();
 
       if (!n.isLeaf()) {
-        serializedNodeInts.add(nodeIdOrZero(n.left()));
-        serializedNodeInts.add(nodeIdOrZero(n.right()));
+        encodedNodes.add(nodeIdOrZero(n.left()));
+        encodedNodes.add(nodeIdOrZero(n.right()));
       } else {
         var segs = n.segments();
         int numSeg = segs.size() / 2;
-        serializedNodeInts.add(-numSeg - 1);
+        encodedNodes.add(-numSeg - 1);
         for (int i = 0; i < segs.size(); i++) {
-          serializedNodeInts.add(segs.get(i));
+          encodedNodes.add(segs.get(i));
         }
       }
     }
 
     var m = map();
-    m.put(SER_KEY_NODES, serializedNodeInts.toJson());
+    m.put(SER_KEY_NODES, encodedNodes.toJson());
     m.put(SER_KEY_ROOT_BOUNDS, mRootBounds.toJson());
     m.put(SER_KEY_POINTS, mPointSet.serialize());
     m.put(SER_KEY_PARAM, mParam.toJson());
     return m;
   }
+
+  private void postOrderTraversal(QNode subtree, List<QNode> result) {
+    if (subtree == null) return;
+    postOrderTraversal(subtree.left(), result);
+    postOrderTraversal(subtree.right(), result);
+    result.add(subtree);
+  }
+
 
   private static int nodeIdOrZero(QNode nodeOrNull) {
     if (nodeOrNull == null) return 0;
@@ -359,13 +362,10 @@ public class QuadTree extends BaseObject {
   public static String SER_KEY_PARAM = "param";
 
   public static QuadTree deserialize(JSMap m) {
-    //pr(VERT_SP, "deserialize:", INDENT, m);
     var nodes = m.getList(SER_KEY_NODES).asIntArray();
-
-    var i = 0;
-
     List<QNode> constructedNodes = arrayList();
 
+    var i = 0;
     while (i < nodes.length) {
       var x = nodes[i++];
       if (x < 0) {  // It's a leaf node
@@ -381,14 +381,12 @@ public class QuadTree extends BaseObject {
         constructedNodes.add(new QNode(optNode(constructedNodes, x), optNode(constructedNodes, nodes[i++])));
       }
     }
-    QNode root = last(constructedNodes);
-
     var rootBounds = FRect.DEFAULT_INSTANCE.parse(m.getList(SER_KEY_ROOT_BOUNDS));
     var points = PointSet.deserialize(m.getList(SER_KEY_POINTS));
     var param = m.getUnsafe(SER_KEY_PARAM);
     var params = QtreeParam.DEFAULT_INSTANCE.parse(param);
     var qt = new QuadTree(params, points);
-    qt.mRoot = root;
+    qt.mRoot = last(constructedNodes);
     qt.mRootBounds = rootBounds;
     return qt;
   }
@@ -397,6 +395,7 @@ public class QuadTree extends BaseObject {
     if (id == 0) return null;
     return list.get(id - 1);
   }
+
   // ----------------------------------------------------------------------------------------------
   // Logging and debugging
   // ----------------------------------------------------------------------------------------------
@@ -416,17 +415,13 @@ public class QuadTree extends BaseObject {
         m.put("x", node.debugId());
 
       var x = list();
-//      if (node.mDebugId != 0)
-//        x.add("x").add( node.mDebugId);
-//      x.add("w").add(bounds.width).add("h").add(bounds.height);
-      //m.put("pop", node.population());
       for (int j : node.segments().array())
         x.add(j);
       m.put("segs", x);
       return m;
     } else {
       var m = map();
-      if (node.debugId()!= 0)
+      if (node.debugId() != 0)
         m.put("x", node.debugId());
       if (node.left() != null || node.right() != null) {
         boolean splitDimension = bounds.width > bounds.height;

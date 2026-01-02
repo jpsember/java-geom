@@ -102,6 +102,21 @@ public class QuadTreeTest extends MyTestCase {
   @Test
   public void zeroSegments() {
     genSegments(0);
+
+    var t = genTree();
+    var m = t.serialize();
+    var t2 = QuadTree.deserialize(m);
+    var m2 = t2.serialize();
+    log(m);
+    log(m2);
+    checkState(m.equals(m2));
+    assertMessage(m);
+
+  }
+
+  @Test
+  public void serZero() {
+    genSegments(0);
     genOut();
   }
 
