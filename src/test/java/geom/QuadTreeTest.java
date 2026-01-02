@@ -186,6 +186,7 @@ public class QuadTreeTest extends MyTestCase {
   public void serialize2() {
     auxSer( );
   }
+
   @Test
   public void serialize3() {
     auxSer();
@@ -193,7 +194,7 @@ public class QuadTreeTest extends MyTestCase {
 
 
   @Test
-  public void serialize4() {rv();
+  public void serialize4() {
     auxSer();
   }
 
@@ -205,6 +206,7 @@ public class QuadTreeTest extends MyTestCase {
 
   @Test
   public void serialize8() {
+    startSeed(182);
     auxSer();
   }
 

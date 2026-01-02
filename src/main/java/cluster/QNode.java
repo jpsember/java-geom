@@ -60,6 +60,8 @@ public class QNode {
     return mSegments;
   }
 
+  int mDebugId;
+
   void addSegment(int endpointId0, int endpointId1) {
     var b = (IntArray.Builder) segments();
     b.add(endpointId0);
@@ -73,6 +75,8 @@ public class QNode {
 
   public JSMap toJson() {
     var m = map();
+    if (mDebugId != 0)
+      m.put("xId",mDebugId);
     if (isLeaf())
       m.put("pop", population());
     else {
